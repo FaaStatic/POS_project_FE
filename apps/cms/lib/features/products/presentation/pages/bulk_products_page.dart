@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +9,8 @@ import 'package:ui/ui.dart';
 
 import '../../../../app/di.dart';
 import '../../../../common/failure_text.dart';
+import '../../../../common/file_picker.dart';
+import '../../../../common/file_saver.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/bulk_products_cubit.dart';
 
@@ -84,11 +88,18 @@ class _BulkProductsPageState extends State<BulkProductsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(l10n.bulkHint, style: theme.textTheme.bodyLarge),
-                  const SizedBox(height: Space.lg),
                   if (state.result != null) _ResultSummary(result: state.result!),
                   if (state.failure != null)
-                    Text(failureText(context, state.failure!), style: TextStyle(color: theme.colorScheme.error)),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: Space.lg),
+                      child: Text(failureText(context, state.failure!), style: TextStyle(color: theme.colorScheme.error)),
+                    ),
+                  _ImportFromFile(state: state),
+                  const SizedBox(height: Space.xxl),
+                  Text(l10n.manualTitle, style: theme.textTheme.titleLarge),
+                  const SizedBox(height: Space.sm),
+                  Text(l10n.bulkHint, style: theme.textTheme.bodyLarge),
+                  const SizedBox(height: Space.lg),
                   for (var i = 0; i < _rows.length; i++) _rowEditor(context, i),
                   const SizedBox(height: Space.md),
                   Wrap(
@@ -186,6 +197,62 @@ class _BulkProductsPageState extends State<BulkProductsPage> {
       ),
     );
   }
+}
+
+class _ImportFromFile extends StatelessWidget {
+  const _ImportFromFile({required this.state});
+  final BulkState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final cubit = context.read<BulkProductsCubit>();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.importTitle, style: theme.textTheme.titleLarge),
+        const SizedBox(height: Space.sm),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: Text(l10n.importHint, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        ),
+        const SizedBox(height: Space.lg),
+        Wrap(spacing: Space.md, runSpacing: Space.md, crossAxisAlignment: WrapCrossAlignment.center, children: [
+          AppButton(
+            label: state.fileName == null ? l10n.pickFile : l10n.importing(state.fileName!),
+            icon: Iconsax.document_upload,
+            loading: state.saving && state.fileName != null,
+            onPressed: state.saving
+                ? null
+                : () async {
+                    final file = await pickFile(accept: ImportProductsFile.extensions);
+                    if (file != null) await cubit.importFile(file.bytes, file.name);
+                  },
+          ),
+          AppButton(
+            label: l10n.downloadTemplate,
+            icon: Iconsax.document_download,
+            variant: AppButtonVariant.outline,
+            onPressed: () => saveFile(utf8.encode(_template), 'template-produk.csv', mime: 'text/csv'),
+          ),
+        ]),
+      ],
+    );
+  }
+
+  static final _template = ProductModel.toCsv(const [
+    NewProduct(
+      sku: 'IDM-GRG',
+      barcode: '8992388101012',
+      name: 'Indomie Goreng',
+      purchasePrice: 2800,
+      sellingPrice: 3500,
+      sellingPriceDebt: 4000,
+      stock: 40,
+      category: 'Mie Instan',
+    ),
+  ]);
 }
 
 class _ResultSummary extends StatelessWidget {

@@ -399,5 +399,21 @@
       }
     }
   },
-  "chartTable": "Lihat sebagai tabel"
+  "chartTable": "Lihat sebagai tabel",
+  "importTitle": "Impor dari file Excel atau CSV",
+  "importHint": "Kolom wajib: sku, product_name, purchase_price, selling_price, selling_price_debt. Opsional: barcode, unit (pcs, gram, kg, liter, kardus, ikat), stock, category, image, product_type (physical atau digital). Maks 10.000 baris, 25 MB. SKU yang sudah ada akan diperbarui.",
+  "pickFile": "Pilih file .xlsx atau .csv",
+  "downloadTemplate": "Unduh template CSV",
+  "importing": "Mengimpor {name}…",
+  "@importing": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "manualTitle": "Atau isi manual",
+  "importFormat": "Hanya file .xlsx atau .csv.",
+  "importEmpty": "File kosong.",
+  "importTooLarge": "File lebih dari 25 MB."
 }

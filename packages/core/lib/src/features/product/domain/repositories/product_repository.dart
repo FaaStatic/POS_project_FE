@@ -13,6 +13,9 @@ abstract interface class ProductRepository {
   Future<Result<void>> create(NewProduct product);
   Future<Result<BulkImportResult>> bulkCreate(List<NewProduct> products);
 
+  /// .csv or .xlsx with the same columns as [ProductModel.csvHeader].
+  Future<Result<BulkImportResult>> importFile(List<int> bytes, String filename);
+
   /// [delta] is added to the current stock (negative to reduce).
   Future<Result<void>> adjustStock(String id, double delta);
   Future<Result<void>> delete(String id);

@@ -246,5 +246,14 @@
   "quickAddCustomer": "Add customer",
   "quickMonthReport": "Download this month's report",
   "sold": "{qty} sold",
-  "chartTable": "View as table"
+  "chartTable": "View as table",
+  "importTitle": "Import from an Excel or CSV file",
+  "importHint": "Required columns: sku, product_name, purchase_price, selling_price, selling_price_debt. Optional: barcode, unit (pcs, gram, kg, liter, kardus, ikat), stock, category, image, product_type (physical or digital). Up to 10,000 rows, 25 MB. Existing SKUs are updated.",
+  "pickFile": "Choose an .xlsx or .csv file",
+  "downloadTemplate": "Download CSV template",
+  "importing": "Importing {name}…",
+  "manualTitle": "Or fill in by hand",
+  "importFormat": "Only .xlsx or .csv files.",
+  "importEmpty": "The file is empty.",
+  "importTooLarge": "The file is larger than 25 MB."
 }

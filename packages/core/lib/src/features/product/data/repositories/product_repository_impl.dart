@@ -38,6 +38,10 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<Result<BulkImportResult>> bulkCreate(List<NewProduct> products) => guard(() => _remote.bulk(products));
 
   @override
+  Future<Result<BulkImportResult>> importFile(List<int> bytes, String filename) =>
+      guard(() => _remote.importFile(bytes, filename));
+
+  @override
   Future<Result<void>> adjustStock(String id, double delta) => guard(() => _remote.adjustStock(id, delta));
 
   @override

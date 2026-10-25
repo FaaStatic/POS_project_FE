@@ -44,6 +44,12 @@ class ProductRemoteDatasource {
     return ProductModel.bulkResultFromJson(readMap(await _api.post(ApiPaths.productsBulk, body: form)));
   }
 
+  /// Uploads an existing .csv or .xlsx file as-is.
+  Future<BulkImportResult> importFile(List<int> bytes, String filename) async {
+    final form = FormData.fromMap({'file_upload': MultipartFile.fromBytes(bytes, filename: filename)});
+    return ProductModel.bulkResultFromJson(readMap(await _api.post(ApiPaths.productsBulk, body: form)));
+  }
+
   Future<void> adjustStock(String id, double delta) => _api.patch(ApiPaths.productsStock, body: {'id': id, 'stock': delta});
 
   Future<void> delete(String id) => _api.delete(ApiPaths.product(id));

@@ -65,6 +65,23 @@ class BulkCreateProducts {
   }
 }
 
+/// Backend limits: .csv or .xlsx, up to 10,000 rows, 25 MB request body.
+class ImportProductsFile {
+  const ImportProductsFile(this._repo);
+  final ProductRepository _repo;
+
+  static const maxBytes = 25 * 1024 * 1024;
+  static const extensions = ['.csv', '.xlsx'];
+
+  Future<Result<BulkImportResult>> call(List<int> bytes, String filename) {
+    final name = filename.toLowerCase();
+    if (!extensions.any(name.endsWith)) return Future.value(const Err(ValidationFailure('import_format')));
+    if (bytes.isEmpty) return Future.value(const Err(ValidationFailure('import_empty')));
+    if (bytes.length > maxBytes) return Future.value(const Err(ValidationFailure('import_too_large')));
+    return _repo.importFile(bytes, filename);
+  }
+}
+
 class AdjustStock {
   const AdjustStock(this._repo);
   final ProductRepository _repo;

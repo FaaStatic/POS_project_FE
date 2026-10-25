@@ -821,4 +821,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chartTable => 'View as table';
+
+  @override
+  String get importTitle => 'Import from an Excel or CSV file';
+
+  @override
+  String get importHint =>
+      'Required columns: sku, product_name, purchase_price, selling_price, selling_price_debt. Optional: barcode, unit (pcs, gram, kg, liter, kardus, ikat), stock, category, image, product_type (physical or digital). Up to 10,000 rows, 25 MB. Existing SKUs are updated.';
+
+  @override
+  String get pickFile => 'Choose an .xlsx or .csv file';
+
+  @override
+  String get downloadTemplate => 'Download CSV template';
+
+  @override
+  String importing(String name) {
+    return 'Importing $name…';
+  }
+
+  @override
+  String get manualTitle => 'Or fill in by hand';
+
+  @override
+  String get importFormat => 'Only .xlsx or .csv files.';
+
+  @override
+  String get importEmpty => 'The file is empty.';
+
+  @override
+  String get importTooLarge => 'The file is larger than 25 MB.';
 }

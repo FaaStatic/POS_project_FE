@@ -821,4 +821,34 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get chartTable => 'Lihat sebagai tabel';
+
+  @override
+  String get importTitle => 'Impor dari file Excel atau CSV';
+
+  @override
+  String get importHint =>
+      'Kolom wajib: sku, product_name, purchase_price, selling_price, selling_price_debt. Opsional: barcode, unit (pcs, gram, kg, liter, kardus, ikat), stock, category, image, product_type (physical atau digital). Maks 10.000 baris, 25 MB. SKU yang sudah ada akan diperbarui.';
+
+  @override
+  String get pickFile => 'Pilih file .xlsx atau .csv';
+
+  @override
+  String get downloadTemplate => 'Unduh template CSV';
+
+  @override
+  String importing(String name) {
+    return 'Mengimpor $name…';
+  }
+
+  @override
+  String get manualTitle => 'Atau isi manual';
+
+  @override
+  String get importFormat => 'Hanya file .xlsx atau .csv.';
+
+  @override
+  String get importEmpty => 'File kosong.';
+
+  @override
+  String get importTooLarge => 'File lebih dari 25 MB.';
 }

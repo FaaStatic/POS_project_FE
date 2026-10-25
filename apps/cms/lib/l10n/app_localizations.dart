@@ -1579,6 +1579,60 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Lihat sebagai tabel'**
   String get chartTable;
+
+  /// No description provided for @importTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Impor dari file Excel atau CSV'**
+  String get importTitle;
+
+  /// No description provided for @importHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Kolom wajib: sku, product_name, purchase_price, selling_price, selling_price_debt. Opsional: barcode, unit (pcs, gram, kg, liter, kardus, ikat), stock, category, image, product_type (physical atau digital). Maks 10.000 baris, 25 MB. SKU yang sudah ada akan diperbarui.'**
+  String get importHint;
+
+  /// No description provided for @pickFile.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih file .xlsx atau .csv'**
+  String get pickFile;
+
+  /// No description provided for @downloadTemplate.
+  ///
+  /// In id, this message translates to:
+  /// **'Unduh template CSV'**
+  String get downloadTemplate;
+
+  /// No description provided for @importing.
+  ///
+  /// In id, this message translates to:
+  /// **'Mengimpor {name}…'**
+  String importing(String name);
+
+  /// No description provided for @manualTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Atau isi manual'**
+  String get manualTitle;
+
+  /// No description provided for @importFormat.
+  ///
+  /// In id, this message translates to:
+  /// **'Hanya file .xlsx atau .csv.'**
+  String get importFormat;
+
+  /// No description provided for @importEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'File kosong.'**
+  String get importEmpty;
+
+  /// No description provided for @importTooLarge.
+  ///
+  /// In id, this message translates to:
+  /// **'File lebih dari 25 MB.'**
+  String get importTooLarge;
 }
 
 class _AppLocalizationsDelegate

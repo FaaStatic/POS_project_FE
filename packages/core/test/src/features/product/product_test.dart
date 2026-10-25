@@ -140,3 +140,4 @@ void main() {
     expect(lines[1], 'A1,,"Kopi, ""Kapal""",pcs,1,2,3,1.5,Minuman,,physical');
   });
 }
+
