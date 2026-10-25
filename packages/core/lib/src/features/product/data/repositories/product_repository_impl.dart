@@ -10,7 +10,7 @@ class ProductRepositoryImpl implements ProductRepository {
   final ProductRemoteDatasource _remote;
 
   @override
-  Future<Result<Page<Product>>> list(ProductQuery query, {PageCursor? after}) =>
+  Future<Result<Paged<Product>>> list(ProductQuery query, {PageCursor? after}) =>
       guard(() => _remote.list(query, after: after));
 
   @override

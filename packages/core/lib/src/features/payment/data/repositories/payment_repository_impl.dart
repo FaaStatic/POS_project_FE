@@ -68,7 +68,7 @@ class PaymentRemoteDatasource {
     );
   }
 
-  Future<Page<PaymentRecord>> list(PaymentQuery q, {PageCursor? after}) async {
+  Future<Paged<PaymentRecord>> list(PaymentQuery q, {PageCursor? after}) async {
     final data = readMap(await _api.get(ApiPaths.payments, query: {
       'status': q.state?.name,
       'method': q.method?.name,
@@ -78,7 +78,7 @@ class PaymentRemoteDatasource {
       'after_id': after?.id,
       'after_time': after?.time,
     }));
-    return Page(
+    return Paged(
       items: readList(data['payments']).map(paymentRecordFromJson).toList(),
       cursor: PageCursor.from(data['after_id'], data['after_time']),
       hasNext: readBool(data['has_next']),
@@ -104,6 +104,6 @@ class PaymentRepositoryImpl implements PaymentRepository {
   @override
   Future<Result<ChargeStatus>> status(String orderId) => guard(() => _remote.status(orderId));
   @override
-  Future<Result<Page<PaymentRecord>>> list(PaymentQuery query, {PageCursor? after}) =>
+  Future<Result<Paged<PaymentRecord>>> list(PaymentQuery query, {PageCursor? after}) =>
       guard(() => _remote.list(query, after: after));
 }

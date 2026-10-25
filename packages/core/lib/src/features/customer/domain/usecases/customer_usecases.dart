@@ -8,7 +8,7 @@ class GetCustomers {
   const GetCustomers(this._repo);
   final CustomerRepository _repo;
 
-  Future<Result<Page<Customer>>> call(CustomerQuery query, {PageCursor? after}) => _repo.list(query, after: after);
+  Future<Result<Paged<Customer>>> call(CustomerQuery query, {PageCursor? after}) => _repo.list(query, after: after);
 }
 
 class GetAllCustomers {

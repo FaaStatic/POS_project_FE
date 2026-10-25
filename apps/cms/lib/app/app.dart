@@ -13,7 +13,10 @@ import 'di.dart';
 import 'router.dart';
 
 class CmsApp extends StatefulWidget {
-  const CmsApp({super.key});
+  const CmsApp({super.key, this.initialLocation});
+
+  /// Lets tests start on a specific page.
+  final String? initialLocation;
 
   @override
   State<CmsApp> createState() => _CmsAppState();
@@ -22,7 +25,7 @@ class CmsApp extends StatefulWidget {
 class _CmsAppState extends State<CmsApp> {
   late final AuthCubit _auth = getIt<AuthCubit>()..restore();
   late final SettingsCubit _settings = getIt<SettingsCubit>();
-  late final GoRouter _router = buildRouter(_auth);
+  late final GoRouter _router = buildRouter(_auth, initialLocation: widget.initialLocation);
 
   @override
   void dispose() {

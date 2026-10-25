@@ -79,4 +79,13 @@ class UiLocalizationsId extends UiLocalizations {
   String qtyFor(String name) {
     return 'Jumlah $name';
   }
+
+  @override
+  String get loadMore => 'Muat lebih banyak';
+
+  @override
+  String get actions => 'Aksi';
+
+  @override
+  String get moreActions => 'Aksi lainnya';
 }

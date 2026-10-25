@@ -118,6 +118,7 @@ class _FormState extends State<_Form> {
               AppTextField(label: l10n.barcode, controller: _barcode, validator: (v) => validationText(context, Validators.barcode(v))),
               const SizedBox(height: Space.lg),
               DropdownButtonFormField<ProductUnit>(
+                isExpanded: true,
                 initialValue: _unit,
                 decoration: InputDecoration(labelText: l10n.unit),
                 items: [for (final u in ProductUnit.values) DropdownMenuItem(value: u, child: Text(u.name))],
@@ -129,6 +130,7 @@ class _FormState extends State<_Form> {
               AppTextField(label: l10n.debtPrice, controller: _debtPrice, keyboardType: TextInputType.number, inputFormatters: digits, validator: positive),
               const SizedBox(height: Space.lg),
               DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue: categories.any((c) => c.name == _category) ? _category : null,
                 decoration: InputDecoration(labelText: l10n.category),
                 items: [for (final c in categories) DropdownMenuItem(value: c.name, child: Text(c.name))],

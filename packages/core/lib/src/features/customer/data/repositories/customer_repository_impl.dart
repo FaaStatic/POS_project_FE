@@ -25,7 +25,7 @@ class CustomerRemoteDatasource {
   const CustomerRemoteDatasource(this._api);
   final ApiClient _api;
 
-  Future<Page<Customer>> list(CustomerQuery q, {PageCursor? after, String? order}) async {
+  Future<Paged<Customer>> list(CustomerQuery q, {PageCursor? after, String? order}) async {
     final data = readMap(await _api.get(ApiPaths.customers, query: {
       'search': q.search,
       'status': q.inactive ? 'inactive' : null,
@@ -34,7 +34,7 @@ class CustomerRemoteDatasource {
       'after_id': after?.id,
       'after_time': after?.time,
     }));
-    return Page(
+    return Paged(
       items: readList(data['customer_lists']).map(customerFromJson).toList(),
       cursor: PageCursor.from(data['after_id'], data['after_time']),
       hasNext: readBool(data['has_next']),
@@ -74,7 +74,7 @@ class CustomerRepositoryImpl implements CustomerRepository {
   final CustomerRemoteDatasource _remote;
 
   @override
-  Future<Result<Page<Customer>>> list(CustomerQuery query, {PageCursor? after}) =>
+  Future<Result<Paged<Customer>>> list(CustomerQuery query, {PageCursor? after}) =>
       guard(() => _remote.list(query, after: after));
 
   @override

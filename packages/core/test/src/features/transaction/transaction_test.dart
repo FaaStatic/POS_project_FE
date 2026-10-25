@@ -81,7 +81,7 @@ void main() {
     expect(t.stockConflict, isTrue);
     await GetTransactions(repo)(TransactionQuery(dateStart: DateTime(2026, 10, 1), method: PaymentMethod.qris, openConflict: true));
     expect(adapter.requests.last.queryParameters, {'date_start': '2026-10-01', 'type_payment': 3, 'open_conflict': true, 'limit': 20});
-    expect((await GetCustomerTransactions(repo)('k1') as Ok<Page<Transaction>>).value.items.single.id, 't2');
+    expect((await GetCustomerTransactions(repo)('k1') as Ok<Paged<Transaction>>).value.items.single.id, 't2');
   });
 
   test('cancel requires 3-500 char reason and sends it', () async {

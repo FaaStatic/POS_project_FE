@@ -36,7 +36,7 @@ void main() {
           'has_next': true,
           'product_list': [productJson('p1', barcode: '899', type: 1)],
         })));
-    final page = (await repo.list(const ProductQuery(search: 'mie', barcode: '899')) as Ok<Page<Product>>).value;
+    final page = (await repo.list(const ProductQuery(search: 'mie', barcode: '899')) as Ok<Paged<Product>>).value;
     final p = page.items.single;
     expect(p.name, 'Indomie Goreng');
     expect(p.isDigital, isTrue);

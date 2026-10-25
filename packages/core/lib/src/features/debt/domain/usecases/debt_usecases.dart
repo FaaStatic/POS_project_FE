@@ -8,7 +8,7 @@ class GetDebts {
   const GetDebts(this._repo);
   final DebtRepository _repo;
 
-  Future<Result<Page<Debt>>> call(DebtQuery query, {PageCursor? after}) => _repo.list(query, after: after);
+  Future<Result<Paged<Debt>>> call(DebtQuery query, {PageCursor? after}) => _repo.list(query, after: after);
 }
 
 class GetDebt {

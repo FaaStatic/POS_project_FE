@@ -46,5 +46,8 @@
         "type": "String"
       }
     }
-  }
+  },
+  "loadMore": "Muat lebih banyak",
+  "actions": "Aksi",
+  "moreActions": "Aksi lainnya"
 }

@@ -211,6 +211,24 @@ abstract class UiLocalizations {
   /// In id, this message translates to:
   /// **'Jumlah {name}'**
   String qtyFor(String name);
+
+  /// No description provided for @loadMore.
+  ///
+  /// In id, this message translates to:
+  /// **'Muat lebih banyak'**
+  String get loadMore;
+
+  /// No description provided for @actions.
+  ///
+  /// In id, this message translates to:
+  /// **'Aksi'**
+  String get actions;
+
+  /// No description provided for @moreActions.
+  ///
+  /// In id, this message translates to:
+  /// **'Aksi lainnya'**
+  String get moreActions;
 }
 
 class _UiLocalizationsDelegate extends LocalizationsDelegate<UiLocalizations> {

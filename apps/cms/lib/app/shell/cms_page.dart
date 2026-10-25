@@ -15,8 +15,7 @@ class ShellScope extends InheritedWidget {
   bool updateShouldNotify(ShellScope old) => old.openMenu != openMenu;
 }
 
-/// Page frame: title on the left, page actions on the right (quick access row
-/// lives in the body, not here).
+/// Page frame: title, then a wrapping row of labelled page actions under it.
 class CmsPage extends StatelessWidget {
   const CmsPage({super.key, required this.title, required this.body, this.actions = const [], this.fab});
 
@@ -39,10 +38,20 @@ class CmsPage extends StatelessWidget {
                 onPressed: openMenu,
               ),
         title: Text(title),
-        actions: [...actions, const SizedBox(width: 8)],
       ),
       floatingActionButton: fab,
-      body: body,
+      body: actions.isEmpty
+          ? body
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: Wrap(spacing: 8, runSpacing: 8, children: actions),
+                ),
+                Expanded(child: body),
+              ],
+            ),
     );
   }
 }

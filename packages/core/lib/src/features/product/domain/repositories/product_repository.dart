@@ -3,7 +3,7 @@ import '../../../../common/result.dart';
 import '../entities/product.dart';
 
 abstract interface class ProductRepository {
-  Future<Result<Page<Product>>> list(ProductQuery query, {PageCursor? after});
+  Future<Result<Paged<Product>>> list(ProductQuery query, {PageCursor? after});
 
   /// Every product, following pages. Used to refresh the kasir cache.
   Future<Result<List<Product>>> listAll();

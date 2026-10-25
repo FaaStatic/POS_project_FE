@@ -14,5 +14,5 @@ abstract interface class PaymentRepository {
 
   /// Also asks Midtrans for the latest state.
   Future<Result<ChargeStatus>> status(String orderId);
-  Future<Result<Page<PaymentRecord>>> list(PaymentQuery query, {PageCursor? after});
+  Future<Result<Paged<PaymentRecord>>> list(PaymentQuery query, {PageCursor? after});
 }

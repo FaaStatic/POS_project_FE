@@ -23,7 +23,7 @@ class DebtRemoteDatasource {
   const DebtRemoteDatasource(this._api);
   final ApiClient _api;
 
-  Future<Page<Debt>> list(DebtQuery q, {PageCursor? after}) async {
+  Future<Paged<Debt>> list(DebtQuery q, {PageCursor? after}) async {
     final data = readMap(await _api.get(ApiPaths.debts, query: {
       'customer_id': q.customerId,
       'search': q.search,
@@ -33,7 +33,7 @@ class DebtRemoteDatasource {
       'after_id': after?.id,
       'after_time': after?.time,
     }));
-    return Page(
+    return Paged(
       items: readList(data['transaction_list']).map(debtFromJson).toList(),
       cursor: PageCursor.from(data['after_id'], data['after_time']),
       hasNext: readBool(data['has_next']),
@@ -72,7 +72,7 @@ class DebtRepositoryImpl implements DebtRepository {
   final DebtRemoteDatasource _remote;
 
   @override
-  Future<Result<Page<Debt>>> list(DebtQuery query, {PageCursor? after}) => guard(() => _remote.list(query, after: after));
+  Future<Result<Paged<Debt>>> list(DebtQuery query, {PageCursor? after}) => guard(() => _remote.list(query, after: after));
   @override
   Future<Result<Debt>> get(String id) => guard(() => _remote.get(id));
   @override

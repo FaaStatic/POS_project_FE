@@ -18,7 +18,7 @@ class TransactionRemoteDatasource {
 
   Future<Transaction> get(String id) async => TransactionModel.fromJson(readMap(await _api.get(ApiPaths.transaction(id))));
 
-  Future<Page<Transaction>> list(TransactionQuery q, {PageCursor? after}) => _page(ApiPaths.transactions, {
+  Future<Paged<Transaction>> list(TransactionQuery q, {PageCursor? after}) => _page(ApiPaths.transactions, {
         'date_start': q.dateStart == null ? null : apiDate(q.dateStart!),
         'date_end': q.dateEnd == null ? null : apiDate(q.dateEnd!),
         'type_payment': q.method?.index,
@@ -29,12 +29,12 @@ class TransactionRemoteDatasource {
         'after_time': after?.time,
       });
 
-  Future<Page<Transaction>> listByCustomer(String customerId, {PageCursor? after}) =>
+  Future<Paged<Transaction>> listByCustomer(String customerId, {PageCursor? after}) =>
       _page(ApiPaths.customerTransactions(customerId), {'limit': 20, 'after_id': after?.id, 'after_time': after?.time});
 
-  Future<Page<Transaction>> _page(String path, Map<String, dynamic> query) async {
+  Future<Paged<Transaction>> _page(String path, Map<String, dynamic> query) async {
     final data = readMap(await _api.get(path, query: query));
-    return Page(
+    return Paged(
       items: readList(data['list_transaction']).map(TransactionModel.fromJson).toList(),
       cursor: PageCursor.from(data['after_id'], data['after_time']),
       hasNext: readBool(data['has_next']),
@@ -68,10 +68,10 @@ class TransactionRepositoryImpl implements TransactionRepository {
   @override
   Future<Result<Transaction>> get(String id) => guard(() => _remote.get(id));
   @override
-  Future<Result<Page<Transaction>>> list(TransactionQuery query, {PageCursor? after}) =>
+  Future<Result<Paged<Transaction>>> list(TransactionQuery query, {PageCursor? after}) =>
       guard(() => _remote.list(query, after: after));
   @override
-  Future<Result<Page<Transaction>>> listByCustomer(String customerId, {PageCursor? after}) =>
+  Future<Result<Paged<Transaction>>> listByCustomer(String customerId, {PageCursor? after}) =>
       guard(() => _remote.listByCustomer(customerId, after: after));
   @override
   Future<Result<void>> cancel(String id, String reason) => guard(() => _remote.cancel(id, reason));

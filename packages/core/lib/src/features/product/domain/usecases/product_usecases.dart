@@ -9,7 +9,7 @@ class GetProducts {
   const GetProducts(this._repo);
   final ProductRepository _repo;
 
-  Future<Result<Page<Product>>> call(ProductQuery query, {PageCursor? after}) => _repo.list(query, after: after);
+  Future<Result<Paged<Product>>> call(ProductQuery query, {PageCursor? after}) => _repo.list(query, after: after);
 }
 
 class GetAllProducts {

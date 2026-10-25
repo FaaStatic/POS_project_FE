@@ -5,18 +5,19 @@ import 'package:ui/ui.dart';
 
 import '../../../../app/shell/cms_page.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../auth/presentation/bloc/auth_cubit.dart';
 import '../bloc/settings_cubit.dart';
 
+/// [account] is supplied by the app layer (signed-in user and sign-out).
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+  const SettingsPage({super.key, required this.account});
+
+  final Widget account;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final settings = context.watch<SettingsCubit>().state;
-    final auth = context.watch<AuthCubit>().state;
 
     return CmsPage(
       title: l10n.settingsTitle,
@@ -25,9 +26,6 @@ class SettingsPage extends StatelessWidget {
         child: ListView(
           shrinkWrap: true,
           children: [
-            if (auth case AuthAuthenticated(:final session))
-              Text(l10n.signedInAs(session.username), style: theme.textTheme.bodyLarge),
-            const SizedBox(height: Space.xl),
             Text(l10n.language, style: theme.textTheme.titleSmall),
             const SizedBox(height: Space.sm),
             SegmentedButton<AppLanguage>(
@@ -51,14 +49,7 @@ class SettingsPage extends StatelessWidget {
               onSelectionChanged: (s) => context.read<SettingsCubit>().setTheme(s.first),
             ),
             const SizedBox(height: Space.xxl),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: AppButton(
-                label: l10n.logout,
-                variant: AppButtonVariant.outline,
-                onPressed: () => context.read<AuthCubit>().logout(),
-              ),
-            ),
+            account,
           ],
         ),
       ),

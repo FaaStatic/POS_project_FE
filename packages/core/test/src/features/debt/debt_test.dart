@@ -16,7 +16,7 @@ void main() {
 
   test('list sends unpaid/oldest filters and maps transaction_list', () async {
     adapter.on('GET', ApiPaths.debts, (_) => FakeReply(200, envelope({'has_next': false, 'transaction_list': [debtJson()]})));
-    final page = (await GetDebts(repo)(const DebtQuery(unpaidOnly: true, oldestFirst: true, limit: 5)) as Ok<Page<Debt>>).value;
+    final page = (await GetDebts(repo)(const DebtQuery(unpaidOnly: true, oldestFirst: true, limit: 5)) as Ok<Paged<Debt>>).value;
     expect(page.items.single.paid, isFalse);
     expect(adapter.requests.single.queryParameters, {'status': 0, 'order': 'asc', 'limit': 5});
   });

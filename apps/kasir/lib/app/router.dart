@@ -39,12 +39,16 @@ abstract final class Routes {
 GoRouter buildRouter(AuthCubit auth) => GoRouter(
       initialLocation: Routes.home,
       refreshListenable: _StreamListenable(auth.stream),
+      // Keeps the requested page across splash and login, so a reload stays put.
       redirect: (context, state) {
         final location = state.matchedLocation;
+        final gate = location == Routes.splash || location == Routes.login;
+        final from = gate ? state.uri.queryParameters['from'] : state.uri.toString();
+        String to(String gatePath) => from == null || from == Routes.home ? gatePath : '$gatePath?from=${Uri.encodeComponent(from)}';
         return switch (auth.state) {
-          AuthUnknown() => location == Routes.splash ? null : Routes.splash,
-          AuthUnauthenticated() => location == Routes.login ? null : Routes.login,
-          AuthAuthenticated() => location == Routes.login || location == Routes.splash ? Routes.home : null,
+          AuthUnknown() => location == Routes.splash ? null : to(Routes.splash),
+          AuthUnauthenticated() => location == Routes.login ? null : to(Routes.login),
+          AuthAuthenticated() => gate ? from ?? Routes.home : null,
         };
       },
       routes: [

@@ -11,7 +11,7 @@ class ProductRemoteDatasource {
   const ProductRemoteDatasource(this._api);
   final ApiClient _api;
 
-  Future<Page<Product>> list(ProductQuery q, {PageCursor? after}) async {
+  Future<Paged<Product>> list(ProductQuery q, {PageCursor? after}) async {
     final data = readMap(await _api.get(ApiPaths.products, query: {
       'search': q.search,
       'category_id': q.categoryId,
@@ -20,7 +20,7 @@ class ProductRemoteDatasource {
       'last_id': after?.id,
       'after_time': after?.time,
     }));
-    return Page(
+    return Paged(
       items: readList(data['product_list']).map(ProductModel.fromJson).toList(),
       cursor: PageCursor.from(data['next_id'], data['next_time']),
       hasNext: readBool(data['has_next']),

@@ -5,8 +5,8 @@ import '../entities/transaction.dart';
 abstract interface class TransactionRepository {
   Future<Result<CheckoutResult>> create(CheckoutRequest request);
   Future<Result<Transaction>> get(String id);
-  Future<Result<Page<Transaction>>> list(TransactionQuery query, {PageCursor? after});
-  Future<Result<Page<Transaction>>> listByCustomer(String customerId, {PageCursor? after});
+  Future<Result<Paged<Transaction>>> list(TransactionQuery query, {PageCursor? after});
+  Future<Result<Paged<Transaction>>> listByCustomer(String customerId, {PageCursor? after});
 
   /// Reason is required (3–500 characters).
   Future<Result<void>> cancel(String id, String reason);

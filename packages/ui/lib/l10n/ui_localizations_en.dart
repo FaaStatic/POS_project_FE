@@ -80,4 +80,13 @@ class UiLocalizationsEn extends UiLocalizations {
   String qtyFor(String name) {
     return 'Quantity of $name';
   }
+
+  @override
+  String get loadMore => 'Load more';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get moreActions => 'More actions';
 }

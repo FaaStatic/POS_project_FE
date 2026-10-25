@@ -22,7 +22,231 @@
   "themeDark": "Gelap",
   "logout": "Keluar",
   "signedInAs": "Masuk sebagai {name}",
-  "@signedInAs": {"placeholders": {"name": {"type": "String"}}},
+  "@signedInAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "openMenu": "Buka menu",
-  "navSettings": "Pengaturan"
+  "navSettings": "Pengaturan",
+  "navDashboard": "Dashboard",
+  "navTransactions": "Transaksi",
+  "navProducts": "Produk",
+  "navCategories": "Kategori",
+  "navCustomers": "Customer",
+  "navDebts": "Hutang",
+  "navStaff": "Staff",
+  "navPayments": "Pembayaran",
+  "navDevices": "Device",
+  "navReports": "Laporan",
+  "active": "Aktif",
+  "inactive": "Nonaktif",
+  "search": "Cari",
+  "actions": "Aksi",
+  "save": "Simpan",
+  "saved": "Tersimpan.",
+  "cancel": "Batal",
+  "delete": "Hapus",
+  "edit": "Edit",
+  "restore": "Pulihkan",
+  "deactivate": "Nonaktifkan",
+  "purge": "Hapus permanen",
+  "retry": "Coba lagi",
+  "createdAt": "Dibuat",
+  "role": "Peran",
+  "roleSuper": "Admin",
+  "roleStaff": "Staff",
+  "staffTitle": "Staff",
+  "addStaff": "Tambah staff",
+  "staffEmpty": "Belum ada staff. Tambah staff pertama.",
+  "staffInactiveEmpty": "Tidak ada staff nonaktif.",
+  "resetPassword": "Reset password",
+  "newPassword": "Password baru",
+  "resetPasswordHint": "Semua sesi staff ini akan keluar.",
+  "passwordReset": "Password diganti. Sesi staff ini dicabut.",
+  "staffAdded": "Staff ditambahkan.",
+  "staffDeactivated": "Staff dinonaktifkan. Sesi dan token notifikasinya dicabut.",
+  "staffRestored": "Staff dipulihkan.",
+  "purgeTitle": "Hapus permanen {name}?",
+  "@purgeTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "purgeStaffHint": "Staff tanpa riwayat transaksi dihapus. Staff dengan riwayat dianonimkan supaya laporan lama tetap utuh.",
+  "purgeTypeName": "Ketik {name} untuk konfirmasi",
+  "@purgeTypeName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "purgeMismatch": "Nama tidak cocok.",
+  "purgedDeleted": "Dihapus permanen.",
+  "purgedAnonymized": "Punya riwayat transaksi, jadi dianonimkan.",
+  "customersTitle": "Customer",
+  "addCustomer": "Tambah customer",
+  "editCustomer": "Edit customer",
+  "customersEmpty": "Belum ada customer. Tambah customer pertama.",
+  "customersInactiveEmpty": "Tidak ada customer nonaktif.",
+  "customerName": "Nama",
+  "customerPhone": "Nomor HP",
+  "customerAddress": "Alamat",
+  "customerHasDebt": "Customer masih punya hutang aktif, tidak bisa dihapus permanen.",
+  "purgeCustomerHint": "Customer dengan riwayat transaksi dianonimkan, tanpa riwayat dihapus.",
+  "customerDeactivated": "Customer dinonaktifkan.",
+  "customerRestored": "Customer dipulihkan.",
+  "customerDetail": "Detail customer",
+  "transactionsTitle": "Transaksi",
+  "noTransactions": "Belum ada transaksi.",
+  "debtsTitle": "Hutang",
+  "noDebts": "Tidak ada hutang.",
+  "categoriesTitle": "Kategori",
+  "addCategory": "Tambah kategori",
+  "rename": "Ganti nama",
+  "categoryName": "Nama kategori",
+  "categoriesEmpty": "Belum ada kategori. Tambah kategori pertama.",
+  "productCount": "{count, plural, =0{Belum dipakai} =1{1 produk} other{{count} produk}}",
+  "@productCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "categoryInUse": "Dipakai {count} produk. Pindahkan produknya dulu.",
+  "@categoryInUse": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "categoryDuplicate": "Nama kategori sudah ada.",
+  "categoryDeleted": "Kategori dihapus.",
+  "deleteCategoryTitle": "Hapus kategori {name}?",
+  "@deleteCategoryTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "productsTitle": "Produk",
+  "addProduct": "Tambah produk",
+  "bulkAdd": "Tambah massal",
+  "editProduct": "Edit produk",
+  "productsEmpty": "Belum ada produk. Tambah produk pertama.",
+  "productsNoMatch": "Tidak ada produk yang cocok.",
+  "productName": "Nama produk",
+  "sku": "SKU",
+  "barcode": "Barcode",
+  "barcodeHint": "Opsional. Scanner USB bisa langsung mengisi.",
+  "unit": "Satuan",
+  "productType": "Tipe",
+  "physical": "Fisik",
+  "digital": "Digital",
+  "purchasePrice": "Harga beli",
+  "sellingPrice": "Harga jual",
+  "debtPrice": "Harga hutang",
+  "stock": "Stok",
+  "category": "Kategori",
+  "categoryNewHint": "Pilih kategori atau ketik nama baru",
+  "imageUrl": "URL gambar (opsional)",
+  "allCategories": "Semua kategori",
+  "adjustStock": "Ubah stok",
+  "stockDelta": "Tambah atau kurangi (contoh 10 atau -2)",
+  "stockUpdated": "Stok diperbarui.",
+  "productDeleted": "Produk dihapus.",
+  "deleteProductTitle": "Hapus produk {name}?",
+  "@deleteProductTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "productSaved": "Produk disimpan.",
+  "bulkTitle": "Tambah produk massal",
+  "bulkHint": "Isi satu produk per baris. SKU yang sudah ada akan diperbarui.",
+  "addRow": "Tambah baris",
+  "removeRow": "Hapus baris",
+  "uploadBulk": "Simpan semua",
+  "bulkResult": "{inserted} ditambahkan, {updated} diperbarui.",
+  "@bulkResult": {
+    "placeholders": {
+      "inserted": {
+        "type": "int"
+      },
+      "updated": {
+        "type": "int"
+      }
+    }
+  },
+  "bulkRowError": "Baris {line}: {message}",
+  "@bulkRowError": {
+    "placeholders": {
+      "line": {
+        "type": "int"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "bulkDuplicate": "SKU ganda di form: {skus}",
+  "@bulkDuplicate": {
+    "placeholders": {
+      "skus": {
+        "type": "String"
+      }
+    }
+  },
+  "row": "Baris {n}",
+  "@row": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "devicesTitle": "Device",
+  "devicesEmpty": "Belum ada device yang login.",
+  "allPlatforms": "Semua platform",
+  "user": "User",
+  "platform": "Platform",
+  "lastActive": "Terakhir aktif",
+  "revoke": "Cabut",
+  "revokeTitle": "Cabut device {name}?",
+  "@revokeTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "revokeHint": "Device ini berhenti menerima notifikasi pembayaran.",
+  "deviceRevoked": "Device dicabut.",
+  "unknownUser": "(tanpa user)",
+  "vPositive": "Harus lebih dari 0",
+  "vNumber": "Masukkan angka",
+  "vBarcode": "Hanya huruf, angka, - . _ (maks 64)",
+  "vSku": "Maks 50 karakter",
+  "vCategoryLength": "Maks 100 karakter",
+  "vZero": "Isi selain 0",
+  "loadFailed": "Gagal memuat data. {reason}",
+  "@loadFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "debtPaid": "Lunas",
+  "debtUnpaid": "Belum lunas"
 }

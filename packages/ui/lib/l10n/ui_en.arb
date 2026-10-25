@@ -46,5 +46,8 @@
         "type": "String"
       }
     }
-  }
+  },
+  "loadMore": "Load more",
+  "actions": "Actions",
+  "moreActions": "More actions"
 }

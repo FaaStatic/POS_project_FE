@@ -3,7 +3,7 @@ import '../../../../common/result.dart';
 import '../entities/debt.dart';
 
 abstract interface class DebtRepository {
-  Future<Result<Page<Debt>>> list(DebtQuery query, {PageCursor? after});
+  Future<Result<Paged<Debt>>> list(DebtQuery query, {PageCursor? after});
   Future<Result<Debt>> get(String id);
 
   /// Cash payment. [idempotencyKey] makes a retried tap safe.

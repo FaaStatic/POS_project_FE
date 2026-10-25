@@ -42,6 +42,10 @@ export 'src/features/receipt/domain/repositories/receipt_settings_repository.dar
 export 'src/features/receipt/domain/usecases/receipt_usecases.dart';
 export 'src/features/sales/domain/entities/sale.dart';
 export 'src/features/sales/domain/repositories/sales_log.dart';
+export 'src/features/staff/data/staff_repository_impl.dart';
+export 'src/features/staff/domain/entities/staff.dart';
+export 'src/features/staff/domain/repositories/staff_repository.dart';
+export 'src/features/staff/domain/usecases/staff_usecases.dart';
 export 'src/features/transaction/data/models/transaction_model.dart';
 export 'src/features/transaction/data/repositories/transaction_repository_impl.dart';
 export 'src/features/transaction/domain/entities/transaction.dart';

@@ -41,5 +41,5 @@ class GetPayments {
   const GetPayments(this._repo);
   final PaymentRepository _repo;
 
-  Future<Result<Page<PaymentRecord>>> call(PaymentQuery query, {PageCursor? after}) => _repo.list(query, after: after);
+  Future<Result<Paged<PaymentRecord>>> call(PaymentQuery query, {PageCursor? after}) => _repo.list(query, after: after);
 }

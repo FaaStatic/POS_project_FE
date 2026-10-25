@@ -37,14 +37,14 @@ class GetTransactions {
   const GetTransactions(this._repo);
   final TransactionRepository _repo;
 
-  Future<Result<Page<Transaction>>> call(TransactionQuery query, {PageCursor? after}) => _repo.list(query, after: after);
+  Future<Result<Paged<Transaction>>> call(TransactionQuery query, {PageCursor? after}) => _repo.list(query, after: after);
 }
 
 class GetCustomerTransactions {
   const GetCustomerTransactions(this._repo);
   final TransactionRepository _repo;
 
-  Future<Result<Page<Transaction>>> call(String customerId, {PageCursor? after}) =>
+  Future<Result<Paged<Transaction>>> call(String customerId, {PageCursor? after}) =>
       _repo.listByCustomer(customerId, after: after);
 }
 

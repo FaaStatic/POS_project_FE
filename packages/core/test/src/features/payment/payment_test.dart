@@ -77,7 +77,7 @@ void main() {
             {'id': 'x', 'order_id': 'ORD-1', 'method': 'va', 'status': 'expired', 'gross_amount': 5000, 'fee_amount': 4000, 'va_bank': 'bca'},
           ],
         })));
-    final page = (await GetPayments(repo)(PaymentQuery(state: PaymentState.expired, method: ChargeMethod.va, dateStart: DateTime(2026, 10, 25))) as Ok<Page<PaymentRecord>>).value;
+    final page = (await GetPayments(repo)(PaymentQuery(state: PaymentState.expired, method: ChargeMethod.va, dateStart: DateTime(2026, 10, 25))) as Ok<Paged<PaymentRecord>>).value;
     expect(page.items.single.state, PaymentState.expired);
     expect(page.items.single.feeAmount, 4000);
     expect(adapter.requests.single.queryParameters, {'status': 'expired', 'method': 'va', 'date_start': '2026-10-25', 'limit': 20});

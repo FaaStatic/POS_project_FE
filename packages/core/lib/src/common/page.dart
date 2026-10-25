@@ -1,6 +1,6 @@
 /// Keyset page from the backend (`after_id`/`after_time` or `next_id`/`next_time`).
-class Page<T> {
-  const Page({required this.items, this.cursor, this.hasNext = false});
+class Paged<T> {
+  const Paged({required this.items, this.cursor, this.hasNext = false});
 
   final List<T> items;
   final PageCursor? cursor;
