@@ -255,5 +255,7 @@
   "manualTitle": "Or fill in by hand",
   "importFormat": "Only .xlsx or .csv files.",
   "importEmpty": "The file is empty.",
-  "importTooLarge": "The file is larger than 25 MB."
+  "importTooLarge": "The file is larger than 25 MB.",
+  "loginPanelLine": "Sales, stock, and customer credit in one place.",
+  "loginPanelNote": "Sales are recorded from the Kasir app, even offline."
 }

@@ -30,59 +30,80 @@ class CheckoutPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => getIt<ProductsCubit>()..start(),
       child: Scaffold(
-        body: SafeArea(
-          bottom: false,
-          child: BlocBuilder<CheckoutBloc, CheckoutState>(
-            buildWhen: (a, b) => a.drafts != b.drafts || a.activeId != b.activeId || a.loading != b.loading,
-            builder: (context, state) {
-              if (state.loading) return const LoadingView();
-              final strip = TransactionTabStrip(
-                tabs: [
-                  for (final d in state.drafts)
-                    TransactionTab(
-                      id: d.id,
-                      number: d.number,
-                      highlight: d.status != DraftStatus.open,
-                      subtitle: switch (d.status) {
-                        DraftStatus.awaitingPayment => d.charge?.method == ChargeMethod.va ? l10n.waitingVa : l10n.waitingQris,
-                        DraftStatus.paid => l10n.paid,
-                        DraftStatus.open => l10n.cartSummary(qty(context, d.itemCount), rupiah(context, d.total())),
-                      },
-                    ),
-                ],
-                activeId: state.activeId,
-                onSelect: (id) => context.read<CheckoutBloc>().add(TabSelected(id)),
-                onNew: () => context.read<CheckoutBloc>().add(const NewTabRequested()),
-                onShowAll: () async {
-                  final bloc = context.read<CheckoutBloc>();
-                  final id = await showOpenTabs(context, state.drafts, state.activeId);
-                  if (id != null) bloc.add(TabSelected(id));
-                },
-              );
+        body: BlocBuilder<CheckoutBloc, CheckoutState>(
+          buildWhen: (a, b) => a.drafts != b.drafts || a.activeId != b.activeId || a.loading != b.loading,
+          builder: (context, state) {
+            if (state.loading) return const LoadingView();
+            final strip = TransactionTabStrip(
+              onBrand: true,
+              tabs: [
+                for (final d in state.drafts)
+                  TransactionTab(
+                    id: d.id,
+                    number: d.number,
+                    highlight: d.status != DraftStatus.open,
+                    subtitle: switch (d.status) {
+                      DraftStatus.awaitingPayment =>
+                        d.charge?.method == ChargeMethod.va ? l10n.waitingVa : l10n.waitingQris,
+                      DraftStatus.paid => l10n.paid,
+                      DraftStatus.open => l10n.cartSummary(qty(context, d.itemCount), rupiah(context, d.total())),
+                    },
+                  ),
+              ],
+              activeId: state.activeId,
+              onSelect: (id) => context.read<CheckoutBloc>().add(TabSelected(id)),
+              onNew: () => context.read<CheckoutBloc>().add(const NewTabRequested()),
+              onShowAll: () async {
+                final bloc = context.read<CheckoutBloc>();
+                final id = await showOpenTabs(context, state.drafts, state.activeId);
+                if (id != null) bloc.add(TabSelected(id));
+              },
+            );
 
-              return LayoutBuilder(builder: (context, constraints) {
+            // The green header reaches under the status bar.
+            final header = ColoredBox(
+              color: ShellColors.of(context).background,
+              child: SafeArea(bottom: false, child: strip),
+            );
+            return LayoutBuilder(
+              builder: (context, constraints) {
                 if (constraints.maxWidth >= _sideBySide) {
                   return Row(
                     children: [
-                      Expanded(child: ProductPane(onScan: () => _scan(context))),
-                      const VerticalDivider(width: 1),
+                      Expanded(
+                        child: SafeArea(bottom: false, child: ProductPane(onScan: () => _scan(context))),
+                      ),
                       SizedBox(
                         width: constraints.maxWidth >= 1000 ? 420 : 360,
-                        child: Column(children: [strip, const Expanded(child: CartPanel())]),
+                        child: Material(
+                          color: Theme.of(context).colorScheme.surface,
+                          elevation: 3,
+                          shadowColor: const Color(0x1A0F3D2E),
+                          child: Column(
+                            children: [
+                              header,
+                              const Expanded(child: CartPanel()),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   );
                 }
-                return Column(
+                return Stack(
                   children: [
-                    strip,
-                    Expanded(child: ProductPane(onScan: () => _scan(context))),
-                    const _CartBar(),
+                    Column(
+                      children: [
+                        header,
+                        Expanded(child: ProductPane(onScan: () => _scan(context))),
+                      ],
+                    ),
+                    const Positioned(left: 0, right: 0, bottom: 0, child: _CartBar()),
                   ],
                 );
-              });
-            },
-          ),
+              },
+            );
+          },
         ),
       ),
     );
@@ -104,52 +125,77 @@ class _CartBar extends StatelessWidget {
       DraftStatus.paid => l10n.paid,
       DraftStatus.open => null,
     };
-    return Material(
-      color: theme.colorScheme.surfaceContainerLow,
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.md),
-          // Wrap drops the button below the summary when large text needs the room.
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: Space.md,
-            runSpacing: Space.sm,
-            children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+    final shell = ShellColors.of(context);
+    final empty = draft.isEmpty && status == null;
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
+        child: Material(
+          color: shell.background,
+          elevation: 6,
+          shadowColor: const Color(0x330F3D2E),
+          borderRadius: BorderRadius.circular(Radii.medium + 4),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => _openCart(context),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.md, Space.md),
+              // Wrap drops the button below the summary when large text needs the room.
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: Space.md,
+                runSpacing: Space.sm,
                 children: [
-                  Text(UiLocalizations.of(context).tabLabel(draft.number), style: theme.textTheme.labelLarge),
-                  Text(
-                    status ?? l10n.cartSummary(qty(context, draft.itemCount), rupiah(context, draft.total())),
-                    style: theme.textTheme.titleMedium?.tabular,
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        UiLocalizations.of(context).tabLabel(draft.number),
+                        style: theme.textTheme.labelLarge?.copyWith(color: shell.muted),
+                      ),
+                      Text(
+                        status ??
+                            (empty
+                                ? l10n.cartEmptyShort
+                                : l10n.cartSummary(qty(context, draft.itemCount), rupiah(context, draft.total()))),
+                        style: theme.textTheme.titleMedium?.tabular.copyWith(color: shell.foreground),
+                      ),
+                    ],
+                  ),
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: shell.indicator,
+                      foregroundColor: shell.onIndicator,
+                      minimumSize: const Size(TapSize.min, TapSize.primary),
+                      shape: const StadiumBorder(),
+                    ),
+                    onPressed: () => _openCart(context),
+                    child: Text(l10n.viewCart),
                   ),
                 ],
               ),
-              AppButton(
-                label: l10n.viewCart,
-                large: true,
-                onPressed: () => showModalBottomSheet<void>(
-                  context: context,
-                  isScrollControlled: true,
-                  useSafeArea: true,
-                  builder: (_) => BlocProvider.value(
-                    value: context.read<CheckoutBloc>(),
-                    child: DraggableScrollableSheet(
-                      expand: false,
-                      initialChildSize: 0.92,
-                      maxChildSize: 0.92,
-                      builder: (_, controller) => CartPanel(scrollController: controller),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  void _openCart(BuildContext context) => showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => BlocProvider.value(
+      value: context.read<CheckoutBloc>(),
+      child: DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.92,
+        maxChildSize: 0.92,
+        builder: (_, controller) => CartPanel(scrollController: controller),
+      ),
+    ),
+  );
 }

@@ -27,8 +27,7 @@ class PaymentsPage extends StatelessWidget {
         final q = cubit.query;
         return CmsPage(
           title: l10n.paymentsTitle,
-          body: Column(children: [
-            FilterBar(children: [
+          body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
               SizedBox(
                 width: 200,
                 child: DropdownButtonFormField<PaymentState?>(

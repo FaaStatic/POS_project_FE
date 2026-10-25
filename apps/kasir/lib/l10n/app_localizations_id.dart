@@ -619,4 +619,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get open => 'Buka';
+
+  @override
+  String inCart(String qty) {
+    return '$qty di keranjang';
+  }
+
+  @override
+  String get cartEmptyShort => 'Keranjang kosong';
 }

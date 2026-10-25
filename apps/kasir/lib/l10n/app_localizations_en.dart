@@ -619,4 +619,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get open => 'Open';
+
+  @override
+  String inCart(String qty) {
+    return '$qty in cart';
+  }
+
+  @override
+  String get cartEmptyShort => 'Cart is empty';
 }

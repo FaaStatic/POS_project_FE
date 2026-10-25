@@ -39,10 +39,10 @@ class SaleDetailPage extends StatelessWidget {
           final message = s.failure != null
               ? failureText(context, s.failure!)
               : s.printed
-                  ? l10n.printed
-                  : s.cancelled
-                      ? l10n.cancelled
-                      : null;
+              ? l10n.printed
+              : s.cancelled
+              ? l10n.cancelled
+              : null;
           if (message != null) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
         },
         builder: (context, state) {
@@ -52,8 +52,8 @@ class SaleDetailPage extends StatelessWidget {
             body: state.loading
                 ? const LoadingView()
                 : sale == null
-                    ? ErrorState(message: l10n.errorUnknown)
-                    : _Body(sale: sale, working: state.working),
+                ? ErrorState(message: l10n.errorUnknown)
+                : _Body(sale: sale, working: state.working),
           );
         },
       ),
@@ -89,13 +89,20 @@ class _Body extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(Space.lg),
       children: [
-        Wrap(spacing: Space.sm, runSpacing: Space.sm, children: [
-          SaleStatusBadge(sale: sale),
-          if (sale.stockConflict) StatusBadge(label: l10n.stockConflict, tone: BadgeTone.warning),
-        ]),
+        Wrap(
+          spacing: Space.sm,
+          runSpacing: Space.sm,
+          children: [
+            SaleStatusBadge(sale: sale),
+            if (sale.stockConflict) StatusBadge(label: l10n.stockConflict, tone: BadgeTone.warning),
+          ],
+        ),
         if (sale.error != null) ...[
           const SizedBox(height: Space.sm),
-          Text(l10n.syncError(sale.error!), style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error)),
+          Text(
+            l10n.syncError(sale.error!),
+            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error),
+          ),
         ],
         if (sale.cancelReason != null) ...[
           const SizedBox(height: Space.sm),
@@ -108,7 +115,12 @@ class _Body extends StatelessWidget {
         ),
         const SizedBox(height: Space.xl),
         if (settings.printerAddress == null)
-          AppButton(label: l10n.setupPrinter, variant: AppButtonVariant.outline, expand: true, onPressed: () => context.push('/settings/printer'))
+          AppButton(
+            label: l10n.setupPrinter,
+            variant: AppButtonVariant.outline,
+            expand: true,
+            onPressed: () => context.push('/settings/printer'),
+          )
         else
           AppButton(
             label: l10n.reprint,
@@ -118,7 +130,12 @@ class _Body extends StatelessWidget {
             onPressed: () => cubit.print(receiptFor(context, sale, settings)),
           ),
         const SizedBox(height: Space.md),
-        AppButton(label: l10n.done, large: true, expand: true, onPressed: () => context.canPop() ? context.pop() : context.go('/checkout')),
+        AppButton(
+          label: l10n.done,
+          large: true,
+          expand: true,
+          onPressed: () => context.canPop() ? context.pop() : context.go('/checkout'),
+        ),
         if (sale.status != SaleStatus.cancelled) ...[
           const SizedBox(height: Space.xl),
           AppButton(
@@ -134,4 +151,3 @@ class _Body extends StatelessWidget {
     );
   }
 }
-

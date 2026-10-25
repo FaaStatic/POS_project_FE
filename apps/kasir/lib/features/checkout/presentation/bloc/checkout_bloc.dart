@@ -87,16 +87,17 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     }
     final activeId = e.drafts.any((d) => d.id == state.activeId) ? state.activeId : _fallback(e.drafts)?.id;
     final active = e.drafts.where((d) => d.id == activeId).firstOrNull;
-    emit(state.copyWith(
-      drafts: e.drafts,
-      activeId: activeId,
-      loading: false,
-      shortfalls: active == null ? const {} : await shortfalls(active),
-    ));
+    emit(
+      state.copyWith(
+        drafts: e.drafts,
+        activeId: activeId,
+        loading: false,
+        shortfalls: active == null ? const {} : await shortfalls(active),
+      ),
+    );
   }
 
-  Draft? _fallback(List<Draft> list) =>
-      list.where((d) => d.status == DraftStatus.open).firstOrNull ?? list.firstOrNull;
+  Draft? _fallback(List<Draft> list) => list.where((d) => d.status == DraftStatus.open).firstOrNull ?? list.firstOrNull;
 
   Future<void> _tabSelected(TabSelected e, Emitter<CheckoutState> emit) async {
     final draft = state.drafts.where((d) => d.id == e.draftId).firstOrNull;
@@ -132,11 +133,13 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     final draft = state.active;
     if (draft == null || e.code.trim().isEmpty) return;
     final outcome = await scan(draft, e.code);
-    emit(_notify(state, switch (outcome) {
-      ScanAdded(:final product) => ScanAddedNotice(product.name, draft.number),
-      ScanUnknown(:final code) => ScanUnknownNotice(code),
-      ScanLocked() => const TabLockedNotice(),
-    }));
+    emit(
+      _notify(state, switch (outcome) {
+        ScanAdded(:final product) => ScanAddedNotice(product.name, draft.number),
+        ScanUnknown(:final code) => ScanUnknownNotice(code),
+        ScanLocked() => const TabLockedNotice(),
+      }),
+    );
   }
 
   Future<void> _whenOpen(Emitter<CheckoutState> emit, Future<void> Function() change) async {
@@ -161,7 +164,10 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
       case PaymentMethod.cash || PaymentMethod.debt:
         final result = await checkout(draft, state.method);
         emit(switch (result) {
-          Ok(:final value) => _notify(state.copyWith(paying: false, method: PaymentMethod.cash), SaleRecordedNotice(value.sale, offline: value.offline)),
+          Ok(:final value) => _notify(
+            state.copyWith(paying: false, method: PaymentMethod.cash),
+            SaleRecordedNotice(value.sale, offline: value.offline),
+          ),
           Err(:final failure) => _notify(state.copyWith(paying: false), FailureNotice(failure)),
         });
       case PaymentMethod.qris || PaymentMethod.va:
@@ -188,8 +194,9 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   }
 
   Future<void> _resolveWaiting(ChargesPolled e, Emitter<CheckoutState> emit) async {
-    final waiting = state.drafts.where((d) =>
-        d.status == DraftStatus.awaitingPayment && (e.orderId == null || d.charge?.orderId == e.orderId));
+    final waiting = state.drafts.where(
+      (d) => d.status == DraftStatus.awaitingPayment && (e.orderId == null || d.charge?.orderId == e.orderId),
+    );
     for (final draft in waiting) {
       switch (await resolveCharge(draft)) {
         case ChargeResolution.paid:

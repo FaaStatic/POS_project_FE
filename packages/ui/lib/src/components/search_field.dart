@@ -53,7 +53,7 @@ class _SearchFieldState extends State<SearchField> {
         style: Theme.of(context).textTheme.bodyLarge,
         decoration: InputDecoration(
           hintText: widget.hint ?? l10n.search,
-          prefixIcon: const Icon(Iconsax.search_normal_1),
+          prefixIcon: const Icon(Icons.search_rounded),
           suffixIcon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

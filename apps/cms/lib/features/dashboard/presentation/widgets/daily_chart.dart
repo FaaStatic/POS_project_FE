@@ -40,17 +40,26 @@ class _DailyChartState extends State<DailyChart> {
           runSpacing: Space.sm,
           children: [
             Text(widget.title, style: theme.textTheme.titleMedium),
-            TextButton(onPressed: () => setState(() => _table = !_table), child: Text(_table ? widget.title : l10n.chartTable)),
+            TextButton(
+              onPressed: () => setState(() => _table = !_table),
+              child: Text(_table ? widget.title : l10n.chartTable),
+            ),
           ],
         ),
         const SizedBox(height: Space.sm),
-        Wrap(spacing: Space.lg, children: [
-          _Legend(color: colors.series1, label: l10n.revenue),
-          _Legend(color: colors.series2, label: l10n.grossProfit, dashed: true),
-        ]),
-        const SizedBox(height: Space.md),
+        Wrap(
+          spacing: Space.lg,
+          children: [
+            _Legend(color: colors.series1, label: l10n.revenue),
+            _Legend(color: colors.series2, label: l10n.grossProfit, dashed: true),
+          ],
+        ),
+        const SizedBox(height: Space.xl),
         if (days.isEmpty)
-          Padding(padding: const EdgeInsets.symmetric(vertical: Space.xl), child: Text(l10n.noData))
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: Space.xl),
+            child: Text(l10n.noData),
+          )
         else if (_table)
           _Table(days: days)
         else
@@ -85,7 +94,10 @@ class _DailyChartState extends State<DailyChart> {
                       getTitlesWidget: (v, meta) {
                         final i = v.round();
                         if (i < 0 || i >= days.length) return const SizedBox.shrink();
-                        return SideTitleWidget(meta: meta, child: Text(DateFormat.Md(locale).format(days[i].date), style: theme.textTheme.labelSmall));
+                        return SideTitleWidget(
+                          meta: meta,
+                          child: Text(DateFormat.Md(locale).format(days[i].date), style: theme.textTheme.labelSmall),
+                        );
                       },
                     ),
                   ),
@@ -103,8 +115,14 @@ class _DailyChartState extends State<DailyChart> {
                   ),
                 ),
                 lineBarsData: [
-                  _line([for (final (i, d) in days.indexed) FlSpot(i.toDouble(), d.revenue.toDouble())], colors.series1),
-                  _line([for (final (i, d) in days.indexed) FlSpot(i.toDouble(), d.grossProfit.toDouble())], colors.series2, dashed: true),
+                  _line([
+                    for (final (i, d) in days.indexed) FlSpot(i.toDouble(), d.revenue.toDouble()),
+                  ], colors.series1),
+                  _line(
+                    [for (final (i, d) in days.indexed) FlSpot(i.toDouble(), d.grossProfit.toDouble())],
+                    colors.series2,
+                    dashed: true,
+                  ),
                 ],
               ),
             ),
@@ -114,13 +132,13 @@ class _DailyChartState extends State<DailyChart> {
   }
 
   static LineChartBarData _line(List<FlSpot> spots, Color color, {bool dashed = false}) => LineChartBarData(
-        spots: spots,
-        color: color,
-        barWidth: 2,
-        isCurved: false,
-        dashArray: dashed ? const [6, 4] : null,
-        dotData: FlDotData(show: spots.length <= 14),
-      );
+    spots: spots,
+    color: color,
+    barWidth: 2,
+    isCurved: false,
+    dashArray: dashed ? const [6, 4] : null,
+    dotData: FlDotData(show: spots.length <= 14),
+  );
 }
 
 class _Legend extends StatelessWidget {
@@ -130,15 +148,14 @@ class _Legend extends StatelessWidget {
   final bool dashed;
 
   @override
-  Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
-        SizedBox(
-          width: 24,
-          height: 12,
-          child: CustomPaint(painter: _LegendLine(color, dashed)),
-        ),
-        const SizedBox(width: Space.sm),
-        Flexible(child: Text(label, style: Theme.of(context).textTheme.bodyMedium)),
-      ]);
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      SizedBox(width: 24, height: 12, child: CustomPaint(painter: _LegendLine(color, dashed))),
+      const SizedBox(width: Space.sm),
+      Flexible(child: Text(label, style: Theme.of(context).textTheme.bodyMedium)),
+    ],
+  );
 }
 
 class _LegendLine extends CustomPainter {
@@ -184,12 +201,14 @@ class _Table extends StatelessWidget {
         ],
         rows: [
           for (final d in days)
-            DataRow(cells: [
-              DataCell(Text(dateText(context, d.date))),
-              DataCell(Text('${d.transactions}', style: num)),
-              DataCell(Text(money(context, d.revenue), style: num)),
-              DataCell(Text(money(context, d.grossProfit), style: num)),
-            ]),
+            DataRow(
+              cells: [
+                DataCell(Text(dateText(context, d.date))),
+                DataCell(Text('${d.transactions}', style: num)),
+                DataCell(Text(money(context, d.revenue), style: num)),
+                DataCell(Text(money(context, d.grossProfit), style: num)),
+              ],
+            ),
         ],
       ),
     );

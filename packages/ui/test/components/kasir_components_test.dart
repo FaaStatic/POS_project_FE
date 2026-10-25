@@ -132,4 +132,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(reason, 'salah input');
   });
+
+  for (final dark in [false, true]) {
+    testWidgets('tab strip on the green header keeps text contrast (dark: $dark)', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpUi(
+        tester,
+        Align(
+          alignment: Alignment.topCenter,
+          child: TransactionTabStrip(tabs: tabs(3), activeId: 2, onBrand: true, onSelect: (_) {}, onNew: () {}, onShowAll: () {}),
+        ),
+        dark: dark,
+        size: const Size(900, 400),
+      );
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+      handle.dispose();
+    });
+  }
 }

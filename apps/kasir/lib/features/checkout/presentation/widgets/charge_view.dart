@@ -42,7 +42,10 @@ class ChargeView extends StatelessWidget {
                 width: 260,
                 height: 260,
                 semanticLabel: l10n.qris,
-                errorBuilder: (_, _, _) => SizedBox(width: 260, child: Text(l10n.qrUnavailable, style: const TextStyle(color: Colors.black))),
+                errorBuilder: (_, _, _) => SizedBox(
+                  width: 260,
+                  child: Text(l10n.qrUnavailable, style: const TextStyle(color: Colors.black)),
+                ),
               ),
             ),
           ),

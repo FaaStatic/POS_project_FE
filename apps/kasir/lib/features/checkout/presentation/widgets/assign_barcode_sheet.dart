@@ -12,17 +12,17 @@ import '../bloc/assign_barcode_cubit.dart';
 
 /// Unknown barcode → pick an existing product to attach it to (online).
 Future<Product?> showAssignBarcode(BuildContext context, String code) => showModalBottomSheet<Product>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (_) => MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => getIt<ProductsCubit>()..start()),
-          BlocProvider(create: (_) => getIt<AssignBarcodeCubit>()),
-        ],
-        child: _AssignBarcode(code: code),
-      ),
-    );
+  context: context,
+  isScrollControlled: true,
+  useSafeArea: true,
+  builder: (_) => MultiBlocProvider(
+    providers: [
+      BlocProvider(create: (_) => getIt<ProductsCubit>()..start()),
+      BlocProvider(create: (_) => getIt<AssignBarcodeCubit>()),
+    ],
+    child: _AssignBarcode(code: code),
+  ),
+);
 
 class _AssignBarcode extends StatelessWidget {
   const _AssignBarcode({required this.code});
@@ -53,7 +53,10 @@ class _AssignBarcode extends StatelessWidget {
             if (assign.failure != null)
               Padding(
                 padding: const EdgeInsets.all(Space.lg),
-                child: Text(failureText(context, assign.failure!), style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                child: Text(
+                  failureText(context, assign.failure!),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
               ),
             if (assign.saving) const LinearProgressIndicator(),
             Expanded(

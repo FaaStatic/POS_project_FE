@@ -29,10 +29,26 @@ class DashboardPage extends StatelessWidget {
       child: CmsPage(
         title: l10n.dashboardTitle,
         actions: [
-          OutlinedButton.icon(onPressed: () => context.go('/products?add=1'), icon: const Icon(Iconsax.box_add), label: Text(l10n.quickAddProduct)),
-          OutlinedButton.icon(onPressed: () => context.go('/staff?add=1'), icon: const Icon(Iconsax.user_add), label: Text(l10n.quickAddStaff)),
-          OutlinedButton.icon(onPressed: () => context.go('/customers?add=1'), icon: const Icon(Iconsax.profile_add), label: Text(l10n.quickAddCustomer)),
-          OutlinedButton.icon(onPressed: () => onDownloadMonthReport(context), icon: const Icon(Iconsax.document_download), label: Text(l10n.quickMonthReport)),
+          OutlinedButton.icon(
+            onPressed: () => context.go('/products?add=1'),
+            icon: const Icon(Iconsax.box_add),
+            label: Text(l10n.quickAddProduct),
+          ),
+          OutlinedButton.icon(
+            onPressed: () => context.go('/staff?add=1'),
+            icon: const Icon(Iconsax.user_add),
+            label: Text(l10n.quickAddStaff),
+          ),
+          OutlinedButton.icon(
+            onPressed: () => context.go('/customers?add=1'),
+            icon: const Icon(Iconsax.profile_add),
+            label: Text(l10n.quickAddCustomer),
+          ),
+          OutlinedButton.icon(
+            onPressed: () => onDownloadMonthReport(context),
+            icon: const Icon(Iconsax.document_download),
+            label: Text(l10n.quickMonthReport),
+          ),
         ],
         body: BlocBuilder<DashboardCubit, DashboardState>(
           builder: (context, state) => RefreshIndicator(
@@ -46,18 +62,26 @@ class DashboardPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _NeedsAction(state: state),
-                      const SizedBox(height: Space.xxl),
+                      const SizedBox(height: Space.xl),
                       _RangePicker(state: state),
                       const SizedBox(height: Space.xl),
                       if (state.loading && state.summary == null)
                         const Padding(padding: EdgeInsets.all(Space.xxl), child: LoadingView())
                       else if (state.summary == null)
-                        ErrorState(message: l10n.loadFailed(failureText(context, state.failure!)), onRetry: context.read<DashboardCubit>().load)
+                        ErrorState(
+                          message: l10n.loadFailed(failureText(context, state.failure!)),
+                          onRetry: context.read<DashboardCubit>().load,
+                        )
                       else ...[
                         if (state.loading) const LinearProgressIndicator(),
                         _KeyNumbers(summary: state.summary!),
                         const SizedBox(height: Space.xxl),
-                        DailyChart(days: state.summary!.daily, title: l10n.dailyChartTitle(_rangeName(l10n, state))),
+                        SurfaceCard(
+                          child: DailyChart(
+                            days: state.summary!.daily,
+                            title: l10n.dailyChartTitle(_rangeName(l10n, state)),
+                          ),
+                        ),
                         const SizedBox(height: Space.xxl),
                         _Details(summary: state.summary!),
                       ],
@@ -73,12 +97,12 @@ class DashboardPage extends StatelessWidget {
   }
 
   static String _rangeName(AppLocalizations l10n, DashboardState s) => switch (s.range) {
-        DashboardRange.today => l10n.rangeToday.toLowerCase(),
-        DashboardRange.last7 => l10n.range7,
-        DashboardRange.last30 => l10n.range30,
-        DashboardRange.thisMonth => l10n.rangeMonth.toLowerCase(),
-        DashboardRange.custom => '${apiDate(s.start)} – ${apiDate(s.end)}',
-      };
+    DashboardRange.today => l10n.rangeToday.toLowerCase(),
+    DashboardRange.last7 => l10n.range7,
+    DashboardRange.last30 => l10n.range30,
+    DashboardRange.thisMonth => l10n.rangeMonth.toLowerCase(),
+    DashboardRange.custom => '${apiDate(s.start)} – ${apiDate(s.end)}',
+  };
 }
 
 class _NeedsAction extends StatelessWidget {
@@ -92,43 +116,60 @@ class _NeedsAction extends StatelessWidget {
     final status = StatusColors.of(context);
     final conflicts = state.summary?.openStockConflicts ?? 0;
     Widget row(IconData icon, Color color, String text, VoidCallback onTap, {String? amount}) => ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: Icon(icon, color: color),
-          title: Text(text),
-          subtitle: amount == null ? null : Text(amount, style: theme.textTheme.titleSmall?.tabular),
-          trailing: const Icon(Iconsax.arrow_right_3, size: 18),
-          onTap: onTap,
-        );
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon, color: color),
+      title: Text(text),
+      subtitle: amount == null ? null : Text(amount, style: theme.textTheme.titleSmall?.tabular),
+      trailing: const Icon(Iconsax.arrow_right_3, size: 18),
+      onTap: onTap,
+    );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(l10n.needsAction, style: theme.textTheme.titleLarge),
-        const SizedBox(height: Space.sm),
-        if (state.loading && state.summary == null)
-          const LinearProgressIndicator()
-        else if (state.nothingToDo)
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(Iconsax.tick_circle, color: status.success),
-            title: Text(l10n.nothingToDo),
-          )
-        else ...[
-          if (conflicts > 0)
-            row(Iconsax.warning_2, status.warning, l10n.openConflicts(conflicts), () => context.go('/transactions?conflicts=1')),
-          if (state.failedPayments > 0)
-            row(Iconsax.card_remove, status.danger, l10n.failedPayments(state.failedPayments), () => context.go('/payments?status=failed&today=1')),
-          if (state.oldestDebts.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.only(top: Space.md),
-              child: Text(l10n.oldestDebts, style: theme.textTheme.titleSmall),
-            ),
-            for (final d in state.oldestDebts)
-              row(Iconsax.wallet_money, status.warning, '${d.customerName} · ${dateText(context, d.date)}', () => context.go('/customers/${d.customerId}'),
-                  amount: money(context, d.remaining)),
+    return SurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(l10n.needsAction, style: theme.textTheme.titleLarge),
+          const SizedBox(height: Space.sm),
+          if (state.loading && state.summary == null)
+            const LinearProgressIndicator()
+          else if (state.nothingToDo)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Iconsax.tick_circle, color: status.success),
+              title: Text(l10n.nothingToDo),
+            )
+          else ...[
+            if (conflicts > 0)
+              row(
+                Iconsax.warning_2,
+                status.warning,
+                l10n.openConflicts(conflicts),
+                () => context.go('/transactions?conflicts=1'),
+              ),
+            if (state.failedPayments > 0)
+              row(
+                Iconsax.card_remove,
+                status.danger,
+                l10n.failedPayments(state.failedPayments),
+                () => context.go('/payments?status=failed&today=1'),
+              ),
+            if (state.oldestDebts.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.only(top: Space.md),
+                child: Text(l10n.oldestDebts, style: theme.textTheme.titleSmall),
+              ),
+              for (final d in state.oldestDebts)
+                row(
+                  Iconsax.wallet_money,
+                  status.warning,
+                  '${d.customerName} · ${dateText(context, d.date)}',
+                  () => context.go('/customers/${d.customerId}'),
+                  amount: money(context, d.remaining),
+                ),
+            ],
           ],
         ],
-      ],
+      ),
     );
   }
 }
@@ -173,8 +214,8 @@ class _RangePicker extends StatelessWidget {
   }
 }
 
-/// Revenue leads; the rest support it at a smaller size. No equal-card grid,
-/// and no up/down comparison because there is no named comparison period.
+/// Revenue leads as the one green card; the rest support it at a smaller size.
+/// No up/down comparison because there is no named comparison period.
 class _KeyNumbers extends StatelessWidget {
   const _KeyNumbers({required this.summary});
   final DashboardSummary summary;
@@ -183,29 +224,56 @@ class _KeyNumbers extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    Widget support(String label, String value) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    final shell = ShellColors.of(context);
+    Widget figure(String label, String value, {bool hero = false}) => SurfaceCard(
+      color: hero ? shell.background : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.titleSmall?.copyWith(color: hero ? shell.muted : theme.colorScheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: Space.sm),
+          Text(
+            value,
+            style: (hero ? theme.textTheme.displaySmall : theme.textTheme.headlineSmall)?.tabular.copyWith(
+              color: hero ? shell.foreground : null,
+            ),
+          ),
+        ],
+      ),
+    );
+    final hero = figure(l10n.revenue, money(context, summary.revenue), hero: true);
+    final support = [
+      figure(l10n.grossProfit, money(context, summary.grossProfit)),
+      figure(l10n.transactionCount, '${summary.transactions}'),
+      figure(l10n.activeReceivables, money(context, summary.debtOutstanding)),
+    ];
+    return LayoutBuilder(
+      builder: (context, c) {
+        const gap = Space.lg;
+        if (c.maxWidth >= 960) {
+          return IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(flex: 2, child: hero),
+                for (final card in support) ...[const SizedBox(width: gap), Expanded(child: card)],
+              ],
+            ),
+          );
+        }
+        final third = c.maxWidth >= 600 ? (c.maxWidth - gap * 2) / 3 : c.maxWidth;
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
           children: [
-            Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-            Text(value, style: theme.textTheme.titleLarge?.tabular),
+            SizedBox(width: c.maxWidth, child: hero),
+            for (final card in support) SizedBox(width: third, child: card),
           ],
         );
-    return Wrap(
-      spacing: Space.xxxl,
-      runSpacing: Space.lg,
-      crossAxisAlignment: WrapCrossAlignment.end,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.revenue, style: theme.textTheme.titleSmall),
-            Text(money(context, summary.revenue), style: theme.textTheme.displaySmall?.tabular),
-          ],
-        ),
-        support(l10n.grossProfit, money(context, summary.grossProfit)),
-        support(l10n.transactionCount, '${summary.transactions}'),
-        support(l10n.activeReceivables, money(context, summary.debtOutstanding)),
-      ],
+      },
     );
   }
 }
@@ -222,56 +290,66 @@ class _Details extends StatelessWidget {
     final num = theme.textTheme.bodyMedium?.tabular;
     final payTotal = summary.paymentMethods.fold<int>(0, (a, m) => a + m.total);
 
-    Widget section(String title, List<Widget> rows) => ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(title, style: theme.textTheme.titleMedium),
-              const Divider(height: Space.lg),
-              if (rows.isEmpty) Text(l10n.noData) else ...rows,
-            ],
-          ),
-        );
+    Widget section(String title, List<Widget> rows) => SurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(title, style: theme.textTheme.titleMedium),
+          const Divider(height: Space.xl),
+          if (rows.isEmpty) Text(l10n.noData) else ...rows,
+        ],
+      ),
+    );
     Widget line(String left, String right, {String? sub}) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: Space.xs),
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            spacing: Space.md,
+      padding: const EdgeInsets.symmetric(vertical: Space.xs),
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        spacing: Space.md,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                Text(left, style: theme.textTheme.bodyLarge),
-                if (sub != null) Text(sub, style: theme.textTheme.bodySmall),
-              ]),
-              Text(right, style: num),
+              Text(left, style: theme.textTheme.bodyLarge),
+              if (sub != null) Text(sub, style: theme.textTheme.bodySmall),
             ],
           ),
-        );
+          Text(right, style: num),
+        ],
+      ),
+    );
 
-    return Wrap(
-      spacing: Space.xxxl,
-      runSpacing: Space.xxl,
-      children: [
-        section(l10n.topProducts, [
-          for (final p in summary.topProducts.take(5))
-            line(p.name, money(context, p.total), sub: l10n.sold(formatQty(p.qty, locale: locale))),
-        ]),
-        section(l10n.paymentMix, [
-          for (final m in summary.paymentMethods)
-            line(
-              methodLabel(l10n, PaymentMethod.fromWire(m.method)),
-              money(context, m.total),
-              sub: '${m.count}× · ${payTotal == 0 ? 0 : (m.total * 100 / payTotal).round()}%',
-            ),
-        ]),
-        section(l10n.debtFlow, [
-          line(l10n.newDebt, money(context, summary.debtNew)),
-          line(l10n.paidDebt, money(context, summary.debtPaid)),
-        ]),
-        section(l10n.devicesOnline, [
-          for (final d in summary.devicesOnline) line(d.platform == 'ios' ? 'iOS' : 'Android', '${d.count}'),
-        ]),
-      ],
+    final sections = [
+      section(l10n.topProducts, [
+        for (final p in summary.topProducts.take(5))
+          line(p.name, money(context, p.total), sub: l10n.sold(formatQty(p.qty, locale: locale))),
+      ]),
+      section(l10n.paymentMix, [
+        for (final m in summary.paymentMethods)
+          line(
+            methodLabel(l10n, PaymentMethod.fromWire(m.method)),
+            money(context, m.total),
+            sub: '${m.count}× · ${payTotal == 0 ? 0 : (m.total * 100 / payTotal).round()}%',
+          ),
+      ]),
+      section(l10n.debtFlow, [
+        line(l10n.newDebt, money(context, summary.debtNew)),
+        line(l10n.paidDebt, money(context, summary.debtPaid)),
+      ]),
+      section(l10n.devicesOnline, [
+        for (final d in summary.devicesOnline) line(d.platform == 'ios' ? 'iOS' : 'Android', '${d.count}'),
+      ]),
+    ];
+    return LayoutBuilder(
+      builder: (context, c) {
+        final columns = c.maxWidth >= 900 ? 2 : 1;
+        final width = (c.maxWidth - Space.lg * (columns - 1)) / columns;
+        return Wrap(
+          spacing: Space.lg,
+          runSpacing: Space.lg,
+          children: [for (final s in sections) SizedBox(width: width, child: s)],
+        );
+      },
     );
   }
 }

@@ -7,3 +7,4 @@ coverage/
 .idea/
 .DS_Store
 pubspec_overrides.yaml
+**/test/failures/

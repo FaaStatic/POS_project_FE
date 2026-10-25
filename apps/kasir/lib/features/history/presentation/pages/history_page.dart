@@ -26,8 +26,9 @@ class HistoryPage extends StatelessWidget {
             if (state.loading) return const LoadingView();
             if (state.sales.isEmpty) return EmptyState(icon: Iconsax.receipt_2, message: l10n.historyEmpty);
             return ListView.separated(
+              padding: const EdgeInsets.all(Space.lg),
               itemCount: state.sales.length,
-              separatorBuilder: (_, _) => const Divider(indent: Space.lg),
+              separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
               itemBuilder: (context, i) => SaleTile(key: ValueKey(state.sales[i].clientRef), sale: state.sales[i]),
             );
           },
@@ -45,23 +46,29 @@ class SaleTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    return ListTile(
-      onTap: () => context.push('/sale/${sale.clientRef}'),
-      title: Text(sale.receiptNumber, style: theme.textTheme.titleSmall?.tabular),
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: Space.xs),
-        child: Wrap(
-          spacing: Space.sm,
-          runSpacing: Space.xs,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            Text('${formatDateTime(sale.createdAt, locale: Localizations.localeOf(context).languageCode)} · ${methodLabel(l10n, sale.method)}'),
-            SaleStatusBadge(sale: sale),
-            if (sale.stockConflict) StatusBadge(label: l10n.stockConflict, tone: BadgeTone.warning),
-          ],
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.xs),
+        onTap: () => context.push('/sale/${sale.clientRef}'),
+        title: Text(sale.receiptNumber, style: theme.textTheme.titleSmall?.tabular),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: Space.xs),
+          child: Wrap(
+            spacing: Space.sm,
+            runSpacing: Space.xs,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                '${formatDateTime(sale.createdAt, locale: Localizations.localeOf(context).languageCode)} · ${methodLabel(l10n, sale.method)}',
+              ),
+              SaleStatusBadge(sale: sale),
+              if (sale.stockConflict) StatusBadge(label: l10n.stockConflict, tone: BadgeTone.warning),
+            ],
+          ),
         ),
+        trailing: Text(rupiah(context, sale.total), style: theme.textTheme.titleMedium?.tabular),
       ),
-      trailing: Text(rupiah(context, sale.total), style: theme.textTheme.titleSmall?.tabular),
     );
   }
 }

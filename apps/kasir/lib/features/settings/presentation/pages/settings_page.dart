@@ -27,47 +27,58 @@ class SettingsPage extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(Space.lg),
           children: [
-            Text(l10n.language, style: theme.textTheme.titleSmall),
-            const SizedBox(height: Space.sm),
-            SegmentedButton<AppLanguage>(
-              segments: const [
-                ButtonSegment(value: AppLanguage.id, label: Text('Bahasa Indonesia')),
-                ButtonSegment(value: AppLanguage.en, label: Text('English')),
-              ],
-              selected: {settings.language},
-              onSelectionChanged: (s) => context.read<SettingsCubit>().setLanguage(s.first),
+            SurfaceCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.language, style: theme.textTheme.titleSmall),
+                  const SizedBox(height: Space.sm),
+                  SegmentedButton<AppLanguage>(
+                    segments: const [
+                      ButtonSegment(value: AppLanguage.id, label: Text('Bahasa Indonesia')),
+                      ButtonSegment(value: AppLanguage.en, label: Text('English')),
+                    ],
+                    selected: {settings.language},
+                    onSelectionChanged: (s) => context.read<SettingsCubit>().setLanguage(s.first),
+                  ),
+                  const SizedBox(height: Space.xl),
+                  Text(l10n.theme, style: theme.textTheme.titleSmall),
+                  const SizedBox(height: Space.sm),
+                  SegmentedButton<ThemePreference>(
+                    segments: [
+                      ButtonSegment(value: ThemePreference.system, label: Text(l10n.themeSystem)),
+                      ButtonSegment(value: ThemePreference.light, label: Text(l10n.themeLight)),
+                      ButtonSegment(value: ThemePreference.dark, label: Text(l10n.themeDark)),
+                    ],
+                    selected: {settings.theme},
+                    onSelectionChanged: (s) => context.read<SettingsCubit>().setTheme(s.first),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: Space.xl),
-            Text(l10n.theme, style: theme.textTheme.titleSmall),
-            const SizedBox(height: Space.sm),
-            SegmentedButton<ThemePreference>(
-              segments: [
-                ButtonSegment(value: ThemePreference.system, label: Text(l10n.themeSystem)),
-                ButtonSegment(value: ThemePreference.light, label: Text(l10n.themeLight)),
-                ButtonSegment(value: ThemePreference.dark, label: Text(l10n.themeDark)),
-              ],
-              selected: {settings.theme},
-              onSelectionChanged: (s) => context.read<SettingsCubit>().setTheme(s.first),
+            const SizedBox(height: Space.md),
+            Card(
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Iconsax.printer),
+                    title: Text(l10n.printerTitle),
+                    trailing: const Icon(Iconsax.arrow_right_3),
+                    onTap: () => context.push('/settings/printer'),
+                  ),
+                  const Divider(indent: Space.lg, endIndent: Space.lg),
+                  ListTile(
+                    leading: const Icon(Iconsax.shop),
+                    title: Text(l10n.storeInfo),
+                    trailing: const Icon(Iconsax.arrow_right_3),
+                    onTap: () => context.push('/settings/store'),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: Space.xl),
-            const Divider(),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Iconsax.printer),
-              title: Text(l10n.printerTitle),
-              trailing: const Icon(Iconsax.arrow_right_3),
-              onTap: () => context.push('/settings/printer'),
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Iconsax.shop),
-              title: Text(l10n.storeInfo),
-              trailing: const Icon(Iconsax.arrow_right_3),
-              onTap: () => context.push('/settings/store'),
-            ),
-            const Divider(),
-            const SizedBox(height: Space.lg),
-            account,
+            const SizedBox(height: Space.md),
+            SurfaceCard(child: account),
           ],
         ),
       ),

@@ -40,9 +40,7 @@ class ProductsPage extends StatelessWidget {
             OutlinedButton.icon(onPressed: () => context.push('/products/bulk'), icon: const Icon(Iconsax.document_upload), label: Text(l10n.bulkAdd)),
             FilledButton.icon(onPressed: () => openProductForm(context, cubit), icon: const Icon(Iconsax.add), label: Text(l10n.addProduct)),
           ],
-          body: Column(
-            children: [
-              FilterBar(children: [
+          body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
                 SizedBox(width: 320, child: SearchField(hint: l10n.search, onChanged: cubit.search)),
                 SizedBox(
                   width: 240,

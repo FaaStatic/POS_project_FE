@@ -26,44 +26,60 @@ class CustomerDetailPage extends StatelessWidget {
             body: state.loading
                 ? const LoadingView()
                 : c == null
-                    ? ErrorState(message: failureText(context, state.failure!), onRetry: () => context.read<CustomerDetailCubit>().load(customerId))
-                    : ConstrainedBody(
-                        maxWidth: 880,
-                        child: ListView(
-                          padding: const EdgeInsets.all(Space.xl),
-                          children: [
-                            Wrap(spacing: Space.md, children: [
+                ? ErrorState(
+                    message: failureText(context, state.failure!),
+                    onRetry: () => context.read<CustomerDetailCubit>().load(customerId),
+                  )
+                : ConstrainedBody(
+                    padding: const EdgeInsets.all(Space.lg),
+                    maxWidth: 880,
+                    child: Card(
+                      clipBehavior: Clip.antiAlias,
+                      child: ListView(
+                        padding: const EdgeInsets.all(Space.xl),
+                        children: [
+                          Wrap(
+                            spacing: Space.md,
+                            children: [
                               if (!c.active) StatusBadge(label: l10n.inactive),
                               if (c.phone.isNotEmpty) Text(c.phone, style: theme.textTheme.bodyLarge),
                               if (c.address.isNotEmpty) Text(c.address, style: theme.textTheme.bodyLarge),
-                            ]),
-                            const SizedBox(height: Space.xxl),
-                            Text(l10n.debtsTitle, style: theme.textTheme.titleMedium),
-                            const SizedBox(height: Space.sm),
-                            if (c.debts.isEmpty) Text(l10n.noDebts),
-                            for (final d in c.debts)
-                              ListTile(
-                                key: ValueKey(d.id),
-                                contentPadding: EdgeInsets.zero,
-                                title: Text('${money(context, d.remaining)} / ${money(context, d.total)}', style: theme.textTheme.bodyLarge?.tabular),
-                                subtitle: Text(dateText(context, d.date)),
-                                trailing: StatusBadge(label: d.paid ? l10n.debtPaid : l10n.debtUnpaid, tone: d.paid ? BadgeTone.success : BadgeTone.warning),
+                            ],
+                          ),
+                          const SizedBox(height: Space.xxl),
+                          Text(l10n.debtsTitle, style: theme.textTheme.titleMedium),
+                          const SizedBox(height: Space.sm),
+                          if (c.debts.isEmpty) Text(l10n.noDebts),
+                          for (final d in c.debts)
+                            ListTile(
+                              key: ValueKey(d.id),
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                '${money(context, d.remaining)} / ${money(context, d.total)}',
+                                style: theme.textTheme.bodyLarge?.tabular,
                               ),
-                            const SizedBox(height: Space.xxl),
-                            Text(l10n.transactionsTitle, style: theme.textTheme.titleMedium),
-                            const SizedBox(height: Space.sm),
-                            if (state.transactions.isEmpty) Text(l10n.noTransactions),
-                            for (final t in state.transactions)
-                              ListTile(
-                                key: ValueKey(t.id),
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(t.invoice, style: theme.textTheme.bodyLarge?.tabular),
-                                subtitle: Text(dateTimeText(context, t.createdAt)),
-                                trailing: Text(money(context, t.total), style: theme.textTheme.titleSmall?.tabular),
+                              subtitle: Text(dateText(context, d.date)),
+                              trailing: StatusBadge(
+                                label: d.paid ? l10n.debtPaid : l10n.debtUnpaid,
+                                tone: d.paid ? BadgeTone.success : BadgeTone.warning,
                               ),
-                          ],
-                        ),
+                            ),
+                          const SizedBox(height: Space.xxl),
+                          Text(l10n.transactionsTitle, style: theme.textTheme.titleMedium),
+                          const SizedBox(height: Space.sm),
+                          if (state.transactions.isEmpty) Text(l10n.noTransactions),
+                          for (final t in state.transactions)
+                            ListTile(
+                              key: ValueKey(t.id),
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(t.invoice, style: theme.textTheme.bodyLarge?.tabular),
+                              subtitle: Text(dateTimeText(context, t.createdAt)),
+                              trailing: Text(money(context, t.total), style: theme.textTheme.titleSmall?.tabular),
+                            ),
+                        ],
                       ),
+                    ),
+                  ),
           );
         },
       ),

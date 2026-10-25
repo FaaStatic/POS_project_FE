@@ -14,10 +14,7 @@ Future<({String? id, String? name})?> showCustomerPicker(BuildContext context) =
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      builder: (_) => BlocProvider(
-        create: (_) => getIt<CustomersCubit>()..search(''),
-        child: const _CustomerPicker(),
-      ),
+      builder: (_) => BlocProvider(create: (_) => getIt<CustomersCubit>()..search(''), child: const _CustomerPicker()),
     );
 
 class _CustomerPicker extends StatelessWidget {
@@ -34,7 +31,11 @@ class _CustomerPicker extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Space.lg),
-            child: SearchField(hint: l10n.searchCustomers, autofocus: true, onChanged: context.read<CustomersCubit>().search),
+            child: SearchField(
+              hint: l10n.searchCustomers,
+              autofocus: true,
+              onChanged: context.read<CustomersCubit>().search,
+            ),
           ),
           ListTile(
             leading: const Icon(Iconsax.user_remove),
@@ -46,20 +47,20 @@ class _CustomerPicker extends StatelessWidget {
             child: state.loading
                 ? const LoadingView()
                 : state.customers.isEmpty
-                    ? EmptyState(message: l10n.customersEmpty)
-                    : ListView.builder(
-                        controller: controller,
-                        itemCount: state.customers.length,
-                        itemBuilder: (context, i) {
-                          final Customer c = state.customers[i];
-                          return ListTile(
-                            key: ValueKey(c.id),
-                            title: Text(c.name),
-                            subtitle: c.phone.isEmpty ? null : Text(c.phone),
-                            onTap: () => Navigator.pop(context, (id: c.id, name: c.name)),
-                          );
-                        },
-                      ),
+                ? EmptyState(message: l10n.customersEmpty)
+                : ListView.builder(
+                    controller: controller,
+                    itemCount: state.customers.length,
+                    itemBuilder: (context, i) {
+                      final Customer c = state.customers[i];
+                      return ListTile(
+                        key: ValueKey(c.id),
+                        title: Text(c.name),
+                        subtitle: c.phone.isEmpty ? null : Text(c.phone),
+                        onTap: () => Navigator.pop(context, (id: c.id, name: c.name)),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

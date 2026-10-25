@@ -174,5 +174,7 @@
   "logoutAnyway": "Sign out",
   "paymentPushSuccess": "Payment succeeded",
   "paymentPushFailed": "Payment failed",
-  "open": "Open"
+  "open": "Open",
+  "inCart": "{qty} in cart",
+  "cartEmptyShort": "Cart is empty"
 }

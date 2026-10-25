@@ -79,19 +79,19 @@ class _FormState extends State<_Form> {
     final barcode = _barcode.text.trim();
     final category = isSuper && _newCategory.text.trim().isNotEmpty ? _newCategory.text.trim() : _category;
     context.read<ProductEditCubit>().save(
-          ProductPatch(
-            name: _name.text.trim() == p.name ? null : _name.text.trim(),
-            sku: _sku.text.trim() == p.sku ? null : _sku.text.trim(),
-            barcode: barcode == (p.barcode ?? '') ? null : barcode,
-            unit: _unit == p.unit ? null : _unit,
-            sellingPrice: int.parse(_price.text) == p.sellingPrice ? null : int.parse(_price.text),
-            sellingPriceDebt: int.parse(_debtPrice.text) == p.sellingPriceDebt ? null : int.parse(_debtPrice.text),
-            category: category == p.categoryName ? null : category,
-            purchasePrice: isSuper && int.parse(_purchase.text) != p.purchasePrice ? int.parse(_purchase.text) : null,
-            type: isSuper && _type != p.type ? _type : null,
-          ),
-          stockDelta: isSuper ? double.tryParse(_stockDelta.text.replaceAll(',', '.')) ?? 0 : 0,
-        );
+      ProductPatch(
+        name: _name.text.trim() == p.name ? null : _name.text.trim(),
+        sku: _sku.text.trim() == p.sku ? null : _sku.text.trim(),
+        barcode: barcode == (p.barcode ?? '') ? null : barcode,
+        unit: _unit == p.unit ? null : _unit,
+        sellingPrice: int.parse(_price.text) == p.sellingPrice ? null : int.parse(_price.text),
+        sellingPriceDebt: int.parse(_debtPrice.text) == p.sellingPriceDebt ? null : int.parse(_debtPrice.text),
+        category: category == p.categoryName ? null : category,
+        purchasePrice: isSuper && int.parse(_purchase.text) != p.purchasePrice ? int.parse(_purchase.text) : null,
+        type: isSuper && _type != p.type ? _type : null,
+      ),
+      stockDelta: isSuper ? double.tryParse(_stockDelta.text.replaceAll(',', '.')) ?? 0 : 0,
+    );
   }
 
   @override
@@ -111,11 +111,23 @@ class _FormState extends State<_Form> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AppTextField(label: l10n.productName, controller: _name, validator: (v) => validationText(context, Validators.required(v))),
+              AppTextField(
+                label: l10n.productName,
+                controller: _name,
+                validator: (v) => validationText(context, Validators.required(v)),
+              ),
               const SizedBox(height: Space.lg),
-              AppTextField(label: l10n.sku, controller: _sku, validator: (v) => validationText(context, Validators.sku(v))),
+              AppTextField(
+                label: l10n.sku,
+                controller: _sku,
+                validator: (v) => validationText(context, Validators.sku(v)),
+              ),
               const SizedBox(height: Space.lg),
-              AppTextField(label: l10n.barcode, controller: _barcode, validator: (v) => validationText(context, Validators.barcode(v))),
+              AppTextField(
+                label: l10n.barcode,
+                controller: _barcode,
+                validator: (v) => validationText(context, Validators.barcode(v)),
+              ),
               const SizedBox(height: Space.lg),
               DropdownButtonFormField<ProductUnit>(
                 isExpanded: true,
@@ -125,9 +137,21 @@ class _FormState extends State<_Form> {
                 onChanged: (u) => setState(() => _unit = u ?? _unit),
               ),
               const SizedBox(height: Space.lg),
-              AppTextField(label: l10n.sellingPrice, controller: _price, keyboardType: TextInputType.number, inputFormatters: digits, validator: positive),
+              AppTextField(
+                label: l10n.sellingPrice,
+                controller: _price,
+                keyboardType: TextInputType.number,
+                inputFormatters: digits,
+                validator: positive,
+              ),
               const SizedBox(height: Space.lg),
-              AppTextField(label: l10n.debtPrice, controller: _debtPrice, keyboardType: TextInputType.number, inputFormatters: digits, validator: positive),
+              AppTextField(
+                label: l10n.debtPrice,
+                controller: _debtPrice,
+                keyboardType: TextInputType.number,
+                inputFormatters: digits,
+                validator: positive,
+              ),
               const SizedBox(height: Space.lg),
               DropdownButtonFormField<String>(
                 isExpanded: true,
@@ -142,7 +166,13 @@ class _FormState extends State<_Form> {
                 const SizedBox(height: Space.md),
                 AppTextField(label: l10n.newCategory, controller: _newCategory),
                 const SizedBox(height: Space.lg),
-                AppTextField(label: l10n.purchasePrice, controller: _purchase, keyboardType: TextInputType.number, inputFormatters: digits, validator: positive),
+                AppTextField(
+                  label: l10n.purchasePrice,
+                  controller: _purchase,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: digits,
+                  validator: positive,
+                ),
                 const SizedBox(height: Space.lg),
                 SegmentedButton<ProductType>(
                   segments: [
@@ -166,7 +196,13 @@ class _FormState extends State<_Form> {
               const SizedBox(height: Space.xl),
               Text(l10n.onlineOnly, style: theme.textTheme.bodySmall),
               const SizedBox(height: Space.sm),
-              AppButton(label: l10n.save, large: true, expand: true, loading: widget.state.saving, onPressed: () => _save(isSuper)),
+              AppButton(
+                label: l10n.save,
+                large: true,
+                expand: true,
+                loading: widget.state.saving,
+                onPressed: () => _save(isSuper),
+              ),
             ],
           ),
         ),

@@ -1633,6 +1633,18 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'File lebih dari 25 MB.'**
   String get importTooLarge;
+
+  /// No description provided for @loginPanelLine.
+  ///
+  /// In id, this message translates to:
+  /// **'Penjualan, stok, dan hutang toko dalam satu tempat.'**
+  String get loginPanelLine;
+
+  /// No description provided for @loginPanelNote.
+  ///
+  /// In id, this message translates to:
+  /// **'Transaksi dicatat dari aplikasi Kasir, termasuk saat offline.'**
+  String get loginPanelNote;
 }
 
 class _AppLocalizationsDelegate

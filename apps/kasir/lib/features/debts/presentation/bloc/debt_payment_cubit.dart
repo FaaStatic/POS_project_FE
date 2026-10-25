@@ -18,8 +18,8 @@ abstract class DebtPaymentState with _$DebtPaymentState {
 
 class DebtPaymentCubit extends Cubit<DebtPaymentState> {
   DebtPaymentCubit(this._get, this._pay, this._session, {String? idempotencyKey})
-      : _key = idempotencyKey ?? const Uuid().v4(),
-        super(const DebtPaymentState());
+    : _key = idempotencyKey ?? const Uuid().v4(),
+      super(const DebtPaymentState());
 
   final GetDebt _get;
   final PayDebt _pay;
@@ -49,10 +49,10 @@ class DebtPaymentCubit extends Cubit<DebtPaymentState> {
     final result = await _pay(debt: debt, userId: user.userId, amount: amount, idempotencyKey: _key);
     emit(switch (result) {
       Ok(:final value) => state.copyWith(
-          paying: false,
-          receipt: value,
-          debt: debt.copyWith(remaining: value.remaining, paid: value.paid),
-        ),
+        paying: false,
+        receipt: value,
+        debt: debt.copyWith(remaining: value.remaining, paid: value.paid),
+      ),
       Err(:final failure) => state.copyWith(paying: false, failure: failure),
     });
   }

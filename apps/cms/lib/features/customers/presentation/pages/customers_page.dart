@@ -24,57 +24,84 @@ class CustomersPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return BlocProvider(
       create: (_) => getIt<CustomersCubit>()..load(),
-      child: Builder(builder: (context) {
-        final cubit = context.read<CustomersCubit>();
-        if (openAdd) _openOnce(context, () => openCustomerForm(context, cubit));
-        final state = context.watch<CustomersCubit>().state;
-        return CmsPage(
-          title: l10n.customersTitle,
-          actions: [FilledButton.icon(onPressed: () => openCustomerForm(context, cubit), icon: const Icon(Iconsax.user_add), label: Text(l10n.addCustomer))],
-          body: Column(
-            children: [
-              FilterBar(children: [
-                SegmentedButton<bool>(
-                  segments: [ButtonSegment(value: false, label: Text(l10n.active)), ButtonSegment(value: true, label: Text(l10n.inactive))],
-                  selected: {cubit.query.inactive},
-                  onSelectionChanged: (s) => cubit.showInactive(s.first),
-                ),
-                SizedBox(width: 320, child: SearchField(hint: l10n.search, onChanged: cubit.search)),
-              ]),
-              Expanded(
-                child: PagedBody<Customer>(
-                  state: state,
-                  emptyMessage: cubit.query.inactive ? l10n.customersInactiveEmpty : l10n.customersEmpty,
-                  emptyAction: cubit.query.inactive ? null : l10n.addCustomer,
-                  onEmptyAction: () => openCustomerForm(context, cubit),
-                  onRetry: cubit.load,
-                  builder: (items) => ResponsiveTable<Customer>(
-                    rows: items,
-                    rowKey: (c) => c.id,
-                    onTap: (c) => context.push('/customers/${c.id}'),
-                    hasMore: state.hasNext,
-                    loadingMore: state.loadingMore,
-                    onLoadMore: cubit.loadMore,
-                    columns: [
-                      TableColumnSpec(label: l10n.customerName, flex: 2, cell: (_, c) => Text(c.name)),
-                      TableColumnSpec(label: l10n.customerPhone, cell: (_, c) => Text(c.phone.isEmpty ? '-' : c.phone)),
-                      TableColumnSpec(label: l10n.customerAddress, secondary: true, flex: 2, cell: (_, c) => Text(c.address.isEmpty ? '-' : c.address)),
-                    ],
-                    actions: (context, c) => ActionsMenu(actions: [
-                      RowAction(l10n.edit, () => openCustomerForm(context, cubit, existing: c)),
-                      if (c.active)
-                        RowAction(l10n.deactivate, () => report(context, cubit.deactivate(c), l10n.customerDeactivated))
-                      else
-                        RowAction(l10n.restore, () => report(context, cubit.restore(c), l10n.customerRestored)),
-                      RowAction(l10n.purge, () => _purge(context, cubit, c), destructive: true),
-                    ]),
-                  ),
-                ),
+      child: Builder(
+        builder: (context) {
+          final cubit = context.read<CustomersCubit>();
+          if (openAdd) _openOnce(context, () => openCustomerForm(context, cubit));
+          final state = context.watch<CustomersCubit>().state;
+          return CmsPage(
+            title: l10n.customersTitle,
+            actions: [
+              FilledButton.icon(
+                onPressed: () => openCustomerForm(context, cubit),
+                icon: const Icon(Iconsax.user_add),
+                label: Text(l10n.addCustomer),
               ),
             ],
-          ),
-        );
-      }),
+            body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(
+                  children: [
+                    SegmentedButton<bool>(
+                      segments: [
+                        ButtonSegment(value: false, label: Text(l10n.active)),
+                        ButtonSegment(value: true, label: Text(l10n.inactive)),
+                      ],
+                      selected: {cubit.query.inactive},
+                      onSelectionChanged: (s) => cubit.showInactive(s.first),
+                    ),
+                    SizedBox(
+                      width: 320,
+                      child: SearchField(hint: l10n.search, onChanged: cubit.search),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: PagedBody<Customer>(
+                    state: state,
+                    emptyMessage: cubit.query.inactive ? l10n.customersInactiveEmpty : l10n.customersEmpty,
+                    emptyAction: cubit.query.inactive ? null : l10n.addCustomer,
+                    onEmptyAction: () => openCustomerForm(context, cubit),
+                    onRetry: cubit.load,
+                    builder: (items) => ResponsiveTable<Customer>(
+                      rows: items,
+                      rowKey: (c) => c.id,
+                      onTap: (c) => context.push('/customers/${c.id}'),
+                      hasMore: state.hasNext,
+                      loadingMore: state.loadingMore,
+                      onLoadMore: cubit.loadMore,
+                      columns: [
+                        TableColumnSpec(label: l10n.customerName, flex: 2, cell: (_, c) => Text(c.name)),
+                        TableColumnSpec(
+                          label: l10n.customerPhone,
+                          cell: (_, c) => Text(c.phone.isEmpty ? '-' : c.phone),
+                        ),
+                        TableColumnSpec(
+                          label: l10n.customerAddress,
+                          secondary: true,
+                          flex: 2,
+                          cell: (_, c) => Text(c.address.isEmpty ? '-' : c.address),
+                        ),
+                      ],
+                      actions: (context, c) => ActionsMenu(
+                        actions: [
+                          RowAction(l10n.edit, () => openCustomerForm(context, cubit, existing: c)),
+                          if (c.active)
+                            RowAction(
+                              l10n.deactivate,
+                              () => report(context, cubit.deactivate(c), l10n.customerDeactivated),
+                            )
+                          else
+                            RowAction(l10n.restore, () => report(context, cubit.restore(c), l10n.customerRestored)),
+                          RowAction(l10n.purge, () => _purge(context, cubit, c), destructive: true),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -158,7 +185,12 @@ class _CustomerFormState extends State<_CustomerForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AppTextField(label: l10n.customerName, controller: _name, autofocus: true, validator: (v) => validationText(context, Validators.required(v))),
+          AppTextField(
+            label: l10n.customerName,
+            controller: _name,
+            autofocus: true,
+            validator: (v) => validationText(context, Validators.required(v)),
+          ),
           const SizedBox(height: Space.lg),
           AppTextField(label: l10n.customerPhone, controller: _phone, keyboardType: TextInputType.phone),
           const SizedBox(height: Space.lg),

@@ -74,7 +74,11 @@ class _OpenCart extends StatelessWidget {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(ui.tabLabel(draft.number), style: theme.textTheme.titleMedium),
-                      TextButton.icon(onPressed: () => _close(context), icon: const Icon(Iconsax.trash, size: 20), label: Text(l10n.closeTab)),
+                      TextButton.icon(
+                        onPressed: () => _close(context),
+                        icon: const Icon(Iconsax.trash, size: 20),
+                        label: Text(l10n.closeTab),
+                      ),
                     ],
                   ),
                 ),
@@ -84,7 +88,10 @@ class _OpenCart extends StatelessWidget {
                   leading: const Icon(Iconsax.user),
                   title: Text(draft.customerName ?? l10n.chooseCustomer),
                   subtitle: draft.customerName == null ? null : Text(l10n.customer),
-                  trailing: Text(l10n.changeCustomer, style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary)),
+                  trailing: Text(
+                    l10n.changeCustomer,
+                    style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary),
+                  ),
                   onTap: () async {
                     final bloc = context.read<CheckoutBloc>();
                     final picked = await showCustomerPicker(context);
@@ -94,7 +101,9 @@ class _OpenCart extends StatelessWidget {
               ),
               const SliverToBoxAdapter(child: Divider()),
               if (draft.isEmpty)
-                SliverToBoxAdapter(child: EmptyState(icon: Iconsax.shopping_cart, message: l10n.cartEmpty))
+                SliverToBoxAdapter(
+                  child: EmptyState(icon: Iconsax.shopping_cart, message: l10n.cartEmpty),
+                )
               else
                 SliverList.separated(
                   itemCount: draft.items.length,
@@ -106,7 +115,9 @@ class _OpenCart extends StatelessWidget {
                     stockLeft: state.shortfalls[draft.items[i].productId],
                   ),
                 ),
-              SliverToBoxAdapter(child: _PayOptions(draft: draft, state: state)),
+              SliverToBoxAdapter(
+                child: _PayOptions(draft: draft, state: state),
+              ),
             ],
           ),
         ),
@@ -141,8 +152,10 @@ class _CartLine extends StatelessWidget {
               Text(rupiah(context, item.subtotal(debt: debt)), style: theme.textTheme.titleSmall?.tabular),
             ],
           ),
-          Text('${rupiah(context, item.price(debt: debt))} / ${ProductUnit.values[item.unit.clamp(0, ProductUnit.values.length - 1)].name}',
-              style: theme.textTheme.bodySmall?.tabular),
+          Text(
+            '${rupiah(context, item.price(debt: debt))} / ${ProductUnit.values[item.unit.clamp(0, ProductUnit.values.length - 1)].name}',
+            style: theme.textTheme.bodySmall?.tabular,
+          ),
           if (item.isDigital)
             Padding(
               padding: const EdgeInsets.only(top: Space.sm),
@@ -162,7 +175,12 @@ class _CartLine extends StatelessWidget {
                 children: [
                   Icon(Iconsax.warning_2, size: 18, color: StatusColors.of(context).warning),
                   const SizedBox(width: Space.xs),
-                  Expanded(child: Text(l10n.stockShort(qty(context, stockLeft!)), style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface))),
+                  Expanded(
+                    child: Text(
+                      l10n.stockShort(qty(context, stockLeft!)),
+                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -172,7 +190,10 @@ class _CartLine extends StatelessWidget {
               QtyStepper(
                 value: item.qty,
                 itemName: item.name,
-                allowFraction: item.unit == ProductUnit.kg.index || item.unit == ProductUnit.liter.index || item.unit == ProductUnit.gram.index,
+                allowFraction:
+                    item.unit == ProductUnit.kg.index ||
+                    item.unit == ProductUnit.liter.index ||
+                    item.unit == ProductUnit.gram.index,
                 onChanged: (q) => bloc.add(QtyChanged(item.id, q)),
               ),
               const Spacer(),
@@ -186,10 +207,10 @@ class _CartLine extends StatelessWidget {
 }
 
 String? _disabledReason(AppLocalizations l10n, CheckoutState state, Draft draft, PaymentMethod m) => switch (m) {
-      PaymentMethod.qris || PaymentMethod.va when !state.online => l10n.needsInternet,
-      PaymentMethod.qris || PaymentMethod.va when draft.hasDigital => l10n.digitalCashOnly,
-      _ => null,
-    };
+  PaymentMethod.qris || PaymentMethod.va when !state.online => l10n.needsInternet,
+  PaymentMethod.qris || PaymentMethod.va when draft.hasDigital => l10n.digitalCashOnly,
+  _ => null,
+};
 
 /// Method, VA bank, and total; scrolls with the cart.
 class _PayOptions extends StatelessWidget {
@@ -230,19 +251,25 @@ class _PayOptions extends StatelessWidget {
             const SizedBox(height: Space.md),
             Text(l10n.chooseBank, style: theme.textTheme.labelLarge),
             const SizedBox(height: Space.sm),
-            Wrap(spacing: Space.sm, children: [
-              for (final b in VaBank.values)
-                ChoiceChip(
-                  label: Text(b.name.toUpperCase()),
-                  selected: state.vaBank == b,
-                  onSelected: (_) => bloc.add(VaBankChanged(b)),
-                ),
-            ]),
+            Wrap(
+              spacing: Space.sm,
+              children: [
+                for (final b in VaBank.values)
+                  ChoiceChip(
+                    label: Text(b.name.toUpperCase()),
+                    selected: state.vaBank == b,
+                    onSelected: (_) => bloc.add(VaBankChanged(b)),
+                  ),
+              ],
+            ),
           ],
           if (!state.online || draft.hasDigital) ...[
             const SizedBox(height: Space.sm),
             Text(
-              [if (!state.online) '${l10n.qris}/${l10n.va}: ${l10n.needsInternet}', if (draft.hasDigital && state.online) l10n.digitalCashOnly].join(' · '),
+              [
+                if (!state.online) '${l10n.qris}/${l10n.va}: ${l10n.needsInternet}',
+                if (draft.hasDigital && state.online) l10n.digitalCashOnly,
+              ].join(' · '),
               style: theme.textTheme.bodySmall,
             ),
           ],
@@ -287,7 +314,9 @@ class _PayButton extends StatelessWidget {
             large: true,
             expand: true,
             loading: state.paying,
-            onPressed: draft.isEmpty || reason != null ? null : () => context.read<CheckoutBloc>().add(PayRequested(bank: state.vaBank)),
+            onPressed: draft.isEmpty || reason != null
+                ? null
+                : () => context.read<CheckoutBloc>().add(PayRequested(bank: state.vaBank)),
           ),
         ),
       ),

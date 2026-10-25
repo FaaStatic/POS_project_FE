@@ -21,7 +21,8 @@ class HistoryCubit extends Cubit<HistoryState> {
   void start() {
     _sub = _watch().listen((sales) {
       // Unsent sales first so the cashier sees what still needs a connection.
-      final sorted = [...sales]..sort((a, b) {
+      final sorted = [...sales]
+        ..sort((a, b) {
           final pa = a.status == SaleStatus.pending || a.status == SaleStatus.failed ? 0 : 1;
           final pb = b.status == SaleStatus.pending || b.status == SaleStatus.failed ? 0 : 1;
           return pa != pb ? pa - pb : b.createdAt.compareTo(a.createdAt);

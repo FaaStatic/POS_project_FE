@@ -6,7 +6,8 @@ part 'customers_cubit.freezed.dart';
 
 @freezed
 abstract class CustomerFormState with _$CustomerFormState {
-  const factory CustomerFormState({@Default(false) bool saving, Customer? saved, Failure? failure}) = _CustomerFormState;
+  const factory CustomerFormState({@Default(false) bool saving, Customer? saved, Failure? failure}) =
+      _CustomerFormState;
 }
 
 /// Adding a customer needs the server id, so it is online only.
@@ -34,7 +35,8 @@ class AddCustomerCubit extends Cubit<CustomerFormState> {
 
 @freezed
 abstract class CustomerDetailState with _$CustomerDetailState {
-  const factory CustomerDetailState({@Default(true) bool loading, Customer? customer, Failure? failure}) = _CustomerDetailState;
+  const factory CustomerDetailState({@Default(true) bool loading, Customer? customer, Failure? failure}) =
+      _CustomerDetailState;
 }
 
 class CustomerDetailCubit extends Cubit<CustomerDetailState> {

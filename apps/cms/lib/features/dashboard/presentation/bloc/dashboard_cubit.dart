@@ -29,11 +29,11 @@ class DashboardState {
 /// alongside the summary for the selected range.
 class DashboardCubit extends Cubit<DashboardState> {
   DashboardCubit(this._summary, this._debts, this._payments, {DateTime Function()? clock})
-      : _clock = clock ?? DateTime.now,
-        super(() {
-          final r = rangeDates(DashboardRange.last30, (clock ?? DateTime.now)());
-          return DashboardState(start: r.start, end: r.end);
-        }());
+    : _clock = clock ?? DateTime.now,
+      super(() {
+        final r = rangeDates(DashboardRange.last30, (clock ?? DateTime.now)());
+        return DashboardState(start: r.start, end: r.end);
+      }());
 
   final GetDashboard _summary;
   final GetDebts _debts;
@@ -47,7 +47,17 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   Future<void> load({DashboardRange? range, DateTime? start, DateTime? end}) async {
     final s = start ?? state.start, e = end ?? state.end, r = range ?? state.range;
-    emit(DashboardState(loading: true, range: r, start: s, end: e, summary: state.summary, oldestDebts: state.oldestDebts, failedPayments: state.failedPayments));
+    emit(
+      DashboardState(
+        loading: true,
+        range: r,
+        start: s,
+        end: e,
+        summary: state.summary,
+        oldestDebts: state.oldestDebts,
+        failedPayments: state.failedPayments,
+      ),
+    );
     final today = DateTime(_clock().year, _clock().month, _clock().day);
     final (summary, debts, failed, expired) = await (
       _summary(start: s, end: e),
@@ -56,27 +66,29 @@ class DashboardCubit extends Cubit<DashboardState> {
       _payments(PaymentQuery(state: PaymentState.expired, dateStart: today, dateEnd: today, limit: 100)),
     ).wait;
     int count(Result<Paged<PaymentRecord>> r) => switch (r) {
-          Ok(:final value) => value.items.length,
-          Err() => 0,
-        };
-    emit(DashboardState(
-      loading: false,
-      range: r,
-      start: s,
-      end: e,
-      summary: switch (summary) {
-        Ok(:final value) => value,
-        Err() => null,
-      },
-      failure: switch (summary) {
-        Err(:final failure) => failure,
-        Ok() => null,
-      },
-      oldestDebts: switch (debts) {
-        Ok(:final value) => value.items,
-        Err() => const [],
-      },
-      failedPayments: count(failed) + count(expired),
-    ));
+      Ok(:final value) => value.items.length,
+      Err() => 0,
+    };
+    emit(
+      DashboardState(
+        loading: false,
+        range: r,
+        start: s,
+        end: e,
+        summary: switch (summary) {
+          Ok(:final value) => value,
+          Err() => null,
+        },
+        failure: switch (summary) {
+          Err(:final failure) => failure,
+          Ok() => null,
+        },
+        oldestDebts: switch (debts) {
+          Ok(:final value) => value.items,
+          Err() => const [],
+        },
+        failedPayments: count(failed) + count(expired),
+      ),
+    );
   }
 }

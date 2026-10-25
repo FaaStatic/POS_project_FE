@@ -10,7 +10,7 @@ abstract final class Space {
 
 abstract final class Radii {
   static const small = 6.0;
-  static const medium = 10.0;
+  static const medium = 12.0;
   static const full = 999.0;
 }
 

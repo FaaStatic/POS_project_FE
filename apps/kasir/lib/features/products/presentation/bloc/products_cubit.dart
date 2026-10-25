@@ -51,4 +51,3 @@ class ProductEditCubit extends Cubit<ProductEditState> {
     });
   }
 }
-

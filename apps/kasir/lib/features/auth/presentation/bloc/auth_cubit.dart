@@ -9,7 +9,7 @@ export 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit(this._login, this._restore, this._logout, WatchSessionExpired watchExpired)
-      : super(const AuthState.unknown()) {
+    : super(const AuthState.unknown()) {
     _expiredSub = watchExpired().listen((_) => emit(const AuthState.unauthenticated(expired: true)));
   }
 

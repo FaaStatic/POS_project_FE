@@ -17,6 +17,21 @@ abstract final class Zinc {
 }
 
 abstract final class BrandColors {
+  /// Deep green for the CMS sidebar and kasir header (white text 12:1).
+  static const forest = Color(0xFF0F3D2E);
+  static const forestRaised = Color(0xFF16523E);
+  static const forestDark = Color(0xFF0C241B);
+  static const onForestMuted = Color(0xFFB7D3C5);
+  static const onForestMutedDark = Color(0xFF9FBFB0);
+  static const indicatorOnForest = Color(0xFFC8F2D8);
+  static const indicatorOnForestDark = Color(0xFF4ADE80);
+
+  /// Page canvas behind white surfaces.
+  static const mintCanvas = Color(0xFFF2F7F4);
+  static const canvasDark = Color(0xFF0A100D);
+  static const surfaceDark = Color(0xFF121A16);
+  static const surfaceDarkHigh = Color(0xFF1A241F);
+
   static const greenLight = Color(0xFF15803D);
   static const greenDark = Color(0xFF22C55E);
   static const onGreenDark = Color(0xFF052E16);

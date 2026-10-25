@@ -1147,6 +1147,18 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Buka'**
   String get open;
+
+  /// No description provided for @inCart.
+  ///
+  /// In id, this message translates to:
+  /// **'{qty} di keranjang'**
+  String inCart(String qty);
+
+  /// No description provided for @cartEmptyShort.
+  ///
+  /// In id, this message translates to:
+  /// **'Keranjang kosong'**
+  String get cartEmptyShort;
 }
 
 class _AppLocalizationsDelegate

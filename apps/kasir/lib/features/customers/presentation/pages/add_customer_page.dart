@@ -63,7 +63,10 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                     AppTextField(label: l10n.customerAddress, controller: _address, maxLines: 2),
                     if (state.failure != null) ...[
                       const SizedBox(height: Space.lg),
-                      Text(failureText(context, state.failure!), style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                      Text(
+                        failureText(context, state.failure!),
+                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      ),
                     ],
                     const SizedBox(height: Space.xl),
                     Text(l10n.onlineOnly, style: Theme.of(context).textTheme.bodySmall),
@@ -76,8 +79,8 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                       onPressed: () {
                         if (!_form.currentState!.validate()) return;
                         context.read<AddCustomerCubit>().save(
-                              CustomerInput(name: _name.text, phone: _phone.text, address: _address.text),
-                            );
+                          CustomerInput(name: _name.text, phone: _phone.text, address: _address.text),
+                        );
                       },
                     ),
                   ],

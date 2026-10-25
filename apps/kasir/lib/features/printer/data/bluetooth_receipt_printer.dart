@@ -11,7 +11,11 @@ class BluetoothReceiptPrinter implements ReceiptPrinter {
     final address = settings.printerAddress;
     if (address == null) return const Err(ValidationFailure('no_printer'));
     try {
-      final ok = await FlutterBluetoothPrinter.printBytes(address: address, data: encodeReceipt(document), keepConnected: false);
+      final ok = await FlutterBluetoothPrinter.printBytes(
+        address: address,
+        data: encodeReceipt(document),
+        keepConnected: false,
+      );
       return ok ? const Ok(null) : const Err(ServerFailure('print_failed'));
     } catch (e) {
       return Err(ServerFailure('print_failed: $e'));

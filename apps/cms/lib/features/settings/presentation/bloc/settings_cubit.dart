@@ -11,10 +11,10 @@ abstract class SettingsState with _$SettingsState {
 
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit(GetPreferences get, this._setTheme, this._setLanguage)
-      : super(() {
-          final (theme, language) = get();
-          return SettingsState(theme: theme, language: language);
-        }());
+    : super(() {
+        final (theme, language) = get();
+        return SettingsState(theme: theme, language: language);
+      }());
 
   final SetTheme _setTheme;
   final SetLanguage _setLanguage;

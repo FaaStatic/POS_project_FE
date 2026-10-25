@@ -6,7 +6,8 @@ part 'assign_barcode_cubit.freezed.dart';
 
 @freezed
 abstract class AssignBarcodeState with _$AssignBarcodeState {
-  const factory AssignBarcodeState({@Default(false) bool saving, Product? product, Failure? failure}) = _AssignBarcodeState;
+  const factory AssignBarcodeState({@Default(false) bool saving, Product? product, Failure? failure}) =
+      _AssignBarcodeState;
 }
 
 /// Picks a product for an unknown scanned barcode and saves it (online).

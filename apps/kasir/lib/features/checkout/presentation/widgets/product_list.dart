@@ -80,14 +80,21 @@ class _ProductPaneState extends State<ProductPane> {
               padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.lg, Space.sm),
               child: Row(
                 children: [
-                  _CategoryChip(label: l10n.allCategories, selected: state.categoryId == null, onTap: () => context.read<ProductsCubit>().filter(null)),
+                  _CategoryChip(
+                    label: l10n.allCategories,
+                    selected: state.categoryId == null,
+                    onTap: () => context.read<ProductsCubit>().filter(null),
+                  ),
                   for (final c in state.categories)
-                    _CategoryChip(label: c.name, selected: state.categoryId == c.id, onTap: () => context.read<ProductsCubit>().filter(c.id)),
+                    _CategoryChip(
+                      label: c.name,
+                      selected: state.categoryId == c.id,
+                      onTap: () => context.read<ProductsCubit>().filter(c.id),
+                    ),
                 ],
               ),
             ),
           ),
-        const SliverToBoxAdapter(child: Divider()),
         ..._list(context, state, l10n),
       ],
     );
@@ -101,20 +108,51 @@ class _ProductPaneState extends State<ProductPane> {
           hasScrollBody: false,
           child: EmptyState(
             icon: Iconsax.box,
-            message: state.query.isEmpty && state.categoryId == null ? l10n.noProducts : l10n.noProductsMatch(state.query),
+            message: state.query.isEmpty && state.categoryId == null
+                ? l10n.noProducts
+                : l10n.noProductsMatch(state.query),
           ),
         ),
       ];
     }
     return [
-      SliverList.separated(
-        itemCount: state.products.length,
-        separatorBuilder: (_, _) => const Divider(indent: Space.lg),
-        itemBuilder: (context, i) => _ProductRow(key: ValueKey(state.products[i].id), product: state.products[i]),
+      SliverLayoutBuilder(
+        builder: (context, constraints) {
+          // Tablets get a grid of product cards; phones keep a list so more fits and large text stays readable.
+          if (constraints.crossAxisExtent >= 560) {
+            return SliverPadding(
+              padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.xxl),
+              sliver: SliverGrid.builder(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 220,
+                  mainAxisSpacing: Space.md,
+                  crossAxisSpacing: Space.md,
+                  mainAxisExtent: 264,
+                ),
+                itemCount: state.products.length,
+                itemBuilder: (context, i) =>
+                    _ProductTile(key: ValueKey(state.products[i].id), product: state.products[i]),
+              ),
+            );
+          }
+          return SliverPadding(
+            padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, 120),
+            sliver: SliverList.separated(
+              itemCount: state.products.length,
+              separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
+              itemBuilder: (context, i) => _ProductRow(key: ValueKey(state.products[i].id), product: state.products[i]),
+            ),
+          );
+        },
       ),
     ];
   }
 }
+
+/// Quantity of [productId] already in the active tab, for the card badge.
+double _inCart(BuildContext context, String productId) => context.select<CheckoutBloc, double>(
+  (b) => b.state.active?.items.where((i) => i.productId == productId).fold<double>(0, (a, i) => a + i.qty) ?? 0,
+);
 
 class _CategoryChip extends StatelessWidget {
   const _CategoryChip({required this.label, required this.selected, required this.onTap});
@@ -124,9 +162,9 @@ class _CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(right: Space.sm),
-        child: ChoiceChip(label: Text(label), selected: selected, onSelected: (_) => onTap()),
-      );
+    padding: const EdgeInsets.only(right: Space.sm),
+    child: ChoiceChip(label: Text(label), selected: selected, onSelected: (_) => onTap()),
+  );
 }
 
 class _ProductRow extends StatelessWidget {
@@ -137,42 +175,166 @@ class _ProductRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final status = StatusColors.of(context);
-    final empty = !product.isDigital && product.stock <= 0;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.sm),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(product.name, style: theme.textTheme.titleSmall),
-                const SizedBox(height: 2),
-                Wrap(
-                  spacing: Space.md,
+    final inCart = _inCart(context, product.id);
+    final details = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(product.name, style: theme.textTheme.titleSmall),
+        const SizedBox(height: 2),
+        Text(
+          rupiah(context, product.sellingPrice),
+          style: theme.textTheme.titleMedium?.tabular.copyWith(color: theme.colorScheme.primary),
+        ),
+        _StockLine(product: product, inCart: inCart),
+      ],
+    );
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => context.read<CheckoutBloc>().add(ProductAdded(product)),
+        child: Padding(
+          padding: const EdgeInsets.all(Space.md),
+          // Large text moves the button under the name instead of squeezing it.
+          child: MediaQuery.textScalerOf(context).scale(16) > 21
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(rupiah(context, product.sellingPrice), style: theme.textTheme.bodyMedium?.tabular),
-                    if (product.isDigital)
-                      Text(l10n.digital, style: theme.textTheme.bodySmall)
-                    else
-                      Text(
-                        empty ? l10n.outOfStock : l10n.stock(qty(context, product.stock)),
-                        style: theme.textTheme.bodySmall?.copyWith(color: empty ? status.warning : null),
-                      ),
+                    Row(
+                      children: [
+                        InitialAvatar(name: product.name, imageUrl: product.image),
+                        const SizedBox(width: Space.md),
+                        Expanded(child: details),
+                      ],
+                    ),
+                    const SizedBox(height: Space.sm),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: _AddButton(product: product, label: l10n.add),
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    InitialAvatar(name: product.name, imageUrl: product.image),
+                    const SizedBox(width: Space.md),
+                    Expanded(child: details),
+                    const SizedBox(width: Space.sm),
+                    _AddButton(product: product, label: l10n.add),
                   ],
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(width: Space.md),
-          FilledButton.tonalIcon(
-            onPressed: () => context.read<CheckoutBloc>().add(ProductAdded(product)),
-            icon: const Icon(Iconsax.add, size: 20),
-            label: Text(l10n.add),
-          ),
-        ],
+        ),
       ),
     );
   }
+}
+
+class _ProductTile extends StatelessWidget {
+  const _ProductTile({super.key, required this.product});
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final inCart = _inCart(context, product.id);
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => context.read<CheckoutBloc>().add(ProductAdded(product)),
+        child: Padding(
+          padding: const EdgeInsets.all(Space.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  InitialAvatar(name: product.name, imageUrl: product.image, size: 72),
+                  if (inCart > 0) Positioned(right: 0, top: 0, child: _CartCount(qty: inCart)),
+                ],
+              ),
+              const SizedBox(height: Space.sm),
+              Expanded(
+                child: Text(
+                  product.name,
+                  style: theme.textTheme.titleSmall,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text(
+                rupiah(context, product.sellingPrice),
+                style: theme.textTheme.titleMedium?.tabular.copyWith(color: theme.colorScheme.primary),
+              ),
+              _StockLine(product: product, inCart: 0),
+              const SizedBox(height: Space.sm),
+              SizedBox(
+                width: double.infinity,
+                child: _AddButton(product: product, label: l10n.add),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StockLine extends StatelessWidget {
+  const _StockLine({required this.product, required this.inCart});
+  final Product product;
+  final double inCart;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final status = StatusColors.of(context);
+    final empty = !product.isDigital && product.stock <= 0;
+    return Wrap(
+      spacing: Space.sm,
+      children: [
+        Text(
+          product.isDigital ? l10n.digital : (empty ? l10n.outOfStock : l10n.stock(qty(context, product.stock))),
+          style: theme.textTheme.bodySmall?.copyWith(color: empty ? status.warning : null),
+        ),
+        if (inCart > 0)
+          Text(
+            l10n.inCart(qty(context, inCart)),
+            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
+          ),
+      ],
+    );
+  }
+}
+
+class _CartCount extends StatelessWidget {
+  const _CartCount({required this.qty});
+  final double qty;
+
+  @override
+  Widget build(BuildContext context) {
+    final shell = ShellColors.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: 2),
+      decoration: BoxDecoration(color: shell.background, borderRadius: BorderRadius.circular(Radii.full)),
+      child: Text(
+        formatQty(qty),
+        style: Theme.of(context).textTheme.labelMedium?.tabular.copyWith(color: shell.foreground),
+      ),
+    );
+  }
+}
+
+class _AddButton extends StatelessWidget {
+  const _AddButton({required this.product, required this.label});
+  final Product product;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => FilledButton.icon(
+    style: FilledButton.styleFrom(shape: const StadiumBorder()),
+    onPressed: () => context.read<CheckoutBloc>().add(ProductAdded(product)),
+    icon: const Icon(Icons.add_rounded, size: 22),
+    label: Text(label),
+  );
 }

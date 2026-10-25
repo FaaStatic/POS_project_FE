@@ -32,9 +32,7 @@ class StaffPage extends StatelessWidget {
           actions: [
             FilledButton.icon(onPressed: () => _add(context), icon: const Icon(Iconsax.user_add), label: Text(l10n.addStaff)),
           ],
-          body: Column(
-            children: [
-              FilterBar(children: [
+          body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
                 SegmentedButton<bool>(
                   segments: [
                     ButtonSegment(value: false, label: Text(l10n.active)),

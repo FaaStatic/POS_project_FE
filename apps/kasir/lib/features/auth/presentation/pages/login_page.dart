@@ -58,9 +58,10 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       Text(l10n.loginTitle, style: theme.textTheme.headlineSmall),
                       const SizedBox(height: Space.sm),
-                      Text(l10n.loginSubtitle, style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      )),
+                      Text(
+                        l10n.loginSubtitle,
+                        style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                      ),
                       const SizedBox(height: Space.xl),
                       AppTextField(
                         label: l10n.username,
@@ -84,7 +85,10 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: Space.lg),
                         Semantics(
                           liveRegion: true,
-                          child: Text(message, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error)),
+                          child: Text(
+                            message,
+                            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error),
+                          ),
                         ),
                       ],
                       const SizedBox(height: Space.xl),

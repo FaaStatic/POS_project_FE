@@ -55,7 +55,9 @@ class _StoreInfoPageState extends State<StoreInfoPage> {
                   expand: true,
                   onPressed: () async {
                     final messenger = ScaffoldMessenger.of(context);
-                    await _cubit.save(_cubit.state.copyWith(storeName: _name.text, storeAddress: _address.text, footer: _footer.text));
+                    await _cubit.save(
+                      _cubit.state.copyWith(storeName: _name.text, storeAddress: _address.text, footer: _footer.text),
+                    );
                     messenger.showSnackBar(SnackBar(content: Text(l10n.saved2)));
                     if (context.mounted) context.pop();
                   },

@@ -4,6 +4,7 @@ import '../tokens/colors.dart';
 import '../tokens/spacing.dart';
 import '../tokens/typography.dart';
 import 'chart_colors.dart';
+import 'shell_colors.dart';
 import 'status_colors.dart';
 
 abstract final class AppTheme {
@@ -26,8 +27,8 @@ abstract final class AppTheme {
       onSurface: Zinc.c950,
       onSurfaceVariant: Zinc.c600,
       surfaceContainerLowest: Colors.white,
-      surfaceContainerLow: Zinc.c50,
-      surfaceContainer: Zinc.c50,
+      surfaceContainerLow: BrandColors.mintCanvas,
+      surfaceContainer: Color(0xFFEAF2ED),
       surfaceContainerHigh: Zinc.c100,
       surfaceContainerHighest: Zinc.c200,
       // Input borders need 3:1 against the surface (WCAG 1.4.11), dividers do not.
@@ -41,6 +42,7 @@ abstract final class AppTheme {
     ),
     StatusColors.light,
     ChartColors.light,
+    ShellColors.light,
   );
 
   static final dark = _build(
@@ -58,12 +60,12 @@ abstract final class AppTheme {
       onError: Color(0xFF450A0A),
       errorContainer: BrandColors.redContainerDark,
       onErrorContainer: Color(0xFFFEE2E2),
-      surface: Zinc.c950,
+      surface: BrandColors.surfaceDark,
       onSurface: Zinc.c50,
       onSurfaceVariant: Zinc.c400,
-      surfaceContainerLowest: Zinc.c950,
-      surfaceContainerLow: Zinc.c900,
-      surfaceContainer: Zinc.c900,
+      surfaceContainerLowest: BrandColors.canvasDark,
+      surfaceContainerLow: BrandColors.surfaceDarkHigh,
+      surfaceContainer: BrandColors.surfaceDarkHigh,
       surfaceContainerHigh: Zinc.c800,
       surfaceContainerHighest: Zinc.c700,
       outline: Zinc.c500,
@@ -76,9 +78,10 @@ abstract final class AppTheme {
     ),
     StatusColors.dark,
     ChartColors.dark,
+    ShellColors.dark,
   );
 
-  static ThemeData _build(ColorScheme scheme, StatusColors status, ChartColors chart) {
+  static ThemeData _build(ColorScheme scheme, StatusColors status, ChartColors chart, ShellColors shell) {
     final text = buildTextTheme(scheme.onSurface, scheme.onSurfaceVariant);
     final small = BorderRadius.circular(Radii.small);
     final medium = BorderRadius.circular(Radii.medium);
@@ -94,27 +97,29 @@ abstract final class AppTheme {
       fontFamily: fontFamily,
       package: fontPackage,
       textTheme: text,
-      scaffoldBackgroundColor: scheme.surface,
+      scaffoldBackgroundColor: shell.canvas,
+      canvasColor: scheme.surface,
       materialTapTargetSize: MaterialTapTargetSize.padded,
       visualDensity: VisualDensity.standard,
-      extensions: [status, chart],
+      extensions: [status, chart, shell],
       dividerTheme: DividerThemeData(color: scheme.outlineVariant, thickness: 1, space: 1),
       appBarTheme: AppBarTheme(
-        backgroundColor: scheme.surface,
+        backgroundColor: shell.canvas,
         foregroundColor: scheme.onSurface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: text.titleLarge,
-        shape: Border(bottom: BorderSide(color: scheme.outlineVariant)),
+        titleTextStyle: text.headlineSmall,
       ),
+      // Elevation is the soft shadow alone; no border on top of it.
       cardTheme: CardThemeData(
         color: scheme.surface,
         surfaceTintColor: Colors.transparent,
-        elevation: 0,
+        shadowColor: const Color(0x1A0F3D2E),
+        elevation: 2,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: medium, side: BorderSide(color: scheme.outlineVariant)),
+        shape: RoundedRectangleBorder(borderRadius: medium),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -183,22 +188,31 @@ abstract final class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: scheme.inverseSurface,
-        contentTextStyle: text.bodyMedium?.copyWith(color: scheme.onInverseSurface),
-        actionTextColor: scheme.inversePrimary,
-        shape: RoundedRectangleBorder(borderRadius: small),
+        backgroundColor: shell.background,
+        contentTextStyle: text.bodyMedium?.copyWith(color: shell.foreground),
+        actionTextColor: shell.indicator,
+        shape: RoundedRectangleBorder(borderRadius: medium),
       ),
       chipTheme: ChipThemeData(
-        shape: RoundedRectangleBorder(borderRadius: small),
-        side: BorderSide(color: scheme.outline),
-        labelStyle: text.labelMedium,
-        padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: Space.sm),
+        shape: const StadiumBorder(),
+        side: BorderSide.none,
+        backgroundColor: scheme.surface,
+        selectedColor: shell.background,
+        checkmarkColor: shell.foreground,
+        labelStyle: text.labelLarge?.copyWith(
+          color: WidgetStateColor.resolveWith(
+            (states) => states.contains(WidgetState.selected) ? shell.foreground : scheme.onSurface,
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.sm),
+        showCheckmark: false,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: scheme.surface,
         surfaceTintColor: Colors.transparent,
         indicatorColor: scheme.primaryContainer,
-        elevation: 0,
+        shadowColor: const Color(0x1A0F3D2E),
+        elevation: 3,
         height: 72,
         labelTextStyle: WidgetStatePropertyAll(text.labelMedium),
       ),

@@ -28,8 +28,7 @@ class DebtsPage extends StatelessWidget {
         return CmsPage(
           title: l10n.debtsTitle,
           actions: [FilledButton.icon(onPressed: () => _addManual(context, cubit), icon: const Icon(Iconsax.add), label: Text(l10n.addManualDebt))],
-          body: Column(children: [
-            FilterBar(children: [
+          body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
               FilterChip(label: Text(l10n.unpaidOnly), selected: cubit.query.unpaidOnly, onSelected: cubit.unpaidOnly),
               SizedBox(width: 300, child: SearchField(hint: l10n.searchCustomer, onChanged: cubit.search)),
             ]),

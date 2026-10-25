@@ -19,40 +19,69 @@ class KasirShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final body = Column(children: [?banner, Expanded(child: shell)]);
+    final body = Column(
+      children: [
+        ?banner,
+        Expanded(child: shell),
+      ],
+    );
     // NavigationBar/Rail need two destinations; a single-tab build shows the page alone.
     if (kasirDestinations.length < 2) return Scaffold(body: body);
 
-    return LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth < Breakpoints.medium) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < Breakpoints.medium) {
+          return Scaffold(
+            body: body,
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: shell.currentIndex,
+              onDestinationSelected: _go,
+              destinations: [
+                for (final d in kasirDestinations) NavigationDestination(icon: Icon(d.icon), label: d.label(l10n)),
+              ],
+            ),
+          );
+        }
+        final theme = Theme.of(context);
+        final brand = ShellColors.of(context);
         return Scaffold(
-          body: body,
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: shell.currentIndex,
-            onDestinationSelected: _go,
-            destinations: [
-              for (final d in kasirDestinations) NavigationDestination(icon: Icon(d.icon), label: d.label(l10n)),
+          body: Row(
+            children: [
+              // Wide windows: rail on the brand green, matching the checkout header.
+              Theme(
+                data: theme.copyWith(
+                  navigationRailTheme: theme.navigationRailTheme.copyWith(
+                    backgroundColor: brand.background,
+                    indicatorColor: brand.indicator,
+                    selectedIconTheme: IconThemeData(color: brand.onIndicator),
+                    unselectedIconTheme: IconThemeData(color: brand.foreground),
+                    selectedLabelTextStyle: theme.textTheme.labelMedium?.copyWith(
+                      color: brand.foreground,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    unselectedLabelTextStyle: theme.textTheme.labelMedium?.copyWith(color: brand.muted),
+                  ),
+                ),
+                child: ColoredBox(
+                  color: brand.background,
+                  child: SafeArea(
+                    child: NavigationRail(
+                      selectedIndex: shell.currentIndex,
+                      onDestinationSelected: _go,
+                      labelType: NavigationRailLabelType.all,
+                      destinations: [
+                        for (final d in kasirDestinations)
+                          NavigationRailDestination(icon: Icon(d.icon), label: Text(d.label(l10n))),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(child: body),
             ],
           ),
         );
-      }
-      return Scaffold(
-        body: Row(children: [
-          SafeArea(
-            child: NavigationRail(
-              selectedIndex: shell.currentIndex,
-              onDestinationSelected: _go,
-              labelType: NavigationRailLabelType.all,
-              destinations: [
-                for (final d in kasirDestinations)
-                  NavigationRailDestination(icon: Icon(d.icon), label: Text(d.label(l10n))),
-              ],
-            ),
-          ),
-          const VerticalDivider(width: 1),
-          Expanded(child: body),
-        ]),
-      );
-    });
+      },
+    );
   }
 }

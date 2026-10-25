@@ -851,4 +851,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get importTooLarge => 'File lebih dari 25 MB.';
+
+  @override
+  String get loginPanelLine =>
+      'Penjualan, stok, dan hutang toko dalam satu tempat.';
+
+  @override
+  String get loginPanelNote =>
+      'Transaksi dicatat dari aplikasi Kasir, termasuk saat offline.';
 }

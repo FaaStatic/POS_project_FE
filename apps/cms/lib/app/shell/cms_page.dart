@@ -45,10 +45,18 @@ class CmsPage extends StatelessWidget {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: Wrap(spacing: 8, runSpacing: 8, children: actions),
-                ),
+                // Phones scroll the action row sideways instead of stacking it.
+                if (MediaQuery.sizeOf(context).width < 600)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Row(children: [for (final a in actions) Padding(padding: const EdgeInsets.only(right: 8), child: a)]),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: Wrap(spacing: 8, runSpacing: 8, children: actions),
+                  ),
                 Expanded(child: body),
               ],
             ),

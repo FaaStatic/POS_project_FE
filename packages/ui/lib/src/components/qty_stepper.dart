@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../l10n/ui_localizations.dart';
 import '../tokens/spacing.dart';
@@ -38,33 +37,37 @@ class QtyStepper extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = UiLocalizations.of(context);
     final theme = Theme.of(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton.outlined(
-          tooltip: l10n.decrease,
-          onPressed: enabled ? () => onChanged(value - 1 < 0 ? 0 : value - 1) : null,
-          icon: const Icon(Iconsax.minus, size: 20),
-        ),
-        Semantics(
-          label: l10n.qtyFor(itemName),
-          value: _label,
-          button: enabled,
-          child: InkWell(
-            onTap: enabled ? () => _edit(context) : null,
-            borderRadius: BorderRadius.circular(Radii.small),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-              child: Center(child: Text(_label, style: theme.textTheme.titleMedium?.tabular)),
+    final scheme = theme.colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(color: scheme.surfaceContainer, borderRadius: BorderRadius.circular(Radii.full)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            tooltip: l10n.decrease,
+            onPressed: enabled ? () => onChanged(value - 1 < 0 ? 0 : value - 1) : null,
+            icon: const Icon(Icons.remove_rounded),
+          ),
+          Semantics(
+            label: l10n.qtyFor(itemName),
+            value: _label,
+            button: enabled,
+            child: InkWell(
+              onTap: enabled ? () => _edit(context) : null,
+              borderRadius: BorderRadius.circular(Radii.small),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 48),
+                child: Center(child: Text(_label, style: theme.textTheme.titleMedium?.tabular)),
+              ),
             ),
           ),
-        ),
-        IconButton.outlined(
-          tooltip: l10n.increase,
-          onPressed: enabled ? () => onChanged(value + 1) : null,
-          icon: const Icon(Iconsax.add, size: 20),
-        ),
-      ],
+          IconButton(
+            tooltip: l10n.increase,
+            onPressed: enabled ? () => onChanged(value + 1) : null,
+            icon: const Icon(Icons.add_rounded),
+          ),
+        ],
+      ),
     );
   }
 }

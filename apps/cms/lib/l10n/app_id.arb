@@ -415,5 +415,7 @@
   "manualTitle": "Atau isi manual",
   "importFormat": "Hanya file .xlsx atau .csv.",
   "importEmpty": "File kosong.",
-  "importTooLarge": "File lebih dari 25 MB."
+  "importTooLarge": "File lebih dari 25 MB.",
+  "loginPanelLine": "Penjualan, stok, dan hutang toko dalam satu tempat.",
+  "loginPanelNote": "Transaksi dicatat dari aplikasi Kasir, termasuk saat offline."
 }

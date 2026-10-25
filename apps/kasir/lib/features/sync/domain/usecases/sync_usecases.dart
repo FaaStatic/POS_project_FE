@@ -48,7 +48,12 @@ class SyncPendingTransactions {
           await _sales.markFailed(sale.clientRef, 'no_result', retryable: true);
           failed++;
         } else if (r.accepted) {
-          await _sales.markSynced(sale.clientRef, transactionId: r.transactionId, invoice: r.invoice, stockConflict: r.stockConflict);
+          await _sales.markSynced(
+            sale.clientRef,
+            transactionId: r.transactionId,
+            invoice: r.invoice,
+            stockConflict: r.stockConflict,
+          );
           synced++;
           if (r.stockConflict) conflicts++;
         } else {

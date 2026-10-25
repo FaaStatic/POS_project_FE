@@ -95,8 +95,8 @@ class CheckoutTransaction {
     required this.session,
     DateTime Function()? clock,
     String Function()? newRef,
-  })  : _clock = clock ?? DateTime.now,
-        _newRef = newRef ?? const Uuid().v4;
+  }) : _clock = clock ?? DateTime.now,
+       _newRef = newRef ?? const Uuid().v4;
 
   final TransactionRepository transactions;
   final SalesLog sales;
@@ -115,28 +115,45 @@ class CheckoutTransaction {
     final debt = method == PaymentMethod.debt;
     final lines = [
       for (final i in draft.items)
-        CheckoutLine(productId: i.productId, qty: i.qty, unitPrice: i.price(debt: debt), destination: i.isDigital ? i.destination ?? '' : null),
+        CheckoutLine(
+          productId: i.productId,
+          qty: i.qty,
+          unitPrice: i.price(debt: debt),
+          destination: i.isDigital ? i.destination ?? '' : null,
+        ),
     ];
     final invalid = validateCheckout(method, draft.customerId, lines);
     if (invalid != null) return Err(ValidationFailure(invalid));
 
-    Sale sale(String number, {String? transactionId, int? total, bool conflict = false, SaleStatus status = SaleStatus.pending}) => Sale(
-          clientRef: _newRef(),
-          receiptNumber: number,
-          createdAt: _clock(),
-          method: method,
-          customerId: draft.customerId,
-          customerName: draft.customerName,
-          cashierName: user.username,
-          total: total ?? draft.total(debt: debt),
-          lines: [
-            for (final i in draft.items)
-              SaleLine(productId: i.productId, name: i.name, qty: i.qty, unitPrice: i.price(debt: debt), destination: i.isDigital ? i.destination : null),
-          ],
-          status: status,
-          transactionId: transactionId,
-          stockConflict: conflict,
-        );
+    Sale sale(
+      String number, {
+      String? transactionId,
+      int? total,
+      bool conflict = false,
+      SaleStatus status = SaleStatus.pending,
+    }) => Sale(
+      clientRef: _newRef(),
+      receiptNumber: number,
+      createdAt: _clock(),
+      method: method,
+      customerId: draft.customerId,
+      customerName: draft.customerName,
+      cashierName: user.username,
+      total: total ?? draft.total(debt: debt),
+      lines: [
+        for (final i in draft.items)
+          SaleLine(
+            productId: i.productId,
+            name: i.name,
+            qty: i.qty,
+            unitPrice: i.price(debt: debt),
+            destination: i.isDigital ? i.destination : null,
+          ),
+      ],
+      status: status,
+      transactionId: transactionId,
+      stockConflict: conflict,
+    );
 
     if (await network.isOnline()) {
       final result = await transactions.create(
@@ -144,8 +161,13 @@ class CheckoutTransaction {
       );
       switch (result) {
         case Ok(:final value):
-          final recorded = sale(value.invoice,
-              transactionId: value.transactionId, total: value.total, conflict: value.stockConflict, status: SaleStatus.synced);
+          final recorded = sale(
+            value.invoice,
+            transactionId: value.transactionId,
+            total: value.total,
+            conflict: value.stockConflict,
+            status: SaleStatus.synced,
+          );
           await _commit(draft, recorded);
           return Ok(CheckoutOutcome(recorded, offline: false));
         case Err(failure: NetworkFailure()):
@@ -169,7 +191,13 @@ class CheckoutTransaction {
 
 /// Creates a QRIS or VA charge for a tab and locks it until the charge settles.
 class StartCharge {
-  const StartCharge({required this.qris, required this.va, required this.drafts, required this.network, required this.session});
+  const StartCharge({
+    required this.qris,
+    required this.va,
+    required this.drafts,
+    required this.network,
+    required this.session,
+  });
   final ChargeQris qris;
   final ChargeVa va;
   final DraftRepository drafts;
@@ -207,8 +235,8 @@ class ResolveCharge {
     required this.session,
     DateTime Function()? clock,
     String Function()? newRef,
-  })  : _clock = clock ?? DateTime.now,
-        _newRef = newRef ?? const Uuid().v4;
+  }) : _clock = clock ?? DateTime.now,
+       _newRef = newRef ?? const Uuid().v4;
 
   final CheckPaymentStatus status;
   final TransactionRepository transactions;
@@ -251,7 +279,9 @@ class ResolveCharge {
       customerName: draft.customerName,
       cashierName: session()?.username ?? '',
       total: state.grossAmount,
-      lines: [for (final i in draft.items) SaleLine(productId: i.productId, name: i.name, qty: i.qty, unitPrice: i.unitPrice)],
+      lines: [
+        for (final i in draft.items) SaleLine(productId: i.productId, name: i.name, qty: i.qty, unitPrice: i.unitPrice),
+      ],
       status: SaleStatus.synced,
       transactionId: transactionId,
     );
@@ -276,6 +306,9 @@ class FindStockShortfalls {
     for (final i in physical) {
       wanted[i.productId] = (wanted[i.productId] ?? 0) + i.qty;
     }
-    return {for (final e in wanted.entries) if (e.value > (stock[e.key] ?? 0)) e.key: stock[e.key] ?? 0};
+    return {
+      for (final e in wanted.entries)
+        if (e.value > (stock[e.key] ?? 0)) e.key: stock[e.key] ?? 0,
+    };
   }
 }

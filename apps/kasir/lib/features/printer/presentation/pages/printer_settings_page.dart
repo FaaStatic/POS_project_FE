@@ -38,7 +38,9 @@ class PrinterSettingsPage extends StatelessWidget {
                     expand: true,
                     onPressed: () async {
                       final device = await FlutterBluetoothPrinter.selectDevice(context);
-                      if (device != null) await cubit.save(s.copyWith(printerAddress: device.address, printerName: device.name));
+                      if (device != null) {
+                        await cubit.save(s.copyWith(printerAddress: device.address, printerName: device.name));
+                      }
                     },
                   ),
                   const SizedBox(height: Space.xl),
@@ -68,17 +70,25 @@ class PrinterSettingsPage extends StatelessWidget {
                         ? null
                         : () async {
                             final messenger = ScaffoldMessenger.of(context);
-                            final result = await getIt<PrintReceipt>()(ReceiptDocument([
-                              ReceiptLine(s.storeName.isEmpty ? l10n.storeNameMissing : s.storeName, align: ReceiptAlign.center, bold: true),
-                              ReceiptLine(l10n.testPrint, align: ReceiptAlign.center),
-                            ]));
+                            final result = await getIt<PrintReceipt>()(
+                              ReceiptDocument([
+                                ReceiptLine(
+                                  s.storeName.isEmpty ? l10n.storeNameMissing : s.storeName,
+                                  align: ReceiptAlign.center,
+                                  bold: true,
+                                ),
+                                ReceiptLine(l10n.testPrint, align: ReceiptAlign.center),
+                              ]),
+                            );
                             if (!context.mounted) return;
-                            messenger.showSnackBar(SnackBar(
-                              content: Text(switch (result) {
-                                Ok() => l10n.printed,
-                                Err(:final failure) => failureText(context, failure),
-                              }),
-                            ));
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(switch (result) {
+                                  Ok() => l10n.printed,
+                                  Err(:final failure) => failureText(context, failure),
+                                }),
+                              ),
+                            );
                           },
                   ),
                 ],

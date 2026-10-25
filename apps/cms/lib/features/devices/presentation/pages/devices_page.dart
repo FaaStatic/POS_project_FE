@@ -60,8 +60,7 @@ class DevicesPage extends StatelessWidget {
         }
         return CmsPage(
           title: l10n.devicesTitle,
-          body: Column(children: [
-            FilterBar(children: [
+          body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
               SegmentedButton<DevicePlatform?>(
                 segments: [
                   ButtonSegment(value: null, label: Text(l10n.allPlatforms)),

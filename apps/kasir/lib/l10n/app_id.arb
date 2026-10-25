@@ -368,5 +368,14 @@
   "logoutAnyway": "Keluar",
   "paymentPushSuccess": "Pembayaran berhasil",
   "paymentPushFailed": "Pembayaran gagal",
-  "open": "Buka"
+  "open": "Buka",
+  "inCart": "{qty} di keranjang",
+  "@inCart": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "cartEmptyShort": "Keranjang kosong"
 }

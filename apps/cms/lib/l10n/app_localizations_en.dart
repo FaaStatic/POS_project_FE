@@ -851,4 +851,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importTooLarge => 'The file is larger than 25 MB.';
+
+  @override
+  String get loginPanelLine =>
+      'Sales, stock, and customer credit in one place.';
+
+  @override
+  String get loginPanelNote =>
+      'Sales are recorded from the Kasir app, even offline.';
 }

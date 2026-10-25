@@ -63,11 +63,15 @@ class SyncCubit extends Cubit<SyncState> {
     final result = await sync();
     emit(switch (result) {
       Ok(:final value) => state.copyWith(
-          syncing: false,
-          lastReport: quiet && value.synced == 0 ? state.lastReport : value,
-          reportId: quiet && value.synced == 0 ? state.reportId : state.reportId + 1,
-        ),
-      Err(:final failure) => state.copyWith(syncing: false, failure: quiet ? null : failure, reportId: quiet ? state.reportId : state.reportId + 1),
+        syncing: false,
+        lastReport: quiet && value.synced == 0 ? state.lastReport : value,
+        reportId: quiet && value.synced == 0 ? state.reportId : state.reportId + 1,
+      ),
+      Err(:final failure) => state.copyWith(
+        syncing: false,
+        failure: quiet ? null : failure,
+        reportId: quiet ? state.reportId : state.reportId + 1,
+      ),
     });
   }
 
