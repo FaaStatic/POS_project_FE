@@ -68,6 +68,14 @@ melos run cms
 
 Membuka Chrome di port 5173 (harus sama dengan `cms_origins` di backend). Masuk dengan akun superadmin; akun staff ditolak.
 
+Pakai Brave atau browser Chromium lain: arahkan `CHROME_EXECUTABLE` ke browser itu (sekali, di `~/.zshrc`). `flutter devices` lalu menampilkannya sebagai `chrome`.
+
+```bash
+export CHROME_EXECUTABLE="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
+```
+
+Kalau di Brave login hilang setelah reload, matikan Shields untuk `localhost`.
+
 ## 5. Jalankan Kasir (Android/iOS)
 
 ```bash
