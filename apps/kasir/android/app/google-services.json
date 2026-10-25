@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "111397374230",
+    "project_id": "pos-app-51cb3",
+    "storage_bucket": "pos-app-51cb3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:111397374230:android:d2ea28ca8703d8bc98a837",
+        "android_client_info": {
+          "package_name": "com.suhaili.cashier"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKzGwxs05u-4FqmtPPi0EnjH6pFyVOalc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

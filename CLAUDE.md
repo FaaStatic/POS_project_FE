@@ -12,7 +12,9 @@ dart run melos run build_runner       # freezed, json_serializable, drift
 dart run melos run analyze
 dart run melos run test
 dart run melos run coverage           # gagal kalau domain/data/presentation/bloc < 80%
-flutter run -t lib/main_dev.dart      # dari apps/cms atau apps/kasir
+dart run melos run setup              # gen_l10n + build_runner
+dart run melos run cms                # CMS di Chrome :5173
+dart run melos run kasir -- -d <id>   # kasir di device
 ```
 
 ## Keputusan yang menyimpang dari PRD atau menambahkannya
@@ -21,7 +23,8 @@ flutter run -t lib/main_dev.dart      # dari apps/cms atau apps/kasir
 - Inter dibundel sebagai font asset di `packages/ui/fonts` (OFL), bukan lewat `google_fonts`, supaya kasir tetap punya font saat offline.
 - Application ID: Android `com.suhaili.cashier`, iOS `com.suhaili.cashier-ios`. Tanpa flavor native; `main_dev.dart`/`main_prod.dart` memilih `.env.dev`/`.env.prod`.
 - `.env.*` berisi placeholder `API_BASE_URL`. Emulator Android butuh `http://10.0.2.2:<port>`.
-- Firebase belum dikonfigurasi: jalankan `flutterfire configure` (project `pos-app-51cb3`). Tanpa config, app tetap jalan dan push dimatikan.
+- Firebase dikonfigurasi lewat `flutterfire configure` (project `pos-app-51cb3`, `apps/kasir/lib/firebase_options.dart`). Kalau Firebase gagal start, app tetap jalan dan push dimatikan.
+- Jalankan app dari root: `melos run cms`, `melos run kasir -- -d <id>`; hot reload lewat `melos run kasir-reload` karena Melos tidak meneruskan stdin.
 - `Failure` memakai sealed class Dart 3, bukan freezed, karena tidak butuh codegen.
 - Test double HTTP (`FakeAdapter`) diekspor dari `package:core/testing.dart`; jangan di-import kode produksi.
 - Enum backend: `type_payment` 0 tunai, 1 hutang, 2 transfer (VA), 3 qris; `unit` 0 pcs, 1 gram, 2 kg, 3 liter, 4 kardus, 5 ikat; `product_type` 0 fisik, 1 digital.

@@ -5,8 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
-/// FCM wrapper. When Firebase is not configured (no google-services.json /
-/// GoogleService-Info.plist yet) every call is a no-op and [available] is false.
+/// FCM wrapper. If Firebase fails to start, every call is a no-op and
+/// [available] is false, so the cashier keeps working without push.
 class PushService {
   PushService(this._register, this._devices, this._store);
 
@@ -27,12 +27,12 @@ class PushService {
 
   String? get token => _token;
 
-  Future<void> init() async {
+  Future<void> init(FirebaseOptions options) async {
     try {
-      await Firebase.initializeApp();
+      await Firebase.initializeApp(options: options);
       available = true;
     } catch (e) {
-      debugPrint('Push disabled: Firebase is not configured ($e)');
+      debugPrint('Push disabled: Firebase failed to start ($e)');
       return;
     }
     FirebaseMessaging.onMessage.listen((m) => _emit(_paymentUpdates, m));

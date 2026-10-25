@@ -15,6 +15,41 @@ dev_dependencies:
 
 melos:
   scripts:
+    setup:
+      description: Generate localizations and code (freezed, json, drift). Run after pub get.
+      steps:
+        - gen_l10n
+        - build_runner
+    cms:
+      description: Run the CMS in Chrome on port 5173 (dev). Extra flutter args go after "--".
+      run: cd apps/cms && flutter run -d chrome --web-port 5173 --pid-file "$MELOS_ROOT_PATH/.dart_tool/cms.pid" -t lib/main_dev.dart
+    kasir:
+      description: Run the kasir app (dev). Pick a device with "-- -d <device-id>".
+      run: cd apps/kasir && flutter run --pid-file "$MELOS_ROOT_PATH/.dart_tool/kasir.pid" -t lib/main_dev.dart
+    cms-reload:
+      description: Hot reload the running CMS (from a second terminal).
+      run: kill -USR1 "$(cat "$MELOS_ROOT_PATH/.dart_tool/cms.pid" 2>/dev/null)" 2>/dev/null || echo "CMS is not running. Start it with melos run cms"
+    cms-restart:
+      description: Hot restart the running CMS.
+      run: kill -USR2 "$(cat "$MELOS_ROOT_PATH/.dart_tool/cms.pid" 2>/dev/null)" 2>/dev/null || echo "CMS is not running. Start it with melos run cms"
+    kasir-reload:
+      description: Hot reload the running kasir app (from a second terminal).
+      run: kill -USR1 "$(cat "$MELOS_ROOT_PATH/.dart_tool/kasir.pid" 2>/dev/null)" 2>/dev/null || echo "Kasir is not running. Start it with melos run kasir"
+    kasir-restart:
+      description: Hot restart the running kasir app.
+      run: kill -USR2 "$(cat "$MELOS_ROOT_PATH/.dart_tool/kasir.pid" 2>/dev/null)" 2>/dev/null || echo "Kasir is not running. Start it with melos run kasir"
+    build-cms:
+      description: Release web build of the CMS (prod env) into apps/cms/build/web.
+      run: cd apps/cms && flutter build web -t lib/main_prod.dart
+    build-apk:
+      description: Release APK of the kasir app (prod env).
+      run: cd apps/kasir && flutter build apk -t lib/main_prod.dart
+    build-ipa:
+      description: Release IPA of the kasir app (prod env, needs Apple signing).
+      run: cd apps/kasir && flutter build ipa -t lib/main_prod.dart
+    integration:
+      description: Kasir integration tests on a device. Pick it with "-- -d <device-id>".
+      run: cd apps/kasir && flutter test integration_test
     analyze:
       run: dart run melos exec -c 1 -- flutter analyze --no-fatal-infos
       description: Static analysis for every package.

@@ -10,6 +10,7 @@ import 'app/app.dart';
 import 'app/di.dart';
 import 'background.dart';
 import 'features/push/data/push_service.dart';
+import 'firebase_options.dart';
 
 Future<void> bootstrap(String envFile) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +20,7 @@ Future<void> bootstrap(String envFile) async {
   final store = MmkvStore();
   await store.setString(envFileKey, envFile);
   setupDependencies(config: AppConfig.fromEnv(dotenv.env), store: store);
-  await getIt<PushService>().init();
+  await getIt<PushService>().init(DefaultFirebaseOptions.currentPlatform);
   await Workmanager().initialize(callbackDispatcher);
   runApp(const KasirApp());
 }
