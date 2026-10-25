@@ -33,3 +33,41 @@ class CmsHarness {
     await tester.pumpAndSettle();
   }
 }
+
+Map<String, dynamic> dashboardJson({int conflicts = 0}) => {
+      'date_start': '2026-09-26',
+      'date_end': '2026-10-25',
+      'total_transactions': 120,
+      'revenue': 2500000,
+      'gross_profit': 400000,
+      'debt': {'outstanding': 150000, 'new': 50000, 'paid': 20000},
+      'devices_online': [
+        {'platform': 'android', 'count': 2},
+      ],
+      'open_stock_conflicts': conflicts,
+      'daily': [
+        {'date': '2026-10-24', 'transactions': 5, 'revenue': 100000, 'gross_profit': 15000},
+        {'date': '2026-10-25', 'transactions': 7, 'revenue': 140000, 'gross_profit': 21000},
+      ],
+      'top_products': [
+        {'product_name': 'Indomie Goreng', 'qty': 40, 'total': 140000},
+      ],
+      'payment_methods': [
+        {'method': 'tunai', 'count': 100, 'total': 2000000},
+        {'method': 'qris', 'count': 20, 'total': 500000},
+      ],
+    };
+
+/// Dashboard, needs-action debts, and payments with nothing to follow up by default.
+void serveDashboard(FakeAdapter adapter, {int conflicts = 0, bool oldDebt = false, bool failedPayment = false}) => adapter
+  ..on('GET', ApiPaths.dashboard, (_) => FakeReply(200, envelope(dashboardJson(conflicts: conflicts))))
+  ..on('GET', ApiPaths.debts, (_) => FakeReply(200, envelope({
+        'transaction_list': [
+          if (oldDebt) {'debt_id': 'd1', 'status': 'Belum Lunas', 'customer_id': 'k1', 'name_customer': 'Bu Sri', 'total_debt': 8000, 'remaining_debt': 5000, 'date_debt': '2026-08-01'},
+        ],
+      })))
+  ..on('GET', ApiPaths.payments, (o) => FakeReply(200, envelope({
+        'payments': [
+          if (failedPayment && o.queryParameters['status'] == 'failed') {'id': 'x', 'order_id': 'ORD-9', 'method': 'qris', 'status': 'failed', 'gross_amount': 1000},
+        ],
+      })));

@@ -14,7 +14,10 @@ import '../../../../l10n/app_localizations.dart';
 import '../bloc/customers_cubit.dart';
 
 class CustomersPage extends StatelessWidget {
-  const CustomersPage({super.key});
+  const CustomersPage({super.key, this.openAdd = false});
+
+  /// Set by the dashboard quick action.
+  final bool openAdd;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +26,7 @@ class CustomersPage extends StatelessWidget {
       create: (_) => getIt<CustomersCubit>()..load(),
       child: Builder(builder: (context) {
         final cubit = context.read<CustomersCubit>();
+        if (openAdd) _openOnce(context, () => openCustomerForm(context, cubit));
         final state = context.watch<CustomersCubit>().state;
         return CmsPage(
           title: l10n.customersTitle,
@@ -165,4 +169,16 @@ class _CustomerFormState extends State<_CustomerForm> {
       ),
     );
   }
+}
+
+final _opened = Expando<bool>();
+
+/// Opens the add form once per page instance after the first frame.
+void _openOnce(BuildContext context, VoidCallback open) {
+  final element = context as Element;
+  if (_opened[element] == true) return;
+  _opened[element] = true;
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (context.mounted) open();
+  });
 }

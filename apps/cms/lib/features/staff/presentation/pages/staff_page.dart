@@ -13,7 +13,10 @@ import '../../../../l10n/app_localizations.dart';
 import '../bloc/staff_cubit.dart';
 
 class StaffPage extends StatelessWidget {
-  const StaffPage({super.key});
+  const StaffPage({super.key, this.openAdd = false});
+
+  /// Set by the dashboard quick action.
+  final bool openAdd;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +25,7 @@ class StaffPage extends StatelessWidget {
       create: (_) => getIt<StaffCubit>()..load(),
       child: Builder(builder: (context) {
         final cubit = context.read<StaffCubit>();
+        if (openAdd) _openOnce(context, () => _add(context));
         final state = context.watch<StaffCubit>().state;
         return CmsPage(
           title: l10n.staffTitle,
@@ -189,3 +193,15 @@ class _CredentialsFormState extends State<_CredentialsForm> {
   }
 }
 
+
+final _opened = Expando<bool>();
+
+/// Opens the add form once per page instance after the first frame.
+void _openOnce(BuildContext context, VoidCallback open) {
+  final element = context as Element;
+  if (_opened[element] == true) return;
+  _opened[element] = true;
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (context.mounted) open();
+  });
+}

@@ -11,6 +11,7 @@ class CmsDestination {
 
 /// Order matches the StatefulShellRoute branches in router.dart.
 final cmsDestinations = <CmsDestination>[
+  CmsDestination((l) => l.navDashboard, Iconsax.home_2),
   CmsDestination((l) => l.navTransactions, Iconsax.receipt_2),
   CmsDestination((l) => l.navPayments, Iconsax.card_pos),
   CmsDestination((l) => l.navDebts, Iconsax.wallet_money),

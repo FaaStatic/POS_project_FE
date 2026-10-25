@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../features/auth/presentation/bloc/auth_cubit.dart';
 import '../features/categories/presentation/bloc/categories_cubit.dart';
 import '../features/customers/presentation/bloc/customers_cubit.dart';
+import '../features/dashboard/presentation/bloc/dashboard_cubit.dart';
 import '../features/debts/presentation/bloc/debts_cubit.dart';
 import '../features/devices/presentation/bloc/devices_cubit.dart';
 import '../features/reports/presentation/bloc/reports_cubit.dart';
@@ -52,6 +53,7 @@ void setupDependencies({
     ..registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(PaymentRemoteDatasource(getIt())))
     ..registerLazySingleton<DebtRepository>(() => DebtRepositoryImpl(DebtRemoteDatasource(getIt())))
     ..registerLazySingleton<ReportRepository>(() => ReportRepositoryImpl(getIt()))
+    ..registerLazySingleton<DashboardRepository>(() => DashboardRepositoryImpl(getIt()))
     ..registerFactory(() => Login(getIt()))
     ..registerFactory(() => RestoreSession(getIt()))
     ..registerFactory(() => Logout(getIt()))
@@ -109,5 +111,7 @@ void setupDependencies({
     ..registerFactory(() => PayDebt(getIt()))
     ..registerFactory(() => AddManualDebt(getIt()))
     ..registerFactory(() => DebtsCubit(getIt(), getIt(), getIt(), getIt(), getIt()))
-    ..registerFactory(() => ReportsCubit(getIt(), getIt()));
+    ..registerFactory(() => ReportsCubit(getIt(), getIt()))
+    ..registerFactory(() => GetDashboard(getIt()))
+    ..registerFactory(() => DashboardCubit(getIt(), getIt(), getIt()));
 }
