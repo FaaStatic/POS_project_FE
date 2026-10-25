@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -11,30 +12,85 @@ import '../bloc/checkout_bloc.dart';
 import 'charge_view.dart';
 import 'customer_picker.dart';
 
-/// Cart of the active tab: customer, lines, method, and the Bayar button kept
-/// at the bottom, apart from the product list.
-class CartPanel extends StatelessWidget {
+/// Cart of the active tab in two steps: items, then payment. Bayar stays at the
+/// bottom, apart from the product list.
+class CartPanel extends StatefulWidget {
   const CartPanel({super.key, this.scrollController});
 
   final ScrollController? scrollController;
+
+  @override
+  State<CartPanel> createState() => _CartPanelState();
+}
+
+class _CartPanelState extends State<CartPanel> {
+  bool _paying = false;
+  int? _draftId;
 
   @override
   Widget build(BuildContext context) {
     final state = context.watch<CheckoutBloc>().state;
     final draft = state.active;
     if (draft == null) return const LoadingView();
+    // Switching tabs starts that tab at its items again.
+    if (_draftId != draft.id) {
+      _draftId = draft.id;
+      _paying = false;
+    }
     return switch (draft.status) {
       DraftStatus.awaitingPayment => ChargeView(draft: draft),
       DraftStatus.paid => _PaidView(draft: draft),
-      DraftStatus.open => _OpenCart(draft: draft, state: state, scrollController: scrollController),
+      DraftStatus.open when _paying && !draft.isEmpty => _PaymentStep(
+        draft: draft,
+        state: state,
+        scrollController: widget.scrollController,
+        onBack: () => setState(() => _paying = false),
+      ),
+      DraftStatus.open => _CartStep(
+        draft: draft,
+        state: state,
+        scrollController: widget.scrollController,
+        onNext: () => setState(() => _paying = true),
+      ),
     };
   }
 }
 
-class _OpenCart extends StatelessWidget {
-  const _OpenCart({required this.draft, required this.state, this.scrollController});
+class _StepHeader extends StatelessWidget {
+  const _StepHeader({required this.title, required this.subtitle, this.leading, this.trailing});
+  final String title;
+  final String subtitle;
+  final Widget? leading;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(Space.sm, Space.sm, Space.sm, Space.sm),
+      child: Row(
+        children: [
+          SizedBox(width: TapSize.min, child: leading),
+          Expanded(
+            child: Column(
+              children: [
+                Text(title, style: theme.textTheme.titleLarge, textAlign: TextAlign.center),
+                Text(subtitle, style: theme.textTheme.bodySmall, textAlign: TextAlign.center),
+              ],
+            ),
+          ),
+          SizedBox(width: TapSize.min, child: trailing),
+        ],
+      ),
+    );
+  }
+}
+
+class _CartStep extends StatelessWidget {
+  const _CartStep({required this.draft, required this.state, required this.onNext, this.scrollController});
   final Draft draft;
   final CheckoutState state;
+  final VoidCallback onNext;
   final ScrollController? scrollController;
 
   Future<void> _close(BuildContext context) async {
@@ -58,32 +114,29 @@ class _OpenCart extends StatelessWidget {
     final ui = UiLocalizations.of(context);
     final theme = Theme.of(context);
     final debt = state.method == PaymentMethod.debt;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        _StepHeader(
+          title: ui.tabLabel(draft.number),
+          subtitle: l10n.itemsCount(qty(context, draft.itemCount)),
+          trailing: IconButton(
+            tooltip: l10n.closeTab,
+            onPressed: () => _close(context),
+            style: IconButton.styleFrom(
+              foregroundColor: theme.colorScheme.error,
+              backgroundColor: StatusColors.of(context).dangerContainer,
+            ),
+            icon: const Icon(Iconsax.trash, size: 20),
+          ),
+        ),
         Expanded(
-          child: CustomScrollView(
+          child: ListView(
             controller: scrollController,
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.sm, 0),
-                  child: Wrap(
-                    alignment: WrapAlignment.spaceBetween,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text(ui.tabLabel(draft.number), style: theme.textTheme.titleMedium),
-                      TextButton.icon(
-                        onPressed: () => _close(context),
-                        icon: const Icon(Iconsax.trash, size: 20),
-                        label: Text(l10n.closeTab),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
+            padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.lg, Space.lg),
+            children: [
+              Card(
+                clipBehavior: Clip.antiAlias,
                 child: ListTile(
                   leading: const Icon(Iconsax.user),
                   title: Text(draft.customerName ?? l10n.chooseCustomer),
@@ -99,29 +152,42 @@ class _OpenCart extends StatelessWidget {
                   },
                 ),
               ),
-              const SliverToBoxAdapter(child: Divider()),
+              const SizedBox(height: Space.md),
               if (draft.isEmpty)
-                SliverToBoxAdapter(
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: Space.xxl),
                   child: EmptyState(icon: Iconsax.shopping_cart, message: l10n.cartEmpty),
                 )
               else
-                SliverList.separated(
-                  itemCount: draft.items.length,
-                  separatorBuilder: (_, _) => const Divider(indent: Space.lg),
-                  itemBuilder: (context, i) => _CartLine(
-                    key: ValueKey(draft.items[i].id),
-                    item: draft.items[i],
+                for (final item in draft.items) ...[
+                  _CartLine(
+                    key: ValueKey(item.id),
+                    item: item,
                     debt: debt,
-                    stockLeft: state.shortfalls[draft.items[i].productId],
+                    stockLeft: state.shortfalls[item.productId],
                   ),
-                ),
-              SliverToBoxAdapter(
-                child: _PayOptions(draft: draft, state: state),
-              ),
+                  const SizedBox(height: Space.sm),
+                ],
             ],
           ),
         ),
-        _PayButton(draft: draft, state: state),
+        _BottomBar(
+          children: [
+            _SummaryRow(
+              label: l10n.total,
+              value: rupiah(context, draft.total(debt: debt)),
+              strong: true,
+            ),
+            const SizedBox(height: Space.md),
+            AppButton(
+              label: l10n.toPayment,
+              icon: Iconsax.card,
+              large: true,
+              expand: true,
+              onPressed: draft.isEmpty ? null : onNext,
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -140,67 +206,79 @@ class _CartLine extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final bloc = context.read<CheckoutBloc>();
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: Text(item.name, style: theme.textTheme.titleSmall)),
-              Text(rupiah(context, item.subtotal(debt: debt)), style: theme.textTheme.titleSmall?.tabular),
-            ],
-          ),
-          Text(
-            '${rupiah(context, item.price(debt: debt))} / ${ProductUnit.values[item.unit.clamp(0, ProductUnit.values.length - 1)].name}',
-            style: theme.textTheme.bodySmall?.tabular,
-          ),
-          if (item.isDigital)
-            Padding(
-              padding: const EdgeInsets.only(top: Space.sm),
-              child: AppTextField(
-                key: ValueKey('dest-${item.id}'),
-                label: l10n.destination,
-                initialValue: item.destination,
-                keyboardType: TextInputType.phone,
-                errorText: item.missingDestination ? l10n.destinationRequired : null,
-                onChanged: (v) => bloc.add(DestinationChanged(item.id, v)),
-              ),
-            ),
-          if (stockLeft != null)
-            Padding(
-              padding: const EdgeInsets.only(top: Space.xs),
-              child: Row(
-                children: [
-                  Icon(Iconsax.warning_2, size: 18, color: StatusColors.of(context).warning),
-                  const SizedBox(width: Space.xs),
-                  Expanded(
-                    child: Text(
-                      l10n.stockShort(qty(context, stockLeft!)),
-                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface),
-                    ),
+    final unit = ProductUnit.values[item.unit.clamp(0, ProductUnit.values.length - 1)].name;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(Space.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InitialAvatar(name: item.name, size: 44),
+                const SizedBox(width: Space.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(item.name, style: theme.textTheme.titleSmall),
+                      Text(
+                        '${qty(context, item.qty)} × ${rupiah(context, item.price(debt: debt))} / $unit',
+                        style: theme.textTheme.bodySmall?.tabular,
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                Text(rupiah(context, item.subtotal(debt: debt)), style: theme.textTheme.titleSmall?.tabular),
+              ],
             ),
-          const SizedBox(height: Space.xs),
-          Row(
-            children: [
-              QtyStepper(
-                value: item.qty,
-                itemName: item.name,
-                allowFraction:
-                    item.unit == ProductUnit.kg.index ||
-                    item.unit == ProductUnit.liter.index ||
-                    item.unit == ProductUnit.gram.index,
-                onChanged: (q) => bloc.add(QtyChanged(item.id, q)),
+            if (item.isDigital)
+              Padding(
+                padding: const EdgeInsets.only(top: Space.sm),
+                child: AppTextField(
+                  key: ValueKey('dest-${item.id}'),
+                  label: l10n.destination,
+                  initialValue: item.destination,
+                  keyboardType: TextInputType.phone,
+                  errorText: item.missingDestination ? l10n.destinationRequired : null,
+                  onChanged: (v) => bloc.add(DestinationChanged(item.id, v)),
+                ),
               ),
-              const Spacer(),
-              TextButton(onPressed: () => bloc.add(ItemRemoved(item.id)), child: Text(l10n.remove)),
-            ],
-          ),
-        ],
+            if (stockLeft != null)
+              Padding(
+                padding: const EdgeInsets.only(top: Space.sm),
+                child: Row(
+                  children: [
+                    Icon(Iconsax.warning_2, size: 18, color: StatusColors.of(context).warning),
+                    const SizedBox(width: Space.xs),
+                    Expanded(
+                      child: Text(
+                        l10n.stockShort(qty(context, stockLeft!)),
+                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: Space.sm),
+            Row(
+              children: [
+                TextButton(onPressed: () => bloc.add(ItemRemoved(item.id)), child: Text(l10n.remove)),
+                const Spacer(),
+                QtyStepper(
+                  value: item.qty,
+                  itemName: item.name,
+                  allowFraction:
+                      item.unit == ProductUnit.kg.index ||
+                      item.unit == ProductUnit.liter.index ||
+                      item.unit == ProductUnit.gram.index,
+                  onChanged: (q) => bloc.add(QtyChanged(item.id, q)),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -209,119 +287,304 @@ class _CartLine extends StatelessWidget {
 String? _disabledReason(AppLocalizations l10n, CheckoutState state, Draft draft, PaymentMethod m) => switch (m) {
   PaymentMethod.qris || PaymentMethod.va when !state.online => l10n.needsInternet,
   PaymentMethod.qris || PaymentMethod.va when draft.hasDigital => l10n.digitalCashOnly,
+  PaymentMethod.debt when draft.customerId == null => l10n.debtNeedsCustomer,
   _ => null,
 };
 
-/// Method, VA bank, and total; scrolls with the cart.
-class _PayOptions extends StatelessWidget {
-  const _PayOptions({required this.draft, required this.state});
+class _PaymentStep extends StatefulWidget {
+  const _PaymentStep({required this.draft, required this.state, required this.onBack, this.scrollController});
   final Draft draft;
   final CheckoutState state;
+  final VoidCallback onBack;
+  final ScrollController? scrollController;
+
+  @override
+  State<_PaymentStep> createState() => _PaymentStepState();
+}
+
+class _PaymentStepState extends State<_PaymentStep> {
+  final _received = TextEditingController();
+
+  @override
+  void dispose() {
+    _received.dispose();
+    super.dispose();
+  }
+
+  /// "Uang pas" plus the next round notes a buyer is likely to hand over.
+  static List<int> _suggestions(int total) {
+    final out = <int>{total};
+    for (final step in [5000, 10000, 20000, 50000, 100000]) {
+      final up = ((total + step - 1) ~/ step) * step;
+      if (up > total) out.add(up);
+      if (out.length >= 4) break;
+    }
+    return out.toList()..sort();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final shell = ShellColors.of(context);
+    final status = StatusColors.of(context);
+    final draft = widget.draft;
+    final state = widget.state;
     final bloc = context.read<CheckoutBloc>();
     final total = draft.total(debt: state.method == PaymentMethod.debt);
     final reason = _disabledReason(l10n, state, draft, state.method);
+    final received = int.tryParse(_received.text) ?? 0;
+    final cash = state.method == PaymentMethod.cash;
+    final short = cash && received > 0 && received < total;
 
-    return Container(
-      margin: const EdgeInsets.only(top: Space.md),
-      padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.md),
-      color: theme.colorScheme.surfaceContainerLow,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(l10n.method, style: theme.textTheme.labelLarge),
-          const SizedBox(height: Space.sm),
-          Wrap(
-            spacing: Space.sm,
-            runSpacing: Space.sm,
+    final methods = [
+      (PaymentMethod.cash, Iconsax.money, l10n.cashHint),
+      (PaymentMethod.debt, Iconsax.note_text, l10n.debtHint),
+      (PaymentMethod.qris, Iconsax.scan_barcode, l10n.qrisHint),
+      (PaymentMethod.va, Iconsax.bank, l10n.vaHint2),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _StepHeader(
+          title: l10n.payment,
+          subtitle: UiLocalizations.of(context).tabLabel(draft.number),
+          leading: IconButton(tooltip: l10n.back, onPressed: widget.onBack, icon: const Icon(Icons.arrow_back_rounded)),
+        ),
+        Expanded(
+          child: ListView(
+            controller: widget.scrollController,
+            padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.lg, Space.lg),
             children: [
-              for (final m in PaymentMethod.values)
-                ChoiceChip(
-                  label: Text(methodLabel(l10n, m)),
-                  selected: state.method == m,
-                  onSelected: _disabledReason(l10n, state, draft, m) == null ? (_) => bloc.add(MethodChanged(m)) : null,
+              Container(
+                padding: const EdgeInsets.all(Space.xl),
+                decoration: BoxDecoration(color: shell.background, borderRadius: BorderRadius.circular(Radii.large)),
+                child: Column(
+                  children: [
+                    Text(l10n.totalAmount, style: theme.textTheme.bodyMedium?.copyWith(color: shell.muted)),
+                    const SizedBox(height: Space.xs),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        rupiah(context, total),
+                        style: theme.textTheme.displaySmall?.tabular.copyWith(color: shell.foreground),
+                      ),
+                    ),
+                    const SizedBox(height: Space.xs),
+                    Text(
+                      [l10n.itemsCount(qty(context, draft.itemCount)), ?draft.customerName].join(' · '),
+                      style: theme.textTheme.bodyMedium?.copyWith(color: shell.muted),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-            ],
-          ),
-          if (state.method == PaymentMethod.va && reason == null) ...[
-            const SizedBox(height: Space.md),
-            Text(l10n.chooseBank, style: theme.textTheme.labelLarge),
-            const SizedBox(height: Space.sm),
-            Wrap(
-              spacing: Space.sm,
-              children: [
-                for (final b in VaBank.values)
-                  ChoiceChip(
-                    label: Text(b.name.toUpperCase()),
-                    selected: state.vaBank == b,
-                    onSelected: (_) => bloc.add(VaBankChanged(b)),
-                  ),
+              ),
+              const SizedBox(height: Space.xl),
+              Text(l10n.method, style: theme.textTheme.titleSmall),
+              const SizedBox(height: Space.sm),
+              for (final (m, icon, hint) in methods) ...[
+                _MethodCard(
+                  icon: icon,
+                  title: methodLabel(l10n, m),
+                  subtitle: _disabledReason(l10n, state, draft, m) ?? hint,
+                  selected: state.method == m,
+                  enabled: _disabledReason(l10n, state, draft, m) == null,
+                  onTap: () => bloc.add(MethodChanged(m)),
+                ),
+                const SizedBox(height: Space.sm),
               ],
-            ),
-          ],
-          if (!state.online || draft.hasDigital) ...[
-            const SizedBox(height: Space.sm),
-            Text(
-              [
-                if (!state.online) '${l10n.qris}/${l10n.va}: ${l10n.needsInternet}',
-                if (draft.hasDigital && state.online) l10n.digitalCashOnly,
-              ].join(' · '),
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
-          if (state.method == PaymentMethod.debt && draft.customerId == null) ...[
-            const SizedBox(height: Space.sm),
-            Text(l10n.debtNeedsCustomer, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error)),
-          ],
-          const SizedBox(height: Space.md),
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.end,
-            children: [
-              Text(l10n.total, style: theme.textTheme.titleMedium),
-              Text(rupiah(context, total), style: theme.textTheme.headlineSmall?.tabular),
+              if (state.method == PaymentMethod.va && reason == null) ...[
+                const SizedBox(height: Space.sm),
+                Text(l10n.chooseBank, style: theme.textTheme.titleSmall),
+                const SizedBox(height: Space.sm),
+                Wrap(
+                  spacing: Space.sm,
+                  children: [
+                    for (final b in VaBank.values)
+                      ChoiceChip(
+                        label: Text(b.name.toUpperCase()),
+                        selected: state.vaBank == b,
+                        onSelected: (_) => bloc.add(VaBankChanged(b)),
+                      ),
+                  ],
+                ),
+              ],
+              if (cash) ...[
+                const SizedBox(height: Space.lg),
+                Text(l10n.cashReceived, style: theme.textTheme.titleSmall),
+                const SizedBox(height: Space.sm),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(Space.lg),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Wrap(
+                          spacing: Space.sm,
+                          runSpacing: Space.sm,
+                          children: [
+                            for (final v in _suggestions(total))
+                              ChoiceChip(
+                                label: Text(v == total ? l10n.exactAmount : rupiah(context, v)),
+                                selected: received == v,
+                                onSelected: (_) => setState(() => _received.text = '$v'),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: Space.md),
+                        AppTextField(
+                          label: l10n.cashReceived,
+                          controller: _received,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        if (received > 0) ...[
+                          const Divider(height: Space.xl),
+                          _SummaryRow(
+                            label: short ? l10n.shortBy(rupiah(context, total - received)) : l10n.change,
+                            value: short ? '' : rupiah(context, received - total),
+                            color: short ? status.danger : theme.colorScheme.primary,
+                            strong: true,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
-        ],
-      ),
+        ),
+        _BottomBar(
+          children: [
+            AppButton(
+              label: l10n.payAmount(rupiah(context, total)),
+              icon: Iconsax.tick_circle,
+              large: true,
+              expand: true,
+              loading: state.paying,
+              onPressed: reason != null || short ? null : () => bloc.add(PayRequested(bank: state.vaBank)),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
 
-/// Pinned at the bottom, apart from the product list (POS guidance in PRD §7).
-class _PayButton extends StatelessWidget {
-  const _PayButton({required this.draft, required this.state});
-  final Draft draft;
-  final CheckoutState state;
+class _MethodCard extends StatelessWidget {
+  const _MethodCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool selected;
+  final bool enabled;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final reason = _disabledReason(l10n, state, draft, state.method);
-    final total = draft.total(debt: state.method == PaymentMethod.debt);
-    return Material(
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.lg),
-          child: AppButton(
-            label: l10n.payAmount(rupiah(context, total)),
-            large: true,
-            expand: true,
-            loading: state.paying,
-            onPressed: draft.isEmpty || reason != null
-                ? null
-                : () => context.read<CheckoutBloc>().add(PayRequested(bank: state.vaBank)),
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final shell = ShellColors.of(context);
+    final fg = selected ? shell.foreground : (enabled ? scheme.onSurface : scheme.onSurfaceVariant);
+    final sub = selected ? shell.muted : scheme.onSurfaceVariant;
+    return Semantics(
+      selected: selected,
+      enabled: enabled,
+      child: Card(
+        color: selected ? shell.background : null,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: enabled ? onTap : null,
+          child: Padding(
+            padding: const EdgeInsets.all(Space.md),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: selected ? shell.raised : scheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(Radii.small + 4),
+                  ),
+                  child: Icon(icon, color: fg, size: 22),
+                ),
+                const SizedBox(width: Space.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: theme.textTheme.titleSmall?.copyWith(color: fg)),
+                      Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: sub)),
+                    ],
+                  ),
+                ),
+                if (selected) Icon(Icons.check_circle_rounded, color: shell.foreground),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+class _SummaryRow extends StatelessWidget {
+  const _SummaryRow({required this.label, required this.value, this.strong = false, this.color});
+  final String label;
+  final String value;
+  final bool strong;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.end,
+      children: [
+        Text(label, style: (strong ? theme.textTheme.titleMedium : theme.textTheme.bodyMedium)?.copyWith(color: color)),
+        Text(
+          value,
+          style: (strong ? theme.textTheme.headlineSmall : theme.textTheme.bodyLarge)?.tabular.copyWith(color: color),
+        ),
+      ],
+    );
+  }
+}
+
+class _BottomBar extends StatelessWidget {
+  const _BottomBar({required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
+    ),
+    child: SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
+        ),
+      ),
+    ),
+  );
 }
 
 class _PaidView extends StatelessWidget {

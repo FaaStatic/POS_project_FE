@@ -627,4 +627,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cartEmptyShort => 'Cart is empty';
+
+  @override
+  String get toPayment => 'Continue to payment';
+
+  @override
+  String get payment => 'Payment';
+
+  @override
+  String get totalAmount => 'Amount due';
+
+  @override
+  String itemsCount(String count) {
+    return '$count items';
+  }
+
+  @override
+  String get cashHint => 'Pay at the counter';
+
+  @override
+  String get debtHint => 'Recorded as customer credit';
+
+  @override
+  String get qrisHint => 'Buyer scans the QR code';
+
+  @override
+  String get vaHint2 => 'Transfer to a virtual account';
+
+  @override
+  String get cashReceived => 'Cash received';
+
+  @override
+  String get exactAmount => 'Exact amount';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String shortBy(String amount) {
+    return 'Short by $amount';
+  }
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String cashierLine(String name) {
+    return 'Cashier: $name';
+  }
+
+  @override
+  String get checkoutTitle => 'Checkout';
 }

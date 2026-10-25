@@ -176,5 +176,21 @@
   "paymentPushFailed": "Payment failed",
   "open": "Open",
   "inCart": "{qty} in cart",
-  "cartEmptyShort": "Cart is empty"
+  "cartEmptyShort": "Cart is empty",
+  "toPayment": "Continue to payment",
+  "payment": "Payment",
+  "totalAmount": "Amount due",
+  "itemsCount": "{count} items",
+  "cashHint": "Pay at the counter",
+  "debtHint": "Recorded as customer credit",
+  "qrisHint": "Buyer scans the QR code",
+  "vaHint2": "Transfer to a virtual account",
+  "cashReceived": "Cash received",
+  "exactAmount": "Exact amount",
+  "change": "Change",
+  "shortBy": "Short by {amount}",
+  "back": "Back",
+  "subtotal": "Subtotal",
+  "cashierLine": "Cashier: {name}",
+  "checkoutTitle": "Checkout"
 }

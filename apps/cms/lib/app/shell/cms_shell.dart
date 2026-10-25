@@ -77,20 +77,21 @@ class _BrandNavTheme extends StatelessWidget {
     final theme = Theme.of(context);
     final shell = ShellColors.of(context);
     final label = theme.textTheme.labelLarge!;
-    Color fg(Set<WidgetState> s) => s.contains(WidgetState.selected) ? shell.onIndicator : shell.foreground;
+    Color fg(Set<WidgetState> s) => s.contains(WidgetState.selected) ? shell.foreground : shell.muted;
     return Theme(
       data: theme.copyWith(
         navigationDrawerTheme: theme.navigationDrawerTheme.copyWith(
           backgroundColor: shell.background,
-          indicatorColor: shell.indicator,
+          indicatorColor: shell.selected,
+          indicatorShape: const StadiumBorder(),
           labelTextStyle: WidgetStateProperty.resolveWith((s) => label.copyWith(color: fg(s))),
           iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(color: fg(s), size: 22)),
         ),
         navigationRailTheme: theme.navigationRailTheme.copyWith(
           backgroundColor: shell.background,
-          indicatorColor: shell.indicator,
-          selectedIconTheme: IconThemeData(color: shell.onIndicator),
-          unselectedIconTheme: IconThemeData(color: shell.foreground),
+          indicatorColor: shell.selected,
+          selectedIconTheme: IconThemeData(color: shell.foreground),
+          unselectedIconTheme: IconThemeData(color: shell.muted),
           selectedLabelTextStyle: theme.textTheme.labelMedium?.copyWith(color: shell.foreground, fontWeight: FontWeight.w700),
           unselectedLabelTextStyle: theme.textTheme.labelMedium?.copyWith(color: shell.muted),
         ),

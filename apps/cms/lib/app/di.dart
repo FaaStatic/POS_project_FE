@@ -114,5 +114,5 @@ void setupDependencies({
     ..registerFactory(() => DebtsCubit(getIt(), getIt(), getIt(), getIt(), getIt()))
     ..registerFactory(() => ReportsCubit(getIt(), getIt()))
     ..registerFactory(() => GetDashboard(getIt()))
-    ..registerFactory(() => DashboardCubit(getIt(), getIt(), getIt()));
+    ..registerFactory(() => DashboardCubit(getIt(), getIt(), getIt(), getIt()));
 }

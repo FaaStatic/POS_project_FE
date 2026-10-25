@@ -26,11 +26,11 @@ abstract final class BrandColors {
   static const indicatorOnForest = Color(0xFFC8F2D8);
   static const indicatorOnForestDark = Color(0xFF4ADE80);
 
-  /// Page canvas behind white surfaces.
-  static const mintCanvas = Color(0xFFF2F7F4);
-  static const canvasDark = Color(0xFF0A100D);
-  static const surfaceDark = Color(0xFF121A16);
-  static const surfaceDarkHigh = Color(0xFF1A241F);
+  /// Page canvas behind white cards (shadcn neutral "muted").
+  static const canvas = Zinc.c100;
+  static const canvasDark = Zinc.c950;
+  static const surfaceDark = Zinc.c900;
+  static const surfaceDarkHigh = Zinc.c800;
 
   static const greenLight = Color(0xFF15803D);
   static const greenDark = Color(0xFF22C55E);

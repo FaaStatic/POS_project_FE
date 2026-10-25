@@ -8,6 +8,8 @@ class DashboardState {
     required this.start,
     required this.end,
     this.summary,
+    this.previous,
+    this.recent = const [],
     this.oldestDebts = const [],
     this.failedPayments = 0,
     this.failure,
@@ -18,17 +20,33 @@ class DashboardState {
   final DateTime start;
   final DateTime end;
   final DashboardSummary? summary;
+
+  /// Same-length period right before [start], for the trend lines.
+  final DashboardSummary? previous;
+  final List<Transaction> recent;
   final List<Debt> oldestDebts;
   final int failedPayments;
   final Failure? failure;
 
   bool get nothingToDo => (summary?.openStockConflicts ?? 0) == 0 && oldestDebts.isEmpty && failedPayments == 0;
+
+  DashboardState loadingCopy({DashboardRange? range, DateTime? start, DateTime? end}) => DashboardState(
+    range: range ?? this.range,
+    start: start ?? this.start,
+    end: end ?? this.end,
+    summary: summary,
+    previous: previous,
+    recent: recent,
+    oldestDebts: oldestDebts,
+    failedPayments: failedPayments,
+  );
 }
 
-/// "Needs action" (conflicts, oldest unpaid credit, failed QRIS/VA today) loads
-/// alongside the summary for the selected range.
+/// Loads the summary for the range plus everything around it: the previous
+/// period (trends), recent transactions, and "needs action" (conflicts, oldest
+/// unpaid credit, failed QRIS/VA today).
 class DashboardCubit extends Cubit<DashboardState> {
-  DashboardCubit(this._summary, this._debts, this._payments, {DateTime Function()? clock})
+  DashboardCubit(this._summary, this._debts, this._payments, this._transactions, {DateTime Function()? clock})
     : _clock = clock ?? DateTime.now,
       super(() {
         final r = rangeDates(DashboardRange.last30, (clock ?? DateTime.now)());
@@ -38,6 +56,7 @@ class DashboardCubit extends Cubit<DashboardState> {
   final GetDashboard _summary;
   final GetDebts _debts;
   final GetPayments _payments;
+  final GetTransactions _transactions;
   final DateTime Function() _clock;
 
   Future<void> select(DashboardRange range, {DateTime? start, DateTime? end}) {
@@ -47,27 +66,23 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   Future<void> load({DashboardRange? range, DateTime? start, DateTime? end}) async {
     final s = start ?? state.start, e = end ?? state.end, r = range ?? state.range;
-    emit(
-      DashboardState(
-        loading: true,
-        range: r,
-        start: s,
-        end: e,
-        summary: state.summary,
-        oldestDebts: state.oldestDebts,
-        failedPayments: state.failedPayments,
-      ),
-    );
-    final today = DateTime(_clock().year, _clock().month, _clock().day);
-    final (summary, debts, failed, expired) = await (
+    emit(state.loadingCopy(range: r, start: s, end: e));
+    final now = _clock();
+    final today = DateTime(now.year, now.month, now.day);
+    final days = e.difference(s).inDays + 1;
+    final prevEnd = s.subtract(const Duration(days: 1));
+    final prevStart = prevEnd.subtract(Duration(days: days - 1));
+    final (summary, previous, recent, debts, failed, expired) = await (
       _summary(start: s, end: e),
+      _summary(start: prevStart, end: prevEnd),
+      _transactions(const TransactionQuery(limit: 5)),
       _debts(const DebtQuery(unpaidOnly: true, oldestFirst: true, limit: 5)),
       _payments(PaymentQuery(state: PaymentState.failed, dateStart: today, dateEnd: today, limit: 100)),
       _payments(PaymentQuery(state: PaymentState.expired, dateStart: today, dateEnd: today, limit: 100)),
     ).wait;
-    int count(Result<Paged<PaymentRecord>> r) => switch (r) {
-      Ok(:final value) => value.items.length,
-      Err() => 0,
+    T? ok<T>(Result<T> r) => switch (r) {
+      Ok(:final value) => value,
+      Err() => null,
     };
     emit(
       DashboardState(
@@ -75,20 +90,19 @@ class DashboardCubit extends Cubit<DashboardState> {
         range: r,
         start: s,
         end: e,
-        summary: switch (summary) {
-          Ok(:final value) => value,
-          Err() => null,
-        },
+        summary: ok(summary),
         failure: switch (summary) {
           Err(:final failure) => failure,
           Ok() => null,
         },
-        oldestDebts: switch (debts) {
-          Ok(:final value) => value.items,
-          Err() => const [],
-        },
-        failedPayments: count(failed) + count(expired),
+        previous: ok(previous),
+        recent: ok(recent)?.items ?? const [],
+        oldestDebts: ok(debts)?.items ?? const [],
+        failedPayments: (ok(failed)?.items.length ?? 0) + (ok(expired)?.items.length ?? 0),
       ),
     );
   }
 }
+
+/// Percent change from [before] to [now]; null when there is nothing to compare.
+double? percentChange(num now, num before) => before == 0 ? null : (now - before) * 100 / before;

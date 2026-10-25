@@ -627,4 +627,58 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get cartEmptyShort => 'Keranjang kosong';
+
+  @override
+  String get toPayment => 'Lanjut ke pembayaran';
+
+  @override
+  String get payment => 'Pembayaran';
+
+  @override
+  String get totalAmount => 'Total bayar';
+
+  @override
+  String itemsCount(String count) {
+    return '$count barang';
+  }
+
+  @override
+  String get cashHint => 'Bayar di kasir';
+
+  @override
+  String get debtHint => 'Dicatat sebagai hutang customer';
+
+  @override
+  String get qrisHint => 'Pembeli scan kode QR';
+
+  @override
+  String get vaHint2 => 'Transfer ke nomor virtual account';
+
+  @override
+  String get cashReceived => 'Uang diterima';
+
+  @override
+  String get exactAmount => 'Uang pas';
+
+  @override
+  String get change => 'Kembalian';
+
+  @override
+  String shortBy(String amount) {
+    return 'Kurang $amount';
+  }
+
+  @override
+  String get back => 'Kembali';
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String cashierLine(String name) {
+    return 'Kasir: $name';
+  }
+
+  @override
+  String get checkoutTitle => 'Transaksi';
 }

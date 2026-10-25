@@ -257,5 +257,15 @@
   "importEmpty": "The file is empty.",
   "importTooLarge": "The file is larger than 25 MB.",
   "loginPanelLine": "Sales, stock, and customer credit in one place.",
-  "loginPanelNote": "Sales are recorded from the Kasir app, even offline."
+  "loginPanelNote": "Sales are recorded from the Kasir app, even offline.",
+  "summaryTitle": "Summary",
+  "vsPrevious": "vs previous {range}",
+  "recentTransactions": "Recent transactions",
+  "seeAll": "See all",
+  "statusDone": "Completed",
+  "range": "Range",
+  "account": "Account",
+  "switchLanguage": "Change language",
+  "rangeTodayShort": "today",
+  "periodBefore": "period"
 }

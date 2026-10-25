@@ -377,5 +377,42 @@
       }
     }
   },
-  "cartEmptyShort": "Keranjang kosong"
+  "cartEmptyShort": "Keranjang kosong",
+  "toPayment": "Lanjut ke pembayaran",
+  "payment": "Pembayaran",
+  "totalAmount": "Total bayar",
+  "itemsCount": "{count} barang",
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "cashHint": "Bayar di kasir",
+  "debtHint": "Dicatat sebagai hutang customer",
+  "qrisHint": "Pembeli scan kode QR",
+  "vaHint2": "Transfer ke nomor virtual account",
+  "cashReceived": "Uang diterima",
+  "exactAmount": "Uang pas",
+  "change": "Kembalian",
+  "shortBy": "Kurang {amount}",
+  "@shortBy": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "back": "Kembali",
+  "subtotal": "Subtotal",
+  "cashierLine": "Kasir: {name}",
+  "@cashierLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "checkoutTitle": "Transaksi"
 }

@@ -417,5 +417,22 @@
   "importEmpty": "File kosong.",
   "importTooLarge": "File lebih dari 25 MB.",
   "loginPanelLine": "Penjualan, stok, dan hutang toko dalam satu tempat.",
-  "loginPanelNote": "Transaksi dicatat dari aplikasi Kasir, termasuk saat offline."
+  "loginPanelNote": "Transaksi dicatat dari aplikasi Kasir, termasuk saat offline.",
+  "summaryTitle": "Ringkasan",
+  "vsPrevious": "vs {range} sebelumnya",
+  "@vsPrevious": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "recentTransactions": "Transaksi terbaru",
+  "seeAll": "Lihat semua",
+  "statusDone": "Selesai",
+  "range": "Rentang",
+  "account": "Akun",
+  "switchLanguage": "Ganti bahasa",
+  "rangeTodayShort": "hari ini",
+  "periodBefore": "periode"
 }

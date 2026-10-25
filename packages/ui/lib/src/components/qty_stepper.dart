@@ -38,36 +38,37 @@ class QtyStepper extends StatelessWidget {
     final l10n = UiLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(color: scheme.surfaceContainer, borderRadius: BorderRadius.circular(Radii.full)),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            tooltip: l10n.decrease,
-            onPressed: enabled ? () => onChanged(value - 1 < 0 ? 0 : value - 1) : null,
-            icon: const Icon(Icons.remove_rounded),
-          ),
-          Semantics(
-            label: l10n.qtyFor(itemName),
-            value: _label,
-            button: enabled,
-            child: InkWell(
-              onTap: enabled ? () => _edit(context) : null,
-              borderRadius: BorderRadius.circular(Radii.small),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 40, minHeight: 48),
-                child: Center(child: Text(_label, style: theme.textTheme.titleMedium?.tabular)),
-              ),
+    final square = RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.small + 4));
+    // Muted minus, filled plus: the frequent action carries the weight.
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton.filledTonal(
+          tooltip: l10n.decrease,
+          style: IconButton.styleFrom(shape: square, backgroundColor: scheme.surfaceContainer, foregroundColor: scheme.onSurface),
+          onPressed: enabled ? () => onChanged(value - 1 < 0 ? 0 : value - 1) : null,
+          icon: const Icon(Icons.remove_rounded),
+        ),
+        Semantics(
+          label: l10n.qtyFor(itemName),
+          value: _label,
+          button: enabled,
+          child: InkWell(
+            onTap: enabled ? () => _edit(context) : null,
+            borderRadius: BorderRadius.circular(Radii.small),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 40, minHeight: 48),
+              child: Center(child: Text(_label, style: theme.textTheme.titleMedium?.tabular)),
             ),
           ),
-          IconButton(
-            tooltip: l10n.increase,
-            onPressed: enabled ? () => onChanged(value + 1) : null,
-            icon: const Icon(Icons.add_rounded),
-          ),
-        ],
-      ),
+        ),
+        IconButton.filled(
+          tooltip: l10n.increase,
+          style: IconButton.styleFrom(shape: square),
+          onPressed: enabled ? () => onChanged(value + 1) : null,
+          icon: const Icon(Icons.add_rounded),
+        ),
+      ],
     );
   }
 }

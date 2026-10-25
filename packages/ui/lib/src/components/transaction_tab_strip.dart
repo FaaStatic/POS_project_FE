@@ -17,8 +17,8 @@ class TransactionTab {
   final bool highlight;
 }
 
-/// Horizontally scrolling "Transaksi N" tabs. The active tab is scrolled into
-/// view; "Pembeli baru" and "Semua (N)" stay pinned on the right.
+/// "Transaksi N" tabs as a scrolling row of pills. The active tab is filled with
+/// the brand green and scrolled into view; "Pembeli baru" and "Semua (N)" follow.
 class TransactionTabStrip extends StatefulWidget {
   const TransactionTabStrip({
     super.key,
@@ -27,11 +27,7 @@ class TransactionTabStrip extends StatefulWidget {
     required this.onSelect,
     required this.onNew,
     required this.onShowAll,
-    this.onBrand = false,
   });
-
-  /// Drawn on the deep-green header instead of the page surface.
-  final bool onBrand;
 
   final List<TransactionTab> tabs;
   final int? activeId;
@@ -53,8 +49,7 @@ class _TransactionTabStripState extends State<TransactionTabStrip> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final ctx = _keys[widget.activeId]?.currentContext;
         if (ctx != null && ctx.mounted) {
-          Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 200), alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd);
-          Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 200), alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtStart);
+          Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 200), alignment: 0.5);
         }
       });
     }
@@ -63,61 +58,65 @@ class _TransactionTabStripState extends State<TransactionTabStrip> {
   @override
   Widget build(BuildContext context) {
     final l10n = UiLocalizations.of(context);
-    final scheme = Theme.of(context).colorScheme;
-    final shell = ShellColors.of(context);
-    final actionColor = widget.onBrand ? shell.foreground : null;
     _keys.removeWhere((id, _) => widget.tabs.every((t) => t.id != id));
-
+    final scheme = Theme.of(context).colorScheme;
     final tabs = SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: Space.lg),
       child: Row(
         children: [
-          for (final tab in widget.tabs)
+          for (final tab in widget.tabs) ...[
             _Tab(
               key: _keys.putIfAbsent(tab.id, GlobalKey.new),
               label: l10n.tabLabel(tab.number),
               subtitle: tab.subtitle,
               highlight: tab.highlight,
-              onBrand: widget.onBrand,
               active: tab.id == widget.activeId,
               onTap: () => widget.onSelect(tab.id),
             ),
+            if (tab != widget.tabs.last) const SizedBox(width: Space.sm),
+          ],
         ],
       ),
     );
+    // Always visible, never scrolled away with the tabs.
     final actions = [
-      TextButton.icon(
-        style: TextButton.styleFrom(foregroundColor: actionColor),
+      OutlinedButton.icon(
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.medium)),
+          minimumSize: const Size(TapSize.min, 56),
+          side: BorderSide(color: scheme.outlineVariant),
+          backgroundColor: scheme.surface,
+        ),
         onPressed: widget.onNew,
         icon: const Icon(Icons.add_rounded, size: 22),
         label: Text(l10n.newBuyer),
       ),
       TextButton(
-        style: TextButton.styleFrom(foregroundColor: actionColor),
+        style: TextButton.styleFrom(minimumSize: const Size(TapSize.min, 56)),
         onPressed: widget.onShowAll,
         child: Text(l10n.allTabs(widget.tabs.length)),
       ),
     ];
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: widget.onBrand ? shell.background : null,
-        border: widget.onBrand ? null : Border(bottom: BorderSide(color: scheme.outlineVariant)),
-      ),
-      child: LayoutBuilder(builder: (context, constraints) {
-        // Narrow windows put the actions on their own row so labels never shrink.
-        if (constraints.maxWidth < 520) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              tabs,
-              Align(alignment: Alignment.centerRight, child: Wrap(children: actions)),
-            ],
-          );
-        }
-        return Row(children: [Expanded(child: tabs), const SizedBox(width: Space.xs), ...actions, const SizedBox(width: Space.xs)]);
-      }),
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth < 520) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            tabs,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(Space.lg, Space.xs, Space.sm, 0),
+              child: Wrap(alignment: WrapAlignment.end, spacing: Space.xs, children: actions),
+            ),
+          ],
+        );
+      }
+      return Row(children: [
+        Expanded(child: tabs),
+        ...actions,
+        const SizedBox(width: Space.sm),
+      ]);
+    });
   }
 }
 
@@ -129,13 +128,11 @@ class _Tab extends StatelessWidget {
     required this.highlight,
     required this.active,
     required this.onTap,
-    this.onBrand = false,
   });
 
   final String label;
   final String subtitle;
   final bool highlight;
-  final bool onBrand;
   final bool active;
   final VoidCallback onTap;
 
@@ -144,30 +141,31 @@ class _Tab extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final shell = ShellColors.of(context);
-    final labelColor = onBrand ? shell.foreground : (active ? scheme.primary : scheme.onSurface);
-    final subColor = onBrand ? (highlight || active ? shell.indicator : shell.muted) : (highlight ? scheme.primary : scheme.onSurfaceVariant);
-    final underline = onBrand ? shell.indicator : scheme.primary;
+    final radius = BorderRadius.circular(Radii.medium);
+    final fg = active ? shell.foreground : scheme.onSurface;
+    final sub = active ? shell.indicator : (highlight ? scheme.primary : scheme.onSurfaceVariant);
     return Semantics(
       selected: active,
       button: true,
-      child: InkWell(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOutCubic,
-          constraints: const BoxConstraints(minHeight: TapSize.min + 8, minWidth: 120),
-          padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.sm),
-          decoration: BoxDecoration(
-            color: onBrand && active ? shell.raised : null,
-            border: Border(bottom: BorderSide(color: active ? underline : Colors.transparent, width: 3)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: theme.textTheme.labelLarge?.copyWith(color: labelColor)),
-              Text(subtitle, style: theme.textTheme.labelMedium?.tabular.copyWith(color: subColor)),
-            ],
+      child: Material(
+        color: active ? shell.background : scheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: radius, side: active ? BorderSide.none : BorderSide(color: scheme.outlineVariant)),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOutCubic,
+            constraints: const BoxConstraints(minHeight: 56, minWidth: 128),
+            padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.sm),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: theme.textTheme.labelLarge?.copyWith(color: fg)),
+                Text(subtitle, style: theme.textTheme.labelMedium?.tabular.copyWith(color: sub)),
+              ],
+            ),
           ),
         ),
       ),

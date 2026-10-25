@@ -181,10 +181,7 @@ class _ProductRow extends StatelessWidget {
       children: [
         Text(product.name, style: theme.textTheme.titleSmall),
         const SizedBox(height: 2),
-        Text(
-          rupiah(context, product.sellingPrice),
-          style: theme.textTheme.titleMedium?.tabular.copyWith(color: theme.colorScheme.primary),
-        ),
+        Text(rupiah(context, product.sellingPrice), style: theme.textTheme.titleMedium?.tabular),
         _StockLine(product: product, inCart: inCart),
       ],
     );
@@ -261,10 +258,7 @@ class _ProductTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Text(
-                rupiah(context, product.sellingPrice),
-                style: theme.textTheme.titleMedium?.tabular.copyWith(color: theme.colorScheme.primary),
-              ),
+              Text(rupiah(context, product.sellingPrice), style: theme.textTheme.titleMedium?.tabular),
               _StockLine(product: product, inCart: 0),
               const SizedBox(height: Space.sm),
               SizedBox(

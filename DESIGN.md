@@ -7,10 +7,10 @@ Mode: Operate. Both apps are task tools; reading numbers fast and consistency co
 | Role | Light | Dark | Use |
 |---|---|---|---|
 | Primary | `#15803D` | `#22C55E` (on-primary `#052E16`) | Main action per screen (Bayar, Simpan), active tab, success |
-| Shell (forest) | `#0F3D2E`, raised `#16523E` | `#0C241B` | CMS sidebar/rail/drawer, kasir header and tablet rail, cart pill, revenue card. White text 12:1 |
-| Indicator on forest | `#C8F2D8` (text `#0F3D2E`) | `#4ADE80` (text `#052E16`) | Selected nav item, active tab underline, cart pill button |
-| Canvas | `#F2F7F4` (mint) | `#0A100D` | Page background behind cards |
-| Surface | `#FFFFFF` | `#121A16` | Cards, sheets, inputs |
+| Shell (forest) | `#0F3D2E`, raised `#16523E` | `#0C241B` | CMS sidebar/rail/drawer, kasir floating nav and tablet rail, active transaction tab, payment total card. White text 12:1 |
+| Selected on forest | `#16523E` pill, white text | forest pill, white text | Selected item in the CMS sidebar and the kasir nav |
+| Canvas | zinc 100 | zinc 950 | Page background behind cards (shadcn neutral) |
+| Surface | `#FFFFFF` | zinc 900, raised zinc 800 | Cards, sheets, inputs |
 | Neutrals | zinc 50–950 | zinc 50–950 | Text, borders, containers |
 | Input border (`outline`) | zinc 500 | zinc 500 | 3:1 against the surface (WCAG 1.4.11) |
 | Divider (`outlineVariant`) | zinc 200 | zinc 800 | Decorative only |
@@ -27,9 +27,9 @@ Inter, bundled in `packages/ui/fonts` (works offline). Body 16, small 14, labels
 
 ## Shape and space
 
-Radius: 6 (inputs, badges), 12 (cards, dialogs, sheets, product avatars), full for chips, add buttons, the qty stepper, and people avatars. Spacing steps 4/8/12/16/24/32/48.
+Radius: 6 (inputs, badges), 10 (qty stepper buttons), 14 (cards, stat tiles), 20 (dashboard summary panel), full for chips, transaction tabs, add buttons, and people avatars. Spacing steps 4/8/12/16/24/32/48.
 
-Elevation: white cards on the mint canvas carry a soft green-tinted shadow and no border (one depth cue, not both). Grouped content lives in one card; cards are never nested. Lists of products, sales, and customers are cards with a gap instead of rows split by dividers.
+Elevation: shadcn style. White cards on the zinc canvas carry a 1px `outlineVariant` border plus shadow-sm (elevation 1, 8% black). Floating elements (kasir nav, cart bar) use elevation 6. Grouped content lives in one card; cards are never nested, except stat tiles, which are flat `surfaceContainerLow` blocks inside the summary panel. Lists of products, sales, and customers are cards with a gap instead of rows split by dividers.
 
 Avatars: initials (letters only, so "Aqua 600ml" is AQ) on the brand mint, or the product image when its URL loads. One color for every item; color is not used to tell categories apart.
 
@@ -40,8 +40,9 @@ Tap targets ≥ 48dp, primary actions 56dp (`AppButton(large: true)`). Every scr
 ## Layout
 
 - CMS: drawer < 600, navigation rail 600–1024, sidebar > 1024 (`CmsShell`), all on forest. Tables sit in one white card and become cards below 600, dropping secondary columns below 1024 (`ResponsiveTable`). Forms open as full pages on phones and dialogs elsewhere (`showFormSurface`). Page actions sit in a row under the title; on phones the row scrolls sideways. Login is a forest panel beside the form on wide windows.
-- Kasir: white navigation bar on narrow windows, forest rail on wide ones. The transaction tab strip is the forest header. Products are a list of cards on phones and a grid of cards (initials or image, price, Tambah) on tablets; a badge shows how many are already in the active tab. The cart is a floating forest pill on phones and a side panel from 720. The Bayar button is pinned at the bottom of the cart, apart from the product list. At large text the Tambah button moves under the product name.
-- Dashboard: needs action first, then revenue as the forest hero card with three smaller white cards, then the chart card, then detail cards in two columns. No up/down comparisons without a named period.
+- Kasir (reference: Dribbble 27265995, POS cashier for a small store, restyled to shadcn): floating forest navigation bar on narrow windows, forest rail on wide ones. Header shows the store name, the cashier, and the title "Transaksi". Transaction tabs are pills (active forest, inactive white bordered); "Pembeli baru" and "Semua" sit at the right from 520, below the pills otherwise. Products are a list of cards on phones and a grid on tablets; a badge shows how many are already in the active tab. The cart is a white bar above the nav on phones (opens a sheet) and a side panel from 720. Checkout has two steps: cart (customer, items, total, "Lanjut ke pembayaran") then payment (forest total card, method cards, VA bank chips, cash received with "Uang pas" and rounded-note chips, change or shortfall). Bayar stays disabled while cash is short.
+- CMS top bar: white with a bottom border, page title, language toggle (ID/EN), and an account avatar menu (name, Pengaturan, Keluar).
+- Dashboard (reference: Dribbble 27017971, POS billing/inventory dashboard): one "Ringkasan" panel with a range menu and four equal-height stat tiles (mint icon tile, label, value, trend vs the previous period of the same length), then the chart card beside "Perlu tindakan", then recent transactions beside the detail cards. On phones "Perlu tindakan" comes first. Trends are computed from real previous-period data; receivables have no trend. No up/down comparison without a named period.
 
 ## Interaction
 

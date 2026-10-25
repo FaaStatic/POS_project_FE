@@ -1645,6 +1645,66 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Transaksi dicatat dari aplikasi Kasir, termasuk saat offline.'**
   String get loginPanelNote;
+
+  /// No description provided for @summaryTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Ringkasan'**
+  String get summaryTitle;
+
+  /// No description provided for @vsPrevious.
+  ///
+  /// In id, this message translates to:
+  /// **'vs {range} sebelumnya'**
+  String vsPrevious(String range);
+
+  /// No description provided for @recentTransactions.
+  ///
+  /// In id, this message translates to:
+  /// **'Transaksi terbaru'**
+  String get recentTransactions;
+
+  /// No description provided for @seeAll.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat semua'**
+  String get seeAll;
+
+  /// No description provided for @statusDone.
+  ///
+  /// In id, this message translates to:
+  /// **'Selesai'**
+  String get statusDone;
+
+  /// No description provided for @range.
+  ///
+  /// In id, this message translates to:
+  /// **'Rentang'**
+  String get range;
+
+  /// No description provided for @account.
+  ///
+  /// In id, this message translates to:
+  /// **'Akun'**
+  String get account;
+
+  /// No description provided for @switchLanguage.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti bahasa'**
+  String get switchLanguage;
+
+  /// No description provided for @rangeTodayShort.
+  ///
+  /// In id, this message translates to:
+  /// **'hari ini'**
+  String get rangeTodayShort;
+
+  /// No description provided for @periodBefore.
+  ///
+  /// In id, this message translates to:
+  /// **'periode'**
+  String get periodBefore;
 }
 
 class _AppLocalizationsDelegate

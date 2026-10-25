@@ -1,6 +1,7 @@
 import 'package:core/mobile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 
 import '../helpers/app_harness.dart';
 import '../helpers/fixtures.dart';
@@ -37,6 +38,8 @@ void main() {
     await app.settle(tester);
     await tester.tap(find.text('Lihat keranjang'));
     await app.settle(tester);
+    await tester.tap(find.text('Lanjut ke pembayaran'));
+    await app.settle(tester);
     await tester.tap(find.textContaining('Bayar Rp'));
     await app.settle(tester);
     expect(find.textContaining('OFF-'), findsWidgets);
@@ -68,6 +71,8 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Tambah').at(1));
     await app.settle(tester);
     expect(find.text('Transaksi 2'), findsWidgets);
+    await tester.tap(find.text('Lanjut ke pembayaran'));
+    await app.settle(tester);
     await tester.tap(find.textContaining('Bayar Rp'));
     await app.settle(tester);
     await tester.tap(find.widgetWithText(FilledButton, 'Selesai'));
@@ -76,6 +81,32 @@ void main() {
     expect(find.text('Transaksi 2'), findsNothing);
     expect(find.text('Transaksi 1'), findsWidgets);
     expect(find.text('Aqua 600ml'), findsNWidgets(2));
+    await tester.runAsync(app.close);
+  });
+
+  testWidgets('cash payment shows the shortfall and blocks Bayar until enough is received', (tester) async {
+    final app = AppHarness(online: true)..serveBackend();
+    await app.tokens.writeRefreshToken('r0');
+    await app.pump(tester);
+    await tester.tap(find.widgetWithText(FilledButton, 'Tambah').first);
+    await app.settle(tester);
+    await tester.tap(find.text('Lihat keranjang'));
+    await app.settle(tester);
+    await tester.tap(find.text('Lanjut ke pembayaran'));
+    await app.settle(tester);
+
+    await tester.scrollUntilVisible(find.widgetWithText(AppTextField, 'Uang diterima'), 200, scrollable: find.byType(Scrollable).last);
+    final received = find.descendant(of: find.widgetWithText(AppTextField, 'Uang diterima'), matching: find.byType(TextField));
+    AppButton pay() => tester.widget<AppButton>(find.ancestor(of: find.textContaining('Bayar Rp'), matching: find.byType(AppButton)));
+    await tester.enterText(received, '1000');
+    await app.settle(tester);
+    expect(find.textContaining('Kurang'), findsOneWidget);
+    expect(pay().onPressed, isNull);
+
+    await tester.enterText(received, '10000');
+    await app.settle(tester);
+    expect(find.text('Kembalian'), findsOneWidget);
+    expect(pay().onPressed, isNotNull);
     await tester.runAsync(app.close);
   });
 

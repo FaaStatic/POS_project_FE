@@ -859,4 +859,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get loginPanelNote =>
       'Sales are recorded from the Kasir app, even offline.';
+
+  @override
+  String get summaryTitle => 'Summary';
+
+  @override
+  String vsPrevious(String range) {
+    return 'vs previous $range';
+  }
+
+  @override
+  String get recentTransactions => 'Recent transactions';
+
+  @override
+  String get seeAll => 'See all';
+
+  @override
+  String get statusDone => 'Completed';
+
+  @override
+  String get range => 'Range';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get switchLanguage => 'Change language';
+
+  @override
+  String get rangeTodayShort => 'today';
+
+  @override
+  String get periodBefore => 'period';
 }

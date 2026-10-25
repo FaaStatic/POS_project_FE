@@ -27,8 +27,8 @@ abstract final class AppTheme {
       onSurface: Zinc.c950,
       onSurfaceVariant: Zinc.c600,
       surfaceContainerLowest: Colors.white,
-      surfaceContainerLow: BrandColors.mintCanvas,
-      surfaceContainer: Color(0xFFEAF2ED),
+      surfaceContainerLow: Zinc.c50,
+      surfaceContainer: Zinc.c100,
       surfaceContainerHigh: Zinc.c100,
       surfaceContainerHighest: Zinc.c200,
       // Input borders need 3:1 against the surface (WCAG 1.4.11), dividers do not.
@@ -112,14 +112,14 @@ abstract final class AppTheme {
         centerTitle: false,
         titleTextStyle: text.headlineSmall,
       ),
-      // Elevation is the soft shadow alone; no border on top of it.
+      // shadcn card: hairline border plus shadow-sm.
       cardTheme: CardThemeData(
         color: scheme.surface,
         surfaceTintColor: Colors.transparent,
-        shadowColor: const Color(0x1A0F3D2E),
-        elevation: 2,
+        shadowColor: const Color(0x14000000),
+        elevation: 1,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: medium),
+        shape: RoundedRectangleBorder(borderRadius: medium, side: BorderSide(color: scheme.outlineVariant)),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(

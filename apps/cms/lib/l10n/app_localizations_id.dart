@@ -859,4 +859,36 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get loginPanelNote =>
       'Transaksi dicatat dari aplikasi Kasir, termasuk saat offline.';
+
+  @override
+  String get summaryTitle => 'Ringkasan';
+
+  @override
+  String vsPrevious(String range) {
+    return 'vs $range sebelumnya';
+  }
+
+  @override
+  String get recentTransactions => 'Transaksi terbaru';
+
+  @override
+  String get seeAll => 'Lihat semua';
+
+  @override
+  String get statusDone => 'Selesai';
+
+  @override
+  String get range => 'Rentang';
+
+  @override
+  String get account => 'Akun';
+
+  @override
+  String get switchLanguage => 'Ganti bahasa';
+
+  @override
+  String get rangeTodayShort => 'hari ini';
+
+  @override
+  String get periodBefore => 'periode';
 }

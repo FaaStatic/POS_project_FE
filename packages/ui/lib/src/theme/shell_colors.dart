@@ -13,6 +13,7 @@ class ShellColors extends ThemeExtension<ShellColors> {
     required this.indicator,
     required this.onIndicator,
     required this.canvas,
+    required this.selected,
   });
 
   final Color background;
@@ -25,6 +26,9 @@ class ShellColors extends ThemeExtension<ShellColors> {
   /// Page background behind cards.
   final Color canvas;
 
+  /// Selected navigation item on the green surface (white text on it).
+  final Color selected;
+
   static const light = ShellColors(
     background: BrandColors.forest,
     raised: BrandColors.forestRaised,
@@ -32,7 +36,8 @@ class ShellColors extends ThemeExtension<ShellColors> {
     muted: BrandColors.onForestMuted,
     indicator: BrandColors.indicatorOnForest,
     onIndicator: BrandColors.forest,
-    canvas: BrandColors.mintCanvas,
+    canvas: BrandColors.canvas,
+    selected: BrandColors.forestRaised,
   );
 
   static const dark = ShellColors(
@@ -43,6 +48,7 @@ class ShellColors extends ThemeExtension<ShellColors> {
     indicator: BrandColors.indicatorOnForestDark,
     onIndicator: BrandColors.onGreenDark,
     canvas: BrandColors.canvasDark,
+    selected: BrandColors.forest,
   );
 
   static ShellColors of(BuildContext context) => Theme.of(context).extension<ShellColors>()!;
@@ -56,6 +62,7 @@ class ShellColors extends ThemeExtension<ShellColors> {
     Color? indicator,
     Color? onIndicator,
     Color? canvas,
+    Color? selected,
   }) =>
       ShellColors(
         background: background ?? this.background,
@@ -65,6 +72,7 @@ class ShellColors extends ThemeExtension<ShellColors> {
         indicator: indicator ?? this.indicator,
         onIndicator: onIndicator ?? this.onIndicator,
         canvas: canvas ?? this.canvas,
+        selected: selected ?? this.selected,
       );
 
   @override
@@ -79,6 +87,7 @@ class ShellColors extends ThemeExtension<ShellColors> {
       indicator: l(indicator, other.indicator),
       onIndicator: l(onIndicator, other.onIndicator),
       canvas: l(canvas, other.canvas),
+      selected: l(selected, other.selected),
     );
   }
 }

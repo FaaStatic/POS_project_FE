@@ -1159,6 +1159,102 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Keranjang kosong'**
   String get cartEmptyShort;
+
+  /// No description provided for @toPayment.
+  ///
+  /// In id, this message translates to:
+  /// **'Lanjut ke pembayaran'**
+  String get toPayment;
+
+  /// No description provided for @payment.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran'**
+  String get payment;
+
+  /// No description provided for @totalAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Total bayar'**
+  String get totalAmount;
+
+  /// No description provided for @itemsCount.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} barang'**
+  String itemsCount(String count);
+
+  /// No description provided for @cashHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Bayar di kasir'**
+  String get cashHint;
+
+  /// No description provided for @debtHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Dicatat sebagai hutang customer'**
+  String get debtHint;
+
+  /// No description provided for @qrisHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembeli scan kode QR'**
+  String get qrisHint;
+
+  /// No description provided for @vaHint2.
+  ///
+  /// In id, this message translates to:
+  /// **'Transfer ke nomor virtual account'**
+  String get vaHint2;
+
+  /// No description provided for @cashReceived.
+  ///
+  /// In id, this message translates to:
+  /// **'Uang diterima'**
+  String get cashReceived;
+
+  /// No description provided for @exactAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Uang pas'**
+  String get exactAmount;
+
+  /// No description provided for @change.
+  ///
+  /// In id, this message translates to:
+  /// **'Kembalian'**
+  String get change;
+
+  /// No description provided for @shortBy.
+  ///
+  /// In id, this message translates to:
+  /// **'Kurang {amount}'**
+  String shortBy(String amount);
+
+  /// No description provided for @back.
+  ///
+  /// In id, this message translates to:
+  /// **'Kembali'**
+  String get back;
+
+  /// No description provided for @subtotal.
+  ///
+  /// In id, this message translates to:
+  /// **'Subtotal'**
+  String get subtotal;
+
+  /// No description provided for @cashierLine.
+  ///
+  /// In id, this message translates to:
+  /// **'Kasir: {name}'**
+  String cashierLine(String name);
+
+  /// No description provided for @checkoutTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Transaksi'**
+  String get checkoutTitle;
 }
 
 class _AppLocalizationsDelegate
