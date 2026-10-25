@@ -1,0 +1,19 @@
+{
+  "@@locale": "id",
+  "retry": "Coba lagi",
+  "loading": "Memuat",
+  "showPassword": "Tampilkan kata sandi",
+  "hidePassword": "Sembunyikan kata sandi",
+  "close": "Tutup",
+  "cancel": "Batal",
+  "search": "Cari",
+  "clearSearch": "Hapus pencarian",
+  "previousPage": "Sebelumnya",
+  "nextPage": "Berikutnya",
+  "offlineBanner": "Tidak ada koneksi internet",
+  "pendingCount": "{count, plural, =0{Semua transaksi terkirim} other{{count} transaksi belum terkirim}}",
+  "@pendingCount": {"placeholders": {"count": {"type": "int"}}},
+  "decrease": "Kurangi",
+  "increase": "Tambah",
+  "quantity": "Jumlah"
+}

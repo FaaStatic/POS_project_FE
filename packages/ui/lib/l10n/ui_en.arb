@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "retry": "Try again",
+  "loading": "Loading",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "close": "Close",
+  "cancel": "Cancel",
+  "search": "Search",
+  "clearSearch": "Clear search",
+  "previousPage": "Previous",
+  "nextPage": "Next",
+  "offlineBanner": "No internet connection",
+  "pendingCount": "{count, plural, =0{All transactions sent} =1{1 transaction not sent} other{{count} transactions not sent}}",
+  "@pendingCount": {"placeholders": {"count": {"type": "int"}}},
+  "decrease": "Decrease",
+  "increase": "Increase",
+  "quantity": "Quantity"
+}
