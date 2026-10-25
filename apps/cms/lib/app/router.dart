@@ -14,19 +14,28 @@ import '../features/devices/presentation/pages/devices_page.dart';
 import '../features/products/presentation/pages/bulk_products_page.dart';
 import '../features/products/presentation/pages/products_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
+import '../features/debts/presentation/pages/debts_page.dart';
+import '../features/payments/presentation/pages/payments_page.dart';
+import '../features/reports/presentation/pages/reports_page.dart';
 import '../features/staff/presentation/pages/staff_page.dart';
+import '../features/transactions/presentation/pages/transaction_detail_page.dart';
+import '../features/transactions/presentation/pages/transactions_page.dart';
 import 'shell/cms_shell.dart';
 
 abstract final class Routes {
   static const splash = '/splash';
   static const login = '/login';
+  static const transactions = '/transactions';
+  static const payments = '/payments';
+  static const debts = '/debts';
+  static const reports = '/reports';
   static const products = '/products';
   static const categories = '/categories';
   static const customers = '/customers';
   static const staff = '/staff';
   static const devices = '/devices';
   static const settings = '/settings';
-  static const home = products;
+  static const home = transactions;
 }
 
 GoRouter buildRouter(AuthCubit auth, {String? initialLocation}) => GoRouter(
@@ -52,6 +61,15 @@ GoRouter buildRouter(AuthCubit auth, {String? initialLocation}) => GoRouter(
           branches: [
             StatefulShellBranch(routes: [
               GoRoute(
+                path: Routes.transactions,
+                builder: (_, s) => TransactionsPage(conflictsOnly: s.uri.queryParameters['conflicts'] == '1'),
+                routes: [GoRoute(path: ':id', builder: (_, s) => TransactionDetailPage(transactionId: s.pathParameters['id']!))],
+              ),
+            ]),
+            StatefulShellBranch(routes: [GoRoute(path: Routes.payments, builder: (_, _) => const PaymentsPage())]),
+            StatefulShellBranch(routes: [GoRoute(path: Routes.debts, builder: (_, _) => const DebtsPage())]),
+            StatefulShellBranch(routes: [
+              GoRoute(
                 path: Routes.products,
                 builder: (_, s) => ProductsPage(openAdd: s.uri.queryParameters['add'] == '1'),
                 routes: [GoRoute(path: 'bulk', builder: (_, _) => const BulkProductsPage())],
@@ -67,6 +85,7 @@ GoRouter buildRouter(AuthCubit auth, {String? initialLocation}) => GoRouter(
             ]),
             StatefulShellBranch(routes: [GoRoute(path: Routes.staff, builder: (_, _) => const StaffPage())]),
             StatefulShellBranch(routes: [GoRoute(path: Routes.devices, builder: (_, _) => const DevicesPage())]),
+            StatefulShellBranch(routes: [GoRoute(path: Routes.reports, builder: (_, _) => const ReportsPage())]),
             StatefulShellBranch(routes: [
               GoRoute(path: Routes.settings, builder: (_, _) => const SettingsPage(account: AccountSection())),
             ]),

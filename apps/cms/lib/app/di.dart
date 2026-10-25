@@ -4,7 +4,10 @@ import 'package:get_it/get_it.dart';
 import '../features/auth/presentation/bloc/auth_cubit.dart';
 import '../features/categories/presentation/bloc/categories_cubit.dart';
 import '../features/customers/presentation/bloc/customers_cubit.dart';
+import '../features/debts/presentation/bloc/debts_cubit.dart';
 import '../features/devices/presentation/bloc/devices_cubit.dart';
+import '../features/reports/presentation/bloc/reports_cubit.dart';
+import '../features/transactions/presentation/bloc/transactions_cubit.dart';
 import '../features/products/presentation/bloc/bulk_products_cubit.dart';
 import '../features/products/presentation/bloc/products_cubit.dart';
 import '../features/settings/presentation/bloc/settings_cubit.dart';
@@ -46,6 +49,9 @@ void setupDependencies({
     ..registerLazySingleton<ProductRepository>(() => ProductRepositoryImpl(ProductRemoteDatasource(getIt())))
     ..registerLazySingleton<TransactionRepository>(() => TransactionRepositoryImpl(TransactionRemoteDatasource(getIt())))
     ..registerLazySingleton<DeviceRepository>(() => DeviceRepositoryImpl(getIt()))
+    ..registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(PaymentRemoteDatasource(getIt())))
+    ..registerLazySingleton<DebtRepository>(() => DebtRepositoryImpl(DebtRemoteDatasource(getIt())))
+    ..registerLazySingleton<ReportRepository>(() => ReportRepositoryImpl(getIt()))
     ..registerFactory(() => Login(getIt()))
     ..registerFactory(() => RestoreSession(getIt()))
     ..registerFactory(() => Logout(getIt()))
@@ -87,5 +93,21 @@ void setupDependencies({
     ..registerFactory(() => BulkProductsCubit(getIt()))
     ..registerFactory(() => GetDevices(getIt()))
     ..registerFactory(() => RevokeDevice(getIt()))
-    ..registerFactory(() => DevicesCubit(getIt(), getIt()));
+    ..registerFactory(() => DevicesCubit(getIt(), getIt()))
+    ..registerFactory(() => GetCurrentSession(getIt()))
+    ..registerFactory(() => GetTransactions(getIt()))
+    ..registerFactory(() => GetTransaction(getIt()))
+    ..registerFactory(() => CancelTransaction(getIt()))
+    ..registerFactory(() => MarkConflictReviewed(getIt()))
+    ..registerFactory(() => GetReceiptPdf(getIt()))
+    ..registerFactory(() => GetMonthlyReportPdf(getIt()))
+    ..registerFactory(() => DownloadReport(getIt()))
+    ..registerFactory(() => TransactionDetailCubit(getIt(), getIt(), getIt(), getIt(), getIt()))
+    ..registerFactory(() => GetPayments(getIt()))
+    ..registerFactory(() => CheckPaymentStatus(getIt()))
+    ..registerFactory(() => GetDebts(getIt()))
+    ..registerFactory(() => PayDebt(getIt()))
+    ..registerFactory(() => AddManualDebt(getIt()))
+    ..registerFactory(() => DebtsCubit(getIt(), getIt(), getIt(), getIt(), getIt()))
+    ..registerFactory(() => ReportsCubit(getIt(), getIt()));
 }

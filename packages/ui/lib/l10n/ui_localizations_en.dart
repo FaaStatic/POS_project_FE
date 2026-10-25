@@ -89,4 +89,10 @@ class UiLocalizationsEn extends UiLocalizations {
 
   @override
   String get moreActions => 'More actions';
+
+  @override
+  String get pickDates => 'Pick dates';
+
+  @override
+  String get clearDates => 'Clear dates';
 }

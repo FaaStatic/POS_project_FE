@@ -49,5 +49,7 @@
   },
   "loadMore": "Muat lebih banyak",
   "actions": "Aksi",
-  "moreActions": "Aksi lainnya"
+  "moreActions": "Aksi lainnya",
+  "pickDates": "Pilih tanggal",
+  "clearDates": "Hapus tanggal"
 }

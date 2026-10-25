@@ -37,8 +37,7 @@ void main() {
     adapter
       ..on('POST', ApiPaths.refresh, (_) => FakeReply(401, errorBody('invalid refresh token')))
       ..on('POST', ApiPaths.login, (_) => FakeReply(200, loginData('superadmin')))
-      ..on('GET', ApiPaths.products, (_) => FakeReply(200, envelope({'product_list': []})))
-      ..on('GET', ApiPaths.categories, (_) => FakeReply(200, envelope([])));
+      ..on('GET', ApiPaths.transactions, (_) => FakeReply(200, envelope({'list_transaction': []})));
     await pumpApp(tester);
     expect(find.text('Masuk ke CMS'), findsOneWidget);
 
@@ -47,16 +46,15 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Masuk'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Tambah produk'), findsWidgets);
+    expect(find.text('Belum ada transaksi pada filter ini.'), findsOneWidget);
   });
 
   testWidgets('reload with a valid cookie restores straight into the app', (tester) async {
     adapter
       ..on('POST', ApiPaths.refresh, (_) => FakeReply(200, loginData('superadmin')))
-      ..on('GET', ApiPaths.products, (_) => FakeReply(200, envelope({'product_list': []})))
-      ..on('GET', ApiPaths.categories, (_) => FakeReply(200, envelope([])));
+      ..on('GET', ApiPaths.transactions, (_) => FakeReply(200, envelope({'list_transaction': []})));
     await pumpApp(tester);
-    expect(find.text('Tambah produk'), findsWidgets);
+    expect(find.text('Belum ada transaksi pada filter ini.'), findsOneWidget);
   });
 
   testWidgets('staff rejected by backend sees the admin-only message', (tester) async {
@@ -94,8 +92,7 @@ void main() {
     adapter
       ..on('POST', ApiPaths.refresh, (_) => FakeReply(200, loginData('superadmin')))
       ..on('POST', ApiPaths.logout, (_) => FakeReply(200, envelope(null)))
-      ..on('GET', ApiPaths.products, (_) => FakeReply(200, envelope({'product_list': []})))
-      ..on('GET', ApiPaths.categories, (_) => FakeReply(200, envelope([])));
+      ..on('GET', ApiPaths.transactions, (_) => FakeReply(200, envelope({'list_transaction': []})));
     await pumpApp(tester);
     await tester.tap(find.text('Pengaturan').first);
     await tester.pumpAndSettle();
@@ -120,8 +117,7 @@ void main() {
   testWidgets('compact shell opens the drawer from the page app bar', (tester) async {
     adapter
       ..on('POST', ApiPaths.refresh, (_) => FakeReply(200, loginData('superadmin')))
-      ..on('GET', ApiPaths.products, (_) => FakeReply(200, envelope({'product_list': []})))
-      ..on('GET', ApiPaths.categories, (_) => FakeReply(200, envelope([])))
+      ..on('GET', ApiPaths.transactions, (_) => FakeReply(200, envelope({'list_transaction': []})))
       ..on('GET', ApiPaths.users, (_) => FakeReply(200, envelope({'staff': []})));
     await pumpApp(tester, size: const Size(390, 800));
     await tester.tap(find.byTooltip('Buka menu'));

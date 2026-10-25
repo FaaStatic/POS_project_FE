@@ -49,5 +49,7 @@
   },
   "loadMore": "Load more",
   "actions": "Actions",
-  "moreActions": "More actions"
+  "moreActions": "More actions",
+  "pickDates": "Pick dates",
+  "clearDates": "Clear dates"
 }

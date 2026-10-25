@@ -248,5 +248,156 @@
     }
   },
   "debtPaid": "Lunas",
-  "debtUnpaid": "Belum lunas"
+  "debtUnpaid": "Belum lunas",
+  "transactionsEmpty": "Belum ada transaksi pada filter ini.",
+  "allMethods": "Semua metode",
+  "invoice": "No. invoice",
+  "searchInvoice": "Cari no. invoice",
+  "date": "Tanggal",
+  "method": "Metode",
+  "total": "Total",
+  "profit": "Laba kotor",
+  "conflictOnly": "Konflik stok",
+  "conflict": "Konflik stok",
+  "reviewed": "Sudah ditinjau",
+  "markReviewed": "Tandai sudah ditinjau",
+  "markedReviewed": "Ditandai sudah ditinjau.",
+  "conflictHint": "Stok di server berhenti di 0 saat transaksi offline ini masuk. Koreksi stok produknya, lalu tandai sudah ditinjau.",
+  "transactionDetail": "Detail transaksi",
+  "items": "Barang",
+  "qty": "Jumlah",
+  "price": "Harga",
+  "subtotal": "Subtotal",
+  "cancelTransaction": "Batalkan transaksi",
+  "cancelTitle": "Batalkan {invoice}?",
+  "@cancelTitle": {
+    "placeholders": {
+      "invoice": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelReason": "Alasan pembatalan",
+  "cancelReasonShort": "Alasan minimal 3 karakter",
+  "cancelledOk": "Transaksi dibatalkan.",
+  "downloadReceipt": "Unduh struk PDF",
+  "downloaded": "File diunduh.",
+  "cash": "Tunai",
+  "debt": "Hutang",
+  "qris": "QRIS",
+  "va": "VA",
+  "noCashierFilter": "Filter kasir belum didukung backend.",
+  "paymentsTitle": "Pembayaran QRIS/VA",
+  "paymentsEmpty": "Belum ada pembayaran pada filter ini.",
+  "allStatuses": "Semua status",
+  "status": "Status",
+  "orderId": "Order ID",
+  "amount": "Jumlah",
+  "fee": "Biaya",
+  "paidAt": "Dibayar",
+  "checkStatus": "Cek status",
+  "statusChecked": "Status terbaru: {status}",
+  "@statusChecked": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "psPending": "Menunggu",
+  "psSettling": "Diproses",
+  "psSuccess": "Berhasil",
+  "psFailed": "Gagal",
+  "psExpired": "Kedaluwarsa",
+  "debtsEmpty": "Tidak ada hutang pada filter ini.",
+  "unpaidOnly": "Belum lunas saja",
+  "searchCustomer": "Cari nama customer",
+  "remaining": "Sisa",
+  "addManualDebt": "Tambah hutang manual",
+  "receivePayment": "Terima pembayaran",
+  "paymentAmount": "Jumlah dibayar",
+  "payFull": "Lunasi {amount}",
+  "@payFull": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentRecorded": "Pembayaran dicatat. Sisa {amount}.",
+  "@paymentRecorded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "debtAdded": "Hutang ditambahkan.",
+  "dueDate": "Jatuh tempo (opsional)",
+  "pickCustomer": "Pilih customer",
+  "exceedsRemaining": "Melebihi sisa hutang.",
+  "reportsTitle": "Laporan",
+  "monthlyReport": "Laporan bulanan",
+  "monthlyReportHint": "Penjualan, transaksi hutang, hutang manual, dan pembayaran hutang per hari.",
+  "month": "Bulan",
+  "year": "Tahun",
+  "download": "Unduh PDF",
+  "downloadThisMonth": "Unduh laporan bulan ini",
+  "dashboardTitle": "Dashboard",
+  "needsAction": "Perlu tindakan",
+  "nothingToDo": "Tidak ada yang perlu ditindaklanjuti hari ini.",
+  "openConflicts": "{count, plural, =1{1 konflik stok belum ditinjau} other{{count} konflik stok belum ditinjau}}",
+  "@openConflicts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "oldestDebts": "Hutang belum lunas paling lama",
+  "failedPayments": "{count, plural, =1{1 pembayaran QRIS/VA gagal atau kedaluwarsa hari ini} other{{count} pembayaran QRIS/VA gagal atau kedaluwarsa hari ini}}",
+  "@failedPayments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "revenue": "Omzet",
+  "grossProfit": "Laba kotor",
+  "transactionCount": "Transaksi",
+  "activeReceivables": "Piutang aktif",
+  "rangeToday": "Hari ini",
+  "range7": "7 hari",
+  "range30": "30 hari",
+  "rangeMonth": "Bulan ini",
+  "rangeCustom": "Custom",
+  "dailyChartTitle": "Omzet dan laba kotor harian, {range}",
+  "@dailyChartTitle": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "topProducts": "5 produk terlaris",
+  "paymentMix": "Pembagian metode bayar",
+  "debtFlow": "Hutang baru dan dibayar",
+  "newDebt": "Hutang baru",
+  "paidDebt": "Dibayar",
+  "devicesOnline": "Device yang sedang login",
+  "noData": "Belum ada data pada rentang ini.",
+  "quickAddProduct": "Tambah produk",
+  "quickAddStaff": "Tambah staff",
+  "quickAddCustomer": "Tambah customer",
+  "quickMonthReport": "Unduh laporan bulan ini",
+  "sold": "{qty} terjual",
+  "@sold": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "chartTable": "Lihat sebagai tabel"
 }

@@ -88,4 +88,10 @@ class UiLocalizationsId extends UiLocalizations {
 
   @override
   String get moreActions => 'Aksi lainnya';
+
+  @override
+  String get pickDates => 'Pilih tanggal';
+
+  @override
+  String get clearDates => 'Hapus tanggal';
 }

@@ -229,6 +229,18 @@ abstract class UiLocalizations {
   /// In id, this message translates to:
   /// **'Aksi lainnya'**
   String get moreActions;
+
+  /// No description provided for @pickDates.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih tanggal'**
+  String get pickDates;
+
+  /// No description provided for @clearDates.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus tanggal'**
+  String get clearDates;
 }
 
 class _UiLocalizationsDelegate extends LocalizationsDelegate<UiLocalizations> {

@@ -505,4 +505,320 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get debtUnpaid => 'Unpaid';
+
+  @override
+  String get transactionsEmpty => 'No transactions match these filters.';
+
+  @override
+  String get allMethods => 'All methods';
+
+  @override
+  String get invoice => 'Invoice no.';
+
+  @override
+  String get searchInvoice => 'Search invoice no.';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get method => 'Method';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get profit => 'Gross profit';
+
+  @override
+  String get conflictOnly => 'Stock conflicts';
+
+  @override
+  String get conflict => 'Stock conflict';
+
+  @override
+  String get reviewed => 'Reviewed';
+
+  @override
+  String get markReviewed => 'Mark as reviewed';
+
+  @override
+  String get markedReviewed => 'Marked as reviewed.';
+
+  @override
+  String get conflictHint =>
+      'Server stock stopped at 0 when this offline sale arrived. Correct the product stock, then mark it reviewed.';
+
+  @override
+  String get transactionDetail => 'Transaction details';
+
+  @override
+  String get items => 'Items';
+
+  @override
+  String get qty => 'Qty';
+
+  @override
+  String get price => 'Price';
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String get cancelTransaction => 'Cancel transaction';
+
+  @override
+  String cancelTitle(String invoice) {
+    return 'Cancel $invoice?';
+  }
+
+  @override
+  String get cancelReason => 'Reason for cancelling';
+
+  @override
+  String get cancelReasonShort => 'At least 3 characters';
+
+  @override
+  String get cancelledOk => 'Transaction cancelled.';
+
+  @override
+  String get downloadReceipt => 'Download receipt PDF';
+
+  @override
+  String get downloaded => 'File downloaded.';
+
+  @override
+  String get cash => 'Cash';
+
+  @override
+  String get debt => 'Credit';
+
+  @override
+  String get qris => 'QRIS';
+
+  @override
+  String get va => 'VA';
+
+  @override
+  String get noCashierFilter =>
+      'The backend does not support a cashier filter yet.';
+
+  @override
+  String get paymentsTitle => 'QRIS/VA payments';
+
+  @override
+  String get paymentsEmpty => 'No payments match these filters.';
+
+  @override
+  String get allStatuses => 'All statuses';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get orderId => 'Order ID';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get fee => 'Fee';
+
+  @override
+  String get paidAt => 'Paid';
+
+  @override
+  String get checkStatus => 'Check status';
+
+  @override
+  String statusChecked(String status) {
+    return 'Latest status: $status';
+  }
+
+  @override
+  String get psPending => 'Pending';
+
+  @override
+  String get psSettling => 'Settling';
+
+  @override
+  String get psSuccess => 'Succeeded';
+
+  @override
+  String get psFailed => 'Failed';
+
+  @override
+  String get psExpired => 'Expired';
+
+  @override
+  String get debtsEmpty => 'No credit matches these filters.';
+
+  @override
+  String get unpaidOnly => 'Unpaid only';
+
+  @override
+  String get searchCustomer => 'Search customer name';
+
+  @override
+  String get remaining => 'Remaining';
+
+  @override
+  String get addManualDebt => 'Add manual credit';
+
+  @override
+  String get receivePayment => 'Receive payment';
+
+  @override
+  String get paymentAmount => 'Amount paid';
+
+  @override
+  String payFull(String amount) {
+    return 'Pay off $amount';
+  }
+
+  @override
+  String paymentRecorded(String amount) {
+    return 'Payment recorded. $amount left.';
+  }
+
+  @override
+  String get debtAdded => 'Credit added.';
+
+  @override
+  String get dueDate => 'Due date (optional)';
+
+  @override
+  String get pickCustomer => 'Choose customer';
+
+  @override
+  String get exceedsRemaining => 'More than the remaining credit.';
+
+  @override
+  String get reportsTitle => 'Reports';
+
+  @override
+  String get monthlyReport => 'Monthly report';
+
+  @override
+  String get monthlyReportHint =>
+      'Sales, credit sales, manual credit, and credit payments per day.';
+
+  @override
+  String get month => 'Month';
+
+  @override
+  String get year => 'Year';
+
+  @override
+  String get download => 'Download PDF';
+
+  @override
+  String get downloadThisMonth => 'Download this month\'s report';
+
+  @override
+  String get dashboardTitle => 'Dashboard';
+
+  @override
+  String get needsAction => 'Needs action';
+
+  @override
+  String get nothingToDo => 'Nothing needs follow-up today.';
+
+  @override
+  String openConflicts(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unreviewed stock conflicts',
+      one: '1 unreviewed stock conflict',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get oldestDebts => 'Oldest unpaid credit';
+
+  @override
+  String failedPayments(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count QRIS/VA payments failed or expired today',
+      one: '1 QRIS/VA payment failed or expired today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get revenue => 'Revenue';
+
+  @override
+  String get grossProfit => 'Gross profit';
+
+  @override
+  String get transactionCount => 'Transactions';
+
+  @override
+  String get activeReceivables => 'Active receivables';
+
+  @override
+  String get rangeToday => 'Today';
+
+  @override
+  String get range7 => '7 days';
+
+  @override
+  String get range30 => '30 days';
+
+  @override
+  String get rangeMonth => 'This month';
+
+  @override
+  String get rangeCustom => 'Custom';
+
+  @override
+  String dailyChartTitle(String range) {
+    return 'Daily revenue and gross profit, $range';
+  }
+
+  @override
+  String get topProducts => 'Top 5 products';
+
+  @override
+  String get paymentMix => 'Payment method split';
+
+  @override
+  String get debtFlow => 'New and paid credit';
+
+  @override
+  String get newDebt => 'New credit';
+
+  @override
+  String get paidDebt => 'Paid';
+
+  @override
+  String get devicesOnline => 'Signed-in devices';
+
+  @override
+  String get noData => 'No data in this range yet.';
+
+  @override
+  String get quickAddProduct => 'Add product';
+
+  @override
+  String get quickAddStaff => 'Add staff';
+
+  @override
+  String get quickAddCustomer => 'Add customer';
+
+  @override
+  String get quickMonthReport => 'Download this month\'s report';
+
+  @override
+  String sold(String qty) {
+    return '$qty sold';
+  }
+
+  @override
+  String get chartTable => 'View as table';
 }

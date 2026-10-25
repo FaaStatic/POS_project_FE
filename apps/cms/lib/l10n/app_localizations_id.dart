@@ -506,4 +506,319 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get debtUnpaid => 'Belum lunas';
+
+  @override
+  String get transactionsEmpty => 'Belum ada transaksi pada filter ini.';
+
+  @override
+  String get allMethods => 'Semua metode';
+
+  @override
+  String get invoice => 'No. invoice';
+
+  @override
+  String get searchInvoice => 'Cari no. invoice';
+
+  @override
+  String get date => 'Tanggal';
+
+  @override
+  String get method => 'Metode';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get profit => 'Laba kotor';
+
+  @override
+  String get conflictOnly => 'Konflik stok';
+
+  @override
+  String get conflict => 'Konflik stok';
+
+  @override
+  String get reviewed => 'Sudah ditinjau';
+
+  @override
+  String get markReviewed => 'Tandai sudah ditinjau';
+
+  @override
+  String get markedReviewed => 'Ditandai sudah ditinjau.';
+
+  @override
+  String get conflictHint =>
+      'Stok di server berhenti di 0 saat transaksi offline ini masuk. Koreksi stok produknya, lalu tandai sudah ditinjau.';
+
+  @override
+  String get transactionDetail => 'Detail transaksi';
+
+  @override
+  String get items => 'Barang';
+
+  @override
+  String get qty => 'Jumlah';
+
+  @override
+  String get price => 'Harga';
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String get cancelTransaction => 'Batalkan transaksi';
+
+  @override
+  String cancelTitle(String invoice) {
+    return 'Batalkan $invoice?';
+  }
+
+  @override
+  String get cancelReason => 'Alasan pembatalan';
+
+  @override
+  String get cancelReasonShort => 'Alasan minimal 3 karakter';
+
+  @override
+  String get cancelledOk => 'Transaksi dibatalkan.';
+
+  @override
+  String get downloadReceipt => 'Unduh struk PDF';
+
+  @override
+  String get downloaded => 'File diunduh.';
+
+  @override
+  String get cash => 'Tunai';
+
+  @override
+  String get debt => 'Hutang';
+
+  @override
+  String get qris => 'QRIS';
+
+  @override
+  String get va => 'VA';
+
+  @override
+  String get noCashierFilter => 'Filter kasir belum didukung backend.';
+
+  @override
+  String get paymentsTitle => 'Pembayaran QRIS/VA';
+
+  @override
+  String get paymentsEmpty => 'Belum ada pembayaran pada filter ini.';
+
+  @override
+  String get allStatuses => 'Semua status';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get orderId => 'Order ID';
+
+  @override
+  String get amount => 'Jumlah';
+
+  @override
+  String get fee => 'Biaya';
+
+  @override
+  String get paidAt => 'Dibayar';
+
+  @override
+  String get checkStatus => 'Cek status';
+
+  @override
+  String statusChecked(String status) {
+    return 'Status terbaru: $status';
+  }
+
+  @override
+  String get psPending => 'Menunggu';
+
+  @override
+  String get psSettling => 'Diproses';
+
+  @override
+  String get psSuccess => 'Berhasil';
+
+  @override
+  String get psFailed => 'Gagal';
+
+  @override
+  String get psExpired => 'Kedaluwarsa';
+
+  @override
+  String get debtsEmpty => 'Tidak ada hutang pada filter ini.';
+
+  @override
+  String get unpaidOnly => 'Belum lunas saja';
+
+  @override
+  String get searchCustomer => 'Cari nama customer';
+
+  @override
+  String get remaining => 'Sisa';
+
+  @override
+  String get addManualDebt => 'Tambah hutang manual';
+
+  @override
+  String get receivePayment => 'Terima pembayaran';
+
+  @override
+  String get paymentAmount => 'Jumlah dibayar';
+
+  @override
+  String payFull(String amount) {
+    return 'Lunasi $amount';
+  }
+
+  @override
+  String paymentRecorded(String amount) {
+    return 'Pembayaran dicatat. Sisa $amount.';
+  }
+
+  @override
+  String get debtAdded => 'Hutang ditambahkan.';
+
+  @override
+  String get dueDate => 'Jatuh tempo (opsional)';
+
+  @override
+  String get pickCustomer => 'Pilih customer';
+
+  @override
+  String get exceedsRemaining => 'Melebihi sisa hutang.';
+
+  @override
+  String get reportsTitle => 'Laporan';
+
+  @override
+  String get monthlyReport => 'Laporan bulanan';
+
+  @override
+  String get monthlyReportHint =>
+      'Penjualan, transaksi hutang, hutang manual, dan pembayaran hutang per hari.';
+
+  @override
+  String get month => 'Bulan';
+
+  @override
+  String get year => 'Tahun';
+
+  @override
+  String get download => 'Unduh PDF';
+
+  @override
+  String get downloadThisMonth => 'Unduh laporan bulan ini';
+
+  @override
+  String get dashboardTitle => 'Dashboard';
+
+  @override
+  String get needsAction => 'Perlu tindakan';
+
+  @override
+  String get nothingToDo => 'Tidak ada yang perlu ditindaklanjuti hari ini.';
+
+  @override
+  String openConflicts(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count konflik stok belum ditinjau',
+      one: '1 konflik stok belum ditinjau',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get oldestDebts => 'Hutang belum lunas paling lama';
+
+  @override
+  String failedPayments(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pembayaran QRIS/VA gagal atau kedaluwarsa hari ini',
+      one: '1 pembayaran QRIS/VA gagal atau kedaluwarsa hari ini',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get revenue => 'Omzet';
+
+  @override
+  String get grossProfit => 'Laba kotor';
+
+  @override
+  String get transactionCount => 'Transaksi';
+
+  @override
+  String get activeReceivables => 'Piutang aktif';
+
+  @override
+  String get rangeToday => 'Hari ini';
+
+  @override
+  String get range7 => '7 hari';
+
+  @override
+  String get range30 => '30 hari';
+
+  @override
+  String get rangeMonth => 'Bulan ini';
+
+  @override
+  String get rangeCustom => 'Custom';
+
+  @override
+  String dailyChartTitle(String range) {
+    return 'Omzet dan laba kotor harian, $range';
+  }
+
+  @override
+  String get topProducts => '5 produk terlaris';
+
+  @override
+  String get paymentMix => 'Pembagian metode bayar';
+
+  @override
+  String get debtFlow => 'Hutang baru dan dibayar';
+
+  @override
+  String get newDebt => 'Hutang baru';
+
+  @override
+  String get paidDebt => 'Dibayar';
+
+  @override
+  String get devicesOnline => 'Device yang sedang login';
+
+  @override
+  String get noData => 'Belum ada data pada rentang ini.';
+
+  @override
+  String get quickAddProduct => 'Tambah produk';
+
+  @override
+  String get quickAddStaff => 'Tambah staff';
+
+  @override
+  String get quickAddCustomer => 'Tambah customer';
+
+  @override
+  String get quickMonthReport => 'Unduh laporan bulan ini';
+
+  @override
+  String sold(String qty) {
+    return '$qty terjual';
+  }
+
+  @override
+  String get chartTable => 'Lihat sebagai tabel';
 }

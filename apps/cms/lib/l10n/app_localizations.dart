@@ -1009,6 +1009,576 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Belum lunas'**
   String get debtUnpaid;
+
+  /// No description provided for @transactionsEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada transaksi pada filter ini.'**
+  String get transactionsEmpty;
+
+  /// No description provided for @allMethods.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua metode'**
+  String get allMethods;
+
+  /// No description provided for @invoice.
+  ///
+  /// In id, this message translates to:
+  /// **'No. invoice'**
+  String get invoice;
+
+  /// No description provided for @searchInvoice.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari no. invoice'**
+  String get searchInvoice;
+
+  /// No description provided for @date.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanggal'**
+  String get date;
+
+  /// No description provided for @method.
+  ///
+  /// In id, this message translates to:
+  /// **'Metode'**
+  String get method;
+
+  /// No description provided for @total.
+  ///
+  /// In id, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @profit.
+  ///
+  /// In id, this message translates to:
+  /// **'Laba kotor'**
+  String get profit;
+
+  /// No description provided for @conflictOnly.
+  ///
+  /// In id, this message translates to:
+  /// **'Konflik stok'**
+  String get conflictOnly;
+
+  /// No description provided for @conflict.
+  ///
+  /// In id, this message translates to:
+  /// **'Konflik stok'**
+  String get conflict;
+
+  /// No description provided for @reviewed.
+  ///
+  /// In id, this message translates to:
+  /// **'Sudah ditinjau'**
+  String get reviewed;
+
+  /// No description provided for @markReviewed.
+  ///
+  /// In id, this message translates to:
+  /// **'Tandai sudah ditinjau'**
+  String get markReviewed;
+
+  /// No description provided for @markedReviewed.
+  ///
+  /// In id, this message translates to:
+  /// **'Ditandai sudah ditinjau.'**
+  String get markedReviewed;
+
+  /// No description provided for @conflictHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Stok di server berhenti di 0 saat transaksi offline ini masuk. Koreksi stok produknya, lalu tandai sudah ditinjau.'**
+  String get conflictHint;
+
+  /// No description provided for @transactionDetail.
+  ///
+  /// In id, this message translates to:
+  /// **'Detail transaksi'**
+  String get transactionDetail;
+
+  /// No description provided for @items.
+  ///
+  /// In id, this message translates to:
+  /// **'Barang'**
+  String get items;
+
+  /// No description provided for @qty.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah'**
+  String get qty;
+
+  /// No description provided for @price.
+  ///
+  /// In id, this message translates to:
+  /// **'Harga'**
+  String get price;
+
+  /// No description provided for @subtotal.
+  ///
+  /// In id, this message translates to:
+  /// **'Subtotal'**
+  String get subtotal;
+
+  /// No description provided for @cancelTransaction.
+  ///
+  /// In id, this message translates to:
+  /// **'Batalkan transaksi'**
+  String get cancelTransaction;
+
+  /// No description provided for @cancelTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Batalkan {invoice}?'**
+  String cancelTitle(String invoice);
+
+  /// No description provided for @cancelReason.
+  ///
+  /// In id, this message translates to:
+  /// **'Alasan pembatalan'**
+  String get cancelReason;
+
+  /// No description provided for @cancelReasonShort.
+  ///
+  /// In id, this message translates to:
+  /// **'Alasan minimal 3 karakter'**
+  String get cancelReasonShort;
+
+  /// No description provided for @cancelledOk.
+  ///
+  /// In id, this message translates to:
+  /// **'Transaksi dibatalkan.'**
+  String get cancelledOk;
+
+  /// No description provided for @downloadReceipt.
+  ///
+  /// In id, this message translates to:
+  /// **'Unduh struk PDF'**
+  String get downloadReceipt;
+
+  /// No description provided for @downloaded.
+  ///
+  /// In id, this message translates to:
+  /// **'File diunduh.'**
+  String get downloaded;
+
+  /// No description provided for @cash.
+  ///
+  /// In id, this message translates to:
+  /// **'Tunai'**
+  String get cash;
+
+  /// No description provided for @debt.
+  ///
+  /// In id, this message translates to:
+  /// **'Hutang'**
+  String get debt;
+
+  /// No description provided for @qris.
+  ///
+  /// In id, this message translates to:
+  /// **'QRIS'**
+  String get qris;
+
+  /// No description provided for @va.
+  ///
+  /// In id, this message translates to:
+  /// **'VA'**
+  String get va;
+
+  /// No description provided for @noCashierFilter.
+  ///
+  /// In id, this message translates to:
+  /// **'Filter kasir belum didukung backend.'**
+  String get noCashierFilter;
+
+  /// No description provided for @paymentsTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran QRIS/VA'**
+  String get paymentsTitle;
+
+  /// No description provided for @paymentsEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada pembayaran pada filter ini.'**
+  String get paymentsEmpty;
+
+  /// No description provided for @allStatuses.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua status'**
+  String get allStatuses;
+
+  /// No description provided for @status.
+  ///
+  /// In id, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @orderId.
+  ///
+  /// In id, this message translates to:
+  /// **'Order ID'**
+  String get orderId;
+
+  /// No description provided for @amount.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah'**
+  String get amount;
+
+  /// No description provided for @fee.
+  ///
+  /// In id, this message translates to:
+  /// **'Biaya'**
+  String get fee;
+
+  /// No description provided for @paidAt.
+  ///
+  /// In id, this message translates to:
+  /// **'Dibayar'**
+  String get paidAt;
+
+  /// No description provided for @checkStatus.
+  ///
+  /// In id, this message translates to:
+  /// **'Cek status'**
+  String get checkStatus;
+
+  /// No description provided for @statusChecked.
+  ///
+  /// In id, this message translates to:
+  /// **'Status terbaru: {status}'**
+  String statusChecked(String status);
+
+  /// No description provided for @psPending.
+  ///
+  /// In id, this message translates to:
+  /// **'Menunggu'**
+  String get psPending;
+
+  /// No description provided for @psSettling.
+  ///
+  /// In id, this message translates to:
+  /// **'Diproses'**
+  String get psSettling;
+
+  /// No description provided for @psSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Berhasil'**
+  String get psSuccess;
+
+  /// No description provided for @psFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal'**
+  String get psFailed;
+
+  /// No description provided for @psExpired.
+  ///
+  /// In id, this message translates to:
+  /// **'Kedaluwarsa'**
+  String get psExpired;
+
+  /// No description provided for @debtsEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada hutang pada filter ini.'**
+  String get debtsEmpty;
+
+  /// No description provided for @unpaidOnly.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum lunas saja'**
+  String get unpaidOnly;
+
+  /// No description provided for @searchCustomer.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari nama customer'**
+  String get searchCustomer;
+
+  /// No description provided for @remaining.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa'**
+  String get remaining;
+
+  /// No description provided for @addManualDebt.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah hutang manual'**
+  String get addManualDebt;
+
+  /// No description provided for @receivePayment.
+  ///
+  /// In id, this message translates to:
+  /// **'Terima pembayaran'**
+  String get receivePayment;
+
+  /// No description provided for @paymentAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah dibayar'**
+  String get paymentAmount;
+
+  /// No description provided for @payFull.
+  ///
+  /// In id, this message translates to:
+  /// **'Lunasi {amount}'**
+  String payFull(String amount);
+
+  /// No description provided for @paymentRecorded.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran dicatat. Sisa {amount}.'**
+  String paymentRecorded(String amount);
+
+  /// No description provided for @debtAdded.
+  ///
+  /// In id, this message translates to:
+  /// **'Hutang ditambahkan.'**
+  String get debtAdded;
+
+  /// No description provided for @dueDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Jatuh tempo (opsional)'**
+  String get dueDate;
+
+  /// No description provided for @pickCustomer.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih customer'**
+  String get pickCustomer;
+
+  /// No description provided for @exceedsRemaining.
+  ///
+  /// In id, this message translates to:
+  /// **'Melebihi sisa hutang.'**
+  String get exceedsRemaining;
+
+  /// No description provided for @reportsTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Laporan'**
+  String get reportsTitle;
+
+  /// No description provided for @monthlyReport.
+  ///
+  /// In id, this message translates to:
+  /// **'Laporan bulanan'**
+  String get monthlyReport;
+
+  /// No description provided for @monthlyReportHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Penjualan, transaksi hutang, hutang manual, dan pembayaran hutang per hari.'**
+  String get monthlyReportHint;
+
+  /// No description provided for @month.
+  ///
+  /// In id, this message translates to:
+  /// **'Bulan'**
+  String get month;
+
+  /// No description provided for @year.
+  ///
+  /// In id, this message translates to:
+  /// **'Tahun'**
+  String get year;
+
+  /// No description provided for @download.
+  ///
+  /// In id, this message translates to:
+  /// **'Unduh PDF'**
+  String get download;
+
+  /// No description provided for @downloadThisMonth.
+  ///
+  /// In id, this message translates to:
+  /// **'Unduh laporan bulan ini'**
+  String get downloadThisMonth;
+
+  /// No description provided for @dashboardTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Dashboard'**
+  String get dashboardTitle;
+
+  /// No description provided for @needsAction.
+  ///
+  /// In id, this message translates to:
+  /// **'Perlu tindakan'**
+  String get needsAction;
+
+  /// No description provided for @nothingToDo.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada yang perlu ditindaklanjuti hari ini.'**
+  String get nothingToDo;
+
+  /// No description provided for @openConflicts.
+  ///
+  /// In id, this message translates to:
+  /// **'{count, plural, =1{1 konflik stok belum ditinjau} other{{count} konflik stok belum ditinjau}}'**
+  String openConflicts(int count);
+
+  /// No description provided for @oldestDebts.
+  ///
+  /// In id, this message translates to:
+  /// **'Hutang belum lunas paling lama'**
+  String get oldestDebts;
+
+  /// No description provided for @failedPayments.
+  ///
+  /// In id, this message translates to:
+  /// **'{count, plural, =1{1 pembayaran QRIS/VA gagal atau kedaluwarsa hari ini} other{{count} pembayaran QRIS/VA gagal atau kedaluwarsa hari ini}}'**
+  String failedPayments(int count);
+
+  /// No description provided for @revenue.
+  ///
+  /// In id, this message translates to:
+  /// **'Omzet'**
+  String get revenue;
+
+  /// No description provided for @grossProfit.
+  ///
+  /// In id, this message translates to:
+  /// **'Laba kotor'**
+  String get grossProfit;
+
+  /// No description provided for @transactionCount.
+  ///
+  /// In id, this message translates to:
+  /// **'Transaksi'**
+  String get transactionCount;
+
+  /// No description provided for @activeReceivables.
+  ///
+  /// In id, this message translates to:
+  /// **'Piutang aktif'**
+  String get activeReceivables;
+
+  /// No description provided for @rangeToday.
+  ///
+  /// In id, this message translates to:
+  /// **'Hari ini'**
+  String get rangeToday;
+
+  /// No description provided for @range7.
+  ///
+  /// In id, this message translates to:
+  /// **'7 hari'**
+  String get range7;
+
+  /// No description provided for @range30.
+  ///
+  /// In id, this message translates to:
+  /// **'30 hari'**
+  String get range30;
+
+  /// No description provided for @rangeMonth.
+  ///
+  /// In id, this message translates to:
+  /// **'Bulan ini'**
+  String get rangeMonth;
+
+  /// No description provided for @rangeCustom.
+  ///
+  /// In id, this message translates to:
+  /// **'Custom'**
+  String get rangeCustom;
+
+  /// No description provided for @dailyChartTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Omzet dan laba kotor harian, {range}'**
+  String dailyChartTitle(String range);
+
+  /// No description provided for @topProducts.
+  ///
+  /// In id, this message translates to:
+  /// **'5 produk terlaris'**
+  String get topProducts;
+
+  /// No description provided for @paymentMix.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembagian metode bayar'**
+  String get paymentMix;
+
+  /// No description provided for @debtFlow.
+  ///
+  /// In id, this message translates to:
+  /// **'Hutang baru dan dibayar'**
+  String get debtFlow;
+
+  /// No description provided for @newDebt.
+  ///
+  /// In id, this message translates to:
+  /// **'Hutang baru'**
+  String get newDebt;
+
+  /// No description provided for @paidDebt.
+  ///
+  /// In id, this message translates to:
+  /// **'Dibayar'**
+  String get paidDebt;
+
+  /// No description provided for @devicesOnline.
+  ///
+  /// In id, this message translates to:
+  /// **'Device yang sedang login'**
+  String get devicesOnline;
+
+  /// No description provided for @noData.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada data pada rentang ini.'**
+  String get noData;
+
+  /// No description provided for @quickAddProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah produk'**
+  String get quickAddProduct;
+
+  /// No description provided for @quickAddStaff.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah staff'**
+  String get quickAddStaff;
+
+  /// No description provided for @quickAddCustomer.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah customer'**
+  String get quickAddCustomer;
+
+  /// No description provided for @quickMonthReport.
+  ///
+  /// In id, this message translates to:
+  /// **'Unduh laporan bulan ini'**
+  String get quickMonthReport;
+
+  /// No description provided for @sold.
+  ///
+  /// In id, this message translates to:
+  /// **'{qty} terjual'**
+  String sold(String qty);
+
+  /// No description provided for @chartTable.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat sebagai tabel'**
+  String get chartTable;
 }
 
 class _AppLocalizationsDelegate

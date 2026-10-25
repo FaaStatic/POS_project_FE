@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../tokens/colors.dart';
 import '../tokens/spacing.dart';
 import '../tokens/typography.dart';
+import 'chart_colors.dart';
 import 'status_colors.dart';
 
 abstract final class AppTheme {
@@ -39,6 +40,7 @@ abstract final class AppTheme {
       scrim: Colors.black,
     ),
     StatusColors.light,
+    ChartColors.light,
   );
 
   static final dark = _build(
@@ -73,9 +75,10 @@ abstract final class AppTheme {
       scrim: Colors.black,
     ),
     StatusColors.dark,
+    ChartColors.dark,
   );
 
-  static ThemeData _build(ColorScheme scheme, StatusColors status) {
+  static ThemeData _build(ColorScheme scheme, StatusColors status, ChartColors chart) {
     final text = buildTextTheme(scheme.onSurface, scheme.onSurfaceVariant);
     final small = BorderRadius.circular(Radii.small);
     final medium = BorderRadius.circular(Radii.medium);
@@ -94,7 +97,7 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: scheme.surface,
       materialTapTargetSize: MaterialTapTargetSize.padded,
       visualDensity: VisualDensity.standard,
-      extensions: [status],
+      extensions: [status, chart],
       dividerTheme: DividerThemeData(color: scheme.outlineVariant, thickness: 1, space: 1),
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
@@ -226,6 +229,13 @@ abstract final class AppTheme {
         dividerColor: scheme.outlineVariant,
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(color: scheme.primary),
+      // Indonesian range labels overflow the default headline on phone widths.
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: scheme.surface,
+        surfaceTintColor: Colors.transparent,
+        headerHeadlineStyle: text.headlineSmall,
+        rangePickerHeaderHeadlineStyle: text.titleSmall,
+      ),
       popupMenuTheme: PopupMenuThemeData(
         color: scheme.surface,
         surfaceTintColor: Colors.transparent,

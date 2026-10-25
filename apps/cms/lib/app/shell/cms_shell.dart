@@ -49,7 +49,7 @@ class _CmsShellState extends State<CmsShell> {
                   NavigationRailDestination(icon: Icon(d.icon), label: Text(d.label(l10n))),
               ],
             )
-          : SizedBox(width: 264, child: _Sidebar(l10n: l10n, selected: index, onSelect: _go));
+          : SizedBox(width: 300, child: _Sidebar(l10n: l10n, selected: index, onSelect: _go));
       return Scaffold(
         body: Row(children: [
           SafeArea(child: nav),
