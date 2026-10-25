@@ -21,6 +21,352 @@
   "themeDark": "Gelap",
   "logout": "Keluar",
   "signedInAs": "Masuk sebagai {name}",
-  "@signedInAs": {"placeholders": {"name": {"type": "String"}}},
-  "navSettings": "Pengaturan"
+  "@signedInAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "navSettings": "Pengaturan",
+  "navCheckout": "Transaksi",
+  "navHistory": "Riwayat",
+  "navCustomers": "Customer",
+  "navProducts": "Produk",
+  "searchProducts": "Cari nama, SKU, atau scan barcode",
+  "scan": "Scan",
+  "allCategories": "Semua",
+  "add": "Tambah",
+  "stock": "Stok {qty}",
+  "@stock": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "outOfStock": "Stok habis",
+  "noProducts": "Belum ada produk di perangkat ini. Sambungkan internet lalu tarik untuk memuat.",
+  "noProductsMatch": "Tidak ada produk yang cocok dengan \"{query}\".",
+  "@noProductsMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "reload": "Muat ulang",
+  "cartSummary": "{count} barang · {total}",
+  "@cartSummary": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "viewCart": "Lihat keranjang",
+  "cartEmpty": "Keranjang kosong. Tambah produk dari daftar.",
+  "customer": "Customer",
+  "chooseCustomer": "Pilih customer (opsional)",
+  "noCustomer": "Tanpa customer",
+  "changeCustomer": "Ganti",
+  "remove": "Hapus",
+  "destination": "Nomor tujuan",
+  "destinationRequired": "Isi nomor tujuan",
+  "stockShort": "Stok tersisa {qty}. Mungkin sudah terjual di tab lain.",
+  "@stockShort": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "total": "Total",
+  "method": "Metode bayar",
+  "cash": "Tunai",
+  "debt": "Hutang",
+  "qris": "QRIS",
+  "va": "VA",
+  "needsInternet": "Butuh internet",
+  "digitalCashOnly": "Produk digital: tunai atau hutang",
+  "debtNeedsCustomer": "Pilih customer untuk hutang",
+  "pay": "Bayar",
+  "payAmount": "Bayar {total}",
+  "@payAmount": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "closeTab": "Tutup tab",
+  "closeTabTitle": "Hapus keranjang Transaksi {number} ({count} barang)?",
+  "@closeTabTitle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "closeTabWaiting": "Transaksi ini menunggu pembayaran dan tidak bisa ditutup.",
+  "waitingQris": "Menunggu QRIS",
+  "waitingVa": "Menunggu VA",
+  "paid": "Lunas",
+  "chooseBank": "Pilih bank VA",
+  "scanQrHint": "Minta pembeli scan kode QR ini.",
+  "vaHint": "Minta pembeli transfer ke nomor VA ini.",
+  "vaNumber": "Nomor VA {bank}",
+  "@vaNumber": {
+    "placeholders": {
+      "bank": {
+        "type": "String"
+      }
+    }
+  },
+  "expiresAt": "Berlaku sampai {time}",
+  "@expiresAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "waitingNote": "Status dipantau otomatis. Kasir boleh pindah ke tab lain.",
+  "checkNow": "Cek sekarang",
+  "qrUnavailable": "Gambar QR tidak bisa dimuat. Cek koneksi lalu tekan Cek sekarang.",
+  "chargeFailed": "Pembayaran Transaksi {number} gagal atau kedaluwarsa. Pilih metode lain.",
+  "@chargeFailed": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "chargePaid": "Transaksi {number} lunas.",
+  "@chargePaid": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "scanAdded": "{name} → Transaksi {number}",
+  "@scanAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "unknownBarcode": "Produk belum terdaftar ({code})",
+  "@unknownBarcode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "assignBarcode": "Daftarkan barcode ke produk",
+  "assignBarcodeTitle": "Daftarkan barcode {code}",
+  "@assignBarcodeTitle": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "barcodeAssigned": "Barcode didaftarkan ke {name}.",
+  "@barcodeAssigned": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tabLocked": "Tab ini terkunci karena menunggu pembayaran.",
+  "staleDraftsRemoved": "{count, plural, =1{1 transaksi lama dihapus} other{{count} transaksi lama dihapus}}",
+  "@staleDraftsRemoved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openTabs": "Transaksi terbuka",
+  "savedOffline": "Tersimpan di perangkat. Dikirim saat online.",
+  "saved": "Transaksi tersimpan.",
+  "timeoutUnknown": "Server tidak menjawab. Transaksi mungkin sudah tercatat. Cek Riwayat sebelum mengulang.",
+  "vEmptyCart": "Keranjang masih kosong.",
+  "vInvalidQty": "Jumlah barang harus lebih dari 0.",
+  "receipt": "Struk",
+  "print": "Cetak struk",
+  "reprint": "Cetak ulang",
+  "setupPrinter": "Atur printer",
+  "done": "Selesai",
+  "printed": "Struk dicetak.",
+  "printFailed": "Gagal mencetak. Pastikan printer menyala dan terhubung.",
+  "receiptNumber": "No.",
+  "receiptDate": "Tanggal",
+  "receiptCashier": "Kasir",
+  "receiptCustomer": "Customer",
+  "receiptTotal": "TOTAL",
+  "receiptMethod": "Bayar",
+  "receiptOfflineNote": "Nomor sementara, diganti setelah sync",
+  "storeNameMissing": "Nama toko belum diatur",
+  "historyTitle": "Riwayat transaksi",
+  "historyEmpty": "Belum ada transaksi di perangkat ini.",
+  "statusPending": "Belum terkirim",
+  "statusSynced": "Terkirim",
+  "statusFailed": "Ditolak server",
+  "statusCancelled": "Dibatalkan",
+  "stockConflict": "Konflik stok",
+  "cancelSale": "Batalkan transaksi",
+  "cancelSaleTitle": "Batalkan {number}?",
+  "@cancelSaleTitle": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelReason": "Alasan pembatalan",
+  "cancelReasonShort": "Alasan minimal 3 karakter",
+  "cancelled": "Transaksi dibatalkan.",
+  "cancelNeedsInternet": "Transaksi yang sudah terkirim hanya bisa dibatalkan saat online.",
+  "syncError": "Alasan: {error}",
+  "@syncError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNow": "Sync sekarang",
+  "syncDone": "{count, plural, =0{Tidak ada yang perlu dikirim} =1{1 transaksi terkirim} other{{count} transaksi terkirim}}",
+  "@syncDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "customersTitle": "Customer",
+  "searchCustomers": "Cari nama atau nomor HP",
+  "customersEmpty": "Belum ada customer.",
+  "addCustomer": "Tambah customer",
+  "customerName": "Nama",
+  "customerPhone": "Nomor HP",
+  "customerAddress": "Alamat",
+  "save": "Simpan",
+  "customerSaved": "Customer disimpan.",
+  "onlineOnly": "Fitur ini butuh internet.",
+  "outstanding": "Hutang aktif {amount}",
+  "@outstanding": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "debtsTitle": "Hutang",
+  "noDebts": "Tidak ada hutang.",
+  "remaining": "Sisa {amount} dari {total}",
+  "@remaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "receivePayment": "Terima pembayaran tunai",
+  "paymentAmount": "Jumlah dibayar",
+  "payFull": "Lunasi {amount}",
+  "@payFull": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentRecorded": "Pembayaran dicatat. Sisa {amount}.",
+  "@paymentRecorded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "exceedsRemaining": "Melebihi sisa hutang.",
+  "productsTitle": "Produk",
+  "editProduct": "Edit produk",
+  "productName": "Nama produk",
+  "sku": "SKU",
+  "barcode": "Barcode",
+  "unit": "Satuan",
+  "sellingPrice": "Harga jual",
+  "debtPrice": "Harga hutang",
+  "purchasePrice": "Harga beli",
+  "productType": "Tipe produk",
+  "physical": "Fisik",
+  "digital": "Digital",
+  "category": "Kategori",
+  "newCategory": "Kategori baru",
+  "stockAdjust": "Ubah stok (+/-)",
+  "productSaved": "Produk disimpan.",
+  "superOnly": "Hanya admin",
+  "vPositive": "Harus lebih dari 0",
+  "vBarcode": "Hanya huruf, angka, - . _ (maks 64)",
+  "vSku": "Maks 50 karakter",
+  "vNumber": "Masukkan angka",
+  "storeInfo": "Info toko di struk",
+  "storeName": "Nama toko",
+  "storeAddress": "Alamat toko",
+  "storeFooter": "Catatan kaki struk",
+  "printerTitle": "Printer",
+  "choosePrinter": "Pilih printer Bluetooth",
+  "noPrinter": "Belum ada printer",
+  "paperWidth": "Lebar kertas",
+  "autoPrint": "Cetak otomatis setelah bayar",
+  "testPrint": "Cetak tes",
+  "saved2": "Tersimpan.",
+  "logoutBlocked": "Transaksi {number} masih menunggu pembayaran. Selesaikan atau tunggu sampai kedaluwarsa dulu.",
+  "@logoutBlocked": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "logoutConfirm": "Hapus {count, plural, =1{1 transaksi terbuka} other{{count} transaksi terbuka}} dan keluar?",
+  "@logoutConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "logoutPending": "{count, plural, =1{1 transaksi belum terkirim akan dikirim saat ada yang masuk lagi di HP ini.} other{{count} transaksi belum terkirim akan dikirim saat ada yang masuk lagi di HP ini.}}",
+  "@logoutPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "logoutAnyway": "Keluar",
+  "paymentPushSuccess": "Pembayaran berhasil",
+  "paymentPushFailed": "Pembayaran gagal",
+  "open": "Buka"
 }

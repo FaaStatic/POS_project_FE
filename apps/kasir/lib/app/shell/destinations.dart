@@ -11,5 +11,9 @@ class KasirDestination {
 
 /// Order matches the StatefulShellRoute branches in router.dart.
 final kasirDestinations = <KasirDestination>[
+  KasirDestination((l) => l.navCheckout, Iconsax.shopping_cart),
+  KasirDestination((l) => l.navHistory, Iconsax.receipt_2),
+  KasirDestination((l) => l.navCustomers, Iconsax.profile_2user),
+  KasirDestination((l) => l.navProducts, Iconsax.box),
   KasirDestination((l) => l.navSettings, Iconsax.setting_2),
 ];

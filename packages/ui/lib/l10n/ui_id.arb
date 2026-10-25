@@ -12,8 +12,39 @@
   "nextPage": "Berikutnya",
   "offlineBanner": "Tidak ada koneksi internet",
   "pendingCount": "{count, plural, =0{Semua transaksi terkirim} other{{count} transaksi belum terkirim}}",
-  "@pendingCount": {"placeholders": {"count": {"type": "int"}}},
+  "@pendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "decrease": "Kurangi",
   "increase": "Tambah",
-  "quantity": "Jumlah"
+  "quantity": "Jumlah",
+  "newBuyer": "Pembeli baru",
+  "allTabs": "Semua ({count})",
+  "@allTabs": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tabLabel": "Transaksi {number}",
+  "@tabLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "qtyFor": "Jumlah {name}",
+  "@qtyFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

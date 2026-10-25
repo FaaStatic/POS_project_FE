@@ -1,33 +1,32 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:ui/ui.dart';
 
 import '../../../../app/shell/kasir_page.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../auth/presentation/bloc/auth_cubit.dart';
 import '../bloc/settings_cubit.dart';
 
+/// [account] is supplied by the app layer (signed-in user and sign-out).
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+  const SettingsPage({super.key, required this.account});
+
+  final Widget account;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final settings = context.watch<SettingsCubit>().state;
-    final auth = context.watch<AuthCubit>().state;
 
     return KasirPage(
       title: l10n.settingsTitle,
       body: ConstrainedBody(
-        padding: const EdgeInsets.all(Space.xl),
         child: ListView(
-          shrinkWrap: true,
+          padding: const EdgeInsets.all(Space.lg),
           children: [
-            if (auth case AuthAuthenticated(:final session))
-              Text(l10n.signedInAs(session.username), style: theme.textTheme.bodyLarge),
-            const SizedBox(height: Space.xl),
             Text(l10n.language, style: theme.textTheme.titleSmall),
             const SizedBox(height: Space.sm),
             SegmentedButton<AppLanguage>(
@@ -50,15 +49,25 @@ class SettingsPage extends StatelessWidget {
               selected: {settings.theme},
               onSelectionChanged: (s) => context.read<SettingsCubit>().setTheme(s.first),
             ),
-            const SizedBox(height: Space.xxl),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: AppButton(
-                label: l10n.logout,
-                variant: AppButtonVariant.outline,
-                onPressed: () => context.read<AuthCubit>().logout(),
-              ),
+            const SizedBox(height: Space.xl),
+            const Divider(),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Iconsax.printer),
+              title: Text(l10n.printerTitle),
+              trailing: const Icon(Iconsax.arrow_right_3),
+              onTap: () => context.push('/settings/printer'),
             ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Iconsax.shop),
+              title: Text(l10n.storeInfo),
+              trailing: const Icon(Iconsax.arrow_right_3),
+              onTap: () => context.push('/settings/store'),
+            ),
+            const Divider(),
+            const SizedBox(height: Space.lg),
+            account,
           ],
         ),
       ),

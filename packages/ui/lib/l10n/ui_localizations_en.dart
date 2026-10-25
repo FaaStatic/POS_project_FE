@@ -62,4 +62,22 @@ class UiLocalizationsEn extends UiLocalizations {
 
   @override
   String get quantity => 'Quantity';
+
+  @override
+  String get newBuyer => 'New buyer';
+
+  @override
+  String allTabs(int count) {
+    return 'All ($count)';
+  }
+
+  @override
+  String tabLabel(int number) {
+    return 'Transaction $number';
+  }
+
+  @override
+  String qtyFor(String name) {
+    return 'Quantity of $name';
+  }
 }

@@ -16,17 +16,17 @@ dev_dependencies:
 melos:
   scripts:
     analyze:
-      run: melos exec -c 1 -- flutter analyze --no-fatal-infos
+      run: dart run melos exec -c 1 -- flutter analyze --no-fatal-infos
       description: Static analysis for every package.
     test:
-      run: melos exec -c 1 --dir-exists=test -- flutter test
+      run: dart run melos exec -c 1 --dir-exists=test -- flutter test
       description: Unit and widget tests for every package.
     coverage:
-      run: melos exec -c 1 --dir-exists=test -- "flutter test --coverage && dart run \$MELOS_ROOT_PATH/tool/check_coverage.dart"
+      run: dart run melos exec -c 1 --dir-exists=test -- "flutter test --coverage && dart run \$MELOS_ROOT_PATH/tool/check_coverage.dart"
       description: Fails when domain, data, or presentation/bloc coverage drops under 80%.
     build_runner:
-      run: melos exec -c 1 --depends-on build_runner -- dart run build_runner build --delete-conflicting-outputs
+      run: dart run melos exec -c 1 --depends-on build_runner -- dart run build_runner build --delete-conflicting-outputs
       description: Code generation (freezed, json_serializable, drift).
     gen_l10n:
-      run: melos exec -c 1 --file-exists=l10n.yaml -- flutter gen-l10n
+      run: dart run melos exec -c 1 --file-exists=l10n.yaml -- flutter gen-l10n
       description: Generate localizations from ARB files.

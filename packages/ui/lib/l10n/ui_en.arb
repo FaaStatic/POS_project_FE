@@ -12,8 +12,39 @@
   "nextPage": "Next",
   "offlineBanner": "No internet connection",
   "pendingCount": "{count, plural, =0{All transactions sent} =1{1 transaction not sent} other{{count} transactions not sent}}",
-  "@pendingCount": {"placeholders": {"count": {"type": "int"}}},
+  "@pendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "decrease": "Decrease",
   "increase": "Increase",
-  "quantity": "Quantity"
+  "quantity": "Quantity",
+  "newBuyer": "New buyer",
+  "allTabs": "All ({count})",
+  "@allTabs": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tabLabel": "Transaction {number}",
+  "@tabLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "qtyFor": "Quantity of {name}",
+  "@qtyFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

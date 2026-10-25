@@ -187,6 +187,30 @@ abstract class UiLocalizations {
   /// In id, this message translates to:
   /// **'Jumlah'**
   String get quantity;
+
+  /// No description provided for @newBuyer.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembeli baru'**
+  String get newBuyer;
+
+  /// No description provided for @allTabs.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua ({count})'**
+  String allTabs(int count);
+
+  /// No description provided for @tabLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Transaksi {number}'**
+  String tabLabel(int number);
+
+  /// No description provided for @qtyFor.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah {name}'**
+  String qtyFor(String name);
 }
 
 class _UiLocalizationsDelegate extends LocalizationsDelegate<UiLocalizations> {

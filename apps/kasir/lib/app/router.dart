@@ -6,14 +6,34 @@ import 'package:go_router/go_router.dart';
 import '../features/auth/presentation/bloc/auth_cubit.dart';
 import '../features/auth/presentation/pages/login_page.dart';
 import '../features/auth/presentation/pages/splash_page.dart';
+import '../features/auth/presentation/widgets/account_section.dart';
+import '../features/checkout/presentation/pages/checkout_page.dart';
+import '../features/checkout/presentation/pages/scanner_page.dart';
+import '../features/customers/presentation/pages/add_customer_page.dart';
+import '../features/customers/presentation/pages/customer_detail_page.dart';
+import '../features/customers/presentation/pages/customers_page.dart';
+import '../features/debts/presentation/pages/debt_payment_page.dart';
+import '../features/history/presentation/pages/history_page.dart';
+import '../features/history/presentation/pages/sale_detail_page.dart';
+import '../features/printer/presentation/pages/printer_settings_page.dart';
+import '../features/printer/presentation/pages/store_info_page.dart';
+import '../features/products/presentation/pages/product_edit_page.dart';
+import '../features/products/presentation/pages/products_page.dart';
+import '../features/push/data/push_service.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
+import 'di.dart';
 import 'shell/kasir_shell.dart';
+import 'shell/session_scope.dart';
 
 abstract final class Routes {
   static const splash = '/splash';
   static const login = '/login';
+  static const checkout = '/checkout';
+  static const history = '/history';
+  static const customers = '/customers';
+  static const products = '/products';
   static const settings = '/settings';
-  static const home = settings;
+  static const home = checkout;
 }
 
 GoRouter buildRouter(AuthCubit auth) => GoRouter(
@@ -30,12 +50,56 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
       routes: [
         GoRoute(path: Routes.splash, builder: (_, _) => const SplashPage()),
         GoRoute(path: Routes.login, builder: (_, _) => const LoginPage()),
-        StatefulShellRoute.indexedStack(
-          builder: (_, _, shell) => KasirShell(shell: shell),
-          branches: [
-            StatefulShellBranch(routes: [
-              GoRoute(path: Routes.settings, builder: (_, _) => const SettingsPage()),
-            ]),
+        ShellRoute(
+          builder: (_, _, child) => SessionScope(child: child),
+          routes: [
+            StatefulShellRoute.indexedStack(
+              builder: (_, _, shell) => KasirShell(shell: shell, banner: const SyncBanner()),
+              branches: [
+                StatefulShellBranch(routes: [GoRoute(path: Routes.checkout, builder: (_, _) => const CheckoutPage())]),
+                StatefulShellBranch(routes: [GoRoute(path: Routes.history, builder: (_, _) => const HistoryPage())]),
+                StatefulShellBranch(routes: [
+                  GoRoute(
+                    path: Routes.customers,
+                    builder: (_, _) => const CustomersPage(),
+                    routes: [
+                      GoRoute(path: 'new', builder: (_, _) => const AddCustomerPage()),
+                      GoRoute(path: ':id', builder: (_, s) => CustomerDetailPage(customerId: s.pathParameters['id']!)),
+                    ],
+                  ),
+                ]),
+                StatefulShellBranch(routes: [
+                  GoRoute(
+                    path: Routes.products,
+                    builder: (_, _) => const ProductsPage(),
+                    routes: [GoRoute(path: ':id', builder: (_, s) => ProductEditPage(productId: s.pathParameters['id']!))],
+                  ),
+                ]),
+                StatefulShellBranch(routes: [
+                  GoRoute(
+                    path: Routes.settings,
+                    builder: (_, _) => SettingsPage(
+                      account: AccountSection(beforeLogout: () async {
+                        final push = getIt<PushService>();
+                        final token = push.token;
+                        await push.unregister();
+                        return token;
+                      }),
+                    ),
+                    routes: [
+                      GoRoute(path: 'printer', builder: (_, _) => const PrinterSettingsPage()),
+                      GoRoute(path: 'store', builder: (_, _) => const StoreInfoPage()),
+                    ],
+                  ),
+                ]),
+              ],
+            ),
+            GoRoute(path: '/scan', builder: (_, _) => const ScannerPage()),
+            GoRoute(
+              path: '/sale/:ref',
+              builder: (_, s) => SaleDetailPage(clientRef: s.pathParameters['ref']!, autoPrint: s.uri.queryParameters['print'] == '1'),
+            ),
+            GoRoute(path: '/debts/:id/pay', builder: (_, s) => DebtPaymentPage(debtId: s.pathParameters['id']!)),
           ],
         ),
       ],

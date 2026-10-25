@@ -1,10 +1,14 @@
 export 'l10n/ui_localizations.dart';
 export 'src/components/app_button.dart';
 export 'src/components/app_text_field.dart';
+export 'src/components/confirm_dialog.dart';
 export 'src/components/constrained_body.dart';
 export 'src/components/offline_banner.dart';
+export 'src/components/qty_stepper.dart';
+export 'src/components/search_field.dart';
 export 'src/components/state_views.dart';
 export 'src/components/status_badge.dart';
+export 'src/components/transaction_tab_strip.dart';
 export 'src/theme/app_theme.dart';
 export 'src/theme/status_colors.dart';
 export 'src/tokens/colors.dart';
