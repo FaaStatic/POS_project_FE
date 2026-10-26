@@ -117,6 +117,20 @@ void main() {
     await tester.runAsync(app.close);
   });
 
+  testWidgets('bottom bar has four tabs; products open from Lainnya with the bar still shown', (tester) async {
+    final app = AppHarness(online: true)..serveBackend();
+    await app.tokens.writeRefreshToken('r0');
+    await app.pump(tester, size: const Size(412, 892));
+    expect(find.byType(NavigationDestination), findsNWidgets(4));
+    await tester.tap(find.text('Lainnya'));
+    await app.settle(tester);
+    await tester.tap(find.text('Produk'));
+    await app.settle(tester);
+    expect(find.text('Indomie Goreng'), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
+    await tester.runAsync(app.close);
+  });
+
   testWidgets('checkout survives 200% text on a narrow phone', (tester) async {
     final app = AppHarness(online: true)..serveBackend();
     await app.tokens.writeRefreshToken('r0');

@@ -1261,6 +1261,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Tambah {name}'**
   String addItem(String name);
+
+  /// No description provided for @navMore.
+  ///
+  /// In id, this message translates to:
+  /// **'Lainnya'**
+  String get navMore;
 }
 
 class _AppLocalizationsDelegate

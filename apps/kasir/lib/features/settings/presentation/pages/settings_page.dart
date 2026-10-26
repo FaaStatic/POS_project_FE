@@ -22,11 +22,39 @@ class SettingsPage extends StatelessWidget {
     final settings = context.watch<SettingsCubit>().state;
 
     return KasirPage(
-      title: l10n.settingsTitle,
+      title: l10n.navMore,
       body: ConstrainedBody(
         child: ListView(
           padding: const EdgeInsets.all(Space.lg),
           children: [
+            Card(
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Iconsax.box),
+                    title: Text(l10n.navProducts),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => context.push('/settings/products'),
+                  ),
+                  const Divider(indent: Space.lg, endIndent: Space.lg),
+                  ListTile(
+                    leading: const Icon(Iconsax.printer),
+                    title: Text(l10n.printerTitle),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => context.push('/settings/printer'),
+                  ),
+                  const Divider(indent: Space.lg, endIndent: Space.lg),
+                  ListTile(
+                    leading: const Icon(Iconsax.shop),
+                    title: Text(l10n.storeInfo),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => context.push('/settings/store'),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: Space.md),
             SurfaceCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,27 +80,6 @@ class SettingsPage extends StatelessWidget {
                     ],
                     selected: {settings.theme},
                     onSelectionChanged: (s) => context.read<SettingsCubit>().setTheme(s.first),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: Space.md),
-            Card(
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Iconsax.printer),
-                    title: Text(l10n.printerTitle),
-                    trailing: const Icon(Iconsax.arrow_right_3),
-                    onTap: () => context.push('/settings/printer'),
-                  ),
-                  const Divider(indent: Space.lg, endIndent: Space.lg),
-                  ListTile(
-                    leading: const Icon(Iconsax.shop),
-                    title: Text(l10n.storeInfo),
-                    trailing: const Icon(Iconsax.arrow_right_3),
-                    onTap: () => context.push('/settings/store'),
                   ),
                 ],
               ),

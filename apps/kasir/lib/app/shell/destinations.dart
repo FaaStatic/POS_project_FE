@@ -14,6 +14,6 @@ final kasirDestinations = <KasirDestination>[
   KasirDestination((l) => l.navCheckout, Iconsax.shopping_cart),
   KasirDestination((l) => l.navHistory, Iconsax.receipt_2),
   KasirDestination((l) => l.navCustomers, Iconsax.profile_2user),
-  KasirDestination((l) => l.navProducts, Iconsax.box),
-  KasirDestination((l) => l.navSettings, Iconsax.setting_2),
+  // Products and settings are rare for a cashier, so they share "Lainnya" (Square POS "More").
+  KasirDestination((l) => l.navMore, Iconsax.menu_1),
 ];

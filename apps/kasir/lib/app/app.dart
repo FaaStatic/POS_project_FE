@@ -45,8 +45,8 @@ class _KasirAppState extends State<KasirApp> {
               onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
               debugShowCheckedModeBanner: false,
               routerConfig: _router,
-              theme: AppTheme.light,
-              darkTheme: AppTheme.dark,
+              theme: _kasirTheme(AppTheme.light),
+              darkTheme: _kasirTheme(AppTheme.dark),
               themeMode: themeModeOf(settings.theme),
               locale: Locale(settings.language.name),
               supportedLocales: AppLocalizations.supportedLocales,
@@ -68,3 +68,21 @@ ThemeMode themeModeOf(ThemePreference preference) => switch (preference) {
       ThemePreference.light => ThemeMode.light,
       ThemePreference.dark => ThemeMode.dark,
     };
+
+/// Kasir-only: segmented controls as shadcn toggles (ink selection, no check mark).
+/// The CMS keeps the shared theme unchanged.
+ThemeData _kasirTheme(ThemeData base) {
+  final scheme = base.colorScheme;
+  return base.copyWith(
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      selectedIcon: const SizedBox.shrink(),
+      style: SegmentedButton.styleFrom(
+        selectedBackgroundColor: scheme.primary,
+        selectedForegroundColor: scheme.onPrimary,
+        backgroundColor: scheme.surface,
+        side: BorderSide(color: scheme.outlineVariant),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.control)),
+      ),
+    ),
+  );
+}

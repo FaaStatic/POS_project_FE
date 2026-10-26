@@ -686,4 +686,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String addItem(String name) {
     return 'Add $name';
   }
+
+  @override
+  String get navMore => 'More';
 }

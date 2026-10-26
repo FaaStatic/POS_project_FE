@@ -686,4 +686,7 @@ class AppLocalizationsId extends AppLocalizations {
   String addItem(String name) {
     return 'Tambah $name';
   }
+
+  @override
+  String get navMore => 'Lainnya';
 }

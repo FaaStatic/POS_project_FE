@@ -58,7 +58,7 @@ class CustomersPage extends StatelessWidget {
                                 leading: InitialAvatar(name: c.name, square: false, size: 40),
                                 title: Text(c.name),
                                 subtitle: c.phone.isEmpty ? null : Text(c.phone),
-                                trailing: const Icon(Iconsax.arrow_right_3),
+                                trailing: const Icon(Icons.chevron_right_rounded),
                                 onTap: () => context.push('/customers/${c.id}'),
                               ),
                             );

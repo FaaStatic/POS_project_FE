@@ -58,7 +58,7 @@ class ProductsPage extends StatelessWidget {
                                   rupiah(context, p.sellingPrice),
                                   style: theme.textTheme.titleSmall?.tabular,
                                 ),
-                                onTap: () => context.push('/products/${p.id}'),
+                                onTap: () => context.push('/settings/products/${p.id}'),
                               ),
                             );
                           },

@@ -31,7 +31,6 @@ abstract final class Routes {
   static const checkout = '/checkout';
   static const history = '/history';
   static const customers = '/customers';
-  static const products = '/products';
   static const settings = '/settings';
   static const home = checkout;
 }
@@ -74,13 +73,6 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
                 ]),
                 StatefulShellBranch(routes: [
                   GoRoute(
-                    path: Routes.products,
-                    builder: (_, _) => const ProductsPage(),
-                    routes: [GoRoute(path: ':id', builder: (_, s) => ProductEditPage(productId: s.pathParameters['id']!))],
-                  ),
-                ]),
-                StatefulShellBranch(routes: [
-                  GoRoute(
                     path: Routes.settings,
                     builder: (_, _) => SettingsPage(
                       account: AccountSection(beforeLogout: () async {
@@ -93,6 +85,13 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
                     routes: [
                       GoRoute(path: 'printer', builder: (_, _) => const PrinterSettingsPage()),
                       GoRoute(path: 'store', builder: (_, _) => const StoreInfoPage()),
+                      GoRoute(
+                        path: 'products',
+                        builder: (_, _) => const ProductsPage(),
+                        routes: [
+                          GoRoute(path: ':id', builder: (_, s) => ProductEditPage(productId: s.pathParameters['id']!)),
+                        ],
+                      ),
                     ],
                   ),
                 ]),
