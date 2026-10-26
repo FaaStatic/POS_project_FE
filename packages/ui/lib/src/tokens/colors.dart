@@ -1,7 +1,7 @@
 import 'package:flutter/painting.dart';
 
-/// Zinc neutrals (shadcn) plus the brand green. Values are fixed brand
-/// commitments; Dynamic Color is intentionally not used.
+/// Zinc neutrals (shadcn) plus the brand green, which is reserved for meaning
+/// (success, change due, upward trend). Dynamic Color is intentionally not used.
 abstract final class Zinc {
   static const c50 = Color(0xFFFAFAFA);
   static const c100 = Color(0xFFF4F4F5);
@@ -17,14 +17,12 @@ abstract final class Zinc {
 }
 
 abstract final class BrandColors {
-  /// Deep green for the CMS sidebar and kasir header (white text 12:1).
-  static const forest = Color(0xFF0F3D2E);
-  static const forestRaised = Color(0xFF16523E);
-  static const forestDark = Color(0xFF0C241B);
-  static const onForestMuted = Color(0xFFB7D3C5);
-  static const onForestMutedDark = Color(0xFF9FBFB0);
-  static const indicatorOnForest = Color(0xFFC8F2D8);
-  static const indicatorOnForestDark = Color(0xFF4ADE80);
+  /// Ink surface for the CMS sidebar, kasir nav, and payment total (shadcn primary).
+  static const ink = Zinc.c900;
+  static const inkRaised = Zinc.c800;
+
+  /// Green accent on ink: snackbar actions, the logo mark (on-ink 9:1).
+  static const greenOnInk = Color(0xFF4ADE80);
 
   /// Page canvas behind white cards (shadcn neutral "muted").
   static const canvas = Zinc.c100;

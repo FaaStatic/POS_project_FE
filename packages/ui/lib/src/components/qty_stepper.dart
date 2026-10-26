@@ -39,15 +39,24 @@ class QtyStepper extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final square = RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.small + 4));
+    // 36dp squares drawn, 48dp hit area kept by the padded tap target size.
+    const drawn = Size.square(36);
     // Muted minus, filled plus: the frequent action carries the weight.
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton.filledTonal(
           tooltip: l10n.decrease,
-          style: IconButton.styleFrom(shape: square, backgroundColor: scheme.surfaceContainer, foregroundColor: scheme.onSurface),
+          style: IconButton.styleFrom(
+            shape: square,
+            minimumSize: drawn,
+            fixedSize: drawn,
+            padding: EdgeInsets.zero,
+            backgroundColor: scheme.surfaceContainer,
+            foregroundColor: scheme.onSurface,
+          ),
           onPressed: enabled ? () => onChanged(value - 1 < 0 ? 0 : value - 1) : null,
-          icon: const Icon(Icons.remove_rounded),
+          icon: const Icon(Icons.remove_rounded, size: 20),
         ),
         Semantics(
           label: l10n.qtyFor(itemName),
@@ -57,16 +66,16 @@ class QtyStepper extends StatelessWidget {
             onTap: enabled ? () => _edit(context) : null,
             borderRadius: BorderRadius.circular(Radii.small),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 48),
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 48),
               child: Center(child: Text(_label, style: theme.textTheme.titleMedium?.tabular)),
             ),
           ),
         ),
         IconButton.filled(
           tooltip: l10n.increase,
-          style: IconButton.styleFrom(shape: square),
+          style: IconButton.styleFrom(shape: square, minimumSize: drawn, fixedSize: drawn, padding: EdgeInsets.zero),
           onPressed: enabled ? () => onChanged(value + 1) : null,
-          icon: const Icon(Icons.add_rounded),
+          icon: const Icon(Icons.add_rounded, size: 20),
         ),
       ],
     );

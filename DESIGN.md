@@ -4,20 +4,22 @@ Mode: Operate. Both apps are task tools; reading numbers fast and consistency co
 
 ## Color
 
+Ink and white, shadcn default, after the two references (owner decision 2026-10-26). Green is an accent that always means something.
+
 | Role | Light | Dark | Use |
 |---|---|---|---|
-| Primary | `#15803D` | `#22C55E` (on-primary `#052E16`) | Main action per screen (Bayar, Simpan), active tab, success |
-| Shell (forest) | `#0F3D2E`, raised `#16523E` | `#0C241B` | CMS sidebar/rail/drawer, kasir floating nav and tablet rail, active transaction tab, payment total card. White text 12:1 |
-| Selected on forest | `#16523E` pill, white text | forest pill, white text | Selected item in the CMS sidebar and the kasir nav |
-| Canvas | zinc 100 | zinc 950 | Page background behind cards (shadcn neutral) |
-| Surface | `#FFFFFF` | zinc 900, raised zinc 800 | Cards, sheets, inputs |
-| Neutrals | zinc 50–950 | zinc 50–950 | Text, borders, containers |
+| Primary (ink) | zinc 900, white text | zinc 50, zinc 900 text | Main action per screen (Bayar, Simpan), + buttons, active tab, selected method and chips, stat icon tiles |
+| Shell | zinc 900, selected zinc 800 | zinc 900, selected zinc 800 | CMS sidebar/rail/drawer, kasir floating nav and tablet rail, payment total card |
+| Green accent | `#15803D` (success) | `#4ADE80` on ink | Change due, upward trend, "di keranjang", paid/synced status, logo mark, chart series 1 |
+| Canvas | zinc 100 | zinc 950 | Page background behind cards |
+| Surface | `#FFFFFF` | zinc 900 | Cards, sheets, inputs |
+| Neutrals | zinc 50–950 | zinc 50–950 | Text, containers, grey pills (`surfaceContainer`) |
 | Input border (`outline`) | zinc 500 | zinc 500 | 3:1 against the surface (WCAG 1.4.11) |
-| Divider (`outlineVariant`) | zinc 200 | zinc 800 | Decorative only |
+| Divider (`outlineVariant`) | zinc 200 | zinc 800 | Decorative only, outline buttons |
 | Warning | `#B45309` / container `#FEF3C7` | `#FBBF24` / `#451A03` | Stock conflict, not synced, offline |
-| Danger | `#B91C1C` / `#FEE2E2` | `#F87171` / `#450A0A` | Errors, cancel, destructive |
+| Danger | `#B91C1C` / `#FEE2E2` | `#F87171` / `#450A0A` | Errors, cancel, shortfall, destructive |
 
-Status always ships with a label and a dot or icon, never color alone (`StatusBadge`). Green is not used for decoration.
+Selected states use `primary`/`onPrimary`, never the shell color: in dark mode the shell equals the card surface. Status always ships with a label and a dot or icon, never color alone (`StatusBadge`).
 
 Chart series (`ChartColors`, validated with the dataviz checker): light `#15803D` + `#2A78D6`, dark `#16A34A` + `#3987E5`. The second series is dashed, there is a legend, and a table view.
 
@@ -27,11 +29,13 @@ Inter, bundled in `packages/ui/fonts` (works offline). Body 16, small 14, labels
 
 ## Shape and space
 
-Radius: 6 (inputs, badges), 10 (qty stepper buttons), 14 (cards, stat tiles), 20 (dashboard summary panel), full for chips, transaction tabs, add buttons, and people avatars. Spacing steps 4/8/12/16/24/32/48.
+Radius: 6 (badges), 10 (qty stepper and + buttons), 12 (buttons, inputs, icon tiles, menus), 16 (cards, stat tiles), 24 (panels: `SurfaceCard`, summary panel, payment total card), full for chips, the range pill, and people avatars. Spacing steps 4/8/12/16/24/32/48.
 
-Elevation: shadcn style. White cards on the zinc canvas carry a 1px `outlineVariant` border plus shadow-sm (elevation 1, 8% black). Floating elements (kasir nav, cart bar) use elevation 6. Grouped content lives in one card; cards are never nested, except stat tiles, which are flat `surfaceContainerLow` blocks inside the summary panel. Lists of products, sales, and customers are cards with a gap instead of rows split by dividers.
+Elevation: flat. White cards sit on the zinc canvas with no border and no shadow; the tone step is the depth cue. Only the floating kasir nav carries a shadow. The cart paints the canvas behind its cards so they read inside the white sheet. Stat tiles are flat `surfaceContainerLow` blocks inside the summary panel.
 
-Avatars: initials (letters only, so "Aqua 600ml" is AQ) on the brand mint, or the product image when its URL loads. One color for every item; color is not used to tell categories apart.
+Inputs: label above the field (shadcn), merged with the field for screen readers. The kasir product search is the one borderless field (white on canvas, identified by its icon and hint; focus still draws the ring).
+
+Avatars: initials (letters only, so "Aqua 600ml" is AQ) on a neutral tile, or the product image when its URL loads. Color is not used to tell categories apart.
 
 ## Touch and text size
 
@@ -39,16 +43,17 @@ Tap targets ≥ 48dp, primary actions 56dp (`AppButton(large: true)`). Every scr
 
 ## Layout
 
-- CMS: drawer < 600, navigation rail 600–1024, sidebar > 1024 (`CmsShell`), all on forest. Tables sit in one white card and become cards below 600, dropping secondary columns below 1024 (`ResponsiveTable`). Forms open as full pages on phones and dialogs elsewhere (`showFormSurface`). Page actions sit in a row under the title; on phones the row scrolls sideways. Login is a forest panel beside the form on wide windows.
-- Kasir (reference: Dribbble 27265995, POS cashier for a small store, restyled to shadcn): floating forest navigation bar on narrow windows, forest rail on wide ones. Header shows the store name, the cashier, and the title "Transaksi". Transaction tabs are pills (active forest, inactive white bordered); "Pembeli baru" and "Semua" sit at the right from 520, below the pills otherwise. Products are a list of cards on phones and a grid on tablets; a badge shows how many are already in the active tab. The cart is a white bar above the nav on phones (opens a sheet) and a side panel from 720. Checkout has two steps: cart (customer, items, total, "Lanjut ke pembayaran") then payment (forest total card, method cards, VA bank chips, cash received with "Uang pas" and rounded-note chips, change or shortfall). Bayar stays disabled while cash is short.
-- CMS top bar: white with a bottom border, page title, language toggle (ID/EN), and an account avatar menu (name, Pengaturan, Keluar).
-- Dashboard (reference: Dribbble 27017971, POS billing/inventory dashboard): one "Ringkasan" panel with a range menu and four equal-height stat tiles (mint icon tile, label, value, trend vs the previous period of the same length), then the chart card beside "Perlu tindakan", then recent transactions beside the detail cards. On phones "Perlu tindakan" comes first. Trends are computed from real previous-period data; receivables have no trend. No up/down comparison without a named period.
+- CMS (reference: Dribbble 27017971, Panze POS dashboard): drawer < 600, navigation rail 600–1024, sidebar > 1024 (`CmsShell`), all on ink with a lighter selected pill. Top bar white with a bottom border, page title in medium weight, language toggle (ID/EN), account avatar menu. Tables sit in one white panel and become cards below 600 (`ResponsiveTable`). Forms open as full pages on phones and dialogs elsewhere (`showFormSurface`). Page actions sit in a row under the title; on phones the row scrolls sideways. Login is an ink panel beside the form on wide windows.
+- Dashboard: one "Ringkasan" panel with a grey range pill and four equal-height stat tiles (ink icon tile, label, value, trend vs the previous period of the same length), then the chart panel beside "Perlu tindakan", then recent transactions beside the details. On phones "Perlu tindakan" comes first. Trends come from real previous-period data; receivables have no trend.
+- Kasir (reference: Dribbble 27265995, Vinz POS cashier): header with store and cashier in small print, title "Transaksi", and on phones a cart button with the item count. Transaction tabs: active ink, others white; "Pembeli baru" and "Semua (N)" are pinned at the end of the same row (icon squares with tooltips below 520, labelled buttons above). Search and Scan on white, category chips (active ink). Products: cards with initials, name, stock line, price, and a small ink + (the whole card also adds); a list on phones, a grid on tablets whose tile height follows the text scale.
+- Kasir sizes: phone and portrait tablet (< 900 content width) keep the cart in a sheet; landscape tablets show the order full height on the right (380, 420 from 1100) behind a hairline. Floating ink nav below 600, ink rail above.
+- Checkout has two steps: cart (customer, item cards with − qty + and subtotal on the right, total, "Lanjut ke pembayaran") then payment (ink total card with a green dot line, method cards with the selected one in ink, VA bank chips, cash card with "Uang pas" and rounded-note chips, input, green change or red shortfall). Bayar stays disabled while cash is short.
 
 ## Interaction
 
-- Important actions are labelled buttons; nothing lives only behind long-press or swipe. Row actions use a visible "Aksi" menu button.
+- Important actions are labelled buttons; nothing lives only behind long-press or swipe. Row actions use a visible "Aksi" menu button. Exceptions taken from the kasir reference: the product + and the phone tab actions are icon buttons with tooltips and semantic labels ("Tambah Indomie Goreng"), and the product card itself is the large labelled target.
 - Snackbars for short feedback (scan added, saved, synced). Dialogs only for decisions that stop the flow: close a tab with items, cancel a sale (reason required), permanent delete (type the name).
-- Motion is limited to state changes (tab underline, 150–250 ms ease-out).
+- Motion is limited to state changes (tab color, 150–250 ms ease-out).
 - Icons: Iconsax for navigation and objects; plain Material glyphs (`add_rounded`, `remove_rounded`, `search_rounded`) for +, −, and search, because the Iconsax versions are boxed and read heavy inside buttons.
 
 ## Copy

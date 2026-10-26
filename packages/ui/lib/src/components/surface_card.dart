@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../tokens/spacing.dart';
 
-/// White surface on the mint canvas: the one container for grouped content.
+/// White panel on the zinc canvas: the one container for grouped content.
 class SurfaceCard extends StatelessWidget {
   const SurfaceCard({super.key, required this.child, this.padding = const EdgeInsets.all(Space.xl), this.color, this.onTap});
 
@@ -14,6 +14,7 @@ class SurfaceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(
         color: color,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.large)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(onTap: onTap, child: Padding(padding: padding, child: child)),
       );

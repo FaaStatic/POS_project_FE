@@ -7,7 +7,7 @@ import 'cms_page.dart';
 import 'destinations.dart';
 
 /// Drawer below 600, navigation rail up to 1024, persistent sidebar above.
-/// All three sit on the brand's deep green.
+/// All three sit on the ink surface.
 class CmsShell extends StatefulWidget {
   const CmsShell({super.key, required this.shell});
 
@@ -67,7 +67,7 @@ class _CmsShellState extends State<CmsShell> {
   }
 }
 
-/// Recolors drawer and rail for the green surface without touching page content.
+/// Recolors drawer and rail for the ink surface without touching page content.
 class _BrandNavTheme extends StatelessWidget {
   const _BrandNavTheme({required this.child});
   final Widget child;
@@ -84,7 +84,9 @@ class _BrandNavTheme extends StatelessWidget {
           backgroundColor: shell.background,
           indicatorColor: shell.selected,
           indicatorShape: const StadiumBorder(),
-          labelTextStyle: WidgetStateProperty.resolveWith((s) => label.copyWith(color: fg(s))),
+          labelTextStyle: WidgetStateProperty.resolveWith(
+            (s) => label.copyWith(color: fg(s), fontWeight: s.contains(WidgetState.selected) ? FontWeight.w600 : FontWeight.w500),
+          ),
           iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(color: fg(s), size: 22)),
         ),
         navigationRailTheme: theme.navigationRailTheme.copyWith(

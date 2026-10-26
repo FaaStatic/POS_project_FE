@@ -192,5 +192,13 @@
   "back": "Back",
   "subtotal": "Subtotal",
   "cashierLine": "Cashier: {name}",
-  "checkoutTitle": "Checkout"
+  "checkoutTitle": "Checkout",
+  "addItem": "Add {name}",
+  "@addItem": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

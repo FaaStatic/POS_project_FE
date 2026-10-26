@@ -6,7 +6,7 @@ import '../pump.dart';
 
 void main() {
   for (final dark in [false, true]) {
-    testWidgets('selected chip and forest surfaces meet contrast (dark: $dark)', (tester) async {
+    testWidgets('selected chip and ink surfaces meet contrast (dark: $dark)', (tester) async {
       final handle = tester.ensureSemantics();
       await pumpUi(
         tester,

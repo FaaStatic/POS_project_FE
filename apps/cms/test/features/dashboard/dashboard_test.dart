@@ -76,7 +76,7 @@ void main() {
     await tester.tap(find.text('Lihat sebagai tabel'));
     await tester.pumpAndSettle();
     expect(find.byType(DataTable), findsOneWidget);
-    await tester.tap(find.widgetWithText(OutlinedButton, '30 hari'));
+    await tester.tap(find.widgetWithText(TextButton, '30 hari'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('7 hari').last);
     await tester.pumpAndSettle();

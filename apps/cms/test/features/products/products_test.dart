@@ -57,6 +57,7 @@ void main() {
     await tester.enterText(fields.at(5), '17000');
     await tester.enterText(fields.at(6), '5');
     await tester.enterText(fields.at(7), 'Sembako');
+    await tester.ensureVisible(find.widgetWithText(FilledButton, 'Simpan'));
     await tester.tap(find.widgetWithText(FilledButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Produk disimpan.'), findsOneWidget);

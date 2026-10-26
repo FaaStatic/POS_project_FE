@@ -10,7 +10,7 @@ import '../../../../common/catalog/catalog_cubits.dart';
 import '../bloc/checkout_bloc.dart';
 
 /// Search (also receives hardware-scanner input), category filter, and the
-/// product list with a labelled "Tambah" button per row.
+/// product list; tapping a card or its + adds one to the active tab.
 class ProductPane extends StatefulWidget {
   const ProductPane({super.key, required this.onScan});
 
@@ -44,6 +44,7 @@ class _ProductPaneState extends State<ProductPane> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
     final state = context.watch<ProductsCubit>().state;
 
     // Search and filters scroll away with the list so large text never squeezes it.
@@ -54,17 +55,29 @@ class _ProductPaneState extends State<ProductPane> {
             padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.sm),
             child: Row(
               children: [
+                // White on the canvas, identified by its icon and hint; focus still draws the ring.
                 Expanded(
-                  child: SearchField(
-                    controller: _search,
-                    focusNode: _focus,
-                    hint: l10n.searchProducts,
-                    onChanged: context.read<ProductsCubit>().search,
-                    onSubmitted: _submitted,
+                  child: Theme(
+                    data: theme.copyWith(
+                      inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(Radii.control),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    child: SearchField(
+                      controller: _search,
+                      focusNode: _focus,
+                      hint: l10n.searchProducts,
+                      onChanged: context.read<ProductsCubit>().search,
+                      onSubmitted: _submitted,
+                    ),
                   ),
                 ),
                 const SizedBox(width: Space.sm),
                 OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(side: BorderSide.none, minimumSize: const Size(TapSize.min, 52)),
                   onPressed: widget.onScan,
                   icon: const Icon(Iconsax.scan_barcode),
                   label: Text(l10n.scan),
@@ -123,11 +136,11 @@ class _ProductPaneState extends State<ProductPane> {
             return SliverPadding(
               padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.xxl),
               sliver: SliverGrid.builder(
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 220,
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 240,
                   mainAxisSpacing: Space.md,
                   crossAxisSpacing: Space.md,
-                  mainAxisExtent: 264,
+                  mainAxisExtent: _ProductTile.extent(context),
                 ),
                 itemCount: state.products.length,
                 itemBuilder: (context, i) =>
@@ -136,7 +149,7 @@ class _ProductPaneState extends State<ProductPane> {
             );
           }
           return SliverPadding(
-            padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, 120),
+            padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.xl),
             sliver: SliverList.separated(
               itemCount: state.products.length,
               separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
@@ -173,52 +186,43 @@ class _ProductRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final inCart = _inCart(context, product.id);
-    final details = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(product.name, style: theme.textTheme.titleSmall),
-        const SizedBox(height: 2),
-        Text(rupiah(context, product.sellingPrice), style: theme.textTheme.titleMedium?.tabular),
-        _StockLine(product: product, inCart: inCart),
-      ],
-    );
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => context.read<CheckoutBloc>().add(ProductAdded(product)),
         child: Padding(
-          padding: const EdgeInsets.all(Space.md),
-          // Large text moves the button under the name instead of squeezing it.
-          child: MediaQuery.textScalerOf(context).scale(16) > 21
-              ? Column(
+          padding: const EdgeInsets.fromLTRB(Space.md, Space.md, Space.sm, Space.sm),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InitialAvatar(name: product.name, imageUrl: product.image, size: 48),
+              const SizedBox(width: Space.md),
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: Space.sm),
+                      child: Text(product.name, style: theme.textTheme.titleSmall),
+                    ),
+                    const SizedBox(height: 2),
+                    _StockLine(product: product, inCart: inCart),
+                    // Price and the add button share the bottom line, as in the receipt.
                     Row(
                       children: [
-                        InitialAvatar(name: product.name, imageUrl: product.image),
-                        const SizedBox(width: Space.md),
-                        Expanded(child: details),
+                        Expanded(
+                          child: Text(rupiah(context, product.sellingPrice), style: theme.textTheme.titleMedium?.tabular),
+                        ),
+                        _AddButton(product: product),
                       ],
                     ),
-                    const SizedBox(height: Space.sm),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: _AddButton(product: product, label: l10n.add),
-                    ),
-                  ],
-                )
-              : Row(
-                  children: [
-                    InitialAvatar(name: product.name, imageUrl: product.image),
-                    const SizedBox(width: Space.md),
-                    Expanded(child: details),
-                    const SizedBox(width: Space.sm),
-                    _AddButton(product: product, label: l10n.add),
                   ],
                 ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -229,9 +233,11 @@ class _ProductTile extends StatelessWidget {
   const _ProductTile({super.key, required this.product});
   final Product product;
 
+  /// Tile height that still fits two name lines at the current text scale.
+  static double extent(BuildContext context) => 120 + 80 * MediaQuery.textScalerOf(context).scale(16) / 16;
+
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final inCart = _inCart(context, product.id);
     return Card(
@@ -239,31 +245,37 @@ class _ProductTile extends StatelessWidget {
       child: InkWell(
         onTap: () => context.read<CheckoutBloc>().add(ProductAdded(product)),
         child: Padding(
-          padding: const EdgeInsets.all(Space.md),
+          padding: const EdgeInsets.fromLTRB(Space.md, Space.md, Space.sm, Space.sm),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Stack(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  InitialAvatar(name: product.name, imageUrl: product.image, size: 72),
-                  if (inCart > 0) Positioned(right: 0, top: 0, child: _CartCount(qty: inCart)),
+                  InitialAvatar(name: product.name, imageUrl: product.image, size: 48),
+                  const Spacer(),
+                  if (inCart > 0)
+                    Padding(
+                      padding: const EdgeInsets.only(right: Space.xs),
+                      child: _CartCount(qty: inCart),
+                    ),
                 ],
               ),
-              const SizedBox(height: Space.sm),
-              Expanded(
-                child: Text(
-                  product.name,
-                  style: theme.textTheme.titleSmall,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              Text(rupiah(context, product.sellingPrice), style: theme.textTheme.titleMedium?.tabular),
+              const SizedBox(height: Space.md),
+              Text(product.name, style: theme.textTheme.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
+              const Spacer(),
               _StockLine(product: product, inCart: 0),
-              const SizedBox(height: Space.sm),
-              SizedBox(
-                width: double.infinity,
-                child: _AddButton(product: product, label: l10n.add),
+              Row(
+                children: [
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(rupiah(context, product.sellingPrice), style: theme.textTheme.titleMedium?.tabular),
+                    ),
+                  ),
+                  _AddButton(product: product),
+                ],
               ),
             ],
           ),
@@ -284,19 +296,24 @@ class _StockLine extends StatelessWidget {
     final theme = Theme.of(context);
     final status = StatusColors.of(context);
     final empty = !product.isDigital && product.stock <= 0;
-    return Wrap(
-      spacing: Space.sm,
-      children: [
-        Text(
-          product.isDigital ? l10n.digital : (empty ? l10n.outOfStock : l10n.stock(qty(context, product.stock))),
-          style: theme.textTheme.bodySmall?.copyWith(color: empty ? status.warning : null),
-        ),
-        if (inCart > 0)
-          Text(
-            l10n.inCart(qty(context, inCart)),
-            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
+    final muted = theme.textTheme.bodySmall;
+    return Text.rich(
+      TextSpan(
+        style: muted,
+        children: [
+          TextSpan(
+            text: product.isDigital ? l10n.digital : (empty ? l10n.outOfStock : l10n.stock(qty(context, product.stock))),
+            style: empty ? TextStyle(color: status.warning, fontWeight: FontWeight.w600) : null,
           ),
-      ],
+          if (inCart > 0) ...[
+            const TextSpan(text: '  ·  '),
+            TextSpan(
+              text: l10n.inCart(qty(context, inCart)),
+              style: TextStyle(color: status.success, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -307,28 +324,34 @@ class _CartCount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shell = ShellColors.of(context);
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: 2),
-      decoration: BoxDecoration(color: shell.background, borderRadius: BorderRadius.circular(Radii.full)),
+      decoration: BoxDecoration(color: scheme.primary, borderRadius: BorderRadius.circular(Radii.full)),
       child: Text(
         formatQty(qty),
-        style: Theme.of(context).textTheme.labelMedium?.tabular.copyWith(color: shell.foreground),
+        style: Theme.of(context).textTheme.labelMedium?.tabular.copyWith(color: scheme.onPrimary),
       ),
     );
   }
 }
 
+/// Small ink square; the whole card is also tappable, so the glyph never has to
+/// carry the action alone.
 class _AddButton extends StatelessWidget {
-  const _AddButton({required this.product, required this.label});
+  const _AddButton({required this.product});
   final Product product;
-  final String label;
 
   @override
-  Widget build(BuildContext context) => FilledButton.icon(
-    style: FilledButton.styleFrom(shape: const StadiumBorder()),
+  Widget build(BuildContext context) => IconButton.filled(
+    tooltip: AppLocalizations.of(context).addItem(product.name),
+    style: IconButton.styleFrom(
+      minimumSize: const Size.square(36),
+      fixedSize: const Size.square(36),
+      padding: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.small + 4)),
+    ),
     onPressed: () => context.read<CheckoutBloc>().add(ProductAdded(product)),
-    icon: const Icon(Icons.add_rounded, size: 22),
-    label: Text(label),
+    icon: const Icon(Icons.add_rounded, size: 20),
   );
 }

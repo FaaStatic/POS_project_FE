@@ -681,4 +681,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get checkoutTitle => 'Checkout';
+
+  @override
+  String addItem(String name) {
+    return 'Add $name';
+  }
 }

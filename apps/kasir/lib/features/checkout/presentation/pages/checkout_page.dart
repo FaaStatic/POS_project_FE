@@ -17,7 +17,8 @@ import '../widgets/product_list.dart';
 class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key});
 
-  static const _sideBySide = 720.0;
+  /// Landscape tablets; portrait tablets keep the grid and open the cart as a sheet.
+  static const _sideBySide = 900.0;
 
   Future<void> _scan(BuildContext context) async {
     final bloc = context.read<CheckoutBloc>();
@@ -65,40 +66,29 @@ class CheckoutPage extends StatelessWidget {
 
               return LayoutBuilder(
                 builder: (context, constraints) {
-                  if (constraints.maxWidth >= _sideBySide) {
-                    return Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              const _Header(),
-                              strip,
-                              const SizedBox(height: Space.sm),
-                              Expanded(child: products),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, Space.lg, Space.lg, Space.lg),
-                          child: SizedBox(
-                            width: constraints.maxWidth >= 1000 ? 420 : 360,
-                            child: const Card(clipBehavior: Clip.antiAlias, child: CartPanel()),
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                  return Stack(
+                  final wide = constraints.maxWidth >= _sideBySide;
+                  final main = Column(
                     children: [
-                      Column(
-                        children: [
-                          const _Header(),
-                          strip,
-                          const SizedBox(height: Space.sm),
-                          Expanded(child: products),
-                        ],
+                      _Header(showCart: !wide),
+                      strip,
+                      const SizedBox(height: Space.sm),
+                      Expanded(child: products),
+                    ],
+                  );
+                  if (!wide) return main;
+                  // Tablets: the order runs full height beside the catalog, like a POS counter screen.
+                  return Row(
+                    children: [
+                      Expanded(child: main),
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          border: Border(left: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
+                        ),
+                        child: SizedBox(
+                          width: constraints.maxWidth >= 1100 ? 420 : 380,
+                          child: const CartPanel(),
+                        ),
                       ),
-                      const Positioned(left: 0, right: 0, bottom: 0, child: _CartBar()),
                     ],
                   );
                 },
@@ -111,9 +101,10 @@ class CheckoutPage extends StatelessWidget {
   }
 }
 
-/// Store and cashier in small print above the page title.
+/// Store and cashier in small print above the page title; phones add the cart button.
 class _Header extends StatelessWidget {
-  const _Header();
+  const _Header({required this.showCart});
+  final bool showCart;
 
   @override
   Widget build(BuildContext context) {
@@ -123,83 +114,57 @@ class _Header extends StatelessWidget {
     final cashier = getIt<GetCurrentSession>()()?.username;
     final muted = theme.textTheme.bodySmall;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.md, Space.md),
+      child: Row(
         children: [
-          Wrap(
-            spacing: Space.sm,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Icon(Iconsax.shop, size: 16, color: muted?.color),
-              Text(store.isEmpty ? l10n.storeNameMissing : store, style: muted),
-              if (cashier != null) Text('·  ${l10n.cashierLine(cashier)}', style: muted),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: Space.sm,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Icon(Iconsax.shop, size: 16, color: muted?.color),
+                    Text(store.isEmpty ? l10n.storeNameMissing : store, style: muted),
+                    if (cashier != null) Text('·  ${l10n.cashierLine(cashier)}', style: muted),
+                  ],
+                ),
+                const SizedBox(height: Space.xs),
+                Text(l10n.checkoutTitle, style: theme.textTheme.headlineSmall),
+              ],
+            ),
           ),
-          const SizedBox(height: Space.xs),
-          Text(l10n.checkoutTitle, style: theme.textTheme.headlineSmall),
+          if (showCart) const _CartButton(),
         ],
       ),
     );
   }
 }
 
-/// Narrow layout: summary of the active tab with a button that opens the cart sheet.
-class _CartBar extends StatelessWidget {
-  const _CartBar();
+/// Phones: cart icon with the active tab's item count; opens the cart sheet.
+class _CartButton extends StatelessWidget {
+  const _CartButton();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final draft = context.select<CheckoutBloc, Draft?>((b) => b.state.active);
-    if (draft == null) return const SizedBox.shrink();
-    final status = switch (draft.status) {
-      DraftStatus.awaitingPayment => draft.charge?.method == ChargeMethod.va ? l10n.waitingVa : l10n.waitingQris,
-      DraftStatus.paid => l10n.paid,
-      DraftStatus.open => null,
-    };
-    final empty = draft.isEmpty && status == null;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
-      child: Card(
-        elevation: 6,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => _openCart(context),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.md, Space.md),
-            // Wrap drops the button below the summary when large text needs the room.
-            child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: Space.md,
-              runSpacing: Space.sm,
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(UiLocalizations.of(context).tabLabel(draft.number), style: theme.textTheme.bodySmall),
-                    Text(
-                      status ??
-                          (empty
-                              ? l10n.cartEmptyShort
-                              : l10n.cartSummary(qty(context, draft.itemCount), rupiah(context, draft.total()))),
-                      style: theme.textTheme.titleMedium?.tabular,
-                    ),
-                  ],
-                ),
-                AppButton(
-                  label: l10n.viewCart,
-                  icon: Iconsax.shopping_cart,
-                  large: true,
-                  onPressed: () => _openCart(context),
-                ),
-              ],
-            ),
-          ),
-        ),
+    final count = context.select<CheckoutBloc, double>((b) => b.state.active?.itemCount ?? 0);
+    final scheme = Theme.of(context).colorScheme;
+    return IconButton(
+      tooltip: l10n.viewCart,
+      onPressed: () => _openCart(context),
+      style: IconButton.styleFrom(
+        minimumSize: const Size.square(52),
+        backgroundColor: scheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.medium)),
+      ),
+      icon: Badge(
+        isLabelVisible: count > 0,
+        label: Text(formatQty(count)),
+        backgroundColor: scheme.primary,
+        textColor: scheme.onPrimary,
+        child: const Icon(Iconsax.shopping_cart),
       ),
     );
   }
@@ -208,6 +173,7 @@ class _CartBar extends StatelessWidget {
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    backgroundColor: ShellColors.of(context).canvas,
     builder: (_) => BlocProvider.value(
       value: context.read<CheckoutBloc>(),
       child: DraggableScrollableSheet(

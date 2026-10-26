@@ -681,4 +681,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get checkoutTitle => 'Transaksi';
+
+  @override
+  String addItem(String name) {
+    return 'Tambah $name';
+  }
 }

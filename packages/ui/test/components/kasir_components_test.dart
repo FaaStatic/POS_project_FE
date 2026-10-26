@@ -24,8 +24,9 @@ void main() {
     );
     await tester.ensureVisible(find.text('Transaksi 2'));
     await tester.tap(find.text('Transaksi 2'));
-    await tester.tap(find.text('Pembeli baru'));
-    await tester.tap(find.text('Semua (3)'));
+    // Phone width: icon actions, named by their tooltips.
+    await tester.tap(find.byTooltip('Pembeli baru'));
+    await tester.tap(find.byTooltip('Semua (3)'));
     expect([selected, added, shown], [2, 1, 1]);
   });
 

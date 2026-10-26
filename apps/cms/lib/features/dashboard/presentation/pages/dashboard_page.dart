@@ -162,7 +162,6 @@ class _SummaryPanel extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(Radii.large),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -238,10 +237,10 @@ class _StatTile extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: scheme.primaryContainer,
-              borderRadius: BorderRadius.circular(Radii.small + 6),
+              color: scheme.primary,
+              borderRadius: BorderRadius.circular(Radii.control),
             ),
-            child: Icon(icon, color: scheme.onPrimaryContainer, size: 22),
+            child: Icon(icon, color: scheme.onPrimary, size: 22),
           ),
           const SizedBox(height: Space.md),
           Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant)),
@@ -305,9 +304,11 @@ class _RangeMenu extends StatelessWidget {
             child: Text(labels[r]!),
           ),
       ],
-      builder: (context, controller, _) => OutlinedButton.icon(
+      builder: (context, controller, _) => TextButton.icon(
+        style: TextButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.surfaceContainer),
+        iconAlignment: IconAlignment.end,
         onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-        icon: const Icon(Iconsax.calendar_1, size: 18),
+        icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 20),
         label: Text(
           state.range == DashboardRange.custom
               ? '${dateText(context, state.start)} – ${dateText(context, state.end)}'

@@ -6,6 +6,9 @@ import 'package:ui/ui.dart';
 import '../helpers/app_harness.dart';
 import '../helpers/fixtures.dart';
 
+/// Product "+" buttons, named "Tambah {produk}" for screen readers.
+final addButtons = find.byWidgetPredicate((w) => w is IconButton && (w.tooltip ?? '').startsWith('Tambah '));
+
 void main() {
   testWidgets('first launch shows login; signing in opens Transaksi 1 and stores the refresh token', (tester) async {
     final app = AppHarness(online: true)..serveBackend();
@@ -34,9 +37,9 @@ void main() {
     await app.settle(tester);
     expect(find.text('Tidak ada koneksi internet'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Tambah').first);
+    await tester.tap(addButtons.first);
     await app.settle(tester);
-    await tester.tap(find.text('Lihat keranjang'));
+    await tester.tap(find.byTooltip('Lihat keranjang'));
     await app.settle(tester);
     await tester.tap(find.text('Lanjut ke pembayaran'));
     await app.settle(tester);
@@ -64,11 +67,11 @@ void main() {
     await app.settle(tester);
 
     // List order is by name: Aqua, then Indomie.
-    await tester.tap(find.widgetWithText(FilledButton, 'Tambah').at(0));
+    await tester.tap(addButtons.at(0));
     await app.settle(tester);
     await tester.tap(find.text('Pembeli baru'));
     await app.settle(tester);
-    await tester.tap(find.widgetWithText(FilledButton, 'Tambah').at(1));
+    await tester.tap(addButtons.at(1));
     await app.settle(tester);
     expect(find.text('Transaksi 2'), findsWidgets);
     await tester.tap(find.text('Lanjut ke pembayaran'));
@@ -88,9 +91,9 @@ void main() {
     final app = AppHarness(online: true)..serveBackend();
     await app.tokens.writeRefreshToken('r0');
     await app.pump(tester);
-    await tester.tap(find.widgetWithText(FilledButton, 'Tambah').first);
+    await tester.tap(addButtons.first);
     await app.settle(tester);
-    await tester.tap(find.text('Lihat keranjang'));
+    await tester.tap(find.byTooltip('Lihat keranjang'));
     await app.settle(tester);
     await tester.tap(find.text('Lanjut ke pembayaran'));
     await app.settle(tester);
@@ -107,6 +110,10 @@ void main() {
     await app.settle(tester);
     expect(find.text('Kembalian'), findsOneWidget);
     expect(pay().onPressed, isNotNull);
+
+    await tester.tap(find.text('Uang pas'));
+    await app.settle(tester);
+    expect(tester.widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'Uang pas')).selected, isTrue);
     await tester.runAsync(app.close);
   });
 
@@ -115,7 +122,7 @@ void main() {
     await app.tokens.writeRefreshToken('r0');
     await app.pump(tester, size: const Size(360, 780), textScale: 2);
     expect(tester.takeException(), isNull);
-    await tester.tap(find.text('Lihat keranjang'));
+    await tester.tap(find.byTooltip('Lihat keranjang'));
     await app.settle(tester);
     expect(tester.takeException(), isNull);
     await tester.runAsync(app.close);

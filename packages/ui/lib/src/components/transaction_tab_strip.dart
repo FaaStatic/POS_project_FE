@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/ui_localizations.dart';
-import '../theme/shell_colors.dart';
+import '../theme/status_colors.dart';
 import '../tokens/spacing.dart';
 import '../tokens/typography.dart';
 
@@ -13,12 +13,12 @@ class TransactionTab {
   /// "3 barang · Rp 27.500" or a status such as "Menunggu QRIS".
   final String subtitle;
 
-  /// Status subtitles (waiting, paid) are drawn in the primary color.
+  /// Status subtitles (waiting, paid) are drawn in the success color.
   final bool highlight;
 }
 
-/// "Transaksi N" tabs as a scrolling row of pills. The active tab is filled with
-/// the brand green and scrolled into view; "Pembeli baru" and "Semua (N)" follow.
+/// "Transaksi N" tabs as a scrolling row. The active tab is ink and scrolled into
+/// view; "Pembeli baru" and "Semua (N)" stay pinned at the end.
 class TransactionTabStrip extends StatefulWidget {
   const TransactionTabStrip({
     super.key,
@@ -59,7 +59,6 @@ class _TransactionTabStripState extends State<TransactionTabStrip> {
   Widget build(BuildContext context) {
     final l10n = UiLocalizations.of(context);
     _keys.removeWhere((id, _) => widget.tabs.every((t) => t.id != id));
-    final scheme = Theme.of(context).colorScheme;
     final tabs = SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: Space.lg),
@@ -79,45 +78,66 @@ class _TransactionTabStripState extends State<TransactionTabStrip> {
         ],
       ),
     );
-    // Always visible, never scrolled away with the tabs.
-    final actions = [
-      OutlinedButton.icon(
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.medium)),
-          minimumSize: const Size(TapSize.min, 56),
-          side: BorderSide(color: scheme.outlineVariant),
-          backgroundColor: scheme.surface,
-        ),
-        onPressed: widget.onNew,
-        icon: const Icon(Icons.add_rounded, size: 22),
-        label: Text(l10n.newBuyer),
-      ),
-      TextButton(
-        style: TextButton.styleFrom(minimumSize: const Size(TapSize.min, 56)),
-        onPressed: widget.onShowAll,
-        child: Text(l10n.allTabs(widget.tabs.length)),
-      ),
-    ];
+    // Always visible, never scrolled away with the tabs. Phones get square icon
+    // buttons so the tabs keep one row.
     return LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth < 520) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            tabs,
-            Padding(
-              padding: const EdgeInsets.fromLTRB(Space.lg, Space.xs, Space.sm, 0),
-              child: Wrap(alignment: WrapAlignment.end, spacing: Space.xs, children: actions),
-            ),
-          ],
-        );
-      }
+      final compact = constraints.maxWidth < 520;
+      final newBuyer = compact
+          ? _SquareAction(tooltip: l10n.newBuyer, onTap: widget.onNew, child: const Icon(Icons.add_rounded))
+          : OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(TapSize.min, 56),
+                side: BorderSide.none,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.medium)),
+              ),
+              onPressed: widget.onNew,
+              icon: const Icon(Icons.add_rounded, size: 22),
+              label: Text(l10n.newBuyer),
+            );
+      final showAll = compact
+          ? _SquareAction(
+              tooltip: l10n.allTabs(widget.tabs.length),
+              onTap: widget.onShowAll,
+              child: Badge(
+                label: Text('${widget.tabs.length}'),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                textColor: Theme.of(context).colorScheme.onPrimary,
+                child: const Icon(Icons.view_agenda_outlined),
+              ),
+            )
+          : TextButton(
+              style: TextButton.styleFrom(minimumSize: const Size(TapSize.min, 56)),
+              onPressed: widget.onShowAll,
+              child: Text(l10n.allTabs(widget.tabs.length)),
+            );
       return Row(children: [
         Expanded(child: tabs),
-        ...actions,
+        newBuyer,
         const SizedBox(width: Space.sm),
+        showAll,
+        SizedBox(width: compact ? Space.lg : Space.sm),
       ]);
     });
   }
+}
+
+class _SquareAction extends StatelessWidget {
+  const _SquareAction({required this.tooltip, required this.onTap, required this.child});
+  final String tooltip;
+  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    tooltip: tooltip,
+    onPressed: onTap,
+    style: IconButton.styleFrom(
+      minimumSize: const Size.square(56),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.medium)),
+    ),
+    icon: child,
+  );
 }
 
 class _Tab extends StatelessWidget {
@@ -140,16 +160,17 @@ class _Tab extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final shell = ShellColors.of(context);
+    final status = StatusColors.of(context);
     final radius = BorderRadius.circular(Radii.medium);
-    final fg = active ? shell.foreground : scheme.onSurface;
-    final sub = active ? shell.indicator : (highlight ? scheme.primary : scheme.onSurfaceVariant);
+    // Primary, not the shell ink: in dark mode the ink equals the card surface.
+    final fg = active ? scheme.onPrimary : scheme.onSurface;
+    final sub = active ? scheme.onPrimary.withValues(alpha: 0.7) : (highlight ? status.success : scheme.onSurfaceVariant);
     return Semantics(
       selected: active,
       button: true,
       child: Material(
-        color: active ? shell.background : scheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: radius, side: active ? BorderSide.none : BorderSide(color: scheme.outlineVariant)),
+        color: active ? scheme.primary : scheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: radius),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,

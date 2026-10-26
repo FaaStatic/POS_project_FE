@@ -4,7 +4,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../l10n/ui_localizations.dart';
 
-/// Labelled text input. [password] adds a show/hide toggle with an accessible label.
+/// Text input with its label above it. [password] adds a show/hide toggle with an accessible label.
 class AppTextField extends StatefulWidget {
   const AppTextField({
     super.key,
@@ -59,7 +59,9 @@ class _AppTextFieldState extends State<AppTextField> {
   @override
   Widget build(BuildContext context) {
     final l10n = UiLocalizations.of(context);
-    return TextFormField(
+    final theme = Theme.of(context);
+    // shadcn: label above the field, merged so screen readers announce them as one.
+    final field = TextFormField(
       controller: widget.controller,
       initialValue: widget.controller == null ? widget.initialValue : null,
       focusNode: widget.focusNode,
@@ -76,7 +78,6 @@ class _AppTextFieldState extends State<AppTextField> {
       onFieldSubmitted: widget.onSubmitted,
       style: Theme.of(context).textTheme.bodyLarge,
       decoration: InputDecoration(
-        labelText: widget.label,
         hintText: widget.hint,
         helperText: widget.helper,
         errorText: widget.errorText,
@@ -88,6 +89,17 @@ class _AppTextFieldState extends State<AppTextField> {
                 onPressed: () => setState(() => _obscured = !_obscured),
               )
             : null,
+      ),
+    );
+    return MergeSemantics(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(widget.label, style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w500)),
+          const SizedBox(height: 6),
+          field,
+        ],
       ),
     );
   }

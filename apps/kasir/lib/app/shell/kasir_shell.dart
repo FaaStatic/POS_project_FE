@@ -47,14 +47,15 @@ class KasirShell extends StatelessWidget {
         return Scaffold(
           body: Row(
             children: [
-              // Wide windows: rail on the brand green, matching the checkout header.
+              // Wide windows: ink rail, same surface as the phone nav.
               Theme(
                 data: theme.copyWith(
                   navigationRailTheme: theme.navigationRailTheme.copyWith(
                     backgroundColor: brand.background,
-                    indicatorColor: brand.indicator,
-                    selectedIconTheme: IconThemeData(color: brand.onIndicator),
-                    unselectedIconTheme: IconThemeData(color: brand.foreground),
+                    indicatorColor: brand.selected,
+                    indicatorShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.control)),
+                    selectedIconTheme: IconThemeData(color: brand.foreground),
+                    unselectedIconTheme: IconThemeData(color: brand.muted),
                     selectedLabelTextStyle: theme.textTheme.labelMedium?.copyWith(
                       color: brand.foreground,
                       fontWeight: FontWeight.w700,
@@ -86,7 +87,7 @@ class KasirShell extends StatelessWidget {
   }
 }
 
-/// Narrow windows: the navigation bar floats as a green pill above the content.
+/// Narrow windows: the navigation bar floats as an ink pill above the content.
 class _FloatingNav extends StatelessWidget {
   const _FloatingNav({required this.selected, required this.onSelect, required this.destinations});
   final int selected;
@@ -113,7 +114,8 @@ class _FloatingNav extends StatelessWidget {
               backgroundColor: Colors.transparent,
               elevation: 0,
               height: 68,
-              indicatorColor: brand.selected,
+              // Selection is carried by white vs muted, not an indicator blob.
+              indicatorColor: Colors.transparent,
               iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(color: fg(s))),
               labelTextStyle: WidgetStateProperty.resolveWith(
                 (s) => theme.textTheme.labelSmall?.copyWith(color: fg(s), fontWeight: FontWeight.w600),

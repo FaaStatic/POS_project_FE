@@ -37,22 +37,26 @@ class _CartPanelState extends State<CartPanel> {
       _draftId = draft.id;
       _paying = false;
     }
-    return switch (draft.status) {
-      DraftStatus.awaitingPayment => ChargeView(draft: draft),
-      DraftStatus.paid => _PaidView(draft: draft),
-      DraftStatus.open when _paying && !draft.isEmpty => _PaymentStep(
-        draft: draft,
-        state: state,
-        scrollController: widget.scrollController,
-        onBack: () => setState(() => _paying = false),
-      ),
-      DraftStatus.open => _CartStep(
-        draft: draft,
-        state: state,
-        scrollController: widget.scrollController,
-        onNext: () => setState(() => _paying = true),
-      ),
-    };
+    // White cards need the canvas behind them, in the sheet and the side panel alike.
+    return ColoredBox(
+      color: ShellColors.of(context).canvas,
+      child: switch (draft.status) {
+        DraftStatus.awaitingPayment => ChargeView(draft: draft),
+        DraftStatus.paid => _PaidView(draft: draft),
+        DraftStatus.open when _paying && !draft.isEmpty => _PaymentStep(
+          draft: draft,
+          state: state,
+          scrollController: widget.scrollController,
+          onBack: () => setState(() => _paying = false),
+        ),
+        DraftStatus.open => _CartStep(
+          draft: draft,
+          state: state,
+          scrollController: widget.scrollController,
+          onNext: () => setState(() => _paying = true),
+        ),
+      },
+    );
   }
 }
 
@@ -143,7 +147,7 @@ class _CartStep extends StatelessWidget {
                   subtitle: draft.customerName == null ? null : Text(l10n.customer),
                   trailing: Text(
                     l10n.changeCustomer,
-                    style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary),
+                    style: theme.textTheme.labelLarge?.copyWith(decoration: TextDecoration.underline),
                   ),
                   onTap: () async {
                     final bloc = context.read<CheckoutBloc>();
@@ -209,7 +213,7 @@ class _CartLine extends StatelessWidget {
     final unit = ProductUnit.values[item.unit.clamp(0, ProductUnit.values.length - 1)].name;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(Space.md),
+        padding: const EdgeInsets.fromLTRB(Space.md, Space.md, Space.sm, Space.sm),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -227,10 +231,34 @@ class _CartLine extends StatelessWidget {
                         '${qty(context, item.qty)} × ${rupiah(context, item.price(debt: debt))} / $unit',
                         style: theme.textTheme.bodySmall?.tabular,
                       ),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(TapSize.min, 40),
+                          foregroundColor: theme.colorScheme.onSurfaceVariant,
+                          textStyle: theme.textTheme.bodySmall?.copyWith(decoration: TextDecoration.underline),
+                        ),
+                        onPressed: () => bloc.add(ItemRemoved(item.id)),
+                        child: Text(l10n.remove),
+                      ),
                     ],
                   ),
                 ),
-                Text(rupiah(context, item.subtotal(debt: debt)), style: theme.textTheme.titleSmall?.tabular),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    QtyStepper(
+                      value: item.qty,
+                      itemName: item.name,
+                      allowFraction:
+                          item.unit == ProductUnit.kg.index ||
+                          item.unit == ProductUnit.liter.index ||
+                          item.unit == ProductUnit.gram.index,
+                      onChanged: (q) => bloc.add(QtyChanged(item.id, q)),
+                    ),
+                    Text(rupiah(context, item.subtotal(debt: debt)), style: theme.textTheme.titleSmall?.tabular),
+                  ],
+                ),
               ],
             ),
             if (item.isDigital)
@@ -261,22 +289,6 @@ class _CartLine extends StatelessWidget {
                   ],
                 ),
               ),
-            const SizedBox(height: Space.sm),
-            Row(
-              children: [
-                TextButton(onPressed: () => bloc.add(ItemRemoved(item.id)), child: Text(l10n.remove)),
-                const Spacer(),
-                QtyStepper(
-                  value: item.qty,
-                  itemName: item.name,
-                  allowFraction:
-                      item.unit == ProductUnit.kg.index ||
-                      item.unit == ProductUnit.liter.index ||
-                      item.unit == ProductUnit.gram.index,
-                  onChanged: (q) => bloc.add(QtyChanged(item.id, q)),
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -372,10 +384,19 @@ class _PaymentStepState extends State<_PaymentStep> {
                       ),
                     ),
                     const SizedBox(height: Space.xs),
-                    Text(
-                      [l10n.itemsCount(qty(context, draft.itemCount)), ?draft.customerName].join(' · '),
-                      style: theme.textTheme.bodyMedium?.copyWith(color: shell.muted),
-                      textAlign: TextAlign.center,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.circle, size: 8, color: shell.indicator),
+                        const SizedBox(width: Space.sm),
+                        Flexible(
+                          child: Text(
+                            [l10n.itemsCount(qty(context, draft.itemCount)), ?draft.customerName].join(' · '),
+                            style: theme.textTheme.bodyMedium?.copyWith(color: shell.foreground),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -411,9 +432,7 @@ class _PaymentStepState extends State<_PaymentStep> {
                 ),
               ],
               if (cash) ...[
-                const SizedBox(height: Space.lg),
-                Text(l10n.cashReceived, style: theme.textTheme.titleSmall),
-                const SizedBox(height: Space.sm),
+                const SizedBox(height: Space.md),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(Space.lg),
@@ -435,6 +454,7 @@ class _PaymentStepState extends State<_PaymentStep> {
                         const SizedBox(height: Space.md),
                         AppTextField(
                           label: l10n.cashReceived,
+                          prefixIcon: Iconsax.money,
                           controller: _received,
                           keyboardType: TextInputType.number,
                           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -445,7 +465,7 @@ class _PaymentStepState extends State<_PaymentStep> {
                           _SummaryRow(
                             label: short ? l10n.shortBy(rupiah(context, total - received)) : l10n.change,
                             value: short ? '' : rupiah(context, received - total),
-                            color: short ? status.danger : theme.colorScheme.primary,
+                            color: short ? status.danger : status.success,
                             strong: true,
                           ),
                         ],
@@ -495,14 +515,13 @@ class _MethodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final shell = ShellColors.of(context);
-    final fg = selected ? shell.foreground : (enabled ? scheme.onSurface : scheme.onSurfaceVariant);
-    final sub = selected ? shell.muted : scheme.onSurfaceVariant;
+    final fg = selected ? scheme.onPrimary : (enabled ? scheme.onSurface : scheme.onSurfaceVariant);
+    final sub = selected ? scheme.onPrimary.withValues(alpha: 0.7) : scheme.onSurfaceVariant;
     return Semantics(
       selected: selected,
       enabled: enabled,
       child: Card(
-        color: selected ? shell.background : null,
+        color: selected ? scheme.primary : null,
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: enabled ? onTap : null,
@@ -514,7 +533,7 @@ class _MethodCard extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: selected ? shell.raised : scheme.surfaceContainer,
+                    color: selected ? scheme.onPrimary.withValues(alpha: 0.12) : scheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(Radii.small + 4),
                   ),
                   child: Icon(icon, color: fg, size: 22),
@@ -529,7 +548,7 @@ class _MethodCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (selected) Icon(Icons.check_circle_rounded, color: shell.foreground),
+                if (selected) Icon(Icons.check_circle_rounded, color: scheme.onPrimary),
               ],
             ),
           ),

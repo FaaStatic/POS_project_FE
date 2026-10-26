@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../tokens/colors.dart';
 
-/// Colors for the branded navigation surfaces (CMS sidebar/rail, kasir header).
+/// Colors for the ink navigation surfaces (CMS sidebar/rail, kasir nav).
 @immutable
 class ShellColors extends ThemeExtension<ShellColors> {
   const ShellColors({
@@ -26,29 +26,29 @@ class ShellColors extends ThemeExtension<ShellColors> {
   /// Page background behind cards.
   final Color canvas;
 
-  /// Selected navigation item on the green surface (white text on it).
+  /// Selected navigation item on the ink surface (white text on it).
   final Color selected;
 
   static const light = ShellColors(
-    background: BrandColors.forest,
-    raised: BrandColors.forestRaised,
+    background: BrandColors.ink,
+    raised: BrandColors.inkRaised,
     foreground: Colors.white,
-    muted: BrandColors.onForestMuted,
-    indicator: BrandColors.indicatorOnForest,
-    onIndicator: BrandColors.forest,
+    muted: Zinc.c400,
+    indicator: BrandColors.greenOnInk,
+    onIndicator: BrandColors.onGreenDark,
     canvas: BrandColors.canvas,
-    selected: BrandColors.forestRaised,
+    selected: BrandColors.inkRaised,
   );
 
   static const dark = ShellColors(
-    background: BrandColors.forestDark,
-    raised: BrandColors.forest,
-    foreground: Color(0xFFF4F4F5),
-    muted: BrandColors.onForestMutedDark,
-    indicator: BrandColors.indicatorOnForestDark,
+    background: Zinc.c900,
+    raised: Zinc.c800,
+    foreground: Zinc.c50,
+    muted: Zinc.c400,
+    indicator: BrandColors.greenOnInk,
     onIndicator: BrandColors.onGreenDark,
     canvas: BrandColors.canvasDark,
-    selected: BrandColors.forest,
+    selected: Zinc.c800,
   );
 
   static ShellColors of(BuildContext context) => Theme.of(context).extension<ShellColors>()!;

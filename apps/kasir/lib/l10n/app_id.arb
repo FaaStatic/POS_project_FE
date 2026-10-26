@@ -414,5 +414,13 @@
       }
     }
   },
-  "checkoutTitle": "Transaksi"
+  "checkoutTitle": "Transaksi",
+  "addItem": "Tambah {name}",
+  "@addItem": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -1255,6 +1255,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Transaksi'**
   String get checkoutTitle;
+
+  /// No description provided for @addItem.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah {name}'**
+  String addItem(String name);
 }
 
 class _AppLocalizationsDelegate

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../tokens/spacing.dart';
 
-/// Product or person initials on the brand mint, or the image when [imageUrl] loads.
+/// Product or person initials on a neutral tile, or the image when [imageUrl] loads.
 /// One color for every item: color is not used to tell categories apart.
 class InitialAvatar extends StatelessWidget {
   const InitialAvatar({super.key, required this.name, this.imageUrl, this.size = 44, this.square = true});
@@ -25,7 +25,7 @@ class InitialAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final radius = BorderRadius.circular(square ? Radii.medium : size);
+    final radius = BorderRadius.circular(square ? Radii.control : size);
     final fallback = Center(
       child: Text(
         initials(name),

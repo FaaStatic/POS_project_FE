@@ -33,18 +33,22 @@ class _DailyChartState extends State<DailyChart> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Wrap(
+        SizedBox(
+          width: double.infinity,
+          child: Wrap(
           alignment: WrapAlignment.spaceBetween,
           crossAxisAlignment: WrapCrossAlignment.center,
           spacing: Space.lg,
           runSpacing: Space.sm,
           children: [
-            Text(widget.title, style: theme.textTheme.titleMedium),
+            Text(widget.title, style: theme.textTheme.titleLarge),
             TextButton(
+              style: TextButton.styleFrom(backgroundColor: theme.colorScheme.surfaceContainer),
               onPressed: () => setState(() => _table = !_table),
               child: Text(_table ? widget.title : l10n.chartTable),
             ),
           ],
+        ),
         ),
         const SizedBox(height: Space.sm),
         Wrap(

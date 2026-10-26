@@ -11,10 +11,11 @@ abstract final class AppTheme {
   static final light = _build(
     const ColorScheme(
       brightness: Brightness.light,
-      primary: BrandColors.greenLight,
+      // shadcn: actions are ink; green is kept for meaning (StatusColors).
+      primary: Zinc.c900,
       onPrimary: Colors.white,
-      primaryContainer: BrandColors.greenContainerLight,
-      onPrimaryContainer: Color(0xFF14532D),
+      primaryContainer: Zinc.c100,
+      onPrimaryContainer: Zinc.c900,
       secondary: Zinc.c900,
       onSecondary: Zinc.c50,
       secondaryContainer: Zinc.c100,
@@ -48,10 +49,10 @@ abstract final class AppTheme {
   static final dark = _build(
     const ColorScheme(
       brightness: Brightness.dark,
-      primary: BrandColors.greenDark,
-      onPrimary: BrandColors.onGreenDark,
-      primaryContainer: BrandColors.greenContainerDark,
-      onPrimaryContainer: Color(0xFFDCFCE7),
+      primary: Zinc.c50,
+      onPrimary: Zinc.c900,
+      primaryContainer: Zinc.c800,
+      onPrimaryContainer: Zinc.c50,
       secondary: Zinc.c50,
       onSecondary: Zinc.c900,
       secondaryContainer: Zinc.c800,
@@ -83,12 +84,12 @@ abstract final class AppTheme {
 
   static ThemeData _build(ColorScheme scheme, StatusColors status, ChartColors chart, ShellColors shell) {
     final text = buildTextTheme(scheme.onSurface, scheme.onSurfaceVariant);
-    final small = BorderRadius.circular(Radii.small);
+    final control = BorderRadius.circular(Radii.control);
     final medium = BorderRadius.circular(Radii.medium);
     OutlineInputBorder border(Color color, [double width = 1]) =>
-        OutlineInputBorder(borderRadius: small, borderSide: BorderSide(color: color, width: width));
+        OutlineInputBorder(borderRadius: control, borderSide: BorderSide(color: color, width: width));
     const buttonSize = Size(TapSize.min, TapSize.min);
-    final buttonShape = RoundedRectangleBorder(borderRadius: small);
+    final buttonShape = RoundedRectangleBorder(borderRadius: control);
     const buttonPadding = EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.md);
 
     return ThemeData(
@@ -112,14 +113,13 @@ abstract final class AppTheme {
         centerTitle: false,
         titleTextStyle: text.headlineSmall,
       ),
-      // shadcn card: hairline border plus shadow-sm.
+      // White cards sit flat on the zinc canvas; the tone step is the only depth cue.
       cardTheme: CardThemeData(
         color: scheme.surface,
         surfaceTintColor: Colors.transparent,
-        shadowColor: const Color(0x14000000),
-        elevation: 1,
+        elevation: 0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: medium, side: BorderSide(color: scheme.outlineVariant)),
+        shape: RoundedRectangleBorder(borderRadius: medium),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -137,7 +137,8 @@ abstract final class AppTheme {
           shape: buttonShape,
           textStyle: text.labelLarge,
           foregroundColor: scheme.onSurface,
-          side: BorderSide(color: scheme.outline),
+          backgroundColor: scheme.surface,
+          side: BorderSide(color: scheme.outlineVariant),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -145,7 +146,7 @@ abstract final class AppTheme {
           minimumSize: buttonSize,
           padding: buttonPadding,
           shape: buttonShape,
-          textStyle: text.labelLarge,
+          textStyle: text.labelLarge?.copyWith(fontWeight: FontWeight.w500),
           foregroundColor: scheme.onSurface,
         ),
       ),
@@ -196,37 +197,41 @@ abstract final class AppTheme {
       chipTheme: ChipThemeData(
         shape: const StadiumBorder(),
         side: BorderSide.none,
-        backgroundColor: scheme.surface,
-        selectedColor: shell.background,
-        checkmarkColor: shell.foreground,
+        backgroundColor: scheme.surfaceContainer,
+        selectedColor: scheme.primary,
+        checkmarkColor: scheme.onPrimary,
         labelStyle: text.labelLarge?.copyWith(
           color: WidgetStateColor.resolveWith(
-            (states) => states.contains(WidgetState.selected) ? shell.foreground : scheme.onSurface,
+            (states) => states.contains(WidgetState.selected) ? scheme.onPrimary : scheme.onSurface,
           ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.sm),
         showCheckmark: false,
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: scheme.surface,
+        backgroundColor: shell.background,
         surfaceTintColor: Colors.transparent,
-        indicatorColor: scheme.primaryContainer,
-        shadowColor: const Color(0x1A0F3D2E),
-        elevation: 3,
+        indicatorColor: Colors.transparent,
+        elevation: 0,
         height: 72,
-        labelTextStyle: WidgetStatePropertyAll(text.labelMedium),
+        iconTheme: WidgetStateProperty.resolveWith(
+          (s) => IconThemeData(color: s.contains(WidgetState.selected) ? shell.foreground : shell.muted),
+        ),
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (s) => text.labelSmall?.copyWith(color: s.contains(WidgetState.selected) ? shell.foreground : shell.muted),
+        ),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: scheme.surface,
-        indicatorColor: scheme.primaryContainer,
+        indicatorColor: scheme.surfaceContainer,
         selectedLabelTextStyle: text.labelMedium?.copyWith(color: scheme.onSurface),
         unselectedLabelTextStyle: text.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
       ),
       navigationDrawerTheme: NavigationDrawerThemeData(
         backgroundColor: scheme.surface,
         surfaceTintColor: Colors.transparent,
-        indicatorColor: scheme.primaryContainer,
-        indicatorShape: RoundedRectangleBorder(borderRadius: small),
+        indicatorColor: scheme.surfaceContainer,
+        indicatorShape: const StadiumBorder(),
         labelTextStyle: WidgetStatePropertyAll(text.labelLarge),
       ),
       listTileTheme: ListTileThemeData(
@@ -235,7 +240,7 @@ abstract final class AppTheme {
         subtitleTextStyle: text.bodySmall,
       ),
       tabBarTheme: TabBarThemeData(
-        labelColor: scheme.primary,
+        labelColor: scheme.onSurface,
         unselectedLabelColor: scheme.onSurfaceVariant,
         indicatorColor: scheme.primary,
         labelStyle: text.labelLarge,
@@ -250,11 +255,20 @@ abstract final class AppTheme {
         headerHeadlineStyle: text.headlineSmall,
         rangePickerHeaderHeadlineStyle: text.titleSmall,
       ),
+      menuTheme: MenuThemeData(
+        style: MenuStyle(
+          backgroundColor: WidgetStatePropertyAll(scheme.surface),
+          surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: control, side: BorderSide(color: scheme.outlineVariant)),
+          ),
+        ),
+      ),
       popupMenuTheme: PopupMenuThemeData(
         color: scheme.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 8,
-        shape: RoundedRectangleBorder(borderRadius: small, side: BorderSide(color: scheme.outlineVariant)),
+        shape: RoundedRectangleBorder(borderRadius: control, side: BorderSide(color: scheme.outlineVariant)),
         textStyle: text.bodyMedium,
       ),
     );
