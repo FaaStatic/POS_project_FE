@@ -794,6 +794,12 @@ abstract class AppLocalizations {
   /// **'Sync sekarang'**
   String get syncNow;
 
+  /// No description provided for @syncPending.
+  ///
+  /// In id, this message translates to:
+  /// **'{count, plural, =0{Semua transaksi sudah terkirim} other{{count} transaksi belum terkirim}}'**
+  String syncPending(int count);
+
   /// No description provided for @syncDone.
   ///
   /// In id, this message translates to:

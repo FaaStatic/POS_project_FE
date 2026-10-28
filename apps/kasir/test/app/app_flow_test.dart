@@ -131,6 +131,24 @@ void main() {
     await tester.runAsync(app.close);
   });
 
+  testWidgets('settings has a manual sync row, disabled while offline', (tester) async {
+    final app = AppHarness(online: true)..serveBackend();
+    await app.tokens.writeRefreshToken('r0');
+    await app.pump(tester);
+    await tester.tap(find.text('Lainnya'));
+    await app.settle(tester);
+    final row = find.widgetWithText(ListTile, 'Sync sekarang');
+    expect(find.text('Semua transaksi sudah terkirim'), findsOneWidget);
+    await tester.tap(row);
+    await app.settle(tester);
+    expect(find.text('Tidak ada yang perlu dikirim'), findsOneWidget);
+
+    app.network.set(false);
+    await app.settle(tester);
+    expect(tester.widget<ListTile>(row).enabled, isFalse);
+    await tester.runAsync(app.close);
+  });
+
   testWidgets('checkout survives 200% text on a narrow phone', (tester) async {
     final app = AppHarness(online: true)..serveBackend();
     await app.tokens.writeRefreshToken('r0');

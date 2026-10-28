@@ -12,11 +12,13 @@ import '../bloc/settings_cubit.dart';
 
 const designShotUrl = 'https://dribbble.com/shots/27265995-Mobile-App-Design-for-POS-Cashier-Management-for-Small-Store';
 
-/// [account] is supplied by the app layer (signed-in user and sign-out).
+/// [account] and [sync] are supplied by the app layer (signed-in user and
+/// sign-out; manual sync of the offline queue).
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key, required this.account});
+  const SettingsPage({super.key, required this.account, required this.sync});
 
   final Widget account;
+  final Widget sync;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,8 @@ class SettingsPage extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(Space.lg),
           children: [
+            Card(clipBehavior: Clip.antiAlias, child: sync),
+            const SizedBox(height: Space.md),
             Card(
               clipBehavior: Clip.antiAlias,
               child: Column(

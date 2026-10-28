@@ -77,6 +77,7 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
                         await push.unregister();
                         return token;
                       }),
+                      sync: const SyncTile(),
                     ),
                     routes: [
                       GoRoute(path: 'printer', builder: (_, _) => const PrinterSettingsPage()),
