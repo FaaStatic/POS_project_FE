@@ -2,8 +2,10 @@
 
 Flutter frontend for a small-shop point-of-sale system. One monorepo holds two apps that share their business logic:
 
-- **CMS** (web): the shop owner (superadmin) runs the back office: products, stock, staff, customers, debts, payments, devices, and reports.
-- **Kasir** (Android/iOS): staff ring up sales at the counter. Cashiers keep selling for cash or on credit while the internet is down, and the app syncs those sales once it reconnects.
+- **myPOS**, the CMS (`apps/cms`, web): the shop owner (superadmin) runs the back office: products, stock, staff, customers, debts, payments, devices, and reports.
+- **myKasir**, the Kasir app (`apps/kasir`, Android/iOS): staff ring up sales at the counter. Cashiers keep selling for cash or on credit while the internet is down, and the app syncs those sales once it reconnects.
+
+The rest of this README calls them CMS and Kasir, after their folders.
 
 See [CLAUDE.md](CLAUDE.md) for technical decisions and the full architecture rules, and [DESIGN.md](DESIGN.md) for the visual system.
 
@@ -31,7 +33,7 @@ Superadmins create staff accounts in the CMS (Staff → Add staff). Both apps sh
 
 ## Features: Kasir
 
-The bottom bar has four tabs: **Checkout** (Transaksi), **History** (Riwayat), **Customers** (Pelanggan), and **More** (Lainnya). Products and settings sit under More because cashiers rarely open them.
+The bottom bar has four tabs: **Checkout** (Transaksi), **History** (Riwayat), **Customers** (Customer), and **More** (Lainnya). Products and settings sit under More because cashiers rarely open them.
 
 ### Checkout and parallel tabs
 
@@ -109,7 +111,16 @@ While a QRIS/VA charge is pending, the cashier can't close that tab or log out. 
 | Reports | Monthly PDF with sales, credit sales, manual credit, and credit payments per day |
 | Settings | Language, theme (system, light, dark), logout |
 
-The layout adapts from a sidebar on desktop to a rail and top bar on narrower screens.
+The shell uses a drawer below 600 px, a navigation rail up to 1024 px, and a persistent sidebar above that. List pages share one filter bar: every filter (search, date range, select, tabs) has its label above it, and search placeholders name the field the backend matches (product name, customer name, username).
+
+### Branding
+
+| | CMS (web) | Kasir (mobile) |
+| --- | --- | --- |
+| App name | `myPOS`: tab title, PWA `name`/`short_name`, `appTitle` | `myKasir`: Android label, iOS display name, `appTitle` |
+| Icon | `web/favicon.png` and `web/icons/*`, drawn from `packages/ui/assets/brand/mark.svg` | Launcher icons from the same mark |
+| Brand color `#065F46` (`Mint.c800`) | Manifest `theme_color` and `<meta name="theme-color">` | `MaterialApp.color` (Android recents card) |
+| Launch background | Manifest `background_color` `#F4F7F5` | Android launch screen `#F4F7F5`, `#0B1210` in dark mode; iOS `#F4F7F5` |
 
 ## Monorepo
 
@@ -200,13 +211,16 @@ data           JSON model, datasource (dio / drift), repository impl
 2. A bloc or cubit calls use cases only, never a repository or datasource.
 3. Each use case does one action through one `call(...)` method and returns `Result<T>`: `Ok(value)` or `Err(Failure)`. `Result` and `Failure` are Dart 3 sealed classes, so callers handle them with `switch`.
 4. The repository impl maps models to entities and turns `DioException` or drift errors into a `Failure`. JSON and HTTP stay inside this layer.
-5. `Failure` subtypes: `NetworkFailure`, `TimeoutFailure`, `UnauthorizedFailure`, `ForbiddenFailure`, `NotFoundFailure`, `ConflictFailure`, `ValidationFailure`, `ServerFailure`, `StorageFailure`.
+5. `Failure` subtypes: `NetworkFailure`, `TimeoutFailure`, `UnauthorizedFailure`, `ForbiddenFailure`, `NotFoundFailure`, `ConflictFailure`, `ValidationFailure`, `ServerFailure`.
+6. Add a use case, entity method, or failure type only when an app calls it. Unused ones get deleted.
 
 ### Wiring
 
 - `app/di.dart` creates every instance with get_it and registers implementations under their contract:
   `getIt.registerLazySingleton<ProductRepository>(() => ProductRepositoryImpl(...))`.
 - `app/router.dart` defines routes with go_router, one path constant per route, plus an auth redirect. Each tab uses a `StatefulShellRoute` branch so it keeps its own navigation stack.
+- `app/app.dart` wraps the app in a `BlocListener<AuthCubit, AuthState>` that calls `GoRouter.refresh()`, so the redirect runs again on login, logout, and session expiry.
+- Settings cubits stay in each app on purpose: a cubit is the view model of one app's screen, and the shared logic already lives in core use cases (`GetPreferences`, `SetTheme`, `SetLanguage`).
 - Each route creates its bloc through `BlocProvider(create: (_) => XCubit(getIt(), getIt()))`.
 - Plain CRUD screens use a Cubit. Flows where event order matters (checkout tabs, cart, scanner, sync) use a Bloc.
 
@@ -253,8 +267,11 @@ Login → POST /auth/login → access token (memory) + refresh token
   Kasir: refresh token saved in secure storage
 Any request → AuthInterceptor adds "Authorization: Bearer <access>"
   ← 401 → POST /auth/refresh once → retry the request
-          refresh fails → clear session → router redirects to /login
+          refresh fails → clear session → AuthCubit emits unauthenticated
+          → BlocListener calls GoRouter.refresh() → redirect to /login
 ```
+
+On the CMS, a page load without the cookie gets `400` from `/auth/refresh` and shows the login page. That is expected.
 
 The cookie only reaches the CMS when the backend's `cms_origins` lists the CMS origin (`http://localhost:5173` in dev).
 
@@ -422,6 +439,8 @@ melos run coverage                          # fails if domain/data/bloc coverage
 melos run integration -- -d <device-id>     # Kasir: offline → sync and multi-tab on a device
 ```
 
+`test/app/responsive_test.dart` in each app pumps every route at phone, tablet, and desktop (CMS) or landscape (Kasir) widths, with long names, large amounts, and 1.5× text on phones. Any overflow fails the test, so run it after a layout change.
+
 `test/` in each package mirrors `lib/` (`test/features/<feature>/domain|data|presentation`). Tests mock contracts with `mocktail`, test blocs with `bloc_test`, run drift against an in-memory database, and fake HTTP with `FakeAdapter` from `package:core/testing.dart`. The coverage gate (`tool/check_coverage.dart`) counts lines in `domain/`, `data/`, and `presentation/bloc/` and skips generated `.g.dart` and `.freezed.dart` files.
 
 ### All melos scripts
@@ -463,3 +482,6 @@ Write each step test-first (red, green, refactor):
 | `melos: command not found` | Use `dart run melos run ...` or install it globally (step 1) |
 | `Could not find an option named "-d"` | Flutter arguments go after `--`: `melos run kasir -- -d <id>` |
 | `kasir-reload` says the app isn't running | Start it with `melos run kasir` first; the pid file only exists while it runs |
+| CMS debug web: `Stack Overflow` thrown by a `BlocBuilder` near `AppTheme.compact` | Something removed the `AppTheme.compact` warm-up in `bootstrap.dart`. DDC links the shadcn theme libraries on first use, which overflows the stack inside the widget tree, so the themes must be built before `runApp` |
+| `Failed to bind web development server ... port 5173` | An old CMS dev server still holds the port: `lsof -ti tcp:5173 \| xargs kill` |
+| A widget test that expires the session hangs | The test passed the same `ApiClient` as `api` and `bare`. The refresh call then queues behind the `AuthInterceptor` error it is handling; give `bare` its own client, as production does |
