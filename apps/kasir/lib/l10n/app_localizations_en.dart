@@ -10,7 +10,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Kasir';
+  String get appTitle => 'myKasir';
 
   @override
   String get loginTitle => 'Sign in to Kasir';

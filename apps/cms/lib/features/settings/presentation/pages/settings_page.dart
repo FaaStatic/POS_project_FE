@@ -31,25 +31,22 @@ class SettingsPage extends StatelessWidget {
             children: [
               Text(l10n.language, style: theme.textTheme.titleSmall),
               const SizedBox(height: Space.sm),
-              SegmentedButton<AppLanguage>(
-                segments: const [
-                  ButtonSegment(value: AppLanguage.id, label: Text('Bahasa Indonesia')),
-                  ButtonSegment(value: AppLanguage.en, label: Text('English')),
-                ],
-                selected: {settings.language},
-                onSelectionChanged: (s) => context.read<SettingsCubit>().setLanguage(s.first),
+              AppTabs<AppLanguage>(
+                choices: const [Choice(AppLanguage.id, 'Bahasa Indonesia'), Choice(AppLanguage.en, 'English')],
+                value: settings.language,
+                onChanged: context.read<SettingsCubit>().setLanguage,
               ),
               const SizedBox(height: Space.xl),
               Text(l10n.theme, style: theme.textTheme.titleSmall),
               const SizedBox(height: Space.sm),
-              SegmentedButton<ThemePreference>(
-                segments: [
-                  ButtonSegment(value: ThemePreference.system, label: Text(l10n.themeSystem)),
-                  ButtonSegment(value: ThemePreference.light, label: Text(l10n.themeLight)),
-                  ButtonSegment(value: ThemePreference.dark, label: Text(l10n.themeDark)),
+              AppTabs<ThemePreference>(
+                choices: [
+                  Choice(ThemePreference.system, l10n.themeSystem),
+                  Choice(ThemePreference.light, l10n.themeLight),
+                  Choice(ThemePreference.dark, l10n.themeDark),
                 ],
-                selected: {settings.theme},
-                onSelectionChanged: (s) => context.read<SettingsCubit>().setTheme(s.first),
+                value: settings.theme,
+                onChanged: context.read<SettingsCubit>().setTheme,
               ),
               const SizedBox(height: Space.xxl),
               account,

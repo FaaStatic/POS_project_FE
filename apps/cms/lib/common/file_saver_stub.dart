@@ -2,3 +2,7 @@
 final savedFiles = <String>[];
 
 void saveFile(List<int> bytes, String name, {String mime = 'application/pdf'}) => savedFiles.add(name);
+
+final openedUrls = <String>[];
+
+void openInNewTab(String url) => openedUrls.add(url);

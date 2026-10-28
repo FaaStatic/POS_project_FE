@@ -6,17 +6,6 @@ import '../../../../validation/validators.dart';
 import '../entities/transaction.dart';
 import '../repositories/transaction_repository.dart';
 
-class CreateTransaction {
-  const CreateTransaction(this._repo);
-  final TransactionRepository _repo;
-
-  Future<Result<CheckoutResult>> call(CheckoutRequest request) {
-    final error = validateCheckout(request.method, request.customerId, request.lines);
-    if (error != null) return Future.value(Err(ValidationFailure(error)));
-    return _repo.create(request);
-  }
-}
-
 /// Shared by online checkout and the offline queue.
 String? validateCheckout(PaymentMethod method, String? customerId, List<CheckoutLine> lines) {
   if (lines.isEmpty) return 'empty_cart';

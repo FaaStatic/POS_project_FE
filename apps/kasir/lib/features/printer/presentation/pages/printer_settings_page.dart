@@ -46,18 +46,14 @@ class PrinterSettingsPage extends StatelessWidget {
                   const SizedBox(height: Space.xl),
                   Text(l10n.paperWidth, style: theme.textTheme.titleSmall),
                   const SizedBox(height: Space.sm),
-                  SegmentedButton<PaperWidth>(
-                    segments: const [
-                      ButtonSegment(value: PaperWidth.mm58, label: Text('58 mm')),
-                      ButtonSegment(value: PaperWidth.mm80, label: Text('80 mm')),
-                    ],
-                    selected: {s.paper},
-                    onSelectionChanged: (v) => cubit.save(s.copyWith(paper: v.first)),
+                  AppTabs<PaperWidth>(
+                    choices: const [Choice(PaperWidth.mm58, '58 mm'), Choice(PaperWidth.mm80, '80 mm')],
+                    value: s.paper,
+                    onChanged: (v) => cubit.save(s.copyWith(paper: v)),
                   ),
                   const SizedBox(height: Space.lg),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(l10n.autoPrint),
+                  ShadSwitch(
+                    label: Text(l10n.autoPrint),
                     value: s.autoPrint,
                     onChanged: (v) => cubit.save(s.copyWith(autoPrint: v)),
                   ),

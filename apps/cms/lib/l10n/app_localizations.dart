@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In id, this message translates to:
-  /// **'Shop CMS'**
+  /// **'myPOS'**
   String get appTitle;
 
   /// No description provided for @loginTitle.
@@ -301,6 +301,30 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Laporan'**
   String get navReports;
+
+  /// No description provided for @navGroupSales.
+  ///
+  /// In id, this message translates to:
+  /// **'Penjualan'**
+  String get navGroupSales;
+
+  /// No description provided for @navGroupCatalog.
+  ///
+  /// In id, this message translates to:
+  /// **'Katalog'**
+  String get navGroupCatalog;
+
+  /// No description provided for @navGroupPeople.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengguna'**
+  String get navGroupPeople;
+
+  /// No description provided for @navGroupOther.
+  ///
+  /// In id, this message translates to:
+  /// **'Lainnya'**
+  String get navGroupOther;
 
   /// No description provided for @active.
   ///
@@ -1303,6 +1327,18 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Cari nama customer'**
   String get searchCustomer;
+
+  /// No description provided for @searchProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari nama produk'**
+  String get searchProduct;
+
+  /// No description provided for @searchUsername.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari username'**
+  String get searchUsername;
 
   /// No description provided for @remaining.
   ///

@@ -30,26 +30,10 @@ class DashboardPage extends StatelessWidget {
       child: CmsPage(
         title: l10n.dashboardTitle,
         actions: [
-          OutlinedButton.icon(
-            onPressed: () => context.go('/products?add=1'),
-            icon: const Icon(Iconsax.box_add),
-            label: Text(l10n.quickAddProduct),
-          ),
-          OutlinedButton.icon(
-            onPressed: () => context.go('/staff?add=1'),
-            icon: const Icon(Iconsax.user_add),
-            label: Text(l10n.quickAddStaff),
-          ),
-          OutlinedButton.icon(
-            onPressed: () => context.go('/customers?add=1'),
-            icon: const Icon(Iconsax.profile_add),
-            label: Text(l10n.quickAddCustomer),
-          ),
-          OutlinedButton.icon(
-            onPressed: () => onDownloadMonthReport(context),
-            icon: const Icon(Iconsax.document_download),
-            label: Text(l10n.quickMonthReport),
-          ),
+          AppButton(label: l10n.quickAddProduct, icon: Iconsax.box_add_copy, variant: AppButtonVariant.outline, onPressed: () => context.go('/products?add=1')),
+          AppButton(label: l10n.quickAddStaff, icon: Iconsax.user_add_copy, variant: AppButtonVariant.outline, onPressed: () => context.go('/staff?add=1')),
+          AppButton(label: l10n.quickAddCustomer, icon: Iconsax.profile_add_copy, variant: AppButtonVariant.outline, onPressed: () => context.go('/customers?add=1')),
+          AppButton(label: l10n.quickMonthReport, icon: Iconsax.document_download_copy, variant: AppButtonVariant.outline, onPressed: () => onDownloadMonthReport(context)),
         ],
         body: BlocBuilder<DashboardCubit, DashboardState>(
           builder: (context, state) {
@@ -131,28 +115,28 @@ class _SummaryPanel extends StatelessWidget {
     final vs = l10n.vsPrevious(DashboardPage._rangeName(l10n, state));
     final tiles = [
       _StatTile(
-        icon: Iconsax.money_recive,
+        icon: Iconsax.money_recive_copy,
         label: l10n.revenue,
         value: s == null ? '–' : money(context, s.revenue),
         change: s == null || p == null ? null : percentChange(s.revenue, p.revenue),
         vs: vs,
       ),
       _StatTile(
-        icon: Iconsax.chart_2,
+        icon: Iconsax.chart_2_copy,
         label: l10n.grossProfit,
         value: s == null ? '–' : money(context, s.grossProfit),
         change: s == null || p == null ? null : percentChange(s.grossProfit, p.grossProfit),
         vs: vs,
       ),
       _StatTile(
-        icon: Iconsax.receipt_2,
+        icon: Iconsax.receipt_2_copy,
         label: l10n.transactionCount,
         value: s == null ? '–' : '${s.transactions}',
         change: s == null || p == null ? null : percentChange(s.transactions, p.transactions),
         vs: vs,
       ),
       _StatTile(
-        icon: Iconsax.wallet_money,
+        icon: Iconsax.wallet_money_copy,
         label: l10n.activeReceivables,
         value: s == null ? '–' : money(context, s.debtOutstanding),
       ),
@@ -304,12 +288,11 @@ class _RangeMenu extends StatelessWidget {
             child: Text(labels[r]!),
           ),
       ],
-      builder: (context, controller, _) => TextButton.icon(
-        style: TextButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.surfaceContainer),
-        iconAlignment: IconAlignment.end,
+      builder: (context, controller, _) => ShadButton.outline(
         onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-        icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 20),
-        label: Text(
+        leading: const Icon(Iconsax.calendar_1_copy, size: 16),
+        trailing: const Icon(Iconsax.arrow_down_1_copy, size: 14),
+        child: Text(
           state.range == DashboardRange.custom
               ? '${dateText(context, state.start)} – ${dateText(context, state.end)}'
               : labels[state.range]!,
@@ -351,11 +334,11 @@ class _NeedsAction extends StatelessWidget {
           if (state.loading && state.summary == null)
             const LinearProgressIndicator()
           else if (state.nothingToDo)
-            row(Iconsax.tick_circle, status.success, status.successContainer, l10n.nothingToDo, () {})
+            row(Iconsax.tick_circle_copy, status.success, status.successContainer, l10n.nothingToDo, () {})
           else ...[
             if (conflicts > 0)
               row(
-                Iconsax.warning_2,
+                Iconsax.warning_2_copy,
                 status.warning,
                 status.warningContainer,
                 l10n.openConflicts(conflicts),
@@ -363,7 +346,7 @@ class _NeedsAction extends StatelessWidget {
               ),
             if (state.failedPayments > 0)
               row(
-                Iconsax.card_remove,
+                Iconsax.card_remove_copy,
                 status.danger,
                 status.dangerContainer,
                 l10n.failedPayments(state.failedPayments),
@@ -376,7 +359,7 @@ class _NeedsAction extends StatelessWidget {
               ),
               for (final d in state.oldestDebts)
                 row(
-                  Iconsax.wallet_money,
+                  Iconsax.wallet_money_copy,
                   status.warning,
                   status.warningContainer,
                   '${d.customerName} · ${dateText(context, d.date)}',
@@ -411,7 +394,7 @@ class _RecentTransactions extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(child: Text(l10n.recentTransactions, style: theme.textTheme.titleLarge)),
-                TextButton(onPressed: () => context.go('/transactions'), child: Text(l10n.seeAll)),
+                AppButton(label: l10n.seeAll, variant: AppButtonVariant.ghost, onPressed: () => context.go('/transactions')),
               ],
             ),
           ),

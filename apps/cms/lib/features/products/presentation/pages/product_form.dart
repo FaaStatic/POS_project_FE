@@ -120,22 +120,17 @@ class _ProductFormState extends State<ProductForm> {
           ),
           const SizedBox(height: Space.lg),
           pair(
-            DropdownButtonFormField<ProductUnit>(
-              isExpanded: true,
-              initialValue: _unit,
-              decoration: InputDecoration(labelText: l10n.unit),
-              items: [for (final u in ProductUnit.values) DropdownMenuItem(value: u, child: Text(u.name))],
-              onChanged: (u) => setState(() => _unit = u ?? _unit),
+            AppSelect<ProductUnit>(
+              label: l10n.unit,
+              value: _unit,
+              choices: [for (final u in ProductUnit.values) Choice(u, u.name)],
+              onChanged: (u) => setState(() => _unit = u),
             ),
-            DropdownButtonFormField<ProductType>(
-              isExpanded: true,
-              initialValue: _type,
-              decoration: InputDecoration(labelText: l10n.productType),
-              items: [
-                DropdownMenuItem(value: ProductType.physical, child: Text(l10n.physical)),
-                DropdownMenuItem(value: ProductType.digital, child: Text(l10n.digital)),
-              ],
-              onChanged: (t) => setState(() => _type = t ?? _type),
+            AppSelect<ProductType>(
+              label: l10n.productType,
+              value: _type,
+              choices: [Choice(ProductType.physical, l10n.physical), Choice(ProductType.digital, l10n.digital)],
+              onChanged: (t) => setState(() => _type = t),
             ),
           ),
           const SizedBox(height: Space.lg),
@@ -159,10 +154,11 @@ class _ProductFormState extends State<ProductForm> {
             textEditingController: _category,
             focusNode: _categoryFocus,
             optionsBuilder: (v) => widget.categories.map((c) => c.name).where((n) => n.toLowerCase().contains(v.text.toLowerCase())),
-            fieldViewBuilder: (context, controller, focus, _) => TextFormField(
+            fieldViewBuilder: (context, controller, focus, _) => AppTextField(
+              label: l10n.category,
+              helper: l10n.categoryNewHint,
               controller: controller,
               focusNode: focus,
-              decoration: InputDecoration(labelText: l10n.category, helperText: l10n.categoryNewHint),
               validator: (v) => validationText(context, Validators.categoryName(v)),
             ),
           ),

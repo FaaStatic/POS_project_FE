@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../l10n/ui_localizations.dart';
+import '../theme/app_theme.dart';
 
-/// Search input with a clear button. Hardware barcode scanners type into it and
-/// press Enter, which arrives through [onSubmitted].
+/// shadcn search input with a clear button. Hardware barcode scanners type into
+/// it and press Enter, which arrives through [onSubmitted].
 class SearchField extends StatefulWidget {
   const SearchField({
     super.key,
@@ -41,34 +43,38 @@ class _SearchFieldState extends State<SearchField> {
   @override
   Widget build(BuildContext context) {
     final l10n = UiLocalizations.of(context);
+    final sizes = AppSizes.of(context);
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
+    final iconSize = sizes.compact ? 16.0 : 20.0;
     return ListenableBuilder(
       listenable: _controller,
-      builder: (context, _) => TextField(
+      builder: (context, _) => ShadInput(
         controller: _controller,
         focusNode: widget.focusNode,
         autofocus: widget.autofocus,
         textInputAction: TextInputAction.search,
         onChanged: widget.onChanged,
         onSubmitted: widget.onSubmitted,
-        style: Theme.of(context).textTheme.bodyLarge,
-        decoration: InputDecoration(
-          hintText: widget.hint ?? l10n.search,
-          prefixIcon: const Icon(Icons.search_rounded),
-          suffixIcon: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_controller.text.isNotEmpty)
-                IconButton(
-                  tooltip: l10n.clearSearch,
-                  icon: const Icon(Iconsax.close_circle),
+        placeholder: Text(widget.hint ?? l10n.search),
+        leading: Icon(Iconsax.search_normal_1_copy, size: iconSize, color: muted),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_controller.text.isNotEmpty)
+              Tooltip(
+                message: l10n.clearSearch,
+                child: ShadIconButton.ghost(
+                  width: sizes.control - 8,
+                  height: sizes.control - 8,
+                  icon: Icon(Iconsax.close_circle_copy, size: iconSize),
                   onPressed: () {
                     _controller.clear();
                     widget.onChanged('');
                   },
                 ),
-              ?widget.trailing,
-            ],
-          ),
+              ),
+            ?widget.trailing,
+          ],
         ),
       ),
     );

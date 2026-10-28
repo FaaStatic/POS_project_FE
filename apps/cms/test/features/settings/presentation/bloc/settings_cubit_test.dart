@@ -1,6 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:cms/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:core/core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -8,6 +9,12 @@ void main() {
   setUp(() => repo = PreferencesRepositoryImpl(MemoryStore()));
 
   SettingsCubit build() => SettingsCubit(GetPreferences(repo), SetTheme(repo), SetLanguage(repo));
+
+  test('every theme preference maps to a ThemeMode by name', () {
+    for (final p in ThemePreference.values) {
+      expect(ThemeMode.values.byName(p.name).name, p.name);
+    }
+  });
 
   test('starts from stored preferences', () {
     expect(build().state, const SettingsState(theme: ThemePreference.system, language: AppLanguage.id));

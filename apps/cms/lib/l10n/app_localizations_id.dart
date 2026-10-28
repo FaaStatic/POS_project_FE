@@ -10,7 +10,7 @@ class AppLocalizationsId extends AppLocalizations {
   AppLocalizationsId([String locale = 'id']) : super(locale);
 
   @override
-  String get appTitle => 'Shop CMS';
+  String get appTitle => 'myPOS';
 
   @override
   String get loginTitle => 'Masuk ke CMS';
@@ -115,6 +115,18 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get navReports => 'Laporan';
+
+  @override
+  String get navGroupSales => 'Penjualan';
+
+  @override
+  String get navGroupCatalog => 'Katalog';
+
+  @override
+  String get navGroupPeople => 'Pengguna';
+
+  @override
+  String get navGroupOther => 'Lainnya';
 
   @override
   String get active => 'Aktif';
@@ -658,6 +670,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get searchCustomer => 'Cari nama customer';
+
+  @override
+  String get searchProduct => 'Cari nama produk';
+
+  @override
+  String get searchUsername => 'Cari username';
 
   @override
   String get remaining => 'Sisa';

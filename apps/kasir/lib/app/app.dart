@@ -1,4 +1,3 @@
-import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -34,20 +33,31 @@ class _KasirAppState extends State<KasirApp> {
 
   @override
   Widget build(BuildContext context) => MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: _auth),
-          BlocProvider.value(value: _settings),
-        ],
-        child: BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (context, settings) {
-            Intl.defaultLocale = settings.language.name;
-            return MaterialApp.router(
+    providers: [
+      BlocProvider.value(value: _auth),
+      BlocProvider.value(value: _settings),
+    ],
+    // Re-runs the auth redirect on login, logout, and session expiry.
+    child: BlocListener<AuthCubit, AuthState>(
+      listener: (_, _) => _router.refresh(),
+      child: BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, settings) {
+          Intl.defaultLocale = settings.language.name;
+          final mode = ThemeMode.values.byName(settings.theme.name);
+          // shadcn wraps Material so both widget sets read one theme (kasir: touch density).
+          return ShadApp.custom(
+            theme: AppTheme.touch.shadLight,
+            darkTheme: AppTheme.touch.shadDark,
+            themeMode: mode,
+            appBuilder: (context) => MaterialApp.router(
               onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+              // Android recents card, like the web manifest's theme_color.
+              color: Mint.c800,
               debugShowCheckedModeBanner: false,
               routerConfig: _router,
-              theme: _kasirTheme(AppTheme.light),
-              darkTheme: _kasirTheme(AppTheme.dark),
-              themeMode: themeModeOf(settings.theme),
+              theme: AppTheme.touch.light,
+              darkTheme: AppTheme.touch.dark,
+              themeMode: mode,
               locale: Locale(settings.language.name),
               supportedLocales: AppLocalizations.supportedLocales,
               localizationsDelegates: const [
@@ -57,31 +67,10 @@ class _KasirAppState extends State<KasirApp> {
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-            );
-          },
-        ),
-      );
-}
-
-ThemeMode themeModeOf(ThemePreference preference) => switch (preference) {
-      ThemePreference.system => ThemeMode.system,
-      ThemePreference.light => ThemeMode.light,
-      ThemePreference.dark => ThemeMode.dark,
-    };
-
-/// Kasir-only: segmented controls as shadcn toggles (ink selection, no check mark).
-/// The CMS keeps the shared theme unchanged.
-ThemeData _kasirTheme(ThemeData base) {
-  final scheme = base.colorScheme;
-  return base.copyWith(
-    segmentedButtonTheme: SegmentedButtonThemeData(
-      selectedIcon: const SizedBox.shrink(),
-      style: SegmentedButton.styleFrom(
-        selectedBackgroundColor: scheme.primary,
-        selectedForegroundColor: scheme.onPrimary,
-        backgroundColor: scheme.surface,
-        side: BorderSide(color: scheme.outlineVariant),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.control)),
+              builder: (context, child) => ShadAppBuilder(child: child),
+            ),
+          );
+        },
       ),
     ),
   );

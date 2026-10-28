@@ -28,6 +28,10 @@ dart run melos run kasir -- -d <id>   # kasir di device
 - `Failure` memakai sealed class Dart 3, bukan freezed, karena tidak butuh codegen.
 - Test double HTTP (`FakeAdapter`) diekspor dari `package:core/testing.dart`; jangan di-import kode produksi.
 - Enum backend: `type_payment` 0 tunai, 1 hutang, 2 transfer (VA), 3 qris; `unit` 0 pcs, 1 gram, 2 kg, 3 liter, 4 kardus, 5 ikat; `product_type` 0 fisik, 1 digital.
+- Komponen memakai `shadcn_ui` (dependency di `packages/ui`). Kedua app membungkus `MaterialApp.router` dengan `ShadApp.custom` + `ShadAppBuilder`. `ui.dart` hanya me-re-export widget Shad yang dipakai lewat `show`, karena `shadcn_ui` juga mengekspor boxy, flutter_animate, intl, dan two_dimensional_scrollables. Material tetap dipakai untuk widget yang tidak punya padanan Shad (`ListTile`, `ChoiceChip`, `Autocomplete`, `MenuAnchor`, `NavigationRail`/`NavigationBar`) dan untuk stepper qty, karena tombol Shad tidak punya area sentuh 48dp.
+- Skema warna putih + mint (`Mint`, `Neutral` di `ui/src/tokens/colors.dart`), terang dan gelap. Dua densitas: `AppTheme.compact` untuk CMS (kontrol 40, body 14) dan `AppTheme.touch` untuk kasir (kontrol 48, aksi utama 56, body 16). Ukuran dibaca lewat `AppSizes.of(context)`.
+- Ikon Iconsax memakai varian `_copy` (linear/outline). Nama tanpa `_copy` adalah varian bold.
+- Referensi desain: CMS dari "CMS Dashboard Design" oleh Faysol Ahmed Sozib (dribbble.com/shots/16763871), kasir dari "Mobile App Design for POS" oleh Vinz (dribbble.com/shots/27265995). Credit (`DesignCredit`) ada di footer `CmsPage`, halaman login CMS, dan bawah halaman Lainnya kasir. Kasir membuka link dengan `url_launcher`; CMS memakai `openInNewTab` di `common/file_saver*`.
 
 ## Arsitektur folder dan alur kode (PRD bagian 8.4)
 

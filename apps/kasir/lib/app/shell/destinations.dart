@@ -11,9 +11,9 @@ class KasirDestination {
 
 /// Order matches the StatefulShellRoute branches in router.dart.
 final kasirDestinations = <KasirDestination>[
-  KasirDestination((l) => l.navCheckout, Iconsax.shopping_cart),
-  KasirDestination((l) => l.navHistory, Iconsax.receipt_2),
-  KasirDestination((l) => l.navCustomers, Iconsax.profile_2user),
+  KasirDestination((l) => l.navCheckout, Iconsax.shopping_cart_copy),
+  KasirDestination((l) => l.navHistory, Iconsax.receipt_2_copy),
+  KasirDestination((l) => l.navCustomers, Iconsax.profile_2user_copy),
   // Products and settings are rare for a cashier, so they share "Lainnya" (Square POS "More").
-  KasirDestination((l) => l.navMore, Iconsax.menu_1),
+  KasirDestination((l) => l.navMore, Iconsax.menu_1_copy),
 ];

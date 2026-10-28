@@ -3,6 +3,7 @@ import 'package:core/core.dart';
 import 'package:core/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/cms_harness.dart';
@@ -76,31 +77,31 @@ void main() {
     await app.pump(tester, location: '/staff');
     expect(find.text('kasir1'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Tambah staff'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Tambah staff'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).at(0), 'kasir2');
-    await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Simpan'));
+    await tester.enterText(formFields.at(0), 'kasir2');
+    await tester.enterText(formFields.at(1), 'secret1');
+    await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Staff ditambahkan.'), findsOneWidget);
     expect(app.adapter.requests.where((r) => r.path == ApiPaths.register).single.data, {'username': 'kasir2', 'password': 'secret1'});
 
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Aksi'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Aksi'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Reset password'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField), 'newpass1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Simpan'));
+    await tester.enterText(formFields, 'newpass1');
+    await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Password diganti. Sesi staff ini dicabut.'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Aksi'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Aksi'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Hapus permanen'));
     await tester.pumpAndSettle();
-    final purge = find.widgetWithText(FilledButton, 'Hapus permanen');
-    expect(tester.widget<FilledButton>(purge).onPressed, isNull);
-    await tester.enterText(find.byType(TextField).last, 'kasir1');
+    final purge = find.widgetWithText(ShadButton, 'Hapus permanen');
+    expect(tester.widget<ShadButton>(purge).onPressed, isNull);
+    await tester.enterText(find.byType(EditableText).last, 'kasir1');
     await tester.pump();
     await tester.tap(purge);
     await tester.pumpAndSettle();

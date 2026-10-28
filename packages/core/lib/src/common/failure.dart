@@ -47,7 +47,3 @@ final class ServerFailure extends Failure {
   const ServerFailure([super.message]);
 }
 
-/// Local storage (drift, secure storage) failed.
-final class StorageFailure extends Failure {
-  const StorageFailure([super.message]);
-}

@@ -16,3 +16,6 @@ void saveFile(List<int> bytes, String name, {String mime = 'application/pdf'}) {
   web.URL.revokeObjectURL(url);
   savedFiles.add(name);
 }
+
+/// Opens an external page without leaving the CMS; noopener keeps it from reaching back.
+void openInNewTab(String url) => web.window.open(url, '_blank', 'noopener');

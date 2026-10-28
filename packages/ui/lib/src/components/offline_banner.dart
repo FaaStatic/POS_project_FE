@@ -4,6 +4,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../l10n/ui_localizations.dart';
 import '../theme/status_colors.dart';
 import '../tokens/spacing.dart';
+import 'app_button.dart';
 
 /// Kasir offline banner with the pending transaction count and an optional sync action.
 class OfflineBanner extends StatelessWidget {
@@ -38,16 +39,11 @@ class OfflineBanner extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.xs),
           child: Row(
             children: [
-              Icon(offline ? Iconsax.cloud_cross : Iconsax.cloud_change, color: status.warning),
+              Icon(offline ? Iconsax.cloud_cross_copy : Iconsax.cloud_change_copy, color: status.warning),
               const SizedBox(width: Space.sm),
               Expanded(child: Text(parts.join(' · '), style: theme.textTheme.bodyMedium)),
               if (syncLabel != null && pendingCount > 0)
-                TextButton(
-                  onPressed: syncing ? null : onSync,
-                  child: syncing
-                      ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                      : Text(syncLabel!),
-                ),
+                AppButton(label: syncLabel!, variant: AppButtonVariant.ghost, loading: syncing, onPressed: onSync),
             ],
           ),
         ),

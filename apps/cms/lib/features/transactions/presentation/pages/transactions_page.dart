@@ -32,31 +32,37 @@ class TransactionsPage extends StatelessWidget {
             title: l10n.transactionsTitle,
             body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(
                   children: [
-                    DateRangeField(
-                      value: q.dateStart == null
-                          ? null
-                          : DateTimeRange(start: q.dateStart!, end: q.dateEnd ?? q.dateStart!),
-                      onChanged: (r) => cubit.dates(r?.start, r?.end),
+                    FilterField(
+                      label: l10n.date,
+                      child: DateRangeField(
+                        value: q.dateStart == null
+                            ? null
+                            : DateTimeRange(start: q.dateStart!, end: q.dateEnd ?? q.dateStart!),
+                        onChanged: (r) => cubit.dates(r?.start, r?.end),
+                      ),
                     ),
                     SizedBox(
                       width: 200,
-                      child: DropdownButtonFormField<PaymentMethod?>(
-                        isExpanded: true,
-                        initialValue: q.method,
-                        decoration: InputDecoration(labelText: l10n.method),
-                        items: [
-                          DropdownMenuItem(value: null, child: Text(l10n.allMethods)),
-                          for (final m in PaymentMethod.values)
-                            DropdownMenuItem(value: m, child: Text(methodLabel(l10n, m))),
+                      child: AppSelect<PaymentMethod?>(
+                        label: l10n.method,
+                        value: q.method,
+                        choices: [
+                          Choice(null, l10n.allMethods),
+                          for (final m in PaymentMethod.values) Choice(m, methodLabel(l10n, m)),
                         ],
                         onChanged: cubit.method,
                       ),
                     ),
                     SizedBox(
                       width: 260,
-                      child: SearchField(hint: l10n.searchInvoice, onChanged: cubit.invoice),
+                      child: FilterField(
+                        label: l10n.search,
+                        child: SearchField(hint: l10n.searchInvoice, onChanged: cubit.invoice),
+                      ),
                     ),
-                    FilterChip(label: Text(l10n.conflictOnly), selected: q.openConflict, onSelected: cubit.conflicts),
+                    FilterField(
+                      child: ShadSwitch(label: Text(l10n.conflictOnly), value: q.openConflict, onChanged: cubit.conflicts),
+                    ),
                   ],
                 ),
                 Expanded(

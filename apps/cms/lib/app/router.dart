@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
@@ -46,7 +45,6 @@ abstract final class Routes {
 
 GoRouter buildRouter(AuthCubit auth, {String? initialLocation}) => GoRouter(
   initialLocation: initialLocation ?? Routes.home,
-  refreshListenable: _StreamListenable(auth.stream),
   // Keeps the requested page across splash and login, so a reload stays put.
   redirect: (context, state) {
     final location = state.matchedLocation;
@@ -170,17 +168,3 @@ GoRouter buildRouter(AuthCubit auth, {String? initialLocation}) => GoRouter(
     ),
   ],
 );
-
-class _StreamListenable extends ChangeNotifier {
-  _StreamListenable(Stream<Object?> stream) {
-    _sub = stream.listen((_) => notifyListeners());
-  }
-
-  late final StreamSubscription<Object?> _sub;
-
-  @override
-  void dispose() {
-    _sub.cancel();
-    super.dispose();
-  }
-}

@@ -46,7 +46,7 @@ void main() {
     await tester.tap(find.textContaining('Bayar Rp'));
     await app.settle(tester);
     expect(find.textContaining('OFF-'), findsWidgets);
-    await tester.tap(find.widgetWithText(FilledButton, 'Selesai'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Selesai'));
     await app.settle(tester);
     expect(find.textContaining('1 transaksi belum terkirim'), findsOneWidget);
 
@@ -78,7 +78,7 @@ void main() {
     await app.settle(tester);
     await tester.tap(find.textContaining('Bayar Rp'));
     await app.settle(tester);
-    await tester.tap(find.widgetWithText(FilledButton, 'Selesai'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Selesai'));
     await app.settle(tester);
 
     expect(find.text('Transaksi 2'), findsNothing);
@@ -99,7 +99,7 @@ void main() {
     await app.settle(tester);
 
     await tester.scrollUntilVisible(find.widgetWithText(AppTextField, 'Uang diterima'), 200, scrollable: find.byType(Scrollable).last);
-    final received = find.descendant(of: find.widgetWithText(AppTextField, 'Uang diterima'), matching: find.byType(TextField));
+    final received = find.descendant(of: find.widgetWithText(AppTextField, 'Uang diterima'), matching: find.byType(EditableText));
     AppButton pay() => tester.widget<AppButton>(find.ancestor(of: find.textContaining('Bayar Rp'), matching: find.byType(AppButton)));
     await tester.enterText(received, '1000');
     await app.settle(tester);

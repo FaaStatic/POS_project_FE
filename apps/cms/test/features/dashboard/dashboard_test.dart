@@ -3,6 +3,7 @@ import 'package:core/core.dart';
 import 'package:core/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/cms_harness.dart';
@@ -76,7 +77,7 @@ void main() {
     await tester.tap(find.text('Lihat sebagai tabel'));
     await tester.pumpAndSettle();
     expect(find.byType(DataTable), findsOneWidget);
-    await tester.tap(find.widgetWithText(TextButton, '30 hari'));
+    await tester.tap(find.widgetWithText(ShadButton, '30 hari'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('7 hari').last);
     await tester.pumpAndSettle();
@@ -101,9 +102,9 @@ void main() {
     serveDashboard(app.adapter);
     app.adapter.on('GET', ApiPaths.users, (_) => FakeReply(200, envelope({'staff': []})));
     await app.pump(tester, location: '/dashboard');
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Tambah staff'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Tambah staff'));
     await tester.pumpAndSettle();
-    expect(find.byType(Dialog), findsOneWidget);
+    expect(find.byType(ShadDialog), findsOneWidget);
   });
 
   testWidgets('dashboard fits a phone at 200% text', (tester) async {

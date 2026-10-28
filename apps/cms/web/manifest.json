@@ -1,11 +1,11 @@
 {
-    "name": "cms",
-    "short_name": "cms",
+    "name": "myPOS",
+    "short_name": "myPOS",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F4F7F5",
+    "theme_color": "#065F46",
+    "description": "Panel admin myPOS: penjualan, stok, dan hutang toko dalam satu tempat.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

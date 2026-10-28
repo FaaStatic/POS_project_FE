@@ -1,4 +1,3 @@
-import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -37,20 +36,29 @@ class _CmsAppState extends State<CmsApp> {
 
   @override
   Widget build(BuildContext context) => MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: _auth),
-          BlocProvider.value(value: _settings),
-        ],
-        child: BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (context, settings) {
-            Intl.defaultLocale = settings.language.name;
-            return MaterialApp.router(
+    providers: [
+      BlocProvider.value(value: _auth),
+      BlocProvider.value(value: _settings),
+    ],
+    // Re-runs the auth redirect on login, logout, and session expiry.
+    child: BlocListener<AuthCubit, AuthState>(
+      listener: (_, _) => _router.refresh(),
+      child: BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, settings) {
+          Intl.defaultLocale = settings.language.name;
+          final mode = ThemeMode.values.byName(settings.theme.name);
+          // shadcn wraps Material so both widget sets read one theme (CMS: compact density).
+          return ShadApp.custom(
+            theme: AppTheme.compact.shadLight,
+            darkTheme: AppTheme.compact.shadDark,
+            themeMode: mode,
+            appBuilder: (context) => MaterialApp.router(
               onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
               debugShowCheckedModeBanner: false,
               routerConfig: _router,
-              theme: AppTheme.light,
-              darkTheme: AppTheme.dark,
-              themeMode: themeModeOf(settings.theme),
+              theme: AppTheme.compact.light,
+              darkTheme: AppTheme.compact.dark,
+              themeMode: mode,
               locale: Locale(settings.language.name),
               supportedLocales: AppLocalizations.supportedLocales,
               localizationsDelegates: const [
@@ -60,14 +68,11 @@ class _CmsAppState extends State<CmsApp> {
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-            );
-          },
-        ),
-      );
+              builder: (context, child) => ShadAppBuilder(child: child),
+            ),
+          );
+        },
+      ),
+    ),
+  );
 }
-
-ThemeMode themeModeOf(ThemePreference preference) => switch (preference) {
-      ThemePreference.system => ThemeMode.system,
-      ThemePreference.light => ThemeMode.light,
-      ThemePreference.dark => ThemeMode.dark,
-    };

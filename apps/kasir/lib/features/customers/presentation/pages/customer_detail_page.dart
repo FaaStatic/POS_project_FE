@@ -56,22 +56,38 @@ class CustomerDetailPage extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: Space.md),
                             child: Text(l10n.noDebts),
                           ),
+                        // A Wrap, not a ListTile: on phones the pay button drops under the amount.
                         for (final d in unpaid)
-                          ListTile(
+                          Padding(
                             key: ValueKey(d.id),
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              l10n.remaining(rupiah(context, d.remaining), rupiah(context, d.total)),
-                              style: theme.textTheme.bodyLarge?.tabular,
-                            ),
-                            subtitle: d.date == null ? null : Text(formatDateShort(context, d.date!)),
-                            trailing: FilledButton.tonal(
-                              onPressed: () async {
-                                final cubit = context.read<CustomerDetailCubit>();
-                                await context.push('/debts/${d.id}/pay');
-                                await cubit.load(customerId);
-                              },
-                              child: Text(l10n.receivePayment),
+                            padding: const EdgeInsets.symmetric(vertical: Space.sm),
+                            child: Wrap(
+                              alignment: WrapAlignment.spaceBetween,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: Space.md,
+                              runSpacing: Space.sm,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      l10n.remaining(rupiah(context, d.remaining), rupiah(context, d.total)),
+                                      style: theme.textTheme.bodyLarge?.tabular,
+                                    ),
+                                    if (d.date != null) Text(formatDateShort(context, d.date!), style: theme.textTheme.bodySmall),
+                                  ],
+                                ),
+                                AppButton(
+                                  label: l10n.receivePayment,
+                                  variant: AppButtonVariant.secondary,
+                                  onPressed: () async {
+                                    final cubit = context.read<CustomerDetailCubit>();
+                                    await context.push('/debts/${d.id}/pay');
+                                    await cubit.load(customerId);
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                       ],

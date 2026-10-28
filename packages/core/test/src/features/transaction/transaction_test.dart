@@ -41,7 +41,7 @@ void main() {
       customerId: 'k1',
       lines: [CheckoutLine(productId: 'p1', qty: 2, unitPrice: 4000, destination: '0812')],
     );
-    final r = (await CreateTransaction(repo)(req) as Ok<CheckoutResult>).value;
+    final r = (await repo.create(req) as Ok<CheckoutResult>).value;
     expect(r.invoice, 'INV-9');
     expect(r.method, PaymentMethod.debt);
     expect(r.debtRemaining, 12000);
@@ -62,12 +62,6 @@ void main() {
     expect(validateCheckout(PaymentMethod.debt, null, [line]), 'debt_needs_customer');
     expect(validateCheckout(PaymentMethod.cash, null, [line.copyWith(destination: ' ')]), 'destination_required');
     expect(validateCheckout(PaymentMethod.cash, null, [line]), isNull);
-  });
-
-  test('CreateTransaction refuses invalid carts without a request', () async {
-    final r = await CreateTransaction(repo)(const CheckoutRequest(userId: 'u1', method: PaymentMethod.cash, lines: []));
-    expect(r, const Err<CheckoutResult>(ValidationFailure('empty_cart')));
-    expect(adapter.requests, isEmpty);
   });
 
   test('get and list map transactions and filters', () async {

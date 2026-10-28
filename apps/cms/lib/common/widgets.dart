@@ -30,10 +30,11 @@ class ActionsMenu extends StatelessWidget {
             child: Text(a.label, style: a.destructive ? TextStyle(color: scheme.error) : null),
           ),
       ],
-      builder: (context, controller, _) => OutlinedButton.icon(
+      builder: (context, controller, _) => AppButton(
+        label: AppLocalizations.of(context).actions,
+        icon: Iconsax.more_copy,
+        variant: AppButtonVariant.outline,
         onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-        icon: const Icon(Iconsax.more, size: 18),
-        label: Text(AppLocalizations.of(context).actions),
       ),
     );
   }
@@ -77,17 +78,53 @@ class FilterBar extends StatelessWidget {
   const FilterBar({super.key, required this.children});
   final List<Widget> children;
 
+  // Capped at 40% of the screen and scrollable, so on a phone at large text the list below keeps room.
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, Space.sm),
-        child: Wrap(spacing: Space.md, runSpacing: Space.md, crossAxisAlignment: WrapCrossAlignment.center, children: children),
+  Widget build(BuildContext context) => ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.4),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, Space.sm),
+          // Top-aligned so the labels share one line; shadcn controls differ by a few pixels in height.
+          child: Wrap(spacing: Space.md, runSpacing: Space.md, children: children),
+        ),
       );
+}
+
+/// A filter with its label above, styled like [AppSelect]'s. Without [label] (a switch that
+/// carries its own text) the label line stays empty so the control sits beside the others.
+class FilterField extends StatelessWidget {
+  const FilterField({super.key, this.label, required this.child});
+  final String? label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = this.label;
+    final style = Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w500);
+    return MergeSemantics(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (label != null) Text(label, style: style) else ExcludeSemantics(child: Text('', style: style)),
+          const SizedBox(height: 6),
+          if (label != null)
+            child
+          else
+            ConstrainedBox(
+              constraints: BoxConstraints(minHeight: AppSizes.of(context).control),
+              child: Align(alignment: Alignment.centerLeft, widthFactor: 1, heightFactor: 1, child: child),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Permanent delete confirmation: the admin types the exact name.
 Future<String?> showTypeToConfirm(BuildContext context, {required String name, required String hint}) {
   final l10n = AppLocalizations.of(context);
-  return showDialog<String>(context: context, builder: (_) => _TypeToConfirm(name: name, hint: hint, l10n: l10n));
+  return showShadDialog<String>(context: context, builder: (_) => _TypeToConfirm(name: name, hint: hint, l10n: l10n));
 }
 
 class _TypeToConfirm extends StatefulWidget {
@@ -112,31 +149,23 @@ class _TypeToConfirmState extends State<_TypeToConfirm> {
   @override
   Widget build(BuildContext context) {
     final l10n = widget.l10n;
-    final scheme = Theme.of(context).colorScheme;
-    return AlertDialog(
+    return ShadDialog.alert(
       title: Text(l10n.purgeTitle(widget.name)),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(widget.hint),
-          const SizedBox(height: Space.lg),
-          TextField(
-            controller: _controller,
-            autofocus: true,
-            decoration: InputDecoration(labelText: l10n.purgeTypeName(widget.name)),
-            onChanged: (_) => setState(() {}),
-          ),
-        ],
-      ),
+      description: Text(widget.hint),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-        FilledButton(
-          style: FilledButton.styleFrom(backgroundColor: scheme.error, foregroundColor: scheme.onError),
+        AppButton(label: l10n.cancel, variant: AppButtonVariant.outline, onPressed: () => Navigator.pop(context)),
+        AppButton(
+          label: l10n.purge,
+          variant: AppButtonVariant.destructive,
           onPressed: _controller.text.trim() == widget.name ? () => Navigator.pop(context, _controller.text.trim()) : null,
-          child: Text(l10n.purge),
         ),
       ],
+      child: AppTextField(
+        label: l10n.purgeTypeName(widget.name),
+        controller: _controller,
+        autofocus: true,
+        onChanged: (_) => setState(() {}),
+      ),
     );
   }
 }

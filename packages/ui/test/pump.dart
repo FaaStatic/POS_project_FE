@@ -14,23 +14,30 @@ Future<void> pumpUi(
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
+  final mode = dark ? ThemeMode.dark : ThemeMode.light;
   await tester.pumpWidget(
-    MaterialApp(
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: dark ? ThemeMode.dark : ThemeMode.light,
-      locale: const Locale('id'),
-      supportedLocales: UiLocalizations.supportedLocales,
-      localizationsDelegates: const [
-        UiLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      home: MediaQuery.withClampedTextScaling(
-        minScaleFactor: textScale,
-        maxScaleFactor: textScale,
-        child: Scaffold(body: child),
+    ShadApp.custom(
+      theme: AppTheme.touch.shadLight,
+      darkTheme: AppTheme.touch.shadDark,
+      themeMode: mode,
+      appBuilder: (context) => MaterialApp(
+        theme: AppTheme.touch.light,
+        darkTheme: AppTheme.touch.dark,
+        themeMode: mode,
+        locale: const Locale('id'),
+        supportedLocales: UiLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          UiLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        builder: (context, child) => ShadAppBuilder(child: child),
+        home: MediaQuery.withClampedTextScaling(
+          minScaleFactor: textScale,
+          maxScaleFactor: textScale,
+          child: Scaffold(body: child),
+        ),
       ),
     ),
   );

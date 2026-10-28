@@ -10,7 +10,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Shop CMS';
+  String get appTitle => 'myPOS';
 
   @override
   String get loginTitle => 'Sign in to CMS';
@@ -114,6 +114,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navReports => 'Reports';
+
+  @override
+  String get navGroupSales => 'Sales';
+
+  @override
+  String get navGroupCatalog => 'Catalog';
+
+  @override
+  String get navGroupPeople => 'People';
+
+  @override
+  String get navGroupOther => 'Other';
 
   @override
   String get active => 'Active';
@@ -658,6 +670,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchCustomer => 'Search customer name';
+
+  @override
+  String get searchProduct => 'Search product name';
+
+  @override
+  String get searchUsername => 'Search username';
 
   @override
   String get remaining => 'Remaining';

@@ -42,10 +42,10 @@ class _DailyChartState extends State<DailyChart> {
           runSpacing: Space.sm,
           children: [
             Text(widget.title, style: theme.textTheme.titleLarge),
-            TextButton(
-              style: TextButton.styleFrom(backgroundColor: theme.colorScheme.surfaceContainer),
+            AppButton(
+              label: _table ? widget.title : l10n.chartTable,
+              variant: AppButtonVariant.secondary,
               onPressed: () => setState(() => _table = !_table),
-              child: Text(_table ? widget.title : l10n.chartTable),
             ),
           ],
         ),

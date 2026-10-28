@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../tokens/spacing.dart';
 
@@ -14,24 +15,13 @@ Future<R?> showFormSurface<R>(BuildContext context, {required String title, requ
       ),
     ));
   }
-  return showDialog<R>(
+  return showShadDialog<R>(
     context: context,
-    builder: (_) => Dialog(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 560, maxHeight: 720),
-        child: Padding(
-          padding: const EdgeInsets.all(Space.xl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(title, style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: Space.lg),
-              Flexible(child: SingleChildScrollView(child: child)),
-            ],
-          ),
-        ),
-      ),
+    builder: (_) => ShadDialog(
+      title: Text(title),
+      constraints: const BoxConstraints(maxWidth: 560, maxHeight: 720),
+      scrollable: true,
+      child: child,
     ),
   );
 }

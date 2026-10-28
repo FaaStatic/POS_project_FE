@@ -62,16 +62,20 @@ class CheckoutPage extends StatelessWidget {
                   if (id != null) bloc.add(TabSelected(id));
                 },
               );
-              final products = ProductPane(onScan: () => _scan(context));
-
               return LayoutBuilder(
                 builder: (context, constraints) {
                   final wide = constraints.maxWidth >= _sideBySide;
+                  // Short phones at large text: the tab strip scrolls with the products so the
+                  // list keeps room. The header stays pinned because it holds the cart button.
+                  final roomy = wide || constraints.maxHeight >= 600 * MediaQuery.textScalerOf(context).scale(1);
+                  final products = ProductPane(
+                    onScan: () => _scan(context),
+                    header: roomy ? null : Padding(padding: const EdgeInsets.only(bottom: Space.sm), child: strip),
+                  );
                   final main = Column(
                     children: [
                       _Header(showCart: !wide),
-                      strip,
-                      const SizedBox(height: Space.sm),
+                      if (roomy) ...[strip, const SizedBox(height: Space.sm)],
                       Expanded(child: products),
                     ],
                   );
@@ -125,7 +129,7 @@ class _Header extends StatelessWidget {
                   spacing: Space.sm,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Icon(Iconsax.shop, size: 16, color: muted?.color),
+                    Icon(Iconsax.shop_copy, size: 16, color: muted?.color),
                     Text(store.isEmpty ? l10n.storeNameMissing : store, style: muted),
                     if (cashier != null) Text('·  ${l10n.cashierLine(cashier)}', style: muted),
                   ],
@@ -164,7 +168,7 @@ class _CartButton extends StatelessWidget {
         label: Text(formatQty(count)),
         backgroundColor: scheme.primary,
         textColor: scheme.onPrimary,
-        child: const Icon(Iconsax.shopping_cart),
+        child: const Icon(Iconsax.shopping_cart_copy),
       ),
     );
   }

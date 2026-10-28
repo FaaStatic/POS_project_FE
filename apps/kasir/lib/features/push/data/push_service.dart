@@ -15,6 +15,7 @@ class PushService {
   final KeyValueStore _store;
   bool available = false;
   String? _token;
+  StreamSubscription<String>? _refreshSub;
 
   final _paymentUpdates = StreamController<String>.broadcast();
   final _opened = StreamController<String>.broadcast();
@@ -52,14 +53,18 @@ class PushService {
     final token = _token;
     if (token == null) return;
     await _register(token: token, platform: _platform, deviceId: await _deviceId());
+    // Called on every sign-in; one listener per session, not one per login.
+    await _refreshSub?.cancel();
     // ignore: deprecated_member_use
-    messaging.onTokenRefresh.listen((t) async {
+    _refreshSub = messaging.onTokenRefresh.listen((t) async {
       _token = t;
       await _register(token: t, platform: _platform, deviceId: await _deviceId());
     });
   }
 
   Future<void> unregister() async {
+    await _refreshSub?.cancel();
+    _refreshSub = null;
     final token = _token;
     if (!available || token == null) return;
     await _devices.unregister(token);

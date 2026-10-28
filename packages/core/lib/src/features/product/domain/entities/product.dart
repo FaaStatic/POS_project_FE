@@ -30,9 +30,6 @@ abstract class Product with _$Product {
   }) = _Product;
 
   bool get isDigital => type == ProductType.digital;
-
-  /// Debt sales use the debt price.
-  int priceFor({required bool debt}) => debt ? sellingPriceDebt : sellingPrice;
 }
 
 /// Fields a cashier may change. Null means unchanged. [barcode] "" clears it.

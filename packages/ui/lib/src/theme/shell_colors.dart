@@ -2,77 +2,87 @@ import 'package:flutter/material.dart';
 
 import '../tokens/colors.dart';
 
-/// Colors for the ink navigation surfaces (CMS sidebar/rail, kasir nav).
+/// Navigation surfaces (CMS sidebar, kasir bar) and the one solid mint panel
+/// per screen (kasir total, CMS login aside).
 @immutable
 class ShellColors extends ThemeExtension<ShellColors> {
   const ShellColors({
-    required this.background,
-    required this.raised,
-    required this.foreground,
-    required this.muted,
-    required this.indicator,
-    required this.onIndicator,
     required this.canvas,
-    required this.selected,
+    required this.nav,
+    required this.onNav,
+    required this.onNavMuted,
+    required this.navSelected,
+    required this.onNavSelected,
+    required this.border,
+    required this.brand,
+    required this.onBrand,
+    required this.onBrandMuted,
   });
-
-  final Color background;
-  final Color raised;
-  final Color foreground;
-  final Color muted;
-  final Color indicator;
-  final Color onIndicator;
 
   /// Page background behind cards.
   final Color canvas;
-
-  /// Selected navigation item on the ink surface (white text on it).
-  final Color selected;
+  final Color nav;
+  final Color onNav;
+  final Color onNavMuted;
+  final Color navSelected;
+  final Color onNavSelected;
+  final Color border;
+  final Color brand;
+  final Color onBrand;
+  final Color onBrandMuted;
 
   static const light = ShellColors(
-    background: BrandColors.ink,
-    raised: BrandColors.inkRaised,
-    foreground: Colors.white,
-    muted: Zinc.c400,
-    indicator: BrandColors.greenOnInk,
-    onIndicator: BrandColors.onGreenDark,
-    canvas: BrandColors.canvas,
-    selected: BrandColors.inkRaised,
+    canvas: Neutral.canvas,
+    nav: Colors.white,
+    onNav: Neutral.foreground,
+    onNavMuted: Neutral.muted,
+    navSelected: Mint.c100,
+    onNavSelected: Mint.c800,
+    border: Neutral.border,
+    brand: Mint.c800,
+    onBrand: Colors.white,
+    onBrandMuted: Mint.c100,
   );
 
   static const dark = ShellColors(
-    background: Zinc.c900,
-    raised: Zinc.c800,
-    foreground: Zinc.c50,
-    muted: Zinc.c400,
-    indicator: BrandColors.greenOnInk,
-    onIndicator: BrandColors.onGreenDark,
-    canvas: BrandColors.canvasDark,
-    selected: Zinc.c800,
+    canvas: Neutral.canvasDark,
+    nav: Neutral.surfaceDark,
+    onNav: Neutral.foregroundDark,
+    onNavMuted: Neutral.mutedDark,
+    navSelected: Mint.c900,
+    onNavSelected: Mint.c200,
+    border: Neutral.borderDark,
+    brand: Mint.c900,
+    onBrand: Colors.white,
+    onBrandMuted: Mint.c200,
   );
 
   static ShellColors of(BuildContext context) => Theme.of(context).extension<ShellColors>()!;
 
   @override
   ShellColors copyWith({
-    Color? background,
-    Color? raised,
-    Color? foreground,
-    Color? muted,
-    Color? indicator,
-    Color? onIndicator,
     Color? canvas,
-    Color? selected,
+    Color? nav,
+    Color? onNav,
+    Color? onNavMuted,
+    Color? navSelected,
+    Color? onNavSelected,
+    Color? border,
+    Color? brand,
+    Color? onBrand,
+    Color? onBrandMuted,
   }) =>
       ShellColors(
-        background: background ?? this.background,
-        raised: raised ?? this.raised,
-        foreground: foreground ?? this.foreground,
-        muted: muted ?? this.muted,
-        indicator: indicator ?? this.indicator,
-        onIndicator: onIndicator ?? this.onIndicator,
         canvas: canvas ?? this.canvas,
-        selected: selected ?? this.selected,
+        nav: nav ?? this.nav,
+        onNav: onNav ?? this.onNav,
+        onNavMuted: onNavMuted ?? this.onNavMuted,
+        navSelected: navSelected ?? this.navSelected,
+        onNavSelected: onNavSelected ?? this.onNavSelected,
+        border: border ?? this.border,
+        brand: brand ?? this.brand,
+        onBrand: onBrand ?? this.onBrand,
+        onBrandMuted: onBrandMuted ?? this.onBrandMuted,
       );
 
   @override
@@ -80,14 +90,16 @@ class ShellColors extends ThemeExtension<ShellColors> {
     if (other == null) return this;
     Color l(Color a, Color b) => Color.lerp(a, b, t)!;
     return ShellColors(
-      background: l(background, other.background),
-      raised: l(raised, other.raised),
-      foreground: l(foreground, other.foreground),
-      muted: l(muted, other.muted),
-      indicator: l(indicator, other.indicator),
-      onIndicator: l(onIndicator, other.onIndicator),
       canvas: l(canvas, other.canvas),
-      selected: l(selected, other.selected),
+      nav: l(nav, other.nav),
+      onNav: l(onNav, other.onNav),
+      onNavMuted: l(onNavMuted, other.onNavMuted),
+      navSelected: l(navSelected, other.navSelected),
+      onNavSelected: l(onNavSelected, other.onNavSelected),
+      border: l(border, other.border),
+      brand: l(brand, other.brand),
+      onBrand: l(onBrand, other.onBrand),
+      onBrandMuted: l(onBrandMuted, other.onBrandMuted),
     );
   }
 }

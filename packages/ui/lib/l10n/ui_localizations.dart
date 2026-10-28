@@ -241,6 +241,12 @@ abstract class UiLocalizations {
   /// In id, this message translates to:
   /// **'Hapus tanggal'**
   String get clearDates;
+
+  /// No description provided for @designCredit.
+  ///
+  /// In id, this message translates to:
+  /// **'Referensi desain: {title} oleh {author} di Dribbble'**
+  String designCredit(String title, String author);
 }
 
 class _UiLocalizationsDelegate extends LocalizationsDelegate<UiLocalizations> {

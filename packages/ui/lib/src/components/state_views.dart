@@ -33,7 +33,7 @@ class ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _StateBody(
-        icon: Iconsax.warning_2,
+        icon: Iconsax.warning_2_copy,
         iconColor: Theme.of(context).colorScheme.error,
         message: message,
         action: onRetry == null

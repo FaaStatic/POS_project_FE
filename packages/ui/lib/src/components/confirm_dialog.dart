@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../l10n/ui_localizations.dart';
+import 'app_button.dart';
 
 /// Decision dialog for actions that must interrupt the flow (close a tab, cancel a sale).
 Future<bool> showConfirmDialog(
@@ -10,18 +12,21 @@ Future<bool> showConfirmDialog(
   required String confirmLabel,
   bool destructive = false,
 }) async {
-  final scheme = Theme.of(context).colorScheme;
-  final result = await showDialog<bool>(
+  final result = await showShadDialog<bool>(
     context: context,
-    builder: (context) => AlertDialog(
+    builder: (context) => ShadDialog.alert(
       title: Text(title),
-      content: message == null ? null : Text(message),
+      description: message == null ? null : Text(message),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context, false), child: Text(UiLocalizations.of(context).cancel)),
-        FilledButton(
-          style: destructive ? FilledButton.styleFrom(backgroundColor: scheme.error, foregroundColor: scheme.onError) : null,
+        AppButton(
+          label: UiLocalizations.of(context).cancel,
+          variant: AppButtonVariant.outline,
+          onPressed: () => Navigator.pop(context, false),
+        ),
+        AppButton(
+          label: confirmLabel,
+          variant: destructive ? AppButtonVariant.destructive : AppButtonVariant.primary,
           onPressed: () => Navigator.pop(context, true),
-          child: Text(confirmLabel),
         ),
       ],
     ),
@@ -37,7 +42,7 @@ Future<String?> showReasonDialog(
   required String confirmLabel,
   required String tooShort,
 }) =>
-    showDialog<String>(
+    showShadDialog<String>(
       context: context,
       builder: (_) => _ReasonDialog(title: title, label: label, confirmLabel: confirmLabel, tooShort: tooShort),
     );
@@ -64,32 +69,33 @@ class _ReasonDialogState extends State<_ReasonDialog> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return AlertDialog(
-      title: Text(widget.title),
-      content: Form(
-        key: _form,
-        child: TextFormField(
-          controller: _controller,
-          autofocus: true,
-          maxLength: 500,
-          maxLines: 3,
-          minLines: 1,
-          decoration: InputDecoration(labelText: widget.label),
-          validator: (v) => (v?.trim().length ?? 0) < 3 ? widget.tooShort : null,
+  Widget build(BuildContext context) => ShadDialog.alert(
+        title: Text(widget.title),
+        actions: [
+          AppButton(
+            label: UiLocalizations.of(context).cancel,
+            variant: AppButtonVariant.outline,
+            onPressed: () => Navigator.pop(context),
+          ),
+          AppButton(
+            label: widget.confirmLabel,
+            variant: AppButtonVariant.destructive,
+            onPressed: () {
+              if (_form.currentState!.validate()) Navigator.pop(context, _controller.text.trim());
+            },
+          ),
+        ],
+        child: Form(
+          key: _form,
+          child: ShadInputFormField(
+            controller: _controller,
+            autofocus: true,
+            maxLength: 500,
+            maxLines: 3,
+            minLines: 1,
+            label: Text(widget.label),
+            validator: (v) => v.trim().length < 3 ? widget.tooShort : null,
+          ),
         ),
-      ),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(UiLocalizations.of(context).cancel)),
-        FilledButton(
-          style: FilledButton.styleFrom(backgroundColor: scheme.error, foregroundColor: scheme.onError),
-          onPressed: () {
-            if (_form.currentState!.validate()) Navigator.pop(context, _controller.text.trim());
-          },
-          child: Text(widget.confirmLabel),
-        ),
-      ],
-    );
-  }
+      );
 }

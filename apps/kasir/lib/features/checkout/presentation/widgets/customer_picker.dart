@@ -38,7 +38,7 @@ class _CustomerPicker extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Iconsax.user_remove),
+            leading: const Icon(Iconsax.user_remove_copy),
             title: Text(l10n.noCustomer),
             onTap: () => Navigator.pop(context, (id: null, name: null)),
           ),

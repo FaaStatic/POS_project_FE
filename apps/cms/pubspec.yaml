@@ -1,5 +1,5 @@
 name: cms
-description: Shop CMS for the store owner (web).
+description: myPOS, the store admin panel for sales, stock, and debts (web).
 publish_to: none
 version: 0.1.0+1
 resolution: workspace

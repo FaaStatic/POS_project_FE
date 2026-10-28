@@ -48,7 +48,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  for (final (name, size, type) in [('page when compact', const Size(400, 800), Scaffold), ('dialog when wide', const Size(1200, 800), Dialog)]) {
+  for (final (name, size, type) in [('page when compact', const Size(400, 800), Scaffold), ('dialog when wide', const Size(1200, 800), ShadDialog)]) {
     testWidgets('form surface is a $name', (tester) async {
       await pumpUi(tester, Builder(
         builder: (context) => TextButton(

@@ -68,7 +68,7 @@ void main() {
     expect(value, 0);
     await tester.tap(find.text('0'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), '1,5');
+    await tester.enterText(find.byType(EditableText), '1,5');
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
     expect(value, 1.5);
@@ -90,7 +90,7 @@ void main() {
       padding: const EdgeInsets.all(16),
       child: SearchField(onChanged: changes.add, onSubmitted: (v) => submitted = v),
     ));
-    await tester.enterText(find.byType(TextField), '899');
+    await tester.enterText(find.byType(EditableText), '899');
     await tester.testTextInput.receiveAction(TextInputAction.search);
     await tester.pump();
     expect(submitted, '899');
@@ -109,7 +109,7 @@ void main() {
     ));
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(FilledButton, 'Hapus'));
+    await tester.tap(find.widgetWithText(AppButton, 'Hapus'));
     await tester.pumpAndSettle();
     expect(result, isTrue);
   });
@@ -124,12 +124,12 @@ void main() {
     ));
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField), 'ab');
-    await tester.tap(find.widgetWithText(FilledButton, 'OK'));
+    await tester.enterText(find.byType(EditableText), 'ab');
+    await tester.tap(find.widgetWithText(AppButton, 'OK'));
     await tester.pumpAndSettle();
     expect(find.text('Terlalu pendek'), findsOneWidget);
-    await tester.enterText(find.byType(TextFormField), 'salah input');
-    await tester.tap(find.widgetWithText(FilledButton, 'OK'));
+    await tester.enterText(find.byType(EditableText), 'salah input');
+    await tester.tap(find.widgetWithText(AppButton, 'OK'));
     await tester.pumpAndSettle();
     expect(reason, 'salah input');
   });

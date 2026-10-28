@@ -5,6 +5,7 @@ import 'package:core/testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 
 Map<String, dynamic> ownerLogin() =>
     envelope({'id': 'u1', 'username': 'owner', 'role': 'superadmin', 'token': 'a1', 'refresh_token': ''});
@@ -71,3 +72,9 @@ void serveDashboard(FakeAdapter adapter, {int conflicts = 0, bool oldDebt = fals
           if (failedPayment && o.queryParameters['status'] == 'failed') {'id': 'x', 'order_id': 'ORD-9', 'method': 'qris', 'status': 'failed', 'gross_amount': 1000},
         ],
       })));
+
+/// Text inputs other than the page search field.
+final formFields = find.byElementPredicate(
+  (e) => e.widget is EditableText && e.findAncestorWidgetOfExactType<SearchField>() == null,
+  description: 'form text fields',
+);

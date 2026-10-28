@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/ui_localizations.dart';
+import '../theme/app_theme.dart';
 import '../tokens/spacing.dart';
+import 'app_button.dart';
 
 class TableColumnSpec<T> {
   const TableColumnSpec({
@@ -55,11 +57,11 @@ class ResponsiveTable<T> extends StatelessWidget {
           ? Padding(
               padding: const EdgeInsets.all(Space.lg),
               child: Center(
-                child: OutlinedButton(
-                  onPressed: loadingMore ? null : onLoadMore,
-                  child: loadingMore
-                      ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                      : Text(UiLocalizations.of(context).loadMore),
+                child: AppButton(
+                  label: UiLocalizations.of(context).loadMore,
+                  variant: AppButtonVariant.outline,
+                  loading: loadingMore,
+                  onPressed: onLoadMore,
                 ),
               ),
             )
@@ -72,12 +74,13 @@ class ResponsiveTable<T> extends StatelessWidget {
 
   Widget _table(BuildContext context, List<TableColumnSpec<T>> visible, Widget? more) {
     final theme = Theme.of(context);
+    final sizes = AppSizes.of(context);
     final header = theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant);
     Widget cells(List<Widget> children) => Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.md),
+      padding: EdgeInsets.symmetric(horizontal: Space.lg, vertical: sizes.compact ? Space.sm : Space.md),
       child: Row(children: children),
     );
-    // The table sits in one white card on the canvas.
+    // shadcn table: one white card, hairline header, zebra rows to keep the eye on a line.
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.lg),
       child: Card(
@@ -88,7 +91,6 @@ class ResponsiveTable<T> extends StatelessWidget {
             if (i == 0) {
               return DecoratedBox(
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainer,
                   border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
                 ),
                 child: cells([
@@ -109,7 +111,7 @@ class ResponsiveTable<T> extends StatelessWidget {
             final row = rows[i - 1];
             return Material(
               key: ValueKey(rowKey(row)),
-              color: Colors.transparent,
+              color: i.isEven ? theme.colorScheme.surfaceContainerLow : Colors.transparent,
               child: InkWell(
                 onTap: onTap == null ? null : () => onTap!(row),
                 child: DecoratedBox(
@@ -117,7 +119,7 @@ class ResponsiveTable<T> extends StatelessWidget {
                     border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
                   ),
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: TapSize.min + 8),
+                    constraints: BoxConstraints(minHeight: sizes.compact ? 48 : TapSize.min + 8),
                     child: cells([
                       for (final c in visible)
                         Expanded(

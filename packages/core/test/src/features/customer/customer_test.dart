@@ -60,7 +60,7 @@ void main() {
       ..on('DELETE', ApiPaths.customer('k1'), (_) => FakeReply(200, envelope(null)))
       ..on('POST', ApiPaths.customerRestore('k1'), (_) => FakeReply(200, envelope(null)))
       ..on('DELETE', ApiPaths.customerPurge('k1'), (_) => FakeReply(200, envelope({'mode': 'anonymized'})));
-    expect((await GetAllCustomers(repo)() as Ok<List<Customer>>).value.map((c) => c.id), ['k1', 'k2']);
+    expect((await repo.listAll() as Ok<List<Customer>>).value.map((c) => c.id), ['k1', 'k2']);
     await GetCustomers(repo)(const CustomerQuery(inactive: true));
     expect(adapter.requests.last.queryParameters['status'], 'inactive');
     expect(await UpdateCustomer(repo)('k1', const CustomerInput(name: 'Bu Sri')), isA<Ok<void>>());

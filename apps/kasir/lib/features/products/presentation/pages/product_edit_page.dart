@@ -129,12 +129,11 @@ class _FormState extends State<_Form> {
                 validator: (v) => validationText(context, Validators.barcode(v)),
               ),
               const SizedBox(height: Space.lg),
-              DropdownButtonFormField<ProductUnit>(
-                isExpanded: true,
-                initialValue: _unit,
-                decoration: InputDecoration(labelText: l10n.unit),
-                items: [for (final u in ProductUnit.values) DropdownMenuItem(value: u, child: Text(u.name))],
-                onChanged: (u) => setState(() => _unit = u ?? _unit),
+              AppSelect<ProductUnit>(
+                label: l10n.unit,
+                value: _unit,
+                choices: [for (final u in ProductUnit.values) Choice(u, u.name)],
+                onChanged: (u) => setState(() => _unit = u),
               ),
               const SizedBox(height: Space.lg),
               AppTextField(
@@ -153,12 +152,11 @@ class _FormState extends State<_Form> {
                 validator: positive,
               ),
               const SizedBox(height: Space.lg),
-              DropdownButtonFormField<String>(
-                isExpanded: true,
-                initialValue: categories.any((c) => c.name == _category) ? _category : null,
-                decoration: InputDecoration(labelText: l10n.category),
-                items: [for (final c in categories) DropdownMenuItem(value: c.name, child: Text(c.name))],
-                onChanged: (c) => setState(() => _category = c ?? _category),
+              AppSelect<String>(
+                label: l10n.category,
+                value: _category,
+                choices: [for (final c in categories) Choice(c.name, c.name)],
+                onChanged: (c) => setState(() => _category = c),
               ),
               if (isSuper) ...[
                 const SizedBox(height: Space.xl),
@@ -174,13 +172,10 @@ class _FormState extends State<_Form> {
                   validator: positive,
                 ),
                 const SizedBox(height: Space.lg),
-                SegmentedButton<ProductType>(
-                  segments: [
-                    ButtonSegment(value: ProductType.physical, label: Text(l10n.physical)),
-                    ButtonSegment(value: ProductType.digital, label: Text(l10n.digital)),
-                  ],
-                  selected: {_type},
-                  onSelectionChanged: (s) => setState(() => _type = s.first),
+                AppTabs<ProductType>(
+                  choices: [Choice(ProductType.physical, l10n.physical), Choice(ProductType.digital, l10n.digital)],
+                  value: _type,
+                  onChanged: (t) => setState(() => _type = t),
                 ),
                 const SizedBox(height: Space.lg),
                 AppTextField(

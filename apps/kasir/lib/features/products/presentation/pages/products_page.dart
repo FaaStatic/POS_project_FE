@@ -34,7 +34,7 @@ class ProductsPage extends StatelessWidget {
                   child: state.loading
                       ? const LoadingView()
                       : state.products.isEmpty
-                      ? EmptyState(icon: Iconsax.box, message: l10n.noProducts)
+                      ? EmptyState(icon: Iconsax.box_copy, message: l10n.noProducts)
                       : ListView.separated(
                           padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.lg, Space.lg),
                           itemCount: state.products.length,
@@ -44,19 +44,22 @@ class ProductsPage extends StatelessWidget {
                             return Card(
                               key: ValueKey(p.id),
                               clipBehavior: Clip.antiAlias,
+                              // Price under the details, not trailing: at large text a trailing price leaves no room.
                               child: ListTile(
-                                leading: InitialAvatar(name: p.name, imageUrl: p.image, size: 40),
+                                leading: InitialAvatar(name: p.name, imageUrl: p.image, size: 40, colorKey: p.categoryId),
                                 title: Text(p.name),
-                                subtitle: Text(
-                                  [
-                                    p.sku,
-                                    if (p.barcode != null) p.barcode!,
-                                    if (!p.isDigital) l10n.stock(qty(context, p.stock)),
-                                  ].join(' · '),
-                                ),
-                                trailing: Text(
-                                  rupiah(context, p.sellingPrice),
-                                  style: theme.textTheme.titleSmall?.tabular,
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      [
+                                        p.sku,
+                                        if (p.barcode != null) p.barcode!,
+                                        if (!p.isDigital) l10n.stock(qty(context, p.stock)),
+                                      ].join(' · '),
+                                    ),
+                                    Text(rupiah(context, p.sellingPrice), style: theme.textTheme.titleSmall?.tabular),
+                                  ],
                                 ),
                                 onTap: () => context.push('/settings/products/${p.id}'),
                               ),

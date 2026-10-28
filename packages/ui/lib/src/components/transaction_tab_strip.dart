@@ -4,6 +4,7 @@ import '../../l10n/ui_localizations.dart';
 import '../theme/status_colors.dart';
 import '../tokens/spacing.dart';
 import '../tokens/typography.dart';
+import 'app_button.dart';
 
 class TransactionTab {
   const TransactionTab({required this.id, required this.number, required this.subtitle, this.highlight = false});
@@ -81,18 +82,16 @@ class _TransactionTabStripState extends State<TransactionTabStrip> {
     // Always visible, never scrolled away with the tabs. Phones get square icon
     // buttons so the tabs keep one row.
     return LayoutBuilder(builder: (context, constraints) {
-      final compact = constraints.maxWidth < 520;
+      // Labelled actions need about 520 at normal text; large text switches to icon squares sooner.
+      final compact = constraints.maxWidth < 520 * MediaQuery.textScalerOf(context).scale(1);
       final newBuyer = compact
           ? _SquareAction(tooltip: l10n.newBuyer, onTap: widget.onNew, child: const Icon(Icons.add_rounded))
-          : OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size(TapSize.min, 56),
-                side: BorderSide.none,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.medium)),
-              ),
+          : AppButton(
+              label: l10n.newBuyer,
+              icon: Icons.add_rounded,
+              variant: AppButtonVariant.outline,
+              large: true,
               onPressed: widget.onNew,
-              icon: const Icon(Icons.add_rounded, size: 22),
-              label: Text(l10n.newBuyer),
             );
       final showAll = compact
           ? _SquareAction(
@@ -105,10 +104,11 @@ class _TransactionTabStripState extends State<TransactionTabStrip> {
                 child: const Icon(Icons.view_agenda_outlined),
               ),
             )
-          : TextButton(
-              style: TextButton.styleFrom(minimumSize: const Size(TapSize.min, 56)),
+          : AppButton(
+              label: l10n.allTabs(widget.tabs.length),
+              variant: AppButtonVariant.ghost,
+              large: true,
               onPressed: widget.onShowAll,
-              child: Text(l10n.allTabs(widget.tabs.length)),
             );
       return Row(children: [
         Expanded(child: tabs),
@@ -162,9 +162,9 @@ class _Tab extends StatelessWidget {
     final scheme = theme.colorScheme;
     final status = StatusColors.of(context);
     final radius = BorderRadius.circular(Radii.medium);
-    // Primary, not the shell ink: in dark mode the ink equals the card surface.
+    // Full-strength subtitle on the active mint tab: a faded one drops under 4.5:1.
     final fg = active ? scheme.onPrimary : scheme.onSurface;
-    final sub = active ? scheme.onPrimary.withValues(alpha: 0.7) : (highlight ? status.success : scheme.onSurfaceVariant);
+    final sub = active ? scheme.onPrimary : (highlight ? status.success : scheme.onSurfaceVariant);
     return Semantics(
       selected: active,
       button: true,

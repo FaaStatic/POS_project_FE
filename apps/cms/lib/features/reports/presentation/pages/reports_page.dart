@@ -35,43 +35,45 @@ class _ReportsPageState extends State<ReportsPage> {
       child: BlocBuilder<ReportsCubit, bool>(
         builder: (context, busy) => CmsPage(
           title: l10n.reportsTitle,
-          body: ConstrainedBody(
-            padding: const EdgeInsets.all(Space.xl),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(l10n.monthlyReport, style: theme.textTheme.titleLarge),
-                const SizedBox(height: Space.sm),
-                Text(l10n.monthlyReportHint, style: theme.textTheme.bodyLarge),
-                const SizedBox(height: Space.xl),
-                Wrap(spacing: Space.lg, runSpacing: Space.lg, crossAxisAlignment: WrapCrossAlignment.end, children: [
-                  SizedBox(
-                    width: 200,
-                    child: DropdownButtonFormField<int>(
-                      isExpanded: true,
-                      initialValue: _month,
-                      decoration: InputDecoration(labelText: l10n.month),
-                      items: [for (var m = 1; m <= 12; m++) DropdownMenuItem(value: m, child: Text(DateFormat.MMMM(locale).format(DateTime(2000, m))))],
-                      onChanged: (m) => setState(() => _month = m ?? _month),
-                    ),
+          // Scrolls so the form survives phone widths at large text.
+          body: SingleChildScrollView(
+            child: ConstrainedBody(
+              padding: const EdgeInsets.all(Space.xl),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.monthlyReport, style: theme.textTheme.titleLarge),
+                  const SizedBox(height: Space.sm),
+                  Text(l10n.monthlyReportHint, style: theme.textTheme.bodyLarge),
+                  const SizedBox(height: Space.xl),
+                  Wrap(
+                    spacing: Space.lg,
+                    runSpacing: Space.lg,
+                    crossAxisAlignment: WrapCrossAlignment.end,
+                    children: [
+                      SizedBox(
+                        width: 200,
+                        child: AppSelect<int>(
+                          label: l10n.month,
+                          value: _month,
+                          choices: [for (var m = 1; m <= 12; m++) Choice(m, DateFormat.MMMM(locale).format(DateTime(2000, m)))],
+                          onChanged: (m) => setState(() => _month = m),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 140,
+                        child: AppSelect<int>(
+                          label: l10n.year,
+                          value: _year,
+                          choices: [for (var y = now.year; y >= now.year - 4; y--) Choice(y, '$y')],
+                          onChanged: (y) => setState(() => _year = y),
+                        ),
+                      ),
+                      AppButton(label: l10n.download, loading: busy, onPressed: () => download(context, _month, _year)),
+                    ],
                   ),
-                  SizedBox(
-                    width: 140,
-                    child: DropdownButtonFormField<int>(
-                      isExpanded: true,
-                      initialValue: _year,
-                      decoration: InputDecoration(labelText: l10n.year),
-                      items: [for (var y = now.year; y >= now.year - 4; y--) DropdownMenuItem(value: y, child: Text('$y'))],
-                      onChanged: (y) => setState(() => _year = y ?? _year),
-                    ),
-                  ),
-                  AppButton(
-                    label: l10n.download,
-                    loading: busy,
-                    onPressed: () => download(context, _month, _year),
-                  ),
-                ]),
-              ],
+                ],
+              ),
             ),
           ),
         ),

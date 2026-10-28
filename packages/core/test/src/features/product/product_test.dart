@@ -41,7 +41,6 @@ void main() {
     expect(p.name, 'Indomie Goreng');
     expect(p.isDigital, isTrue);
     expect(p.stock, 12.5);
-    expect(p.priceFor(debt: true), 4000);
     expect(p.categoryName, 'Mie Instan');
     expect(page.hasNext, isTrue);
     expect(page.cursor?.id, 'p1');

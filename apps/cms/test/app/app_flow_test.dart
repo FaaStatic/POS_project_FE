@@ -5,6 +5,7 @@ import 'package:core/testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 
 import '../helpers/cms_harness.dart';
 
@@ -26,7 +27,7 @@ void main() {
       config: const AppConfig(baseUrl: 'http://api.test', flavor: 'dev'),
       store: MemoryStore(),
       api: api,
-      bare: api,
+      bare: ApiClient(Dio(BaseOptions(baseUrl: 'http://api.test'))..httpClientAdapter = adapter),
       usesCookie: true,
     );
     await tester.pumpWidget(const CmsApp());
@@ -44,9 +45,9 @@ void main() {
     await pumpApp(tester);
     expect(find.text('Masuk ke CMS'), findsOneWidget);
 
-    await tester.enterText(find.byType(TextFormField).at(0), 'owner');
-    await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Masuk'));
+    await tester.enterText(formFields.at(0), 'owner');
+    await tester.enterText(formFields.at(1), 'secret1');
+    await tester.tap(find.widgetWithText(ShadButton, 'Masuk'));
     await tester.pumpAndSettle();
 
     expect(find.text('Perlu tindakan'), findsOneWidget);
@@ -66,9 +67,9 @@ void main() {
       ..on('POST', ApiPaths.refresh, (_) => FakeReply(401, errorBody('invalid refresh token')))
       ..on('POST', ApiPaths.login, (_) => FakeReply(403, errorBody('forbidden', 'admin only')));
     await pumpApp(tester);
-    await tester.enterText(find.byType(TextFormField).at(0), 'kasir');
-    await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Masuk'));
+    await tester.enterText(formFields.at(0), 'kasir');
+    await tester.enterText(formFields.at(1), 'secret1');
+    await tester.tap(find.widgetWithText(ShadButton, 'Masuk'));
     await tester.pumpAndSettle();
     expect(find.textContaining('CMS khusus admin toko'), findsOneWidget);
   });
@@ -76,7 +77,7 @@ void main() {
   testWidgets('validation blocks short input before any request', (tester) async {
     adapter.on('POST', ApiPaths.refresh, (_) => FakeReply(401, errorBody('x')));
     await pumpApp(tester);
-    await tester.tap(find.widgetWithText(FilledButton, 'Masuk'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Masuk'));
     await tester.pump();
     expect(find.text('Wajib diisi'), findsNWidgets(2));
     expect(adapter.requests.where((r) => r.path == ApiPaths.login), isEmpty);
@@ -85,9 +86,9 @@ void main() {
   testWidgets('network error at login is translated', (tester) async {
     adapter.on('POST', ApiPaths.refresh, (_) => FakeReply(401, errorBody('x')));
     await pumpApp(tester);
-    await tester.enterText(find.byType(TextFormField).at(0), 'owner');
-    await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Masuk'));
+    await tester.enterText(formFields.at(0), 'owner');
+    await tester.enterText(formFields.at(1), 'secret1');
+    await tester.tap(find.widgetWithText(ShadButton, 'Masuk'));
     await tester.pumpAndSettle();
     expect(find.text('Tidak ada koneksi. Periksa internet lalu coba lagi.'), findsOneWidget);
   });
@@ -112,6 +113,22 @@ void main() {
     expect(find.text('Sign in to CMS'), findsOneWidget);
   });
 
+  testWidgets('an expired session mid-use returns to login', (tester) async {
+    var refreshes = 0;
+    adapter
+      ..on('POST', ApiPaths.refresh, (_) => refreshes++ == 0 ? FakeReply(200, loginData('superadmin')) : FakeReply(401, errorBody('expired')))
+      ..on('GET', ApiPaths.users, (_) => FakeReply(401, errorBody('token expired')));
+    serveDashboard(adapter);
+    await pumpApp(tester);
+    expect(find.text('Perlu tindakan'), findsOneWidget);
+    await tester.tap(find.text('Staff').first);
+    // Not pumpAndSettle: the staff list spinner keeps animating until the redirect lands.
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.text('Masuk ke CMS'), findsOneWidget);
+  });
+
   testWidgets('compact width uses a drawer and login survives 200% text', (tester) async {
     adapter.on('POST', ApiPaths.refresh, (_) => FakeReply(401, errorBody('x')));
     await pumpApp(tester, size: const Size(360, 720), textScale: 2);
@@ -126,7 +143,7 @@ void main() {
     await pumpApp(tester, size: const Size(390, 800));
     await tester.tap(find.byTooltip('Buka menu'));
     await tester.pumpAndSettle();
-    expect(find.text('Shop CMS'), findsOneWidget);
+    expect(find.byType(BrandLogo), findsOneWidget);
     await tester.tap(find.text('Staff'));
     await tester.pumpAndSettle();
     expect(find.text('Tambah staff'), findsWidgets);

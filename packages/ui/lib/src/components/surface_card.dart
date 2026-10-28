@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../tokens/spacing.dart';
+import '../theme/app_theme.dart';
 
-/// White panel on the zinc canvas: the one container for grouped content.
+/// White shadcn card on the canvas: the one container for grouped content.
+/// [padding] defaults to the density's card padding.
 class SurfaceCard extends StatelessWidget {
-  const SurfaceCard({super.key, required this.child, this.padding = const EdgeInsets.all(Space.xl), this.color, this.onTap});
+  const SurfaceCard({super.key, required this.child, this.padding, this.color, this.onTap});
 
   final Widget child;
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
   final Color? color;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) => Card(
-        color: color,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.large)),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(onTap: onTap, child: Padding(padding: padding, child: child)),
-      );
+  Widget build(BuildContext context) {
+    final sizes = AppSizes.of(context);
+    // ShadCard paints its fill with a DecoratedBox; a transparent Material above it
+    // keeps ink from list tiles and taps visible.
+    final ink = Material(type: MaterialType.transparency, child: child);
+    if (onTap == null) return ShadCard(padding: padding, backgroundColor: color, child: ink);
+    return ShadCard(
+      padding: EdgeInsets.zero,
+      backgroundColor: color,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(sizes.cardRadius),
+          child: Padding(padding: padding ?? EdgeInsets.all(sizes.cardPadding), child: child),
+        ),
+      ),
+    );
+  }
 }
