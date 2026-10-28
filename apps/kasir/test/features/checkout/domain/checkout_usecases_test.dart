@@ -45,6 +45,8 @@ void main() {
       expect(outcome.offline, isFalse);
       expect(outcome.sale.receiptNumber, 'INV-1');
       expect(outcome.sale.status, SaleStatus.synced);
+      final sent = verify(() => remote.create(captureAny())).captured.single as CheckoutRequest;
+      expect(sent.invoice, 'INV-REF1');
       expect(await local.drafts.byId(draft.id), isNull);
       expect((await local.cache.product('p1'))!.stock, 8);
       expect(await local.sales.pending(), isEmpty);

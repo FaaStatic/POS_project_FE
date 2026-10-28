@@ -25,7 +25,7 @@ abstract final class TransactionModel {
       );
 
   static Map<String, dynamic> checkoutToJson(CheckoutRequest r) => {
-        'no_invoice': '',
+        'no_invoice': r.invoice,
         'type_payment': r.method.wire,
         'user_id': r.userId,
         'customer_id': ?r.customerId,

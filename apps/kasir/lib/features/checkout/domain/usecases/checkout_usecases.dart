@@ -157,7 +157,13 @@ class CheckoutTransaction {
 
     if (await network.isOnline()) {
       final result = await transactions.create(
-        CheckoutRequest(userId: user.userId, method: method, customerId: draft.customerId, lines: lines),
+        CheckoutRequest(
+          invoice: 'INV-${_newRef().replaceAll('-', '').toUpperCase()}',
+          userId: user.userId,
+          method: method,
+          customerId: draft.customerId,
+          lines: lines,
+        ),
       );
       switch (result) {
         case Ok(:final value):

@@ -36,6 +36,7 @@ void main() {
           'debt_info': {'remaining_debt': 12000},
         })));
     final req = const CheckoutRequest(
+      invoice: 'INV-9',
       userId: 'u1',
       method: PaymentMethod.debt,
       customerId: 'k1',
@@ -46,7 +47,7 @@ void main() {
     expect(r.method, PaymentMethod.debt);
     expect(r.debtRemaining, 12000);
     expect(adapter.requests.single.data, {
-      'no_invoice': '',
+      'no_invoice': 'INV-9',
       'type_payment': 'hutang',
       'user_id': 'u1',
       'customer_id': 'k1',

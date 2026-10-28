@@ -71,6 +71,6 @@ class LocalFixture {
 }
 
 void registerFallbacks() {
-  registerFallbackValue(const CheckoutRequest(userId: '', method: PaymentMethod.cash, lines: []));
+  registerFallbackValue(const CheckoutRequest(invoice: '', userId: '', method: PaymentMethod.cash, lines: []));
   registerFallbackValue(<OfflineSale>[]);
 }
