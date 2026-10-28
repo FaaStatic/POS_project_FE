@@ -251,7 +251,12 @@ class _ProductTile extends StatelessWidget {
               const SizedBox(height: Space.md),
               Text(product.name, style: theme.textTheme.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
               const Spacer(),
-              _StockLine(product: product, inCart: 0),
+              // One line like the price: a wrapped stock line pushes the price row out of the fixed tile.
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: _StockLine(product: product, inCart: 0),
+              ),
               Row(
                 children: [
                   Expanded(

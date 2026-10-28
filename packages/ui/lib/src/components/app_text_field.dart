@@ -5,6 +5,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../l10n/ui_localizations.dart';
 import '../theme/app_theme.dart';
+import '../tokens/spacing.dart';
 
 /// shadcn input with its label above it. [password] adds a show/hide toggle with an accessible label.
 class AppTextField extends StatefulWidget {
@@ -85,6 +86,8 @@ class _AppTextFieldState extends State<AppTextField> {
         onChanged: widget.onChanged,
         onSubmitted: widget.onSubmitted,
         placeholder: widget.hint == null ? null : Text(widget.hint!),
+        // The toggle lays out at control - 4; 2 above and below keeps the field as tall as the others.
+        padding: widget.password ? const EdgeInsets.fromLTRB(Space.md, 2, 2, 2) : null,
         leading: widget.prefixIcon == null ? null : Icon(widget.prefixIcon, size: iconSize, color: theme.colorScheme.onSurfaceVariant),
         trailing: widget.password
             ? Tooltip(
