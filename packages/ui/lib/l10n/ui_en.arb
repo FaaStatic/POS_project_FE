@@ -51,5 +51,6 @@
   "actions": "Actions",
   "moreActions": "More actions",
   "pickDates": "Pick dates",
-  "clearDates": "Clear dates"
+  "clearDates": "Clear dates",
+  "designCredit": "Design reference: {title} by {author} on Dribbble"
 }

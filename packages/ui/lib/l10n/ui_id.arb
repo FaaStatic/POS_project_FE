@@ -51,5 +51,12 @@
   "actions": "Aksi",
   "moreActions": "Aksi lainnya",
   "pickDates": "Pilih tanggal",
-  "clearDates": "Hapus tanggal"
+  "clearDates": "Hapus tanggal",
+  "designCredit": "Referensi desain: {title} oleh {author} di Dribbble",
+  "@designCredit": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "author": {"type": "String"}
+    }
+  }
 }

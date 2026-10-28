@@ -6,7 +6,7 @@ import '../pump.dart';
 
 void main() {
   for (final dark in [false, true]) {
-    testWidgets('selected chip and ink surfaces meet contrast (dark: $dark)', (tester) async {
+    testWidgets('selected chip, selected nav, and mint panel meet contrast (dark: $dark)', (tester) async {
       final handle = tester.ensureSemantics();
       await pumpUi(
         tester,
@@ -15,7 +15,15 @@ void main() {
           return Column(children: [
             ChoiceChip(label: const Text('Semua'), selected: true, onSelected: (_) {}),
             ChoiceChip(label: const Text('Minuman'), selected: false, onSelected: (_) {}),
-            Container(color: shell.background, padding: const EdgeInsets.all(16), child: Text('Transaksi', style: TextStyle(color: shell.foreground))),
+            Container(color: shell.navSelected, padding: const EdgeInsets.all(16), child: Text('Transaksi', style: TextStyle(color: shell.onNavSelected))),
+            Container(
+              color: shell.brand,
+              padding: const EdgeInsets.all(16),
+              child: Column(children: [
+                Text('Rp 42.080', style: TextStyle(color: shell.onBrand)),
+                Text('4 barang', style: TextStyle(color: shell.onBrandMuted)),
+              ]),
+            ),
           ]);
         }),
         dark: dark,

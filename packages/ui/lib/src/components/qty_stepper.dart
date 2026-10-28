@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:shadcn_ui/shadcn_ui.dart';
+
 import '../../l10n/ui_localizations.dart';
 import '../tokens/spacing.dart';
 import '../tokens/typography.dart';
+import 'app_button.dart';
 
 /// − qty + with 48dp targets. Tapping the number opens a numeric keypad for
 /// large or fractional quantities (kg, liter).
@@ -26,7 +29,7 @@ class QtyStepper extends StatelessWidget {
   String get _label => value == value.roundToDouble() ? '${value.round()}' : '$value'.replaceAll('.', ',');
 
   Future<void> _edit(BuildContext context) async {
-    final result = await showDialog<double>(
+    final result = await showShadDialog<double>(
       context: context,
       builder: (_) => _QtyDialog(initial: _label, itemName: itemName, allowFraction: allowFraction),
     );
@@ -38,9 +41,10 @@ class QtyStepper extends StatelessWidget {
     final l10n = UiLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final square = RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.small + 4));
-    // 36dp squares drawn, 48dp hit area kept by the padded tap target size.
-    const drawn = Size.square(36);
+    final square = RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.small + 2));
+    // 32dp squares drawn, 48dp hit area kept by the padded tap target size. Material
+    // IconButton stays here because a shadcn icon button has no padded hit area.
+    const drawn = Size.square(32);
     // Muted minus, filled plus: the frequent action carries the weight.
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -106,20 +110,20 @@ class _QtyDialogState extends State<_QtyDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = UiLocalizations.of(context);
-    return AlertDialog(
+    return ShadDialog(
       title: Text(l10n.qtyFor(widget.itemName)),
-      content: TextField(
+      actions: [
+        AppButton(label: l10n.cancel, variant: AppButtonVariant.outline, onPressed: () => Navigator.pop(context)),
+        AppButton(label: 'OK', onPressed: _submit),
+      ],
+      child: ShadInputFormField(
         controller: _controller,
         autofocus: true,
+        label: Text(l10n.quantity),
         keyboardType: TextInputType.numberWithOptions(decimal: widget.allowFraction),
         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(widget.allowFraction ? r'[0-9.,]' : r'[0-9]'))],
-        decoration: InputDecoration(labelText: l10n.quantity),
         onSubmitted: (_) => _submit(),
       ),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-        FilledButton(onPressed: _submit, child: const Text('OK')),
-      ],
     );
   }
 }

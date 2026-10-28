@@ -94,4 +94,9 @@ class UiLocalizationsId extends UiLocalizations {
 
   @override
   String get clearDates => 'Hapus tanggal';
+
+  @override
+  String designCredit(String title, String author) {
+    return 'Referensi desain: $title oleh $author di Dribbble';
+  }
 }

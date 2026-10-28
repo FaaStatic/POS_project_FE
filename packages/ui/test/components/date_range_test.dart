@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shadcn_ui/shadcn_ui.dart' show ShadCalendar;
 import 'package:ui/ui.dart';
 
 import '../pump.dart';
@@ -16,6 +17,6 @@ void main() {
     expect(find.text('Pilih tanggal'), findsOneWidget);
     await tester.tap(find.text('Pilih tanggal'));
     await tester.pumpAndSettle();
-    expect(find.byType(DateRangePickerDialog), findsOneWidget);
+    expect(find.byType(ShadCalendar), findsOneWidget);
   });
 }
