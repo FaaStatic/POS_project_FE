@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/auth/presentation/bloc/auth_cubit.dart';
@@ -48,7 +49,16 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
       },
       routes: [
         GoRoute(path: Routes.splash, builder: (_, _) => const SplashPage()),
-        GoRoute(path: Routes.login, builder: (_, _) => const LoginPage()),
+        // Routes default to no transition here; this fade gives the splash logo time to fly.
+        GoRoute(
+          path: Routes.login,
+          pageBuilder: (_, state) => CustomTransitionPage<void>(
+            key: state.pageKey,
+            transitionDuration: Durations.medium4,
+            transitionsBuilder: (_, animation, _, child) => FadeTransition(opacity: animation, child: child),
+            child: const LoginPage(),
+          ),
+        ),
         ShellRoute(
           builder: (_, _, child) => SessionScope(child: child),
           routes: [
@@ -77,6 +87,7 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
                         await push.unregister();
                         return token;
                       }),
+                      sync: const SyncTile(),
                     ),
                     routes: [
                       GoRoute(path: 'printer', builder: (_, _) => const PrinterSettingsPage()),

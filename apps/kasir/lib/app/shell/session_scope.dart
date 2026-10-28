@@ -4,6 +4,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:ui/ui.dart';
 
 import '../../common/failure_text.dart';
@@ -150,6 +151,30 @@ class SyncBanner extends StatelessWidget {
       syncing: s.syncing,
       syncLabel: s.online ? AppLocalizations.of(context).syncNow : null,
       onSync: () => context.read<SyncCubit>().syncNow(),
+    );
+  }
+}
+
+/// Manual sync row for the settings page. Disabled while offline or syncing.
+class SyncTile extends StatelessWidget {
+  const SyncTile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final s = context.watch<SyncCubit>().state;
+    return ListTile(
+      leading: const Icon(Iconsax.refresh_copy),
+      title: Text(l10n.syncNow),
+      subtitle: Text(l10n.syncPending(s.pending)),
+      trailing: s.syncing
+          ? const SizedBox.square(
+              dimension: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : null,
+      enabled: s.online && !s.syncing,
+      onTap: () => context.read<SyncCubit>().syncNow(),
     );
   }
 }

@@ -408,6 +408,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get syncNow => 'Sync now';
 
   @override
+  String syncPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count transactions not sent yet',
+      one: '1 transaction not sent yet',
+      zero: 'All transactions sent',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String syncDone(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

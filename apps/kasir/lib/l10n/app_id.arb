@@ -251,6 +251,14 @@
     }
   },
   "syncNow": "Sync sekarang",
+  "syncPending": "{count, plural, =0{Semua transaksi sudah terkirim} other{{count} transaksi belum terkirim}}",
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "syncDone": "{count, plural, =0{Tidak ada yang perlu dikirim} =1{1 transaksi terkirim} other{{count} transaksi terkirim}}",
   "@syncDone": {
     "placeholders": {

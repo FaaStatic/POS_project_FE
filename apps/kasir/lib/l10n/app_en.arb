@@ -116,6 +116,7 @@
   "cancelNeedsInternet": "Sent transactions can only be cancelled online.",
   "syncError": "Reason: {error}",
   "syncNow": "Sync now",
+  "syncPending": "{count, plural, =0{All transactions sent} =1{1 transaction not sent yet} other{{count} transactions not sent yet}}",
   "syncDone": "{count, plural, =0{Nothing to send} =1{1 transaction sent} other{{count} transactions sent}}",
   "customersTitle": "Customers",
   "searchCustomers": "Search name or phone",
