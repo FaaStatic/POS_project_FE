@@ -23,10 +23,11 @@ class CustomersPage extends StatelessWidget {
           return KasirPage(
             title: l10n.customersTitle,
             actions: [
-              TextButton.icon(
+              AppButton(
+                label: l10n.addCustomer,
+                icon: Iconsax.user_add_copy,
+                variant: AppButtonVariant.ghost,
                 onPressed: () => context.push('/customers/new'),
-                icon: const Icon(Iconsax.user_add),
-                label: Text(l10n.addCustomer),
               ),
             ],
             body: Column(
@@ -40,7 +41,7 @@ class CustomersPage extends StatelessWidget {
                       ? const LoadingView()
                       : state.customers.isEmpty
                       ? EmptyState(
-                          icon: Iconsax.profile_2user,
+                          icon: Iconsax.profile_2user_copy,
                           message: l10n.customersEmpty,
                           actionLabel: l10n.addCustomer,
                           onAction: () => context.push('/customers/new'),

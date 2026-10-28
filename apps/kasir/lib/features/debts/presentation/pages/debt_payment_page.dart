@@ -71,9 +71,10 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
                             const SizedBox(height: Space.sm),
                             Align(
                               alignment: Alignment.centerLeft,
-                              child: TextButton(
+                              child: AppButton(
+                                label: l10n.payFull(rupiah(context, debt.remaining)),
+                                variant: AppButtonVariant.ghost,
                                 onPressed: () => _amount.text = '${debt.remaining}',
-                                child: Text(l10n.payFull(rupiah(context, debt.remaining))),
                               ),
                             ),
                           ],

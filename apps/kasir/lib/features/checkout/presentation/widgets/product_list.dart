@@ -12,9 +12,12 @@ import '../bloc/checkout_bloc.dart';
 /// Search (also receives hardware-scanner input), category filter, and the
 /// product list; tapping a card or its + adds one to the active tab.
 class ProductPane extends StatefulWidget {
-  const ProductPane({super.key, required this.onScan});
+  const ProductPane({super.key, required this.onScan, this.header});
 
   final VoidCallback onScan;
+
+  /// Scrolls away above the search when the screen is short.
+  final Widget? header;
 
   @override
   State<ProductPane> createState() => _ProductPaneState();
@@ -44,44 +47,28 @@ class _ProductPaneState extends State<ProductPane> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final state = context.watch<ProductsCubit>().state;
 
     // Search and filters scroll away with the list so large text never squeezes it.
     return CustomScrollView(
       slivers: [
+        if (widget.header case final header?) SliverToBoxAdapter(child: header),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.sm),
             child: Row(
               children: [
-                // White on the canvas, identified by its icon and hint; focus still draws the ring.
                 Expanded(
-                  child: Theme(
-                    data: theme.copyWith(
-                      inputDecorationTheme: theme.inputDecorationTheme.copyWith(
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(Radii.control),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    child: SearchField(
-                      controller: _search,
-                      focusNode: _focus,
-                      hint: l10n.searchProducts,
-                      onChanged: context.read<ProductsCubit>().search,
-                      onSubmitted: _submitted,
-                    ),
+                  child: SearchField(
+                    controller: _search,
+                    focusNode: _focus,
+                    hint: l10n.searchProducts,
+                    onChanged: context.read<ProductsCubit>().search,
+                    onSubmitted: _submitted,
                   ),
                 ),
                 const SizedBox(width: Space.sm),
-                OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(side: BorderSide.none, minimumSize: const Size(TapSize.min, 52)),
-                  onPressed: widget.onScan,
-                  icon: const Icon(Iconsax.scan_barcode),
-                  label: Text(l10n.scan),
-                ),
+                AppButton(label: l10n.scan, icon: Iconsax.scan_barcode_copy, variant: AppButtonVariant.outline, onPressed: widget.onScan),
               ],
             ),
           ),
@@ -120,7 +107,7 @@ class _ProductPaneState extends State<ProductPane> {
         SliverFillRemaining(
           hasScrollBody: false,
           child: EmptyState(
-            icon: Iconsax.box,
+            icon: Iconsax.box_copy,
             message: state.query.isEmpty && state.categoryId == null
                 ? l10n.noProducts
                 : l10n.noProductsMatch(state.query),
@@ -197,7 +184,7 @@ class _ProductRow extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              InitialAvatar(name: product.name, imageUrl: product.image, size: 48),
+              InitialAvatar(name: product.name, imageUrl: product.image, size: 48, colorKey: product.categoryId),
               const SizedBox(width: Space.md),
               Expanded(
                 child: Column(
@@ -233,8 +220,8 @@ class _ProductTile extends StatelessWidget {
   const _ProductTile({super.key, required this.product});
   final Product product;
 
-  /// Tile height that still fits two name lines at the current text scale.
-  static double extent(BuildContext context) => 120 + 80 * MediaQuery.textScalerOf(context).scale(16) / 16;
+  /// Tile height that still fits two name lines at the current text scale (200 at 100%).
+  static double extent(BuildContext context) => 100 + 100 * MediaQuery.textScalerOf(context).scale(16) / 16;
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +239,7 @@ class _ProductTile extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  InitialAvatar(name: product.name, imageUrl: product.image, size: 48),
+                  InitialAvatar(name: product.name, imageUrl: product.image, size: 48, colorKey: product.categoryId),
                   const Spacer(),
                   if (inCart > 0)
                     Padding(
@@ -336,7 +323,7 @@ class _CartCount extends StatelessWidget {
   }
 }
 
-/// Small ink square; the whole card is also tappable, so the glyph never has to
+/// Small mint square; the whole card is also tappable, so the glyph never has to
 /// carry the action alone.
 class _AddButton extends StatelessWidget {
   const _AddButton({required this.product});

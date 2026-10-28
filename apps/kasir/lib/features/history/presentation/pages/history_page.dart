@@ -24,7 +24,7 @@ class HistoryPage extends StatelessWidget {
         body: BlocBuilder<HistoryCubit, HistoryState>(
           builder: (context, state) {
             if (state.loading) return const LoadingView();
-            if (state.sales.isEmpty) return EmptyState(icon: Iconsax.receipt_2, message: l10n.historyEmpty);
+            if (state.sales.isEmpty) return EmptyState(icon: Iconsax.receipt_2_copy, message: l10n.historyEmpty);
             return ListView.separated(
               padding: const EdgeInsets.all(Space.lg),
               itemCount: state.sales.length,
@@ -81,7 +81,7 @@ class SaleStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return switch (sale.status) {
-      SaleStatus.pending => StatusBadge(label: l10n.statusPending, tone: BadgeTone.warning, icon: Iconsax.cloud_change),
+      SaleStatus.pending => StatusBadge(label: l10n.statusPending, tone: BadgeTone.warning, icon: Iconsax.cloud_change_copy),
       SaleStatus.synced => StatusBadge(label: l10n.statusSynced, tone: BadgeTone.success),
       SaleStatus.failed => StatusBadge(label: l10n.statusFailed, tone: BadgeTone.danger),
       SaleStatus.cancelled => StatusBadge(label: l10n.statusCancelled),

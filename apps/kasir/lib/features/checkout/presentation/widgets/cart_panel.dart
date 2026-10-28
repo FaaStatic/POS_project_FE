@@ -131,7 +131,7 @@ class _CartStep extends StatelessWidget {
               foregroundColor: theme.colorScheme.error,
               backgroundColor: StatusColors.of(context).dangerContainer,
             ),
-            icon: const Icon(Iconsax.trash, size: 20),
+            icon: const Icon(Iconsax.trash_copy, size: 20),
           ),
         ),
         Expanded(
@@ -142,7 +142,7 @@ class _CartStep extends StatelessWidget {
               Card(
                 clipBehavior: Clip.antiAlias,
                 child: ListTile(
-                  leading: const Icon(Iconsax.user),
+                  leading: const Icon(Iconsax.user_copy),
                   title: Text(draft.customerName ?? l10n.chooseCustomer),
                   subtitle: draft.customerName == null ? null : Text(l10n.customer),
                   trailing: Text(
@@ -160,7 +160,7 @@ class _CartStep extends StatelessWidget {
               if (draft.isEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: Space.xxl),
-                  child: EmptyState(icon: Iconsax.shopping_cart, message: l10n.cartEmpty),
+                  child: EmptyState(icon: Iconsax.shopping_cart_copy, message: l10n.cartEmpty),
                 )
               else
                 for (final item in draft.items) ...[
@@ -185,7 +185,7 @@ class _CartStep extends StatelessWidget {
             const SizedBox(height: Space.md),
             AppButton(
               label: l10n.toPayment,
-              icon: Iconsax.card,
+              icon: Iconsax.card_copy,
               large: true,
               expand: true,
               onPressed: draft.isEmpty ? null : onNext,
@@ -231,15 +231,13 @@ class _CartLine extends StatelessWidget {
                         '${qty(context, item.qty)} × ${rupiah(context, item.price(debt: debt))} / $unit',
                         style: theme.textTheme.bodySmall?.tabular,
                       ),
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(TapSize.min, 40),
-                          foregroundColor: theme.colorScheme.onSurfaceVariant,
-                          textStyle: theme.textTheme.bodySmall?.copyWith(decoration: TextDecoration.underline),
-                        ),
+                      ShadButton.link(
+                        padding: EdgeInsets.zero,
+                        height: 40,
+                        foregroundColor: theme.colorScheme.onSurfaceVariant,
+                        hoverForegroundColor: theme.colorScheme.onSurface,
                         onPressed: () => bloc.add(ItemRemoved(item.id)),
-                        child: Text(l10n.remove),
+                        child: Flexible(child: Text(l10n.remove, style: theme.textTheme.bodySmall?.copyWith(decoration: TextDecoration.underline))),
                       ),
                     ],
                   ),
@@ -278,7 +276,7 @@ class _CartLine extends StatelessWidget {
                 padding: const EdgeInsets.only(top: Space.sm),
                 child: Row(
                   children: [
-                    Icon(Iconsax.warning_2, size: 18, color: StatusColors.of(context).warning),
+                    Icon(Iconsax.warning_2_copy, size: 18, color: StatusColors.of(context).warning),
                     const SizedBox(width: Space.xs),
                     Expanded(
                       child: Text(
@@ -350,10 +348,10 @@ class _PaymentStepState extends State<_PaymentStep> {
     final short = cash && received > 0 && received < total;
 
     final methods = [
-      (PaymentMethod.cash, Iconsax.money, l10n.cashHint),
-      (PaymentMethod.debt, Iconsax.note_text, l10n.debtHint),
-      (PaymentMethod.qris, Iconsax.scan_barcode, l10n.qrisHint),
-      (PaymentMethod.va, Iconsax.bank, l10n.vaHint2),
+      (PaymentMethod.cash, Iconsax.money_copy, l10n.cashHint),
+      (PaymentMethod.debt, Iconsax.note_text_copy, l10n.debtHint),
+      (PaymentMethod.qris, Iconsax.scan_barcode_copy, l10n.qrisHint),
+      (PaymentMethod.va, Iconsax.bank_copy, l10n.vaHint2),
     ];
 
     return Column(
@@ -371,32 +369,23 @@ class _PaymentStepState extends State<_PaymentStep> {
             children: [
               Container(
                 padding: const EdgeInsets.all(Space.xl),
-                decoration: BoxDecoration(color: shell.background, borderRadius: BorderRadius.circular(Radii.large)),
+                decoration: BoxDecoration(color: shell.brand, borderRadius: BorderRadius.circular(Radii.large)),
                 child: Column(
                   children: [
-                    Text(l10n.totalAmount, style: theme.textTheme.bodyMedium?.copyWith(color: shell.muted)),
+                    Text(l10n.totalAmount, style: theme.textTheme.bodyMedium?.copyWith(color: shell.onBrandMuted)),
                     const SizedBox(height: Space.xs),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
                         rupiah(context, total),
-                        style: theme.textTheme.displaySmall?.tabular.copyWith(color: shell.foreground),
+                        style: theme.textTheme.displaySmall?.tabular.copyWith(color: shell.onBrand),
                       ),
                     ),
                     const SizedBox(height: Space.xs),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.circle, size: 8, color: shell.indicator),
-                        const SizedBox(width: Space.sm),
-                        Flexible(
-                          child: Text(
-                            [l10n.itemsCount(qty(context, draft.itemCount)), ?draft.customerName].join(' · '),
-                            style: theme.textTheme.bodyMedium?.copyWith(color: shell.foreground),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      [l10n.itemsCount(qty(context, draft.itemCount)), ?draft.customerName].join(' · '),
+                      style: theme.textTheme.bodyMedium?.copyWith(color: shell.onBrand),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
@@ -454,7 +443,7 @@ class _PaymentStepState extends State<_PaymentStep> {
                         const SizedBox(height: Space.md),
                         AppTextField(
                           label: l10n.cashReceived,
-                          prefixIcon: Iconsax.money,
+                          prefixIcon: Iconsax.money_copy,
                           controller: _received,
                           keyboardType: TextInputType.number,
                           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -481,7 +470,7 @@ class _PaymentStepState extends State<_PaymentStep> {
           children: [
             AppButton(
               label: l10n.payAmount(rupiah(context, total)),
-              icon: Iconsax.tick_circle,
+              icon: Iconsax.tick_circle_copy,
               large: true,
               expand: true,
               loading: state.paying,
@@ -516,7 +505,8 @@ class _MethodCard extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final fg = selected ? scheme.onPrimary : (enabled ? scheme.onSurface : scheme.onSurfaceVariant);
-    final sub = selected ? scheme.onPrimary.withValues(alpha: 0.7) : scheme.onSurfaceVariant;
+    // Full strength on the mint fill: a faded subtitle drops under 4.5:1.
+    final sub = selected ? scheme.onPrimary : scheme.onSurfaceVariant;
     return Semantics(
       selected: selected,
       enabled: enabled,
@@ -620,7 +610,7 @@ class _PaidView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Icon(Iconsax.tick_circle, size: 48, color: StatusColors.of(context).success),
+          Icon(Iconsax.tick_circle_copy, size: 48, color: StatusColors.of(context).success),
           const SizedBox(height: Space.md),
           Text(l10n.chargePaid(draft.number), textAlign: TextAlign.center, style: theme.textTheme.titleMedium),
           const SizedBox(height: Space.xl),

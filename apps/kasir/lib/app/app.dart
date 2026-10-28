@@ -41,22 +41,30 @@ class _KasirAppState extends State<KasirApp> {
         child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, settings) {
             Intl.defaultLocale = settings.language.name;
-            return MaterialApp.router(
-              onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-              debugShowCheckedModeBanner: false,
-              routerConfig: _router,
-              theme: _kasirTheme(AppTheme.light),
-              darkTheme: _kasirTheme(AppTheme.dark),
-              themeMode: themeModeOf(settings.theme),
-              locale: Locale(settings.language.name),
-              supportedLocales: AppLocalizations.supportedLocales,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                UiLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
+            final mode = themeModeOf(settings.theme);
+            // shadcn wraps Material so both widget sets read one theme (kasir: touch density).
+            return ShadApp.custom(
+              theme: AppTheme.touch.shadLight,
+              darkTheme: AppTheme.touch.shadDark,
+              themeMode: mode,
+              appBuilder: (context) => MaterialApp.router(
+                onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+                debugShowCheckedModeBanner: false,
+                routerConfig: _router,
+                theme: AppTheme.touch.light,
+                darkTheme: AppTheme.touch.dark,
+                themeMode: mode,
+                locale: Locale(settings.language.name),
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  UiLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                builder: (context, child) => ShadAppBuilder(child: child),
+              ),
             );
           },
         ),
@@ -68,21 +76,3 @@ ThemeMode themeModeOf(ThemePreference preference) => switch (preference) {
       ThemePreference.light => ThemeMode.light,
       ThemePreference.dark => ThemeMode.dark,
     };
-
-/// Kasir-only: segmented controls as shadcn toggles (ink selection, no check mark).
-/// The CMS keeps the shared theme unchanged.
-ThemeData _kasirTheme(ThemeData base) {
-  final scheme = base.colorScheme;
-  return base.copyWith(
-    segmentedButtonTheme: SegmentedButtonThemeData(
-      selectedIcon: const SizedBox.shrink(),
-      style: SegmentedButton.styleFrom(
-        selectedBackgroundColor: scheme.primary,
-        selectedForegroundColor: scheme.onPrimary,
-        backgroundColor: scheme.surface,
-        side: BorderSide(color: scheme.outlineVariant),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.control)),
-      ),
-    ),
-  );
-}

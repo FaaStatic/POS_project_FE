@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 import 'package:kasir/app/app.dart';
 import 'package:kasir/app/di.dart';
 
@@ -85,9 +86,9 @@ class AppHarness {
   }
 
   Future<void> signIn(WidgetTester tester) async {
-    await tester.enterText(find.byType(TextFormField).at(0), 'kasir1');
-    await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Masuk'));
+    await tester.enterText(find.byType(EditableText).at(0), 'kasir1');
+    await tester.enterText(find.byType(EditableText).at(1), 'secret1');
+    await tester.tap(find.widgetWithText(ShadButton, 'Masuk'));
     await settle(tester);
   }
 
