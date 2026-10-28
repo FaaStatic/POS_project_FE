@@ -6,6 +6,7 @@ import 'package:ui/ui.dart';
 import '../../../../common/failure_text.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/auth_cubit.dart';
+import 'splash_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -56,7 +57,10 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Align(alignment: AlignmentDirectional.centerStart, child: BrandLogo.kasir(height: 40)),
+                      const Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Hero(tag: brandHeroTag, child: BrandLogo.kasir(height: 40)),
+                      ),
                       const SizedBox(height: Space.xl),
                       Text(l10n.loginTitle, style: theme.textTheme.headlineSmall),
                       const SizedBox(height: Space.sm),
