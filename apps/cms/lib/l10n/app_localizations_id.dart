@@ -10,7 +10,7 @@ class AppLocalizationsId extends AppLocalizations {
   AppLocalizationsId([String locale = 'id']) : super(locale);
 
   @override
-  String get appTitle => 'Shop CMS';
+  String get appTitle => 'myPOS';
 
   @override
   String get loginTitle => 'Masuk ke CMS';

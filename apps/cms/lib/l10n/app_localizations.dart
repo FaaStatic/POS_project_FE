@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In id, this message translates to:
-  /// **'Shop CMS'**
+  /// **'myPOS'**
   String get appTitle;
 
   /// No description provided for @loginTitle.

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Neutral.canvasDark -->
+    <color name="launch_background">#0B1210</color>
+</resources>

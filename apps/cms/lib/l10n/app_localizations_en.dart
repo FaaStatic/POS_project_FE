@@ -10,7 +10,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Shop CMS';
+  String get appTitle => 'myPOS';
 
   @override
   String get loginTitle => 'Sign in to CMS';

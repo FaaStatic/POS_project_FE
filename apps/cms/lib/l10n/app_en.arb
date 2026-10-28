@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Shop CMS",
+  "appTitle": "myPOS",
   "loginTitle": "Sign in to CMS",
   "loginSubtitle": "Store admins only. Cashiers use the Kasir phone app.",
   "username": "Username",

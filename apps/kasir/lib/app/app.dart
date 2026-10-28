@@ -51,6 +51,8 @@ class _KasirAppState extends State<KasirApp> {
             themeMode: mode,
             appBuilder: (context) => MaterialApp.router(
               onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+              // Android recents card, like the web manifest's theme_color.
+              color: Mint.c800,
               debugShowCheckedModeBanner: false,
               routerConfig: _router,
               theme: AppTheme.touch.light,

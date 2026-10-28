@@ -1,5 +1,5 @@
 name: kasir
-description: Offline-first cashier app (Android, iOS).
+description: myKasir, offline-first cashier app for the store (Android, iOS).
 publish_to: none
 version: 0.1.0+1
 resolution: workspace
