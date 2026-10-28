@@ -12,13 +12,6 @@ class GetProducts {
   Future<Result<Paged<Product>>> call(ProductQuery query, {PageCursor? after}) => _repo.list(query, after: after);
 }
 
-class GetAllProducts {
-  const GetAllProducts(this._repo);
-  final ProductRepository _repo;
-
-  Future<Result<List<Product>>> call() => _repo.listAll();
-}
-
 class GetProduct {
   const GetProduct(this._repo);
   final ProductRepository _repo;

@@ -27,7 +27,7 @@ void main() {
       config: const AppConfig(baseUrl: 'http://api.test', flavor: 'dev'),
       store: MemoryStore(),
       api: api,
-      bare: api,
+      bare: ApiClient(Dio(BaseOptions(baseUrl: 'http://api.test'))..httpClientAdapter = adapter),
       usesCookie: true,
     );
     await tester.pumpWidget(const CmsApp());
@@ -111,6 +111,22 @@ void main() {
     await tester.tap(find.text('Sign out'));
     await tester.pumpAndSettle();
     expect(find.text('Sign in to CMS'), findsOneWidget);
+  });
+
+  testWidgets('an expired session mid-use returns to login', (tester) async {
+    var refreshes = 0;
+    adapter
+      ..on('POST', ApiPaths.refresh, (_) => refreshes++ == 0 ? FakeReply(200, loginData('superadmin')) : FakeReply(401, errorBody('expired')))
+      ..on('GET', ApiPaths.users, (_) => FakeReply(401, errorBody('token expired')));
+    serveDashboard(adapter);
+    await pumpApp(tester);
+    expect(find.text('Perlu tindakan'), findsOneWidget);
+    await tester.tap(find.text('Staff').first);
+    // Not pumpAndSettle: the staff list spinner keeps animating until the redirect lands.
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.text('Masuk ke CMS'), findsOneWidget);
   });
 
   testWidgets('compact width uses a drawer and login survives 200% text', (tester) async {
