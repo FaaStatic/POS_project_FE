@@ -1,7 +1,7 @@
 import 'package:core/core.dart';
 import 'package:core/testing.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 
 import '../../helpers/cms_harness.dart';
 
@@ -16,9 +16,9 @@ void main() {
       ..on('DELETE', ApiPaths.device('d1'), (_) => FakeReply(200, envelope(null)));
     await app.pump(tester, location: '/devices');
     expect(find.text('kasir1'), findsOneWidget);
-    await tester.tap(find.widgetWithText(TextButton, 'Cabut'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Cabut'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(FilledButton, 'Cabut'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Cabut').last);
     await tester.pumpAndSettle();
     expect(find.text('Device dicabut.'), findsOneWidget);
     await tester.tap(find.text('iOS'));

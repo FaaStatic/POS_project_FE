@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:core/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 
 import '../../helpers/cms_harness.dart';
 
@@ -17,28 +18,28 @@ void main() {
       ..on('DELETE', ApiPaths.category('c2'), (_) => FakeReply(200, envelope(null)));
     await app.pump(tester, location: '/categories');
     expect(find.text('3 produk'), findsOneWidget);
-    final deletes = find.widgetWithText(TextButton, 'Hapus');
-    expect(tester.widget<TextButton>(deletes.at(0)).onPressed, isNull);
+    final deletes = find.widgetWithText(ShadButton, 'Hapus');
+    expect(tester.widget<ShadButton>(deletes.at(0)).onPressed, isNull);
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Tambah kategori'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Tambah kategori'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField), ' sembako ');
-    await tester.tap(find.widgetWithText(FilledButton, 'Simpan'));
+    await tester.enterText(formFields, ' sembako ');
+    await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Nama kategori sudah ada.'), findsOneWidget);
-    await tester.tap(find.widgetWithText(TextButton, 'Batal'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Batal'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Ganti nama').first);
+    await tester.tap(find.widgetWithText(ShadButton, 'Ganti nama').first);
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField), 'Sembako Pokok');
-    await tester.tap(find.widgetWithText(FilledButton, 'Simpan'));
+    await tester.enterText(formFields, 'Sembako Pokok');
+    await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(app.adapter.requests.last.path, ApiPaths.categories);
 
     await tester.tap(deletes.at(1));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(FilledButton, 'Hapus'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Hapus').last);
     await tester.pumpAndSettle();
     expect(find.text('Kategori dihapus.'), findsOneWidget);
   });

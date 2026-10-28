@@ -32,21 +32,14 @@ class CustomersPage extends StatelessWidget {
           return CmsPage(
             title: l10n.customersTitle,
             actions: [
-              FilledButton.icon(
-                onPressed: () => openCustomerForm(context, cubit),
-                icon: const Icon(Iconsax.user_add),
-                label: Text(l10n.addCustomer),
-              ),
+              AppButton(label: l10n.addCustomer, icon: Iconsax.user_add_copy, onPressed: () => openCustomerForm(context, cubit)),
             ],
             body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(
                   children: [
-                    SegmentedButton<bool>(
-                      segments: [
-                        ButtonSegment(value: false, label: Text(l10n.active)),
-                        ButtonSegment(value: true, label: Text(l10n.inactive)),
-                      ],
-                      selected: {cubit.query.inactive},
-                      onSelectionChanged: (s) => cubit.showInactive(s.first),
+                    AppTabs<bool>(
+                      choices: [Choice(false, l10n.active), Choice(true, l10n.inactive)],
+                      value: cubit.query.inactive,
+                      onChanged: cubit.showInactive,
                     ),
                     SizedBox(
                       width: 320,

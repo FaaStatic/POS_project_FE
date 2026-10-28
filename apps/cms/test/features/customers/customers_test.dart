@@ -1,8 +1,8 @@
 import 'package:cms/features/customers/presentation/bloc/customers_cubit.dart';
 import 'package:core/core.dart';
 import 'package:core/testing.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/cms_harness.dart';
@@ -64,18 +64,18 @@ void main() {
     await app.pump(tester, location: '/customers');
     expect(find.text('Bu Sri'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Tambah customer'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Tambah customer'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).first, 'Bu Sri');
-    await tester.tap(find.widgetWithText(FilledButton, 'Simpan'));
+    await tester.enterText(formFields.first, 'Bu Sri');
+    await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Tersimpan.'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Aksi'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Aksi'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Hapus permanen'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(FilledButton, 'Hapus permanen'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Hapus permanen'));
     await tester.pumpAndSettle();
     expect(find.text('Customer masih punya hutang aktif, tidak bisa dihapus permanen.'), findsOneWidget);
 

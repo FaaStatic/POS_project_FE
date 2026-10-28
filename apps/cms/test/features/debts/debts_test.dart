@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:core/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 
 import '../../helpers/cms_harness.dart';
 
@@ -23,24 +24,24 @@ void main() {
     expect(app.adapter.requests.firstWhere((r) => r.path == ApiPaths.debts).queryParameters, containsPair('order', 'asc'));
     expect(find.text('Bu Sri'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Terima pembayaran'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Terima pembayaran'));
     await tester.pumpAndSettle();
     await tester.tap(find.textContaining('Lunasi'));
-    await tester.tap(find.widgetWithText(FilledButton, 'Simpan'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     final pay = app.adapter.requests.firstWhere((r) => r.path == ApiPaths.debtPay).data as Map;
     expect(pay['nominal_bayar'], 5000);
     expect(pay['idempotency_key'], isNotEmpty);
     expect(find.text('Pembayaran dicatat. Sisa Rp 0.'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Tambah hutang manual'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Tambah hutang manual'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.descendant(of: find.byType(Dialog), matching: find.byType(TextField)).first, 'Bu');
+    await tester.enterText(find.descendant(of: find.byType(ShadDialog), matching: find.byType(EditableText)).first, 'Bu');
     await tester.pumpAndSettle();
     await tester.tap(find.text('Bu Sri · 0812'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.descendant(of: find.byType(Dialog), matching: find.byType(TextFormField)).last, '20000');
-    await tester.tap(find.widgetWithText(FilledButton, 'Simpan'));
+    await tester.enterText(find.descendant(of: find.byType(ShadDialog), matching: find.byType(EditableText)).last, '20000');
+    await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Hutang ditambahkan.'), findsOneWidget);
     expect(app.adapter.requests.lastWhere((r) => r.method == 'POST' && r.path == ApiPaths.debts).data,

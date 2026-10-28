@@ -117,6 +117,18 @@ class AppLocalizationsId extends AppLocalizations {
   String get navReports => 'Laporan';
 
   @override
+  String get navGroupSales => 'Penjualan';
+
+  @override
+  String get navGroupCatalog => 'Katalog';
+
+  @override
+  String get navGroupPeople => 'Pengguna';
+
+  @override
+  String get navGroupOther => 'Lainnya';
+
+  @override
   String get active => 'Aktif';
 
   @override

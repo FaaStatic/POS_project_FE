@@ -116,6 +116,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navReports => 'Reports';
 
   @override
+  String get navGroupSales => 'Sales';
+
+  @override
+  String get navGroupCatalog => 'Catalog';
+
+  @override
+  String get navGroupPeople => 'People';
+
+  @override
+  String get navGroupOther => 'Other';
+
+  @override
   String get active => 'Active';
 
   @override

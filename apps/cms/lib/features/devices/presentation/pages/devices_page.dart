@@ -29,7 +29,7 @@ class DevicesPage extends StatelessWidget {
         } else if (state.failure != null) {
           body = ErrorState(message: l10n.loadFailed(failureText(context, state.failure!)), onRetry: () => cubit.load(state.platform));
         } else if (state.items.isEmpty) {
-          body = EmptyState(icon: Iconsax.mobile, message: l10n.devicesEmpty);
+          body = EmptyState(icon: Iconsax.mobile_copy, message: l10n.devicesEmpty);
         } else {
           body = ResponsiveTable<Device>(
             rows: state.items,
@@ -40,8 +40,9 @@ class DevicesPage extends StatelessWidget {
               TableColumnSpec(label: l10n.lastActive, cell: (c, d) => Text(dateTimeText(c, d.lastUsedAt))),
               TableColumnSpec(label: 'Device ID', secondary: true, cell: (_, d) => Text(d.deviceId)),
             ],
-            actions: (context, d) => TextButton(
-              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+            actions: (context, d) => AppButton(
+              label: l10n.revoke,
+              variant: AppButtonVariant.destructiveGhost,
               onPressed: () async {
                 final ok = await showConfirmDialog(
                   context,
@@ -54,21 +55,20 @@ class DevicesPage extends StatelessWidget {
                 final result = await cubit.revoke(d);
                 if (context.mounted) showResult(context, result, l10n.deviceRevoked);
               },
-              child: Text(l10n.revoke),
             ),
           );
         }
         return CmsPage(
           title: l10n.devicesTitle,
           body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
-              SegmentedButton<DevicePlatform?>(
-                segments: [
-                  ButtonSegment(value: null, label: Text(l10n.allPlatforms)),
-                  const ButtonSegment(value: DevicePlatform.android, label: Text('Android')),
-                  const ButtonSegment(value: DevicePlatform.ios, label: Text('iOS')),
+              AppTabs<DevicePlatform?>(
+                choices: [
+                  Choice(null, l10n.allPlatforms),
+                  const Choice(DevicePlatform.android, 'Android'),
+                  const Choice(DevicePlatform.ios, 'iOS'),
                 ],
-                selected: {state.platform},
-                onSelectionChanged: (s) => cubit.load(s.first),
+                value: state.platform,
+                onChanged: cubit.load,
               ),
             ]),
             Expanded(child: body),

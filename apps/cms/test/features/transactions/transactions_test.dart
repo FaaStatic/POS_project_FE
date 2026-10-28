@@ -3,6 +3,7 @@ import 'package:core/core.dart';
 import 'package:core/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 
 import '../../helpers/cms_harness.dart';
 
@@ -38,13 +39,13 @@ void main() {
     expect(find.text('INV-001'), findsOneWidget);
     expect(find.text('Konflik stok'), findsWidgets);
 
-    await tester.tap(find.widgetWithText(FilterChip, 'Konflik stok'));
+    await tester.tap(find.byType(ShadSwitch));
     await tester.pumpAndSettle();
     expect(app.adapter.requests.last.queryParameters['open_conflict'], true);
 
     await tester.tap(find.text('INV-001'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(FilledButton, 'Tandai sudah ditinjau'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Tandai sudah ditinjau'));
     await tester.pumpAndSettle();
     expect(find.text('Ditandai sudah ditinjau.'), findsOneWidget);
     expect(find.text('Sudah ditinjau'), findsOneWidget);
@@ -55,8 +56,8 @@ void main() {
 
     await tester.tap(find.text('Batalkan transaksi'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField), 'salah input');
-    await tester.tap(find.descendant(of: find.byType(AlertDialog), matching: find.widgetWithText(FilledButton, 'Batalkan transaksi')));
+    await tester.enterText(formFields, 'salah input');
+    await tester.tap(find.descendant(of: find.byType(ShadDialog), matching: find.widgetWithText(ShadButton, 'Batalkan transaksi')));
     await tester.pumpAndSettle();
     expect(app.adapter.requests.last.data, {'trx_id': 't1', 'reason': 'salah input'});
     expect(find.text('INV-001'), findsOneWidget);

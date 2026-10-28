@@ -30,25 +30,20 @@ class PaymentsPage extends StatelessWidget {
           body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
               SizedBox(
                 width: 200,
-                child: DropdownButtonFormField<PaymentState?>(
-                  isExpanded: true,
-                  initialValue: q.state,
-                  decoration: InputDecoration(labelText: l10n.status),
-                  items: [
-                    DropdownMenuItem(value: null, child: Text(l10n.allStatuses)),
-                    for (final s in PaymentState.values) DropdownMenuItem(value: s, child: Text(paymentStateLabel(l10n, s))),
+                child: AppSelect<PaymentState?>(
+                  label: l10n.status,
+                  value: q.state,
+                  choices: [
+                    Choice(null, l10n.allStatuses),
+                    for (final s in PaymentState.values) Choice(s, paymentStateLabel(l10n, s)),
                   ],
                   onChanged: cubit.filterState,
                 ),
               ),
-              SegmentedButton<ChargeMethod?>(
-                segments: [
-                  ButtonSegment(value: null, label: Text(l10n.allMethods)),
-                  ButtonSegment(value: ChargeMethod.qris, label: Text(l10n.qris)),
-                  ButtonSegment(value: ChargeMethod.va, label: Text(l10n.va)),
-                ],
-                selected: {q.method},
-                onSelectionChanged: (s) => cubit.method(s.first),
+              AppTabs<ChargeMethod?>(
+                choices: [Choice(null, l10n.allMethods), Choice(ChargeMethod.qris, l10n.qris), Choice(ChargeMethod.va, l10n.va)],
+                value: q.method,
+                onChanged: cubit.method,
               ),
               DateRangeField(
                 value: q.dateStart == null ? null : DateTimeRange(start: q.dateStart!, end: q.dateEnd ?? q.dateStart!),
@@ -75,7 +70,9 @@ class PaymentsPage extends StatelessWidget {
                     TableColumnSpec(label: l10n.createdAt, secondary: true, cell: (c, p) => Text(dateTimeText(c, p.createdAt))),
                     TableColumnSpec(label: l10n.paidAt, secondary: true, cell: (c, p) => Text(dateTimeText(c, p.paidAt))),
                   ],
-                  actions: (context, p) => OutlinedButton(
+                  actions: (context, p) => AppButton(
+                    label: l10n.checkStatus,
+                    variant: AppButtonVariant.outline,
                     onPressed: () async {
                       final result = await cubit.check(p);
                       if (!context.mounted) return;
@@ -84,7 +81,6 @@ class PaymentsPage extends StatelessWidget {
                         Err() => '',
                       });
                     },
-                    child: Text(l10n.checkStatus),
                   ),
                 ),
               ),

@@ -23,7 +23,6 @@ class CategoriesPage extends StatelessWidget {
       child: Builder(builder: (context) {
         final cubit = context.read<CategoriesCubit>();
         final state = context.watch<CategoriesCubit>().state;
-        final theme = Theme.of(context);
         Widget body;
         if (state.loading && state.items.isEmpty) {
           body = const LoadingView();
@@ -40,13 +39,13 @@ class CategoriesPage extends StatelessWidget {
               TableColumnSpec(label: l10n.navProducts, cell: (_, c) => Text(l10n.productCount(c.productCount))),
             ],
             actions: (context, c) => Wrap(spacing: Space.sm, alignment: WrapAlignment.end, children: [
-              OutlinedButton(onPressed: () => _name(context, cubit, existing: c), child: Text(l10n.rename)),
+              AppButton(label: l10n.rename, variant: AppButtonVariant.outline, onPressed: () => _name(context, cubit, existing: c)),
               Tooltip(
                 message: c.productCount > 0 ? l10n.categoryInUse(c.productCount) : '',
-                child: TextButton(
-                  style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
+                child: AppButton(
+                  label: l10n.delete,
+                  variant: AppButtonVariant.destructiveGhost,
                   onPressed: c.productCount > 0 ? null : () => _delete(context, cubit, c),
-                  child: Text(l10n.delete),
                 ),
               ),
             ]),
@@ -54,7 +53,7 @@ class CategoriesPage extends StatelessWidget {
         }
         return CmsPage(
           title: l10n.categoriesTitle,
-          actions: [FilledButton.icon(onPressed: () => _name(context, cubit), icon: const Icon(Iconsax.add), label: Text(l10n.addCategory))],
+          actions: [AppButton(label: l10n.addCategory, icon: Iconsax.add_copy, onPressed: () => _name(context, cubit))],
           body: body,
         );
       }),

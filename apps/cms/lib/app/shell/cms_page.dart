@@ -5,10 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:ui/ui.dart';
 
+import '../../common/file_saver.dart';
 import '../../features/auth/presentation/bloc/auth_cubit.dart';
 import '../../features/settings/presentation/bloc/settings_cubit.dart';
 
 import '../../l10n/app_localizations.dart';
+
+const designShotUrl = 'https://dribbble.com/shots/16763871-CMS-Dashboard-Design';
 
 /// Gives the compact layout's page app bar a way to open the shell drawer.
 class ShellScope extends InheritedWidget {
@@ -23,7 +26,8 @@ class ShellScope extends InheritedWidget {
   bool updateShouldNotify(ShellScope old) => old.openMenu != openMenu;
 }
 
-/// Page frame: title, then a wrapping row of labelled page actions under it.
+/// Page frame: white top bar (title, language, account), a wrapping row of
+/// labelled page actions, the body, and the design credit at the foot.
 class CmsPage extends StatelessWidget {
   const CmsPage({super.key, required this.title, required this.body, this.actions = const [], this.fab});
 
@@ -35,43 +39,58 @@ class CmsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final openMenu = ShellScope.menuOf(context);
+    final theme = Theme.of(context);
+    final narrow = MediaQuery.sizeOf(context).width < Breakpoints.medium;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: openMenu == null
             ? null
             : IconButton(
-                icon: const Icon(Icons.menu),
+                icon: const Icon(Iconsax.menu_1_copy),
                 tooltip: AppLocalizations.of(context).openMenu,
                 onPressed: openMenu,
               ),
         toolbarHeight: 64,
-        title: Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500)),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        shape: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-        actions: const [_LanguageButton(), _AccountMenu(), SizedBox(width: 12)],
+        titleSpacing: openMenu == null ? Space.xl : 0,
+        title: Text(title, style: theme.textTheme.titleLarge),
+        backgroundColor: theme.colorScheme.surface,
+        shape: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
+        actions: const [_LanguageButton(), SizedBox(width: Space.xs), _AccountMenu(), SizedBox(width: Space.lg)],
       ),
       floatingActionButton: fab,
-      body: actions.isEmpty
-          ? body
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Phones scroll the action row sideways instead of stacking it.
-                if (MediaQuery.sizeOf(context).width < 600)
-                  SingleChildScrollView(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (actions.isNotEmpty)
+            // Phones scroll the action row sideways instead of stacking it.
+            narrow
+                ? SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Row(children: [for (final a in actions) Padding(padding: const EdgeInsets.only(right: 8), child: a)]),
+                    padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, 0),
+                    child: Row(children: [for (final a in actions) Padding(padding: const EdgeInsets.only(right: Space.sm), child: a)]),
                   )
-                else
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: Wrap(spacing: 8, runSpacing: 8, children: actions),
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, 0),
+                    child: Wrap(spacing: Space.sm, runSpacing: Space.sm, children: actions),
                   ),
-                Expanded(child: body),
-              ],
+          Expanded(child: body),
+          DecoratedBox(
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant))),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Space.sm),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: DesignCredit(
+                  title: 'CMS Dashboard Design',
+                  author: 'Faysol Ahmed Sozib',
+                  onOpen: () => openInNewTab(designShotUrl),
+                ),
+              ),
             ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -83,10 +102,10 @@ class _LanguageButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsCubit>();
     final next = settings.state.language == AppLanguage.id ? AppLanguage.en : AppLanguage.id;
-    return TextButton.icon(
+    return ShadButton.ghost(
       onPressed: () => settings.setLanguage(next),
-      icon: const Icon(Iconsax.global, size: 20),
-      label: Text(settings.state.language.name.toUpperCase()),
+      leading: const Icon(Iconsax.global_copy, size: 16),
+      child: Text(settings.state.language.name.toUpperCase()),
     );
   }
 }
@@ -101,21 +120,22 @@ class _AccountMenu extends StatelessWidget {
     final auth = context.watch<AuthCubit>().state;
     final name = auth is AuthAuthenticated ? auth.session.username : '';
     return MenuAnchor(
+      alignmentOffset: const Offset(0, Space.sm),
       menuChildren: [
         if (name.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.sm),
             child: Text(l10n.signedInAs(name), style: Theme.of(context).textTheme.bodySmall),
           ),
-        MenuItemButton(leadingIcon: const Icon(Iconsax.setting_2), onPressed: () => context.go('/settings'), child: Text(l10n.navSettings)),
-        MenuItemButton(leadingIcon: const Icon(Iconsax.logout), onPressed: () => context.read<AuthCubit>().logout(), child: Text(l10n.logout)),
+        MenuItemButton(leadingIcon: const Icon(Iconsax.setting_2_copy, size: 18), onPressed: () => context.go('/settings'), child: Text(l10n.navSettings)),
+        MenuItemButton(leadingIcon: const Icon(Iconsax.logout_copy, size: 18), onPressed: () => context.read<AuthCubit>().logout(), child: Text(l10n.logout)),
       ],
       builder: (context, controller, _) => Tooltip(
         message: l10n.account,
         child: InkWell(
           customBorder: const CircleBorder(),
           onTap: () => controller.isOpen ? controller.close() : controller.open(),
-          child: Padding(padding: const EdgeInsets.all(4), child: InitialAvatar(name: name.isEmpty ? '?' : name, size: 40, square: false)),
+          child: Padding(padding: const EdgeInsets.all(Space.xs), child: InitialAvatar(name: name.isEmpty ? '?' : name, size: 36, square: false)),
         ),
       ),
     );

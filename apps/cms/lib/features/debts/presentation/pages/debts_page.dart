@@ -27,9 +27,9 @@ class DebtsPage extends StatelessWidget {
         final theme = Theme.of(context);
         return CmsPage(
           title: l10n.debtsTitle,
-          actions: [FilledButton.icon(onPressed: () => _addManual(context, cubit), icon: const Icon(Iconsax.add), label: Text(l10n.addManualDebt))],
+          actions: [AppButton(label: l10n.addManualDebt, icon: Iconsax.add_copy, onPressed: () => _addManual(context, cubit))],
           body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
-              FilterChip(label: Text(l10n.unpaidOnly), selected: cubit.query.unpaidOnly, onSelected: cubit.unpaidOnly),
+              ShadSwitch(label: Text(l10n.unpaidOnly), value: cubit.query.unpaidOnly, onChanged: cubit.unpaidOnly),
               SizedBox(width: 300, child: SearchField(hint: l10n.searchCustomer, onChanged: cubit.search)),
             ]),
             Expanded(
@@ -53,7 +53,7 @@ class DebtsPage extends StatelessWidget {
                   ],
                   actions: (context, d) => d.paid
                       ? const SizedBox.shrink()
-                      : OutlinedButton(onPressed: () => _pay(context, cubit, d), child: Text(l10n.receivePayment)),
+                      : AppButton(label: l10n.receivePayment, variant: AppButtonVariant.outline, onPressed: () => _pay(context, cubit, d)),
                 ),
               ),
             ),
@@ -135,7 +135,11 @@ class _PayFormState extends State<_PayForm> {
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: TextButton(onPressed: () => _amount.text = '${d.remaining}', child: Text(l10n.payFull(money(context, d.remaining)))),
+          child: AppButton(
+            label: l10n.payFull(money(context, d.remaining)),
+            variant: AppButtonVariant.ghost,
+            onPressed: () => _amount.text = '${d.remaining}',
+          ),
         ),
         const SizedBox(height: Space.lg),
         FormActions(onSave: _save, saving: _saving, failure: _failure),
@@ -187,6 +191,7 @@ class _ManualDebtFormState extends State<_ManualDebtForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final today = DateTime.now();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -194,11 +199,12 @@ class _ManualDebtFormState extends State<_ManualDebtForm> {
           displayStringForOption: (c) => c.phone.isEmpty ? c.name : '${c.name} · ${c.phone}',
           optionsBuilder: (v) => v.text.trim().length < 2 ? const <Customer>[] : widget.cubit.findCustomers(v.text.trim()),
           onSelected: (c) => setState(() => _customer = c),
-          fieldViewBuilder: (context, controller, focus, _) => TextField(
+          fieldViewBuilder: (context, controller, focus, _) => AppTextField(
+            label: l10n.pickCustomer,
+            helper: _customer?.name,
             controller: controller,
             focusNode: focus,
             autofocus: true,
-            decoration: InputDecoration(labelText: l10n.pickCustomer, helperText: _customer?.name),
           ),
         ),
         const SizedBox(height: Space.lg),
@@ -209,14 +215,22 @@ class _ManualDebtFormState extends State<_ManualDebtForm> {
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
         const SizedBox(height: Space.lg),
-        OutlinedButton.icon(
-          icon: const Icon(Iconsax.calendar_1),
-          label: Text(_due == null ? l10n.dueDate : dateText(context, _due)),
-          onPressed: () async {
-            final now = DateTime.now();
-            final picked = await showDatePicker(context: context, firstDate: now, lastDate: DateTime(now.year + 2), initialDate: _due ?? now);
-            if (picked != null) setState(() => _due = picked);
-          },
+        // Full width like the inputs above; height 0 lets the date wrap at large text.
+        ConstrainedBox(
+          constraints: BoxConstraints(minHeight: AppSizes.of(context).control),
+          child: ShadDatePicker(
+            width: 0,
+            height: 0,
+            expands: true,
+            buttonPadding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.sm),
+            placeholder: Text(l10n.dueDate),
+            selected: _due,
+            formatDate: (d) => dateText(context, d),
+            fromMonth: today,
+            toMonth: DateTime(today.year + 2),
+            selectableDayPredicate: (d) => !d.isBefore(DateUtils.dateOnly(today)),
+            onChanged: (d) => setState(() => _due = d),
+          ),
         ),
         const SizedBox(height: Space.xl),
         FormActions(onSave: _save, saving: _saving, failure: _failure),

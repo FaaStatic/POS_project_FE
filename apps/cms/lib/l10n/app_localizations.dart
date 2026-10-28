@@ -302,6 +302,30 @@ abstract class AppLocalizations {
   /// **'Laporan'**
   String get navReports;
 
+  /// No description provided for @navGroupSales.
+  ///
+  /// In id, this message translates to:
+  /// **'Penjualan'**
+  String get navGroupSales;
+
+  /// No description provided for @navGroupCatalog.
+  ///
+  /// In id, this message translates to:
+  /// **'Katalog'**
+  String get navGroupCatalog;
+
+  /// No description provided for @navGroupPeople.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengguna'**
+  String get navGroupPeople;
+
+  /// No description provided for @navGroupOther.
+  ///
+  /// In id, this message translates to:
+  /// **'Lainnya'**
+  String get navGroupOther;
+
   /// No description provided for @active.
   ///
   /// In id, this message translates to:

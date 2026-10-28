@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
+import '../../../../app/shell/cms_page.dart' show designShotUrl;
 import '../../../../common/failure_text.dart';
+import '../../../../common/file_saver.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/auth_cubit.dart';
 
@@ -54,6 +56,8 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Align(alignment: AlignmentDirectional.centerStart, child: BrandLogo.pos(height: 40)),
+              const SizedBox(height: Space.xl),
               Text(l10n.loginTitle, style: theme.textTheme.headlineSmall),
               const SizedBox(height: Space.sm),
               Text(l10n.loginSubtitle, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
@@ -96,29 +100,40 @@ class _LoginPageState extends State<LoginPage> {
         final centered = Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(Space.xl),
-            child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 440), child: form),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 440),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                form,
+                const SizedBox(height: Space.lg),
+                DesignCredit(
+                  title: 'CMS Dashboard Design',
+                  author: 'Faysol Ahmed Sozib',
+                  onOpen: () => openInNewTab(designShotUrl),
+                ),
+              ]),
+            ),
           ),
         );
         if (constraints.maxWidth < 900) return SafeArea(child: centered);
         return Row(children: [
           Expanded(
             child: ColoredBox(
-              color: shell.background,
-              child: Padding(
+              color: shell.brand,
+              child: FillOrScroll(
                 padding: const EdgeInsets.all(Space.xxxl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(l10n.appTitle, style: theme.textTheme.titleLarge?.copyWith(color: shell.foreground)),
+                    const BrandLogo.mark(height: 48),
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 480),
                       child: Text(
                         l10n.loginPanelLine,
-                        style: theme.textTheme.displaySmall?.copyWith(color: shell.foreground, height: 1.15),
+                        style: theme.textTheme.displaySmall?.copyWith(color: shell.onBrand, height: 1.15),
                       ),
                     ),
-                    Text(l10n.loginPanelNote, style: theme.textTheme.bodyLarge?.copyWith(color: shell.muted)),
+                    Text(l10n.loginPanelNote, style: theme.textTheme.bodyLarge?.copyWith(color: shell.onBrandMuted)),
                   ],
                 ),
               ),

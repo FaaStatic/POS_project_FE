@@ -44,22 +44,30 @@ class _CmsAppState extends State<CmsApp> {
         child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, settings) {
             Intl.defaultLocale = settings.language.name;
-            return MaterialApp.router(
-              onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-              debugShowCheckedModeBanner: false,
-              routerConfig: _router,
-              theme: AppTheme.light,
-              darkTheme: AppTheme.dark,
-              themeMode: themeModeOf(settings.theme),
-              locale: Locale(settings.language.name),
-              supportedLocales: AppLocalizations.supportedLocales,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                UiLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
+            final mode = themeModeOf(settings.theme);
+            // shadcn wraps Material so both widget sets read one theme (CMS: compact density).
+            return ShadApp.custom(
+              theme: AppTheme.compact.shadLight,
+              darkTheme: AppTheme.compact.shadDark,
+              themeMode: mode,
+              appBuilder: (context) => MaterialApp.router(
+                onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+                debugShowCheckedModeBanner: false,
+                routerConfig: _router,
+                theme: AppTheme.compact.light,
+                darkTheme: AppTheme.compact.dark,
+                themeMode: mode,
+                locale: Locale(settings.language.name),
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  UiLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                builder: (context, child) => ShadAppBuilder(child: child),
+              ),
             );
           },
         ),

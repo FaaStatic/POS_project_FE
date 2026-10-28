@@ -106,10 +106,11 @@ class _BulkProductsPageState extends State<BulkProductsPage> {
                     spacing: Space.md,
                     runSpacing: Space.md,
                     children: [
-                      OutlinedButton.icon(
+                      AppButton(
+                        label: l10n.addRow,
+                        icon: Iconsax.add_copy,
+                        variant: AppButtonVariant.outline,
                         onPressed: () => setState(() => _rows.add(_Row())),
-                        icon: const Icon(Iconsax.add),
-                        label: Text(l10n.addRow),
                       ),
                       AppButton(
                         label: l10n.uploadBulk,
@@ -141,11 +142,11 @@ class _BulkProductsPageState extends State<BulkProductsPage> {
       bool number = false,
     }) => SizedBox(
       width: width,
-      child: TextFormField(
+      child: AppTextField(
+        label: label,
         controller: c,
         keyboardType: number ? TextInputType.number : null,
         inputFormatters: number ? digits : null,
-        decoration: InputDecoration(labelText: label),
         validator: rule == null ? null : (v) => need(rule, v),
       ),
     );
@@ -169,12 +170,11 @@ class _BulkProductsPageState extends State<BulkProductsPage> {
               field(l10n.productName, r.name, width: 240, rule: Validators.required),
               SizedBox(
                 width: 120,
-                child: DropdownButtonFormField<ProductUnit>(
-                  isExpanded: true,
-                  initialValue: r.unit,
-                  decoration: InputDecoration(labelText: l10n.unit),
-                  items: [for (final u in ProductUnit.values) DropdownMenuItem(value: u, child: Text(u.name))],
-                  onChanged: (u) => r.unit = u ?? r.unit,
+                child: AppSelect<ProductUnit>(
+                  label: l10n.unit,
+                  value: r.unit,
+                  choices: [for (final u in ProductUnit.values) Choice(u, u.name)],
+                  onChanged: (u) => setState(() => r.unit = u),
                 ),
               ),
               field(l10n.purchasePrice, r.purchase, rule: Validators.positiveInt, number: true),
@@ -183,13 +183,14 @@ class _BulkProductsPageState extends State<BulkProductsPage> {
               field(l10n.stock, r.stock, width: 100, rule: Validators.nonNegativeNumber),
               field(l10n.category, r.category, rule: Validators.categoryName),
               if (_rows.length > 1)
-                TextButton(
+                AppButton(
+                  label: l10n.removeRow,
+                  variant: AppButtonVariant.ghost,
                   onPressed: () => setState(() {
                     for (final c in _rows.removeAt(i).all) {
                       c.dispose();
                     }
                   }),
-                  child: Text(l10n.removeRow),
                 ),
             ],
           ),
@@ -221,7 +222,7 @@ class _ImportFromFile extends StatelessWidget {
         Wrap(spacing: Space.md, runSpacing: Space.md, crossAxisAlignment: WrapCrossAlignment.center, children: [
           AppButton(
             label: state.fileName == null ? l10n.pickFile : l10n.importing(state.fileName!),
-            icon: Iconsax.document_upload,
+            icon: Iconsax.document_upload_copy,
             loading: state.saving && state.fileName != null,
             onPressed: state.saving
                 ? null
@@ -232,7 +233,7 @@ class _ImportFromFile extends StatelessWidget {
           ),
           AppButton(
             label: l10n.downloadTemplate,
-            icon: Iconsax.document_download,
+            icon: Iconsax.document_download_copy,
             variant: AppButtonVariant.outline,
             onPressed: () => saveFile(utf8.encode(_template), 'template-produk.csv', mime: 'text/csv'),
           ),

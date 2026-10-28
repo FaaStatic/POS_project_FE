@@ -5,6 +5,7 @@ import 'package:core/testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ui/ui.dart';
 
 import '../helpers/cms_harness.dart';
 
@@ -44,9 +45,9 @@ void main() {
     await pumpApp(tester);
     expect(find.text('Masuk ke CMS'), findsOneWidget);
 
-    await tester.enterText(find.byType(TextFormField).at(0), 'owner');
-    await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Masuk'));
+    await tester.enterText(formFields.at(0), 'owner');
+    await tester.enterText(formFields.at(1), 'secret1');
+    await tester.tap(find.widgetWithText(ShadButton, 'Masuk'));
     await tester.pumpAndSettle();
 
     expect(find.text('Perlu tindakan'), findsOneWidget);
@@ -66,9 +67,9 @@ void main() {
       ..on('POST', ApiPaths.refresh, (_) => FakeReply(401, errorBody('invalid refresh token')))
       ..on('POST', ApiPaths.login, (_) => FakeReply(403, errorBody('forbidden', 'admin only')));
     await pumpApp(tester);
-    await tester.enterText(find.byType(TextFormField).at(0), 'kasir');
-    await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Masuk'));
+    await tester.enterText(formFields.at(0), 'kasir');
+    await tester.enterText(formFields.at(1), 'secret1');
+    await tester.tap(find.widgetWithText(ShadButton, 'Masuk'));
     await tester.pumpAndSettle();
     expect(find.textContaining('CMS khusus admin toko'), findsOneWidget);
   });
@@ -76,7 +77,7 @@ void main() {
   testWidgets('validation blocks short input before any request', (tester) async {
     adapter.on('POST', ApiPaths.refresh, (_) => FakeReply(401, errorBody('x')));
     await pumpApp(tester);
-    await tester.tap(find.widgetWithText(FilledButton, 'Masuk'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Masuk'));
     await tester.pump();
     expect(find.text('Wajib diisi'), findsNWidgets(2));
     expect(adapter.requests.where((r) => r.path == ApiPaths.login), isEmpty);
@@ -85,9 +86,9 @@ void main() {
   testWidgets('network error at login is translated', (tester) async {
     adapter.on('POST', ApiPaths.refresh, (_) => FakeReply(401, errorBody('x')));
     await pumpApp(tester);
-    await tester.enterText(find.byType(TextFormField).at(0), 'owner');
-    await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Masuk'));
+    await tester.enterText(formFields.at(0), 'owner');
+    await tester.enterText(formFields.at(1), 'secret1');
+    await tester.tap(find.widgetWithText(ShadButton, 'Masuk'));
     await tester.pumpAndSettle();
     expect(find.text('Tidak ada koneksi. Periksa internet lalu coba lagi.'), findsOneWidget);
   });
@@ -126,7 +127,7 @@ void main() {
     await pumpApp(tester, size: const Size(390, 800));
     await tester.tap(find.byTooltip('Buka menu'));
     await tester.pumpAndSettle();
-    expect(find.text('Shop CMS'), findsOneWidget);
+    expect(find.byType(BrandLogo), findsOneWidget);
     await tester.tap(find.text('Staff'));
     await tester.pumpAndSettle();
     expect(find.text('Tambah staff'), findsWidgets);

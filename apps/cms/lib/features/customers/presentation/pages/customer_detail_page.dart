@@ -50,18 +50,33 @@ class CustomerDetailPage extends StatelessWidget {
                           Text(l10n.debtsTitle, style: theme.textTheme.titleMedium),
                           const SizedBox(height: Space.sm),
                           if (c.debts.isEmpty) Text(l10n.noDebts),
+                          // A Wrap, not a ListTile: the badge drops under the amount on narrow screens.
                           for (final d in c.debts)
-                            ListTile(
+                            Padding(
                               key: ValueKey(d.id),
-                              contentPadding: EdgeInsets.zero,
-                              title: Text(
-                                '${money(context, d.remaining)} / ${money(context, d.total)}',
-                                style: theme.textTheme.bodyLarge?.tabular,
-                              ),
-                              subtitle: Text(dateText(context, d.date)),
-                              trailing: StatusBadge(
-                                label: d.paid ? l10n.debtPaid : l10n.debtUnpaid,
-                                tone: d.paid ? BadgeTone.success : BadgeTone.warning,
+                              padding: const EdgeInsets.symmetric(vertical: Space.sm),
+                              child: Wrap(
+                                alignment: WrapAlignment.spaceBetween,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: Space.md,
+                                runSpacing: Space.xs,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '${money(context, d.remaining)} / ${money(context, d.total)}',
+                                        style: theme.textTheme.bodyLarge?.tabular,
+                                      ),
+                                      Text(dateText(context, d.date), style: theme.textTheme.bodySmall),
+                                    ],
+                                  ),
+                                  StatusBadge(
+                                    label: d.paid ? l10n.debtPaid : l10n.debtUnpaid,
+                                    tone: d.paid ? BadgeTone.success : BadgeTone.warning,
+                                  ),
+                                ],
                               ),
                             ),
                           const SizedBox(height: Space.xxl),

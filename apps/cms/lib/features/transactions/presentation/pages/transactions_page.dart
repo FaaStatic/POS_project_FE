@@ -40,14 +40,12 @@ class TransactionsPage extends StatelessWidget {
                     ),
                     SizedBox(
                       width: 200,
-                      child: DropdownButtonFormField<PaymentMethod?>(
-                        isExpanded: true,
-                        initialValue: q.method,
-                        decoration: InputDecoration(labelText: l10n.method),
-                        items: [
-                          DropdownMenuItem(value: null, child: Text(l10n.allMethods)),
-                          for (final m in PaymentMethod.values)
-                            DropdownMenuItem(value: m, child: Text(methodLabel(l10n, m))),
+                      child: AppSelect<PaymentMethod?>(
+                        label: l10n.method,
+                        value: q.method,
+                        choices: [
+                          Choice(null, l10n.allMethods),
+                          for (final m in PaymentMethod.values) Choice(m, methodLabel(l10n, m)),
                         ],
                         onChanged: cubit.method,
                       ),
@@ -56,7 +54,7 @@ class TransactionsPage extends StatelessWidget {
                       width: 260,
                       child: SearchField(hint: l10n.searchInvoice, onChanged: cubit.invoice),
                     ),
-                    FilterChip(label: Text(l10n.conflictOnly), selected: q.openConflict, onSelected: cubit.conflicts),
+                    ShadSwitch(label: Text(l10n.conflictOnly), value: q.openConflict, onChanged: cubit.conflicts),
                   ],
                 ),
                 Expanded(

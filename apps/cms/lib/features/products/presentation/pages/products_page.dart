@@ -37,20 +37,19 @@ class ProductsPage extends StatelessWidget {
         return CmsPage(
           title: l10n.productsTitle,
           actions: [
-            OutlinedButton.icon(onPressed: () => context.push('/products/bulk'), icon: const Icon(Iconsax.document_upload), label: Text(l10n.bulkAdd)),
-            FilledButton.icon(onPressed: () => openProductForm(context, cubit), icon: const Icon(Iconsax.add), label: Text(l10n.addProduct)),
+            AppButton(label: l10n.bulkAdd, icon: Iconsax.document_upload_copy, variant: AppButtonVariant.outline, onPressed: () => context.push('/products/bulk')),
+            AppButton(label: l10n.addProduct, icon: Iconsax.add_copy, onPressed: () => openProductForm(context, cubit)),
           ],
           body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
                 SizedBox(width: 320, child: SearchField(hint: l10n.search, onChanged: cubit.search)),
                 SizedBox(
                   width: 240,
-                  child: DropdownButtonFormField<String?>(
-                    isExpanded: true,
-                    initialValue: cubit.query.categoryId,
-                    decoration: InputDecoration(labelText: l10n.category),
-                    items: [
-                      DropdownMenuItem(value: null, child: Text(l10n.allCategories)),
-                      for (final c in cubit.categories) DropdownMenuItem(value: c.id, child: Text(c.name)),
+                  child: AppSelect<String?>(
+                    label: l10n.category,
+                    value: cubit.query.categoryId,
+                    choices: [
+                      Choice(null, l10n.allCategories),
+                      for (final c in cubit.categories) Choice(c.id, c.name),
                     ],
                     onChanged: cubit.filter,
                   ),
