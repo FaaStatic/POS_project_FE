@@ -84,9 +84,41 @@ class FilterBar extends StatelessWidget {
         constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.4),
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, Space.sm),
-          child: Wrap(spacing: Space.md, runSpacing: Space.md, crossAxisAlignment: WrapCrossAlignment.center, children: children),
+          // Top-aligned so the labels share one line; shadcn controls differ by a few pixels in height.
+          child: Wrap(spacing: Space.md, runSpacing: Space.md, children: children),
         ),
       );
+}
+
+/// A filter with its label above, styled like [AppSelect]'s. Without [label] (a switch that
+/// carries its own text) the label line stays empty so the control sits beside the others.
+class FilterField extends StatelessWidget {
+  const FilterField({super.key, this.label, required this.child});
+  final String? label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = this.label;
+    final style = Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w500);
+    return MergeSemantics(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (label != null) Text(label, style: style) else ExcludeSemantics(child: Text('', style: style)),
+          const SizedBox(height: 6),
+          if (label != null)
+            child
+          else
+            ConstrainedBox(
+              constraints: BoxConstraints(minHeight: AppSizes.of(context).control),
+              child: Align(alignment: Alignment.centerLeft, widthFactor: 1, heightFactor: 1, child: child),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Permanent delete confirmation: the admin types the exact name.

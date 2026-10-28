@@ -33,12 +33,18 @@ class StaffPage extends StatelessWidget {
             AppButton(label: l10n.addStaff, icon: Iconsax.user_add_copy, onPressed: () => _add(context)),
           ],
           body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
-                AppTabs<bool>(
-                  choices: [Choice(false, l10n.active), Choice(true, l10n.inactive)],
-                  value: cubit.query.inactive,
-                  onChanged: cubit.showInactive,
+                FilterField(
+                  label: l10n.status,
+                  child: AppTabs<bool>(
+                    choices: [Choice(false, l10n.active), Choice(true, l10n.inactive)],
+                    value: cubit.query.inactive,
+                    onChanged: cubit.showInactive,
+                  ),
                 ),
-                SizedBox(width: 320, child: SearchField(hint: l10n.search, onChanged: cubit.search)),
+                SizedBox(
+                  width: 320,
+                  child: FilterField(label: l10n.search, child: SearchField(hint: l10n.searchUsername, onChanged: cubit.search)),
+                ),
               ]),
               Expanded(
                 child: PagedBody<Staff>(

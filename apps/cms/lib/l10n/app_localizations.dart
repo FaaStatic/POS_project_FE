@@ -1328,6 +1328,18 @@ abstract class AppLocalizations {
   /// **'Cari nama customer'**
   String get searchCustomer;
 
+  /// No description provided for @searchProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari nama produk'**
+  String get searchProduct;
+
+  /// No description provided for @searchUsername.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari username'**
+  String get searchUsername;
+
   /// No description provided for @remaining.
   ///
   /// In id, this message translates to:

@@ -29,8 +29,11 @@ class DebtsPage extends StatelessWidget {
           title: l10n.debtsTitle,
           actions: [AppButton(label: l10n.addManualDebt, icon: Iconsax.add_copy, onPressed: () => _addManual(context, cubit))],
           body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
-              ShadSwitch(label: Text(l10n.unpaidOnly), value: cubit.query.unpaidOnly, onChanged: cubit.unpaidOnly),
-              SizedBox(width: 300, child: SearchField(hint: l10n.searchCustomer, onChanged: cubit.search)),
+              FilterField(child: ShadSwitch(label: Text(l10n.unpaidOnly), value: cubit.query.unpaidOnly, onChanged: cubit.unpaidOnly)),
+              SizedBox(
+                width: 300,
+                child: FilterField(label: l10n.search, child: SearchField(hint: l10n.searchCustomer, onChanged: cubit.search)),
+              ),
             ]),
             Expanded(
               child: PagedBody<Debt>(

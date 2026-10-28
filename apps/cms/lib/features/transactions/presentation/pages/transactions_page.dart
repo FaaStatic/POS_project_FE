@@ -32,11 +32,14 @@ class TransactionsPage extends StatelessWidget {
             title: l10n.transactionsTitle,
             body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(
                   children: [
-                    DateRangeField(
-                      value: q.dateStart == null
-                          ? null
-                          : DateTimeRange(start: q.dateStart!, end: q.dateEnd ?? q.dateStart!),
-                      onChanged: (r) => cubit.dates(r?.start, r?.end),
+                    FilterField(
+                      label: l10n.date,
+                      child: DateRangeField(
+                        value: q.dateStart == null
+                            ? null
+                            : DateTimeRange(start: q.dateStart!, end: q.dateEnd ?? q.dateStart!),
+                        onChanged: (r) => cubit.dates(r?.start, r?.end),
+                      ),
                     ),
                     SizedBox(
                       width: 200,
@@ -52,9 +55,14 @@ class TransactionsPage extends StatelessWidget {
                     ),
                     SizedBox(
                       width: 260,
-                      child: SearchField(hint: l10n.searchInvoice, onChanged: cubit.invoice),
+                      child: FilterField(
+                        label: l10n.search,
+                        child: SearchField(hint: l10n.searchInvoice, onChanged: cubit.invoice),
+                      ),
                     ),
-                    ShadSwitch(label: Text(l10n.conflictOnly), value: q.openConflict, onChanged: cubit.conflicts),
+                    FilterField(
+                      child: ShadSwitch(label: Text(l10n.conflictOnly), value: q.openConflict, onChanged: cubit.conflicts),
+                    ),
                   ],
                 ),
                 Expanded(

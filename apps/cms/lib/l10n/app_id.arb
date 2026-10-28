@@ -316,6 +316,8 @@
   "debtsEmpty": "Tidak ada hutang pada filter ini.",
   "unpaidOnly": "Belum lunas saja",
   "searchCustomer": "Cari nama customer",
+  "searchProduct": "Cari nama produk",
+  "searchUsername": "Cari username",
   "remaining": "Sisa",
   "addManualDebt": "Tambah hutang manual",
   "receivePayment": "Terima pembayaran",

@@ -205,6 +205,8 @@
   "debtsEmpty": "No credit matches these filters.",
   "unpaidOnly": "Unpaid only",
   "searchCustomer": "Search customer name",
+  "searchProduct": "Search product name",
+  "searchUsername": "Search username",
   "remaining": "Remaining",
   "addManualDebt": "Add manual credit",
   "receivePayment": "Receive payment",

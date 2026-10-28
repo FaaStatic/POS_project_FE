@@ -61,14 +61,17 @@ class DevicesPage extends StatelessWidget {
         return CmsPage(
           title: l10n.devicesTitle,
           body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
-              AppTabs<DevicePlatform?>(
-                choices: [
-                  Choice(null, l10n.allPlatforms),
-                  const Choice(DevicePlatform.android, 'Android'),
-                  const Choice(DevicePlatform.ios, 'iOS'),
-                ],
-                value: state.platform,
-                onChanged: cubit.load,
+              FilterField(
+                label: l10n.platform,
+                child: AppTabs<DevicePlatform?>(
+                  choices: [
+                    Choice(null, l10n.allPlatforms),
+                    const Choice(DevicePlatform.android, 'Android'),
+                    const Choice(DevicePlatform.ios, 'iOS'),
+                  ],
+                  value: state.platform,
+                  onChanged: cubit.load,
+                ),
               ),
             ]),
             Expanded(child: body),

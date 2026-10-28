@@ -40,14 +40,20 @@ class PaymentsPage extends StatelessWidget {
                   onChanged: cubit.filterState,
                 ),
               ),
-              AppTabs<ChargeMethod?>(
-                choices: [Choice(null, l10n.allMethods), Choice(ChargeMethod.qris, l10n.qris), Choice(ChargeMethod.va, l10n.va)],
-                value: q.method,
-                onChanged: cubit.method,
+              FilterField(
+                label: l10n.method,
+                child: AppTabs<ChargeMethod?>(
+                  choices: [Choice(null, l10n.allMethods), Choice(ChargeMethod.qris, l10n.qris), Choice(ChargeMethod.va, l10n.va)],
+                  value: q.method,
+                  onChanged: cubit.method,
+                ),
               ),
-              DateRangeField(
-                value: q.dateStart == null ? null : DateTimeRange(start: q.dateStart!, end: q.dateEnd ?? q.dateStart!),
-                onChanged: (r) => cubit.dates(r?.start, r?.end),
+              FilterField(
+                label: l10n.date,
+                child: DateRangeField(
+                  value: q.dateStart == null ? null : DateTimeRange(start: q.dateStart!, end: q.dateEnd ?? q.dateStart!),
+                  onChanged: (r) => cubit.dates(r?.start, r?.end),
+                ),
               ),
             ]),
             Expanded(

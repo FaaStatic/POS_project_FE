@@ -672,6 +672,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get searchCustomer => 'Cari nama customer';
 
   @override
+  String get searchProduct => 'Cari nama produk';
+
+  @override
+  String get searchUsername => 'Cari username';
+
+  @override
   String get remaining => 'Sisa';
 
   @override

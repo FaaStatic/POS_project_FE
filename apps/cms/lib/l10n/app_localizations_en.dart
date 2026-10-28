@@ -672,6 +672,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchCustomer => 'Search customer name';
 
   @override
+  String get searchProduct => 'Search product name';
+
+  @override
+  String get searchUsername => 'Search username';
+
+  @override
   String get remaining => 'Remaining';
 
   @override

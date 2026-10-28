@@ -41,7 +41,10 @@ class ProductsPage extends StatelessWidget {
             AppButton(label: l10n.addProduct, icon: Iconsax.add_copy, onPressed: () => openProductForm(context, cubit)),
           ],
           body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
-                SizedBox(width: 320, child: SearchField(hint: l10n.search, onChanged: cubit.search)),
+                SizedBox(
+                  width: 320,
+                  child: FilterField(label: l10n.search, child: SearchField(hint: l10n.searchProduct, onChanged: cubit.search)),
+                ),
                 SizedBox(
                   width: 240,
                   child: AppSelect<String?>(
