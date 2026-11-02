@@ -36,12 +36,14 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(app.adapter.requests.last.path, ApiPaths.categories);
+    await dismissInfo(tester);
 
     await tester.tap(deletes.at(1));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ShadButton, 'Hapus').last);
     await tester.pumpAndSettle();
     expect(find.text('Kategori dihapus.'), findsOneWidget);
+    await dismissInfo(tester);
   });
 
   testWidgets('categories empty state on a phone at 200%', (tester) async {

@@ -16,7 +16,7 @@ import '../../l10n/app_localizations.dart';
 import '../di.dart';
 
 /// Lives for one signed-in session: owns the checkout bloc (so QRIS/VA polling
-/// continues on every tab), the sync cubit, push wiring, and checkout snackbars.
+/// continues on every tab), the sync cubit, push wiring, and checkout notices.
 class SessionScope extends StatefulWidget {
   const SessionScope({super.key, required this.child});
   final Widget child;
@@ -63,51 +63,49 @@ class _SessionScopeState extends State<SessionScope> {
     super.dispose();
   }
 
-  void _notice(BuildContext context, CheckoutNotice notice) {
+  /// A scanner that keeps seeing the same code would otherwise stack one dialog per frame.
+  bool _scanDialogOpen = false;
+
+  Future<void> _notice(BuildContext context, CheckoutNotice notice) async {
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    void show(String text, {SnackBarAction? action}) {
-      messenger
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(text), action: action));
-    }
+    void show(String text, InfoKind kind) => showInfoDialog(context, text, kind: kind);
 
     switch (notice) {
       case ScanAddedNotice(:final productName, :final tabNumber):
-        show(l10n.scanAdded(productName, tabNumber));
+        if (_scanDialogOpen) return;
+        _scanDialogOpen = true;
+        await showInfoDialog(context, l10n.scanAdded(productName, tabNumber), kind: InfoKind.success);
+        _scanDialogOpen = false;
       case ScanUnknownNotice(:final code):
-        show(
-          l10n.unknownBarcode(code),
-          action: SnackBarAction(
-            label: l10n.assignBarcode,
-            onPressed: () async {
-              if (!_sync.state.online) {
-                show(l10n.onlineOnly);
-                return;
-              }
-              final product = await showAssignBarcode(context, code);
-              if (product != null) {
-                show(l10n.barcodeAssigned(product.name));
-                _checkout.add(ProductAdded(product));
-              }
-            },
-          ),
-        );
+        if (_scanDialogOpen) return;
+        _scanDialogOpen = true;
+        final assign = await showInfoDialog(context, l10n.unknownBarcode(code), kind: InfoKind.info, actionLabel: l10n.assignBarcode);
+        _scanDialogOpen = false;
+        if (!assign || !context.mounted) return;
+        if (!_sync.state.online) {
+          show(l10n.onlineOnly, InfoKind.info);
+          return;
+        }
+        final product = await showAssignBarcode(context, code);
+        if (product != null && context.mounted) {
+          show(l10n.barcodeAssigned(product.name), InfoKind.success);
+          _checkout.add(ProductAdded(product));
+        }
       case SaleRecordedNotice(:final sale, :final offline):
-        show(offline ? l10n.savedOffline : l10n.saved);
+        show(offline ? l10n.savedOffline : l10n.saved, InfoKind.success);
         context.push('/sale/${sale.clientRef}?print=1');
       case ChargePaidNotice(:final tabNumber):
-        show(l10n.chargePaid(tabNumber));
+        show(l10n.chargePaid(tabNumber), InfoKind.success);
       case ChargeFailedNotice(:final tabNumber):
-        show(l10n.chargeFailed(tabNumber));
+        show(l10n.chargeFailed(tabNumber), InfoKind.error);
       case StaleDraftsNotice(:final count):
-        show(l10n.staleDraftsRemoved(count));
+        show(l10n.staleDraftsRemoved(count), InfoKind.info);
       case TabLockedNotice():
-        show(l10n.tabLocked);
+        show(l10n.tabLocked, InfoKind.info);
       case FailureNotice(failure: TimeoutFailure()):
-        show(l10n.timeoutUnknown);
+        show(l10n.timeoutUnknown, InfoKind.error);
       case FailureNotice(:final failure):
-        show(failureText(context, failure));
+        show(failureText(context, failure), InfoKind.error);
     }
   }
 
@@ -127,9 +125,11 @@ class _SessionScopeState extends State<SessionScope> {
               listenWhen: (a, b) => a.reportId != b.reportId,
               listener: (context, s) {
                 final l10n = AppLocalizations.of(context);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(s.failure != null ? failureText(context, s.failure!) : l10n.syncDone(s.lastReport?.synced ?? 0)),
-                ));
+                showInfoDialog(
+                  context,
+                  s.failure != null ? failureText(context, s.failure!) : l10n.syncDone(s.lastReport?.synced ?? 0),
+                  kind: s.failure != null ? InfoKind.error : InfoKind.success,
+                );
               },
             ),
           ],

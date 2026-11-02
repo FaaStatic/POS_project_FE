@@ -28,9 +28,9 @@ class ProductEditPage extends StatelessWidget {
       ],
       child: BlocConsumer<ProductEditCubit, ProductEditState>(
         listenWhen: (a, b) => b.saved && !a.saved,
-        listener: (context, _) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.productSaved)));
-          context.pop();
+        listener: (context, _) async {
+          await showInfoDialog(context, l10n.productSaved, kind: InfoKind.success);
+          if (context.mounted) context.pop();
         },
         builder: (context, state) => Scaffold(
           appBar: AppBar(title: Text(l10n.editProduct)),

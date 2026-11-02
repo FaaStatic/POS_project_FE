@@ -33,6 +33,7 @@ void main() {
     expect(pay['nominal_bayar'], 5000);
     expect(pay['idempotency_key'], isNotEmpty);
     expect(find.text('Pembayaran dicatat. Sisa Rp 0.'), findsOneWidget);
+    await dismissInfo(tester);
 
     await tester.tap(find.widgetWithText(ShadButton, 'Tambah hutang manual'));
     await tester.pumpAndSettle();
@@ -44,6 +45,7 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Hutang ditambahkan.'), findsOneWidget);
+    await dismissInfo(tester);
     expect(app.adapter.requests.lastWhere((r) => r.method == 'POST' && r.path == ApiPaths.debts).data,
         {'customer_id': 'k1', 'total_transaksi': 20000});
   });

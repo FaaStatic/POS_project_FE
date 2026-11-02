@@ -84,6 +84,7 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Staf ditambahkan.'), findsOneWidget);
+    await dismissInfo(tester);
     expect(app.adapter.requests.where((r) => r.path == ApiPaths.register).single.data, {'username': 'kasir2', 'password': 'secret1'});
 
     await tester.tap(find.byTooltip('Aksi'));
@@ -94,6 +95,7 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Kata sandi diganti. Sesi staf ini dicabut.'), findsOneWidget);
+    await dismissInfo(tester);
 
     await tester.tap(find.byTooltip('Aksi'));
     await tester.pumpAndSettle();

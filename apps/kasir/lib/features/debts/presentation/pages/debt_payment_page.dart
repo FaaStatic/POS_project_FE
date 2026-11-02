@@ -34,9 +34,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
       create: (_) => getIt<DebtPaymentCubit>()..load(widget.debtId),
       child: BlocConsumer<DebtPaymentCubit, DebtPaymentState>(
         listenWhen: (a, b) => b.receipt != null && a.receipt == null,
-        listener: (context, s) =>
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(l10n.paymentRecorded(rupiah(context, s.receipt!.remaining))))),
+        listener: (context, s) => showInfoDialog(context, l10n.paymentRecorded(rupiah(context, s.receipt!.remaining)), kind: InfoKind.success),
         builder: (context, state) {
           final debt = state.debt;
           return Scaffold(

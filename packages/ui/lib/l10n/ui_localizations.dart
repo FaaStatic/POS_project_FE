@@ -271,6 +271,24 @@ abstract class UiLocalizations {
   /// In id, this message translates to:
   /// **'Tampilkan pilihan'**
   String get showOptions;
+
+  /// No description provided for @infoSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Berhasil'**
+  String get infoSuccess;
+
+  /// No description provided for @infoError.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal'**
+  String get infoError;
+
+  /// No description provided for @infoNotice.
+  ///
+  /// In id, this message translates to:
+  /// **'Informasi'**
+  String get infoNotice;
 }
 
 class _UiLocalizationsDelegate extends LocalizationsDelegate<UiLocalizations> {

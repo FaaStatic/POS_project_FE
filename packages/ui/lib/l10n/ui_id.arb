@@ -62,5 +62,8 @@
   "pickImage": "Pilih gambar",
   "changeImage": "Ganti gambar",
   "removeImage": "Hapus gambar",
-  "showOptions": "Tampilkan pilihan"
+  "showOptions": "Tampilkan pilihan",
+  "infoSuccess": "Berhasil",
+  "infoError": "Gagal",
+  "infoNotice": "Informasi"
 }

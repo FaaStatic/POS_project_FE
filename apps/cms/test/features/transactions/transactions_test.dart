@@ -48,11 +48,13 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Tandai sudah ditinjau'));
     await tester.pumpAndSettle();
     expect(find.text('Ditandai sudah ditinjau.'), findsOneWidget);
+    await dismissInfo(tester);
     expect(find.text('Sudah ditinjau'), findsOneWidget);
 
     await tester.tap(find.text('Unduh struk PDF'));
     await tester.pumpAndSettle();
     expect(savedFiles.last, 'inv-001.pdf');
+    await dismissInfo(tester);
 
     await tester.tap(find.text('Batalkan transaksi'));
     await tester.pumpAndSettle();
@@ -60,6 +62,7 @@ void main() {
     await tester.tap(find.descendant(of: find.byType(ShadDialog), matching: find.widgetWithText(ShadButton, 'Batalkan transaksi')));
     await tester.pumpAndSettle();
     expect(app.adapter.requests.last.data, {'trx_id': 't1', 'reason': 'salah input'});
+    await dismissInfo(tester);
     expect(find.text('INV-001'), findsOneWidget);
   });
 

@@ -310,13 +310,6 @@ abstract final class AppTheme {
         showDragHandle: true,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(sizes.cardRadius))),
       ),
-      snackBarTheme: SnackBarThemeData(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: scheme.inverseSurface,
-        contentTextStyle: text.bodyMedium?.copyWith(color: scheme.onInverseSurface),
-        actionTextColor: scheme.inversePrimary,
-        shape: RoundedRectangleBorder(borderRadius: control),
-      ),
       chipTheme: ChipThemeData(
         shape: const StadiumBorder(),
         side: BorderSide(color: scheme.outlineVariant),

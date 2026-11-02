@@ -63,6 +63,7 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Produk disimpan.'), findsOneWidget);
+    await dismissInfo(tester);
     final body = app.adapter.requests.firstWhere((r) => r.method == 'POST' && r.path == ApiPaths.products).data as Map;
     expect(body, containsPair('category', 'Sembako'));
     expect(body, containsPair('selling_price_debt', 17000));
@@ -75,6 +76,7 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Stok diperbarui.'), findsOneWidget);
+    await dismissInfo(tester);
 
     await tester.tap(find.byTooltip('Aksi'));
     await tester.pumpAndSettle();

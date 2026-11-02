@@ -19,11 +19,10 @@ class AccountSection extends StatelessWidget {
   Future<void> _logout(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     final auth = context.read<AuthCubit>();
-    final messenger = ScaffoldMessenger.of(context);
     final check = await getIt<CheckLogout>()();
     if (!context.mounted) return;
     if (check.blocked) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.logoutBlocked(check.awaitingTab!))));
+      await showInfoDialog(context, l10n.logoutBlocked(check.awaitingTab!), kind: InfoKind.info);
       return;
     }
     if (check.needsConfirmation) {

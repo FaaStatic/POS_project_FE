@@ -56,5 +56,8 @@
   "pickImage": "Choose image",
   "changeImage": "Change image",
   "removeImage": "Remove image",
-  "showOptions": "Show options"
+  "showOptions": "Show options",
+  "infoSuccess": "Done",
+  "infoError": "Something went wrong",
+  "infoNotice": "Notice"
 }
