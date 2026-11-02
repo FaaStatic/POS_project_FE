@@ -119,7 +119,7 @@ abstract class AppLocalizations {
   /// No description provided for @username.
   ///
   /// In id, this message translates to:
-  /// **'Username'**
+  /// **'Nama pengguna'**
   String get username;
 
   /// No description provided for @password.
@@ -137,7 +137,7 @@ abstract class AppLocalizations {
   /// No description provided for @cmsAdminOnly.
   ///
   /// In id, this message translates to:
-  /// **'CMS khusus admin toko. Akun staff hanya bisa masuk lewat aplikasi Kasir.'**
+  /// **'CMS khusus admin toko. Akun staf hanya bisa masuk lewat aplikasi Kasir.'**
   String get cmsAdminOnly;
 
   /// No description provided for @errorNetwork.
@@ -173,7 +173,7 @@ abstract class AppLocalizations {
   /// No description provided for @vUsernameLength.
   ///
   /// In id, this message translates to:
-  /// **'Username 3–100 karakter'**
+  /// **'Nama pengguna 3–100 karakter'**
   String get vUsernameLength;
 
   /// No description provided for @vPasswordLength.
@@ -245,7 +245,7 @@ abstract class AppLocalizations {
   /// No description provided for @navDashboard.
   ///
   /// In id, this message translates to:
-  /// **'Dashboard'**
+  /// **'Dasbor'**
   String get navDashboard;
 
   /// No description provided for @navTransactions.
@@ -269,7 +269,7 @@ abstract class AppLocalizations {
   /// No description provided for @navCustomers.
   ///
   /// In id, this message translates to:
-  /// **'Customer'**
+  /// **'Pelanggan'**
   String get navCustomers;
 
   /// No description provided for @navDebts.
@@ -281,7 +281,7 @@ abstract class AppLocalizations {
   /// No description provided for @navStaff.
   ///
   /// In id, this message translates to:
-  /// **'Staff'**
+  /// **'Staf'**
   String get navStaff;
 
   /// No description provided for @navPayments.
@@ -293,7 +293,7 @@ abstract class AppLocalizations {
   /// No description provided for @navDevices.
   ///
   /// In id, this message translates to:
-  /// **'Device'**
+  /// **'Perangkat'**
   String get navDevices;
 
   /// No description provided for @navReports.
@@ -377,7 +377,7 @@ abstract class AppLocalizations {
   /// No description provided for @edit.
   ///
   /// In id, this message translates to:
-  /// **'Edit'**
+  /// **'Ubah'**
   String get edit;
 
   /// No description provided for @restore.
@@ -425,73 +425,73 @@ abstract class AppLocalizations {
   /// No description provided for @roleStaff.
   ///
   /// In id, this message translates to:
-  /// **'Staff'**
+  /// **'Staf'**
   String get roleStaff;
 
   /// No description provided for @staffTitle.
   ///
   /// In id, this message translates to:
-  /// **'Staff'**
+  /// **'Staf'**
   String get staffTitle;
 
   /// No description provided for @addStaff.
   ///
   /// In id, this message translates to:
-  /// **'Tambah staff'**
+  /// **'Tambah staf'**
   String get addStaff;
 
   /// No description provided for @staffEmpty.
   ///
   /// In id, this message translates to:
-  /// **'Belum ada staff. Tambah staff pertama.'**
+  /// **'Belum ada staf. Tambah staf pertama.'**
   String get staffEmpty;
 
   /// No description provided for @staffInactiveEmpty.
   ///
   /// In id, this message translates to:
-  /// **'Tidak ada staff nonaktif.'**
+  /// **'Tidak ada staf nonaktif.'**
   String get staffInactiveEmpty;
 
   /// No description provided for @resetPassword.
   ///
   /// In id, this message translates to:
-  /// **'Reset password'**
+  /// **'Atur ulang kata sandi'**
   String get resetPassword;
 
   /// No description provided for @newPassword.
   ///
   /// In id, this message translates to:
-  /// **'Password baru'**
+  /// **'Kata sandi baru'**
   String get newPassword;
 
   /// No description provided for @resetPasswordHint.
   ///
   /// In id, this message translates to:
-  /// **'Semua sesi staff ini akan keluar.'**
+  /// **'Semua sesi staf ini akan keluar.'**
   String get resetPasswordHint;
 
   /// No description provided for @passwordReset.
   ///
   /// In id, this message translates to:
-  /// **'Password diganti. Sesi staff ini dicabut.'**
+  /// **'Kata sandi diganti. Sesi staf ini dicabut.'**
   String get passwordReset;
 
   /// No description provided for @staffAdded.
   ///
   /// In id, this message translates to:
-  /// **'Staff ditambahkan.'**
+  /// **'Staf ditambahkan.'**
   String get staffAdded;
 
   /// No description provided for @staffDeactivated.
   ///
   /// In id, this message translates to:
-  /// **'Staff dinonaktifkan. Sesi dan token notifikasinya dicabut.'**
+  /// **'Staf dinonaktifkan. Sesi dan token notifikasinya dicabut.'**
   String get staffDeactivated;
 
   /// No description provided for @staffRestored.
   ///
   /// In id, this message translates to:
-  /// **'Staff dipulihkan.'**
+  /// **'Staf dipulihkan.'**
   String get staffRestored;
 
   /// No description provided for @purgeTitle.
@@ -503,7 +503,7 @@ abstract class AppLocalizations {
   /// No description provided for @purgeStaffHint.
   ///
   /// In id, this message translates to:
-  /// **'Staff tanpa riwayat transaksi dihapus. Staff dengan riwayat dianonimkan supaya laporan lama tetap utuh.'**
+  /// **'Staf tanpa riwayat transaksi dihapus. Staf dengan riwayat dianonimkan supaya laporan lama tetap utuh.'**
   String get purgeStaffHint;
 
   /// No description provided for @purgeTypeName.
@@ -533,31 +533,31 @@ abstract class AppLocalizations {
   /// No description provided for @customersTitle.
   ///
   /// In id, this message translates to:
-  /// **'Customer'**
+  /// **'Pelanggan'**
   String get customersTitle;
 
   /// No description provided for @addCustomer.
   ///
   /// In id, this message translates to:
-  /// **'Tambah customer'**
+  /// **'Tambah pelanggan'**
   String get addCustomer;
 
   /// No description provided for @editCustomer.
   ///
   /// In id, this message translates to:
-  /// **'Edit customer'**
+  /// **'Ubah pelanggan'**
   String get editCustomer;
 
   /// No description provided for @customersEmpty.
   ///
   /// In id, this message translates to:
-  /// **'Belum ada customer. Tambah customer pertama.'**
+  /// **'Belum ada pelanggan. Tambah pelanggan pertama.'**
   String get customersEmpty;
 
   /// No description provided for @customersInactiveEmpty.
   ///
   /// In id, this message translates to:
-  /// **'Tidak ada customer nonaktif.'**
+  /// **'Tidak ada pelanggan nonaktif.'**
   String get customersInactiveEmpty;
 
   /// No description provided for @customerName.
@@ -581,31 +581,31 @@ abstract class AppLocalizations {
   /// No description provided for @customerHasDebt.
   ///
   /// In id, this message translates to:
-  /// **'Customer masih punya hutang aktif, tidak bisa dihapus permanen.'**
+  /// **'Pelanggan masih punya hutang aktif, tidak bisa dihapus permanen.'**
   String get customerHasDebt;
 
   /// No description provided for @purgeCustomerHint.
   ///
   /// In id, this message translates to:
-  /// **'Customer dengan riwayat transaksi dianonimkan, tanpa riwayat dihapus.'**
+  /// **'Pelanggan dengan riwayat transaksi dianonimkan, tanpa riwayat dihapus.'**
   String get purgeCustomerHint;
 
   /// No description provided for @customerDeactivated.
   ///
   /// In id, this message translates to:
-  /// **'Customer dinonaktifkan.'**
+  /// **'Pelanggan dinonaktifkan.'**
   String get customerDeactivated;
 
   /// No description provided for @customerRestored.
   ///
   /// In id, this message translates to:
-  /// **'Customer dipulihkan.'**
+  /// **'Pelanggan dipulihkan.'**
   String get customerRestored;
 
   /// No description provided for @customerDetail.
   ///
   /// In id, this message translates to:
-  /// **'Detail customer'**
+  /// **'Detail pelanggan'**
   String get customerDetail;
 
   /// No description provided for @transactionsTitle.
@@ -713,7 +713,7 @@ abstract class AppLocalizations {
   /// No description provided for @editProduct.
   ///
   /// In id, this message translates to:
-  /// **'Edit produk'**
+  /// **'Ubah produk'**
   String get editProduct;
 
   /// No description provided for @productsEmpty.
@@ -749,7 +749,7 @@ abstract class AppLocalizations {
   /// No description provided for @barcodeHint.
   ///
   /// In id, this message translates to:
-  /// **'Opsional. Scanner USB bisa langsung mengisi.'**
+  /// **'Opsional'**
   String get barcodeHint;
 
   /// No description provided for @unit.
@@ -812,11 +812,23 @@ abstract class AppLocalizations {
   /// **'Pilih kategori atau ketik nama baru'**
   String get categoryNewHint;
 
-  /// No description provided for @imageUrl.
+  /// No description provided for @sectionProductInfo.
   ///
   /// In id, this message translates to:
-  /// **'URL gambar (opsional)'**
-  String get imageUrl;
+  /// **'Informasi produk'**
+  String get sectionProductInfo;
+
+  /// No description provided for @sectionPricing.
+  ///
+  /// In id, this message translates to:
+  /// **'Harga'**
+  String get sectionPricing;
+
+  /// No description provided for @sectionStockImage.
+  ///
+  /// In id, this message translates to:
+  /// **'Stok dan gambar'**
+  String get sectionStockImage;
 
   /// No description provided for @allCategories.
   ///
@@ -917,13 +929,13 @@ abstract class AppLocalizations {
   /// No description provided for @devicesTitle.
   ///
   /// In id, this message translates to:
-  /// **'Device'**
+  /// **'Perangkat'**
   String get devicesTitle;
 
   /// No description provided for @devicesEmpty.
   ///
   /// In id, this message translates to:
-  /// **'Belum ada device yang login.'**
+  /// **'Belum ada perangkat yang login.'**
   String get devicesEmpty;
 
   /// No description provided for @allPlatforms.
@@ -959,19 +971,19 @@ abstract class AppLocalizations {
   /// No description provided for @revokeTitle.
   ///
   /// In id, this message translates to:
-  /// **'Cabut device {name}?'**
+  /// **'Cabut perangkat {name}?'**
   String revokeTitle(String name);
 
   /// No description provided for @revokeHint.
   ///
   /// In id, this message translates to:
-  /// **'Device ini berhenti menerima notifikasi pembayaran.'**
+  /// **'Perangkat ini berhenti menerima notifikasi pembayaran.'**
   String get revokeHint;
 
   /// No description provided for @deviceRevoked.
   ///
   /// In id, this message translates to:
-  /// **'Device dicabut.'**
+  /// **'Perangkat dicabut.'**
   String get deviceRevoked;
 
   /// No description provided for @unknownUser.
@@ -1049,13 +1061,13 @@ abstract class AppLocalizations {
   /// No description provided for @invoice.
   ///
   /// In id, this message translates to:
-  /// **'No. invoice'**
+  /// **'No. faktur'**
   String get invoice;
 
   /// No description provided for @searchInvoice.
   ///
   /// In id, this message translates to:
-  /// **'Cari no. invoice'**
+  /// **'Cari no. faktur'**
   String get searchInvoice;
 
   /// No description provided for @date.
@@ -1325,7 +1337,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchCustomer.
   ///
   /// In id, this message translates to:
-  /// **'Cari nama customer'**
+  /// **'Cari nama pelanggan'**
   String get searchCustomer;
 
   /// No description provided for @searchProduct.
@@ -1337,7 +1349,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchUsername.
   ///
   /// In id, this message translates to:
-  /// **'Cari username'**
+  /// **'Cari nama pengguna'**
   String get searchUsername;
 
   /// No description provided for @remaining.
@@ -1391,7 +1403,7 @@ abstract class AppLocalizations {
   /// No description provided for @pickCustomer.
   ///
   /// In id, this message translates to:
-  /// **'Pilih customer'**
+  /// **'Pilih pelanggan'**
   String get pickCustomer;
 
   /// No description provided for @exceedsRemaining.
@@ -1445,7 +1457,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardTitle.
   ///
   /// In id, this message translates to:
-  /// **'Dashboard'**
+  /// **'Dasbor'**
   String get dashboardTitle;
 
   /// No description provided for @needsAction.
@@ -1571,7 +1583,7 @@ abstract class AppLocalizations {
   /// No description provided for @devicesOnline.
   ///
   /// In id, this message translates to:
-  /// **'Device yang sedang login'**
+  /// **'Perangkat yang sedang login'**
   String get devicesOnline;
 
   /// No description provided for @noData.
@@ -1589,13 +1601,13 @@ abstract class AppLocalizations {
   /// No description provided for @quickAddStaff.
   ///
   /// In id, this message translates to:
-  /// **'Tambah staff'**
+  /// **'Tambah staf'**
   String get quickAddStaff;
 
   /// No description provided for @quickAddCustomer.
   ///
   /// In id, this message translates to:
-  /// **'Tambah customer'**
+  /// **'Tambah pelanggan'**
   String get quickAddCustomer;
 
   /// No description provided for @quickMonthReport.
@@ -1741,6 +1753,54 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'periode'**
   String get periodBefore;
+
+  /// No description provided for @productImage.
+  ///
+  /// In id, this message translates to:
+  /// **'Gambar produk (opsional)'**
+  String get productImage;
+
+  /// No description provided for @imageHint.
+  ///
+  /// In id, this message translates to:
+  /// **'WebP, rasio 1:1, maks 500 KB'**
+  String get imageHint;
+
+  /// No description provided for @vImageWebp.
+  ///
+  /// In id, this message translates to:
+  /// **'Gambar harus berformat WebP.'**
+  String get vImageWebp;
+
+  /// No description provided for @vImageSquare.
+  ///
+  /// In id, this message translates to:
+  /// **'Gambar harus persegi (rasio 1:1).'**
+  String get vImageSquare;
+
+  /// No description provided for @vImageSize.
+  ///
+  /// In id, this message translates to:
+  /// **'Ukuran gambar maksimal 500 KB.'**
+  String get vImageSize;
+
+  /// No description provided for @bulkImagesTooLarge.
+  ///
+  /// In id, this message translates to:
+  /// **'Total gambar terlalu besar untuk satu unggahan. Kurangi jumlah gambar atau pisahkan jadi beberapa unggahan.'**
+  String get bulkImagesTooLarge;
+
+  /// No description provided for @skuAutoHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Otomatis dari kategori, tipe, dan nama'**
+  String get skuAutoHint;
+
+  /// No description provided for @createCategory.
+  ///
+  /// In id, this message translates to:
+  /// **'Buat kategori \"{name}\"'**
+  String createCategory(String name);
 }
 
 class _AppLocalizationsDelegate

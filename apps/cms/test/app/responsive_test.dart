@@ -54,7 +54,7 @@ void main() {
     '/dashboard', '/transactions', '/transactions/t1', '/payments', '/debts', '/reports',
     '/products', '/products/bulk', '/categories', '/customers', '/staff', '/devices', '/settings',
   ];
-  const sizes = {'phone': Size(360, 780), 'tablet': Size(800, 1024), 'desktop': Size(1440, 900)};
+  const sizes = {'phone': Size(360, 780), 'tablet': Size(800, 1024), 'tablet_landscape': Size(1024, 768), 'desktop': Size(1440, 900)};
 
   for (final route in routes) {
     for (final MapEntry(key: name, value: size) in sizes.entries) {

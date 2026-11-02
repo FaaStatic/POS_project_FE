@@ -16,11 +16,16 @@ class FakeAdapter implements HttpClientAdapter {
   final routes = <String, FakeHandler>{};
   final requests = <RequestOptions>[];
 
+  /// Raw bytes of each streamed request body (multipart uploads), in request order.
+  /// Dio finalizes a FormData before the adapter runs, so this is the only place to read it.
+  final streamedBodies = <List<int>>[];
+
   void on(String method, String path, FakeHandler handler) => routes['$method $path'] = handler;
 
   @override
   Future<ResponseBody> fetch(RequestOptions options, Stream<Uint8List>? requestStream, Future<void>? cancelFuture) async {
     requests.add(options);
+    if (requestStream != null) streamedBodies.add([for (final chunk in await requestStream.toList()) ...chunk]);
     final handler = routes['${options.method} ${options.path}'];
     if (handler == null) {
       throw DioException.connectionError(requestOptions: options, reason: 'no route ${options.method} ${options.path}');

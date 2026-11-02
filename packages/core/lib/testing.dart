@@ -2,3 +2,4 @@
 library;
 
 export 'src/testing/fake_adapter.dart';
+export 'src/testing/image_fixtures.dart';

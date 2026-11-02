@@ -247,6 +247,30 @@ abstract class UiLocalizations {
   /// In id, this message translates to:
   /// **'Referensi desain: {title} oleh {author} di Dribbble'**
   String designCredit(String title, String author);
+
+  /// No description provided for @pickImage.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih gambar'**
+  String get pickImage;
+
+  /// No description provided for @changeImage.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti gambar'**
+  String get changeImage;
+
+  /// No description provided for @removeImage.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus gambar'**
+  String get removeImage;
+
+  /// No description provided for @showOptions.
+  ///
+  /// In id, this message translates to:
+  /// **'Tampilkan pilihan'**
+  String get showOptions;
 }
 
 class _UiLocalizationsDelegate extends LocalizationsDelegate<UiLocalizations> {

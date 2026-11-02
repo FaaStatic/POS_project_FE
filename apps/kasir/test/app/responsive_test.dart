@@ -24,7 +24,7 @@ void main() {
     '/checkout', '/history', '/customers', '/customers/new', '/settings',
     '/settings/printer', '/settings/store', '/settings/products', '/settings/products/p9',
   ];
-  const sizes = {'phone': Size(360, 780), 'tablet': Size(800, 1280), 'landscape': Size(1280, 800)};
+  const sizes = {'phone': Size(360, 780), 'phone_landscape': Size(780, 360), 'tablet': Size(800, 1280), 'landscape': Size(1280, 800)};
 
   for (final route in routes) {
     for (final MapEntry(key: name, value: size) in sizes.entries) {

@@ -74,9 +74,11 @@ class CheckoutPage extends StatelessWidget {
                   );
                   final main = Column(
                     children: [
-                      _Header(showCart: !wide),
+                      // Short windows (phone landscape) drop the big title to give the list room.
+                      _Header(showTitle: roomy),
                       if (roomy) ...[strip, const SizedBox(height: Space.sm)],
                       Expanded(child: products),
+                      if (!wide) const _CartBar(),
                     ],
                   );
                   if (!wide) return main;
@@ -105,10 +107,10 @@ class CheckoutPage extends StatelessWidget {
   }
 }
 
-/// Store and cashier in small print above the page title; phones add the cart button.
+/// Store and cashier in small print, one line, above the page title.
 class _Header extends StatelessWidget {
-  const _Header({required this.showCart});
-  final bool showCart;
+  const _Header({required this.showTitle});
+  final bool showTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -118,57 +120,81 @@ class _Header extends StatelessWidget {
     final cashier = getIt<GetCurrentSession>()()?.username;
     final muted = theme.textTheme.bodySmall;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.md, Space.md),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: Space.sm,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Icon(Iconsax.shop_copy, size: 16, color: muted?.color),
-                    Text(store.isEmpty ? l10n.storeNameMissing : store, style: muted),
-                    if (cashier != null) Text('·  ${l10n.cashierLine(cashier)}', style: muted),
-                  ],
+          Row(
+            spacing: Space.sm,
+            children: [
+              Icon(Iconsax.shop_copy, size: 16, color: muted?.color),
+              // One span so a narrow window cuts the line short instead of starting a row with "·".
+              Expanded(
+                child: Text(
+                  [store.isEmpty ? l10n.storeNameMissing : store, if (cashier != null) l10n.cashierLine(cashier)].join('  ·  '),
+                  style: muted,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: Space.xs),
-                Text(l10n.checkoutTitle, style: theme.textTheme.headlineSmall),
-              ],
-            ),
+              ),
+            ],
           ),
-          if (showCart) const _CartButton(),
+          if (showTitle) ...[
+            const SizedBox(height: Space.xs),
+            Text(l10n.checkoutTitle, style: theme.textTheme.headlineSmall),
+          ],
         ],
       ),
     );
   }
 }
 
-/// Phones: cart icon with the active tab's item count; opens the cart sheet.
-class _CartButton extends StatelessWidget {
-  const _CartButton();
+/// Phones and portrait tablets: the active tab's count and total pinned in thumb reach,
+/// opening the cart sheet. Hidden while the cart is empty.
+class _CartBar extends StatelessWidget {
+  const _CartBar();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final count = context.select<CheckoutBloc, double>((b) => b.state.active?.itemCount ?? 0);
-    final scheme = Theme.of(context).colorScheme;
-    return IconButton(
-      tooltip: l10n.viewCart,
+    final theme = Theme.of(context);
+    final summary = context.select<CheckoutBloc, (double, int)?>((b) {
+      final draft = b.state.active;
+      return draft == null || draft.isEmpty ? null : (draft.itemCount, draft.total());
+    });
+    if (summary == null) return const SizedBox.shrink();
+    final (count, total) = summary;
+    final figures = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(l10n.itemsCount(qty(context, count)), style: theme.textTheme.bodySmall),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(rupiah(context, total), style: theme.textTheme.titleLarge?.tabular),
+        ),
+      ],
+    );
+    // Large text: the button gets its own full-width line instead of crushing the total.
+    final stacked = MediaQuery.textScalerOf(context).scale(1) > 1.3;
+    final open = AppButton(
+      label: l10n.viewCart,
+      icon: Iconsax.shopping_cart_copy,
+      large: true,
+      expand: stacked,
       onPressed: () => _openCart(context),
-      style: IconButton.styleFrom(
-        minimumSize: const Size.square(52),
-        backgroundColor: scheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.medium)),
+    );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant)),
       ),
-      icon: Badge(
-        isLabelVisible: count > 0,
-        label: Text(formatQty(count)),
-        backgroundColor: scheme.primary,
-        textColor: scheme.onPrimary,
-        child: const Icon(Iconsax.shopping_cart_copy),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.md),
+        child: stacked
+            ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, spacing: Space.sm, children: [figures, open])
+            : Row(spacing: Space.md, children: [Expanded(child: figures), open]),
       ),
     );
   }

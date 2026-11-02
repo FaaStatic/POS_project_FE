@@ -113,13 +113,13 @@ abstract class AppLocalizations {
   /// No description provided for @loginSubtitle.
   ///
   /// In id, this message translates to:
-  /// **'Pakai akun staff atau admin toko.'**
+  /// **'Pakai akun staf atau admin toko.'**
   String get loginSubtitle;
 
   /// No description provided for @username.
   ///
   /// In id, this message translates to:
-  /// **'Username'**
+  /// **'Nama pengguna'**
   String get username;
 
   /// No description provided for @password.
@@ -167,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @vUsernameLength.
   ///
   /// In id, this message translates to:
-  /// **'Username 3–100 karakter'**
+  /// **'Nama pengguna 3–100 karakter'**
   String get vUsernameLength;
 
   /// No description provided for @vPasswordLength.
@@ -245,7 +245,7 @@ abstract class AppLocalizations {
   /// No description provided for @navCustomers.
   ///
   /// In id, this message translates to:
-  /// **'Customer'**
+  /// **'Pelanggan'**
   String get navCustomers;
 
   /// No description provided for @navProducts.
@@ -257,13 +257,13 @@ abstract class AppLocalizations {
   /// No description provided for @searchProducts.
   ///
   /// In id, this message translates to:
-  /// **'Cari nama, SKU, atau scan barcode'**
+  /// **'Cari nama, SKU, atau pindai barcode'**
   String get searchProducts;
 
   /// No description provided for @scan.
   ///
   /// In id, this message translates to:
-  /// **'Scan'**
+  /// **'Pindai'**
   String get scan;
 
   /// No description provided for @allCategories.
@@ -329,19 +329,19 @@ abstract class AppLocalizations {
   /// No description provided for @customer.
   ///
   /// In id, this message translates to:
-  /// **'Customer'**
+  /// **'Pelanggan'**
   String get customer;
 
   /// No description provided for @chooseCustomer.
   ///
   /// In id, this message translates to:
-  /// **'Pilih customer (opsional)'**
+  /// **'Pilih pelanggan (opsional)'**
   String get chooseCustomer;
 
   /// No description provided for @noCustomer.
   ///
   /// In id, this message translates to:
-  /// **'Tanpa customer'**
+  /// **'Tanpa pelanggan'**
   String get noCustomer;
 
   /// No description provided for @changeCustomer.
@@ -425,7 +425,7 @@ abstract class AppLocalizations {
   /// No description provided for @debtNeedsCustomer.
   ///
   /// In id, this message translates to:
-  /// **'Pilih customer untuk hutang'**
+  /// **'Pilih pelanggan untuk hutang'**
   String get debtNeedsCustomer;
 
   /// No description provided for @pay.
@@ -485,7 +485,7 @@ abstract class AppLocalizations {
   /// No description provided for @scanQrHint.
   ///
   /// In id, this message translates to:
-  /// **'Minta pembeli scan kode QR ini.'**
+  /// **'Minta pembeli pindai kode QR ini.'**
   String get scanQrHint;
 
   /// No description provided for @vaHint.
@@ -677,7 +677,7 @@ abstract class AppLocalizations {
   /// No description provided for @receiptCustomer.
   ///
   /// In id, this message translates to:
-  /// **'Customer'**
+  /// **'Pelanggan'**
   String get receiptCustomer;
 
   /// No description provided for @receiptTotal.
@@ -695,7 +695,7 @@ abstract class AppLocalizations {
   /// No description provided for @receiptOfflineNote.
   ///
   /// In id, this message translates to:
-  /// **'Nomor sementara, diganti setelah sync'**
+  /// **'Nomor sementara, diganti setelah sinkron'**
   String get receiptOfflineNote;
 
   /// No description provided for @storeNameMissing.
@@ -791,7 +791,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncNow.
   ///
   /// In id, this message translates to:
-  /// **'Sync sekarang'**
+  /// **'Sinkronkan sekarang'**
   String get syncNow;
 
   /// No description provided for @syncPending.
@@ -809,7 +809,7 @@ abstract class AppLocalizations {
   /// No description provided for @customersTitle.
   ///
   /// In id, this message translates to:
-  /// **'Customer'**
+  /// **'Pelanggan'**
   String get customersTitle;
 
   /// No description provided for @searchCustomers.
@@ -821,13 +821,13 @@ abstract class AppLocalizations {
   /// No description provided for @customersEmpty.
   ///
   /// In id, this message translates to:
-  /// **'Belum ada customer.'**
+  /// **'Belum ada pelanggan.'**
   String get customersEmpty;
 
   /// No description provided for @addCustomer.
   ///
   /// In id, this message translates to:
-  /// **'Tambah customer'**
+  /// **'Tambah pelanggan'**
   String get addCustomer;
 
   /// No description provided for @customerName.
@@ -857,7 +857,7 @@ abstract class AppLocalizations {
   /// No description provided for @customerSaved.
   ///
   /// In id, this message translates to:
-  /// **'Customer disimpan.'**
+  /// **'Pelanggan disimpan.'**
   String get customerSaved;
 
   /// No description provided for @onlineOnly.
@@ -929,7 +929,7 @@ abstract class AppLocalizations {
   /// No description provided for @editProduct.
   ///
   /// In id, this message translates to:
-  /// **'Edit produk'**
+  /// **'Ubah produk'**
   String get editProduct;
 
   /// No description provided for @productName.
@@ -1199,13 +1199,13 @@ abstract class AppLocalizations {
   /// No description provided for @debtHint.
   ///
   /// In id, this message translates to:
-  /// **'Dicatat sebagai hutang customer'**
+  /// **'Dicatat sebagai hutang pelanggan'**
   String get debtHint;
 
   /// No description provided for @qrisHint.
   ///
   /// In id, this message translates to:
-  /// **'Pembeli scan kode QR'**
+  /// **'Pembeli pindai kode QR'**
   String get qrisHint;
 
   /// No description provided for @vaHint2.
@@ -1273,6 +1273,48 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Lainnya'**
   String get navMore;
+
+  /// No description provided for @productImage.
+  ///
+  /// In id, this message translates to:
+  /// **'Gambar produk (opsional)'**
+  String get productImage;
+
+  /// No description provided for @imageHint.
+  ///
+  /// In id, this message translates to:
+  /// **'WebP, rasio 1:1, maks 500 KB'**
+  String get imageHint;
+
+  /// No description provided for @vImageWebp.
+  ///
+  /// In id, this message translates to:
+  /// **'Gambar harus berformat WebP.'**
+  String get vImageWebp;
+
+  /// No description provided for @vImageSquare.
+  ///
+  /// In id, this message translates to:
+  /// **'Gambar harus persegi (rasio 1:1).'**
+  String get vImageSquare;
+
+  /// No description provided for @vImageSize.
+  ///
+  /// In id, this message translates to:
+  /// **'Ukuran gambar maksimal 500 KB.'**
+  String get vImageSize;
+
+  /// No description provided for @categoryPickHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari atau pilih kategori'**
+  String get categoryPickHint;
+
+  /// No description provided for @vCategoryExisting.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih kategori yang sudah ada.'**
+  String get vCategoryExisting;
 }
 
 class _AppLocalizationsDelegate

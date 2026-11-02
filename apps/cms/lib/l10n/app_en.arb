@@ -108,7 +108,7 @@
   "productName": "Product name",
   "sku": "SKU",
   "barcode": "Barcode",
-  "barcodeHint": "Optional. A USB scanner can fill it in.",
+  "barcodeHint": "Optional",
   "unit": "Unit",
   "productType": "Type",
   "physical": "Physical",
@@ -119,7 +119,9 @@
   "stock": "Stock",
   "category": "Category",
   "categoryNewHint": "Pick a category or type a new name",
-  "imageUrl": "Image URL (optional)",
+  "sectionProductInfo": "Product info",
+  "sectionPricing": "Pricing",
+  "sectionStockImage": "Stock and image",
   "allCategories": "All categories",
   "adjustStock": "Adjust stock",
   "stockDelta": "Add or remove (e.g. 10 or -2)",
@@ -273,5 +275,18 @@
   "account": "Account",
   "switchLanguage": "Change language",
   "rangeTodayShort": "today",
-  "periodBefore": "period"
+  "periodBefore": "period",
+  "productImage": "Product image (optional)",
+  "imageHint": "WebP, 1:1 ratio, max 500 KB",
+  "vImageWebp": "The image must be a WebP file.",
+  "vImageSquare": "The image must be square (1:1 ratio).",
+  "vImageSize": "The image must be 500 KB or smaller.",
+  "bulkImagesTooLarge": "The images are too large for one upload. Use fewer images or split them across uploads.",
+  "skuAutoHint": "Filled in from category, type, and name",
+  "createCategory": "Create category \"{name}\"",
+  "@createCategory": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  }
 }

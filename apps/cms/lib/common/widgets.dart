@@ -30,10 +30,10 @@ class ActionsMenu extends StatelessWidget {
             child: Text(a.label, style: a.destructive ? TextStyle(color: scheme.error) : null),
           ),
       ],
-      builder: (context, controller, _) => AppButton(
-        label: AppLocalizations.of(context).actions,
-        icon: Iconsax.more_copy,
-        variant: AppButtonVariant.outline,
+      // Icon only: a labelled button on every row outweighs the data it acts on.
+      builder: (context, controller, _) => IconButton(
+        tooltip: AppLocalizations.of(context).actions,
+        icon: const Icon(Iconsax.more_copy, size: 20),
         onPressed: () => controller.isOpen ? controller.close() : controller.open(),
       ),
     );
@@ -84,11 +84,16 @@ class FilterBar extends StatelessWidget {
         constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.4),
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, Space.sm),
-          // Top-aligned so the labels share one line; shadcn controls differ by a few pixels in height.
-          child: Wrap(spacing: Space.md, runSpacing: Space.md, children: children),
+          // Phones stack the filters full width; the tight width overrides each filter's fixed one.
+          child: _narrow(context)
+              ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, spacing: Space.md, children: children)
+              // Top-aligned so the labels share one line; shadcn controls differ by a few pixels in height.
+              : Wrap(spacing: Space.md, runSpacing: Space.md, children: children),
         ),
       );
 }
+
+bool _narrow(BuildContext context) => MediaQuery.sizeOf(context).width < Breakpoints.medium;
 
 /// A filter with its label above, styled like [AppSelect]'s. Without [label] (a switch that
 /// carries its own text) the label line stays empty so the control sits beside the others.
@@ -101,6 +106,8 @@ class FilterField extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = this.label;
     final style = Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w500);
+    // Stacked on phones, a switch has no row of labels to line up with.
+    if (label == null && _narrow(context)) return child;
     return MergeSemantics(
       child: Column(
         mainAxisSize: MainAxisSize.min,

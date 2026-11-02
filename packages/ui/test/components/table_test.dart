@@ -43,6 +43,32 @@ void main() {
     expect([tapped, more], ['a', 1]);
   });
 
+  testWidgets('cards drop a field that is empty for that row', (tester) async {
+    await pumpUi(tester, ResponsiveTable<String>(
+      rows: const ['a', 'b'],
+      rowKey: (r) => r,
+      columns: [
+        TableColumnSpec<String>(label: 'Nama', cell: (_, r) => Text(r)),
+        TableColumnSpec<String>(label: 'Status', isEmpty: (r) => r == 'a', cell: (_, r) => const Text('Konflik')),
+      ],
+    ), size: const Size(400, 800));
+    expect(find.text('Status'), findsOneWidget);
+    expect(find.text('Konflik'), findsOneWidget);
+  });
+
+  testWidgets('a right-aligned number keeps a gap from the column after it', (tester) async {
+    await pumpUi(tester, ResponsiveTable<String>(
+      rows: const ['a'],
+      rowKey: (r) => r,
+      columns: [
+        TableColumnSpec<String>(label: 'Total', numeric: true, cell: (_, _) => const Text('Rp 70.000')),
+        TableColumnSpec<String>(label: 'Status', cell: (_, _) => const Text('Konflik')),
+      ],
+    ), size: const Size(700, 800));
+    final gap = tester.getTopLeft(find.text('Konflik')).dx - tester.getTopRight(find.text('Rp 70.000')).dx;
+    expect(gap, greaterThanOrEqualTo(Space.lg));
+  });
+
   testWidgets('cards survive 200% text in dark theme', (tester) async {
     await pumpUi(tester, table(more: true), size: const Size(360, 800), dark: true, textScale: 2);
     expect(tester.takeException(), isNull);

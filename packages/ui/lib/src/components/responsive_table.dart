@@ -12,10 +12,14 @@ class TableColumnSpec<T> {
     this.secondary = false,
     this.numeric = false,
     this.flex = 1,
+    this.isEmpty,
   });
 
   final String label;
   final Widget Function(BuildContext context, T row) cell;
+
+  /// Rows where this returns true drop the field from their card on phones.
+  final bool Function(T row)? isEmpty;
 
   /// Hidden on medium widths (600–1024).
   final bool secondary;
@@ -78,7 +82,8 @@ class ResponsiveTable<T> extends StatelessWidget {
     final header = theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant);
     Widget cells(List<Widget> children) => Padding(
       padding: EdgeInsets.symmetric(horizontal: Space.lg, vertical: sizes.compact ? Space.sm : Space.md),
-      child: Row(children: children),
+      // The gap keeps a right-aligned number off the text column beside it.
+      child: Row(spacing: Space.lg, children: children),
     );
     // shadcn table: one white card, hairline header, zebra rows to keep the eye on a line.
     return Padding(
@@ -168,11 +173,25 @@ class ResponsiveTable<T> extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   DefaultTextStyle.merge(style: theme.textTheme.titleSmall, child: columns.first.cell(context, row)),
-                  for (final c in columns.skip(1)) ...[
-                    const SizedBox(height: Space.sm),
-                    Text(c.label, style: label),
-                    c.cell(context, row),
-                  ],
+                  // Label left, value right: one line per field keeps several cards on screen.
+                  for (final c in columns.skip(1))
+                    if (!(c.isEmpty?.call(row) ?? false))
+                      Padding(
+                        padding: const EdgeInsets.only(top: Space.sm),
+                        child: Row(
+                          spacing: Space.md,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(c.label, style: label),
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: DefaultTextStyle.merge(textAlign: TextAlign.end, child: c.cell(context, row)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                   if (actions != null) ...[
                     const SizedBox(height: Space.md),
                     Align(alignment: Alignment.centerRight, child: actions!(context, row)),

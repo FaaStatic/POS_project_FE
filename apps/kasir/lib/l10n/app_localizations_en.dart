@@ -701,4 +701,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navMore => 'More';
+
+  @override
+  String get productImage => 'Product image (optional)';
+
+  @override
+  String get imageHint => 'WebP, 1:1 ratio, max 500 KB';
+
+  @override
+  String get vImageWebp => 'The image must be a WebP file.';
+
+  @override
+  String get vImageSquare => 'The image must be square (1:1 ratio).';
+
+  @override
+  String get vImageSize => 'The image must be 500 KB or smaller.';
+
+  @override
+  String get categoryPickHint => 'Search or pick a category';
+
+  @override
+  String get vCategoryExisting => 'Pick a category that already exists.';
 }

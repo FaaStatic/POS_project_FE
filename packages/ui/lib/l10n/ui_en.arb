@@ -52,5 +52,9 @@
   "moreActions": "More actions",
   "pickDates": "Pick dates",
   "clearDates": "Clear dates",
-  "designCredit": "Design reference: {title} by {author} on Dribbble"
+  "designCredit": "Design reference: {title} by {author} on Dribbble",
+  "pickImage": "Choose image",
+  "changeImage": "Change image",
+  "removeImage": "Remove image",
+  "showOptions": "Show options"
 }

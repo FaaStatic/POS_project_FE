@@ -210,7 +210,9 @@ class _StatTile extends StatelessWidget {
     final scheme = theme.colorScheme;
     final status = StatusColors.of(context);
     final up = (change ?? 0) >= 0;
-    final trendColor = up ? status.success : status.danger;
+    // Anything that prints as 0.0% is no change: muted and flat, not a green rise.
+    final flat = (change ?? 0).abs() < 0.05;
+    final trendColor = flat ? scheme.onSurfaceVariant : (up ? status.success : status.danger);
     return Container(
       padding: const EdgeInsets.all(Space.lg),
       decoration: BoxDecoration(color: scheme.surfaceContainerLow, borderRadius: BorderRadius.circular(Radii.medium)),
@@ -240,7 +242,11 @@ class _StatTile extends StatelessWidget {
               spacing: Space.xs,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Icon(up ? Icons.trending_up_rounded : Icons.trending_down_rounded, size: 18, color: trendColor),
+                Icon(
+                  flat ? Icons.trending_flat_rounded : (up ? Icons.trending_up_rounded : Icons.trending_down_rounded),
+                  size: 18,
+                  color: trendColor,
+                ),
                 Text(
                   '${change!.abs().toStringAsFixed(change!.abs() < 10 ? 1 : 0)}%',
                   style: theme.textTheme.labelMedium?.tabular.copyWith(color: trendColor),

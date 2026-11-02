@@ -44,6 +44,9 @@ String? validationText(BuildContext context, String? key) {
     'sku_length' => l10n.vSku,
     'positive_number' => l10n.vPositive,
     'non_negative_number' => l10n.vNumber,
+    'image_not_webp' => l10n.vImageWebp,
+    'image_not_square' => l10n.vImageSquare,
+    'image_too_large' => l10n.vImageSize,
     _ => l10n.vRequired,
   };
 }

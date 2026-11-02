@@ -361,7 +361,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get barcode => 'Barcode';
 
   @override
-  String get barcodeHint => 'Optional. A USB scanner can fill it in.';
+  String get barcodeHint => 'Optional';
 
   @override
   String get unit => 'Unit';
@@ -394,7 +394,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryNewHint => 'Pick a category or type a new name';
 
   @override
-  String get imageUrl => 'Image URL (optional)';
+  String get sectionProductInfo => 'Product info';
+
+  @override
+  String get sectionPricing => 'Pricing';
+
+  @override
+  String get sectionStockImage => 'Stock and image';
 
   @override
   String get allCategories => 'All categories';
@@ -909,4 +915,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get periodBefore => 'period';
+
+  @override
+  String get productImage => 'Product image (optional)';
+
+  @override
+  String get imageHint => 'WebP, 1:1 ratio, max 500 KB';
+
+  @override
+  String get vImageWebp => 'The image must be a WebP file.';
+
+  @override
+  String get vImageSquare => 'The image must be square (1:1 ratio).';
+
+  @override
+  String get vImageSize => 'The image must be 500 KB or smaller.';
+
+  @override
+  String get bulkImagesTooLarge =>
+      'The images are too large for one upload. Use fewer images or split them across uploads.';
+
+  @override
+  String get skuAutoHint => 'Filled in from category, type, and name';
+
+  @override
+  String createCategory(String name) {
+    return 'Create category \"$name\"';
+  }
 }

@@ -19,7 +19,8 @@ Future<R?> showFormSurface<R>(BuildContext context, {required String title, requ
     context: context,
     builder: (_) => ShadDialog(
       title: Text(title),
-      constraints: const BoxConstraints(maxWidth: 560, maxHeight: 720),
+      // Tall forms get most of a tall window before they scroll; short windows keep a margin.
+      constraints: BoxConstraints(maxWidth: 560, maxHeight: (MediaQuery.sizeOf(context).height - 64).clamp(480.0, 800.0)),
       scrollable: true,
       child: child,
     ),

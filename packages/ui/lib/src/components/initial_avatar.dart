@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'data_image.dart';
 import '../tokens/colors.dart';
 import '../tokens/spacing.dart';
 
@@ -33,6 +34,10 @@ class InitialAvatar extends StatelessWidget {
     final key = colorKey;
     final (bg, fg) = key == null ? tiles.first : tiles[key.codeUnits.fold(0, (a, c) => a + c) % tiles.length];
     final radius = BorderRadius.circular(square ? Radii.control : size);
+    // Decode at display size: a 500 KB source drawn in a 40 px tile should not be held at full pixels.
+    final image = imageUrl == null
+        ? null
+        : imageProviderFor(imageUrl!, cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil());
     final fallback = Center(
       child: Text(
         initials(name),
@@ -51,9 +56,7 @@ class InitialAvatar extends StatelessWidget {
         height: size,
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(color: bg, borderRadius: radius),
-        child: imageUrl == null || imageUrl!.isEmpty
-            ? fallback
-            : Image.network(imageUrl!, fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback),
+        child: image == null ? fallback : Image(image: image, fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback),
       ),
     );
   }

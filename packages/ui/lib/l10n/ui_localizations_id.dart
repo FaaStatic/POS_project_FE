@@ -99,4 +99,16 @@ class UiLocalizationsId extends UiLocalizations {
   String designCredit(String title, String author) {
     return 'Referensi desain: $title oleh $author di Dribbble';
   }
+
+  @override
+  String get pickImage => 'Pilih gambar';
+
+  @override
+  String get changeImage => 'Ganti gambar';
+
+  @override
+  String get removeImage => 'Hapus gambar';
+
+  @override
+  String get showOptions => 'Tampilkan pilihan';
 }

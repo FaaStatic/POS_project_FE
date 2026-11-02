@@ -58,5 +58,9 @@
       "title": {"type": "String"},
       "author": {"type": "String"}
     }
-  }
+  },
+  "pickImage": "Pilih gambar",
+  "changeImage": "Ganti gambar",
+  "removeImage": "Hapus gambar",
+  "showOptions": "Tampilkan pilihan"
 }

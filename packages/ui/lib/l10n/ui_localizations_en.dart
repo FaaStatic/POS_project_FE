@@ -100,4 +100,16 @@ class UiLocalizationsEn extends UiLocalizations {
   String designCredit(String title, String author) {
     return 'Design reference: $title by $author on Dribbble';
   }
+
+  @override
+  String get pickImage => 'Choose image';
+
+  @override
+  String get changeImage => 'Change image';
+
+  @override
+  String get removeImage => 'Remove image';
+
+  @override
+  String get showOptions => 'Show options';
 }

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
 import '../../../../app/shell/cms_page.dart';
+import '../../../../common/file_saver.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/settings_cubit.dart';
 
@@ -50,6 +51,15 @@ class SettingsPage extends StatelessWidget {
               ),
               const SizedBox(height: Space.xxl),
               account,
+              const SizedBox(height: Space.xl),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: DesignCredit(
+                  title: 'CMS Dashboard Design',
+                  author: 'Faysol Ahmed Sozib',
+                  onOpen: () => openInNewTab(designShotUrl),
+                ),
+              ),
             ],
           ),
         ),
