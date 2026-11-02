@@ -37,9 +37,9 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
       create: (_) => getIt<AddCustomerCubit>(),
       child: BlocConsumer<AddCustomerCubit, CustomerFormState>(
         listenWhen: (a, b) => b.saved != null && a.saved == null,
-        listener: (context, s) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.customerSaved)));
-          context.pop(s.saved);
+        listener: (context, s) async {
+          await showInfoDialog(context, l10n.customerSaved, kind: InfoKind.success);
+          if (context.mounted) context.pop(s.saved);
         },
         builder: (context, state) => Scaffold(
           appBar: AppBar(title: Text(l10n.addCustomer)),

@@ -21,6 +21,7 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Cabut').last);
     await tester.pumpAndSettle();
     expect(find.text('Perangkat dicabut.'), findsOneWidget);
+    await dismissInfo(tester);
     await tester.tap(find.text('iOS'));
     await tester.pumpAndSettle();
     expect(find.text('Belum ada perangkat yang login.'), findsOneWidget);

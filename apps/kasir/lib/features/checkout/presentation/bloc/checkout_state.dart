@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'checkout_state.freezed.dart';
 
-/// One-shot messages for snackbars and navigation; [CheckoutState.noticeId] changes with each.
+/// One-shot messages for info dialogs and navigation; [CheckoutState.noticeId] changes with each.
 sealed class CheckoutNotice {
   const CheckoutNotice();
 }

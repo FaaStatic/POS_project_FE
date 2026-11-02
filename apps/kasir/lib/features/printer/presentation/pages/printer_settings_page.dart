@@ -65,7 +65,6 @@ class PrinterSettingsPage extends StatelessWidget {
                     onPressed: s.printerAddress == null
                         ? null
                         : () async {
-                            final messenger = ScaffoldMessenger.of(context);
                             final result = await getIt<PrintReceipt>()(
                               ReceiptDocument([
                                 ReceiptLine(
@@ -77,13 +76,13 @@ class PrinterSettingsPage extends StatelessWidget {
                               ]),
                             );
                             if (!context.mounted) return;
-                            messenger.showSnackBar(
-                              SnackBar(
-                                content: Text(switch (result) {
-                                  Ok() => l10n.printed,
-                                  Err(:final failure) => failureText(context, failure),
-                                }),
-                              ),
+                            showInfoDialog(
+                              context,
+                              switch (result) {
+                                Ok() => l10n.printed,
+                                Err(:final failure) => failureText(context, failure),
+                              },
+                              kind: result is Ok ? InfoKind.success : InfoKind.error,
                             );
                           },
                   ),

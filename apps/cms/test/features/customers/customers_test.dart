@@ -70,6 +70,7 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Tersimpan.'), findsOneWidget);
+    await dismissInfo(tester);
 
     await tester.tap(find.byTooltip('Aksi'));
     await tester.pumpAndSettle();
@@ -78,6 +79,7 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Hapus permanen'));
     await tester.pumpAndSettle();
     expect(find.text('Pelanggan masih punya hutang aktif, tidak bisa dihapus permanen.'), findsOneWidget);
+    await dismissInfo(tester);
 
     await tester.tap(find.text('Bu Sri'));
     await tester.pumpAndSettle();

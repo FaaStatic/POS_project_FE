@@ -112,4 +112,13 @@ class UiLocalizationsEn extends UiLocalizations {
 
   @override
   String get showOptions => 'Show options';
+
+  @override
+  String get infoSuccess => 'Done';
+
+  @override
+  String get infoError => 'Something went wrong';
+
+  @override
+  String get infoNotice => 'Notice';
 }

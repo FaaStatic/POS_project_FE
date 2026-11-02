@@ -45,6 +45,7 @@ void main() {
     await app.settle(tester);
     await tester.tap(find.textContaining('Bayar Rp'));
     await app.settle(tester);
+    await dismissInfo(tester);
     expect(find.textContaining('OFF-'), findsWidgets);
     await tester.tap(find.widgetWithText(ShadButton, 'Selesai'));
     await app.settle(tester);
@@ -78,6 +79,7 @@ void main() {
     await app.settle(tester);
     await tester.tap(find.textContaining('Bayar Rp'));
     await app.settle(tester);
+    await dismissInfo(tester);
     await tester.tap(find.widgetWithText(ShadButton, 'Selesai'));
     await app.settle(tester);
 

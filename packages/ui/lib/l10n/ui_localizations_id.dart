@@ -111,4 +111,13 @@ class UiLocalizationsId extends UiLocalizations {
 
   @override
   String get showOptions => 'Tampilkan pilihan';
+
+  @override
+  String get infoSuccess => 'Berhasil';
+
+  @override
+  String get infoError => 'Gagal';
+
+  @override
+  String get infoNotice => 'Informasi';
 }

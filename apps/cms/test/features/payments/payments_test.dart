@@ -21,6 +21,7 @@ void main() {
     await tester.tap(find.text('Cek status'));
     await tester.pumpAndSettle();
     expect(find.text('Status terbaru: Berhasil'), findsOneWidget);
+    await dismissInfo(tester);
     await tester.tap(find.descendant(of: find.byType(AppTabs<ChargeMethod?>), matching: find.text('VA')));
     await tester.pumpAndSettle();
     expect(app.adapter.requests.last.queryParameters['method'], 'va');

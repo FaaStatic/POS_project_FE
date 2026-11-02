@@ -180,6 +180,7 @@ void main() {
       expect(_posted(app)['sku'], 'MIE-P-IG-001');
       expect(_posted(app, index: 1)['sku'], 'MIE-P-IG-002');
       expect(find.text('Produk disimpan.'), findsOneWidget);
+      await dismissInfo(tester);
     });
 
     testWidgets('a SKU the user typed is never swapped for another when it is refused', (tester) async {

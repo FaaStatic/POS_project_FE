@@ -94,3 +94,9 @@ class AppHarness {
 
   Future<void> close() => db.close();
 }
+
+/// Closes the info dialog that replaced the snackbar.
+Future<void> dismissInfo(WidgetTester tester) async {
+  await tester.tap(find.descendant(of: find.byType(ShadDialog), matching: find.widgetWithText(ShadButton, 'Tutup')));
+  await tester.pumpAndSettle();
+}

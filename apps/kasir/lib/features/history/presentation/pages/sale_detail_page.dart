@@ -38,12 +38,12 @@ class SaleDetailPage extends StatelessWidget {
           }
           final message = s.failure != null
               ? failureText(context, s.failure!)
-              : s.printed
-              ? l10n.printed
               : s.cancelled
               ? l10n.cancelled
               : null;
-          if (message != null) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+          if (message != null) {
+            showInfoDialog(context, message, kind: s.failure != null ? InfoKind.error : InfoKind.info);
+          }
         },
         builder: (context, state) {
           final sale = state.sale;

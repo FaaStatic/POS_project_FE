@@ -78,3 +78,9 @@ final formFields = find.byElementPredicate(
   (e) => e.widget is EditableText && e.findAncestorWidgetOfExactType<SearchField>() == null,
   description: 'form text fields',
 );
+
+/// Closes the info dialog that replaced the snackbar.
+Future<void> dismissInfo(WidgetTester tester) async {
+  await tester.tap(find.descendant(of: find.byType(ShadDialog), matching: find.widgetWithText(ShadButton, 'Tutup')));
+  await tester.pumpAndSettle();
+}

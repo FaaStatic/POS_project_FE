@@ -144,7 +144,7 @@ class _BulkProductsPageState extends State<BulkProductsPage> {
     if (!_form.currentState!.validate()) return;
     final filled = _rows.where((r) => !_isBlank(r)).toList();
     if (filled.fold(0, (sum, r) => sum + r.image.length) > _maxImagesBytes) {
-      toast(context, AppLocalizations.of(context).bulkImagesTooLarge);
+      toast(context, AppLocalizations.of(context).bulkImagesTooLarge, kind: InfoKind.error);
       return;
     }
     context.read<BulkProductsCubit>().submit([for (final r in filled) r.toProduct()]);
