@@ -8,3 +8,5 @@ coverage/
 .DS_Store
 pubspec_overrides.yaml
 **/test/failures/
+# Widget Preview related
+.widget_preview/

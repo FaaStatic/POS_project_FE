@@ -8,6 +8,7 @@ import 'package:ui/ui.dart';
 import '../../../../app/di.dart';
 import '../../../../common/catalog/catalog_cubits.dart';
 import '../../../../common/failure_text.dart';
+import '../../../../common/product_image_field.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/products_cubit.dart';
 
@@ -63,11 +64,14 @@ class _FormState extends State<_Form> {
   final _newCategory = TextEditingController();
   late ProductUnit _unit = widget.product.unit;
   late ProductType _type = widget.product.type;
-  late String _category = widget.product.categoryName;
+  late final _category = TextEditingController(text: widget.product.categoryName);
+
+  /// Raw base64 of the picture, a legacy URL kept as stored, or empty for none.
+  late String _image = widget.product.image;
 
   @override
   void dispose() {
-    for (final c in [_name, _sku, _barcode, _price, _debtPrice, _purchase, _stockDelta, _newCategory]) {
+    for (final c in [_name, _sku, _barcode, _price, _debtPrice, _purchase, _stockDelta, _newCategory, _category]) {
       c.dispose();
     }
     super.dispose();
@@ -77,7 +81,7 @@ class _FormState extends State<_Form> {
     if (!_form.currentState!.validate()) return;
     final p = widget.product;
     final barcode = _barcode.text.trim();
-    final category = isSuper && _newCategory.text.trim().isNotEmpty ? _newCategory.text.trim() : _category;
+    final category = isSuper && _newCategory.text.trim().isNotEmpty ? _newCategory.text.trim() : _existingCategory(_category.text) ?? p.categoryName;
     context.read<ProductEditCubit>().save(
       ProductPatch(
         name: _name.text.trim() == p.name ? null : _name.text.trim(),
@@ -87,11 +91,21 @@ class _FormState extends State<_Form> {
         sellingPrice: int.parse(_price.text) == p.sellingPrice ? null : int.parse(_price.text),
         sellingPriceDebt: int.parse(_debtPrice.text) == p.sellingPriceDebt ? null : int.parse(_debtPrice.text),
         category: category == p.categoryName ? null : category,
+        image: _image == p.image ? null : _image,
         purchasePrice: isSuper && int.parse(_purchase.text) != p.purchasePrice ? int.parse(_purchase.text) : null,
         type: isSuper && _type != p.type ? _type : null,
       ),
       stockDelta: isSuper ? double.tryParse(_stockDelta.text.replaceAll(',', '.')) ?? 0 : 0,
     );
+  }
+
+  /// The store's own spelling of [text], or null when no category has that name.
+  String? _existingCategory(String text) {
+    final wanted = text.trim().toLowerCase();
+    for (final c in context.read<ProductsCubit>().state.categories) {
+      if (c.name.toLowerCase() == wanted) return c.name;
+    }
+    return null;
   }
 
   @override
@@ -111,6 +125,8 @@ class _FormState extends State<_Form> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              ProductImageField(value: _image, onChanged: (v) => setState(() => _image = v)),
+              const SizedBox(height: Space.lg),
               AppTextField(
                 label: l10n.productName,
                 controller: _name,
@@ -152,11 +168,21 @@ class _FormState extends State<_Form> {
                 validator: positive,
               ),
               const SizedBox(height: Space.lg),
-              AppSelect<String>(
+              // Staff pick from the existing categories; a new one is the superadmin's, below.
+              AppAutocomplete(
                 label: l10n.category,
-                value: _category,
-                choices: [for (final c in categories) Choice(c.name, c.name)],
-                onChanged: (c) => setState(() => _category = c),
+                hint: l10n.categoryPickHint,
+                controller: _category,
+                options: [for (final c in categories) c.name],
+                validator: (v) {
+                  final text = (v ?? '').trim();
+                  // Unchanged always passes: the list may not have loaded, and an older product can
+                  // have no category at all, which must not block saving something else.
+                  if (text == widget.product.categoryName.trim()) return null;
+                  if (text.isEmpty) return validationText(context, 'required');
+                  if (_existingCategory(text) != null) return null;
+                  return l10n.vCategoryExisting;
+                },
               ),
               if (isSuper) ...[
                 const SizedBox(height: Space.xl),

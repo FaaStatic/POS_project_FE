@@ -20,10 +20,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ShadButton, 'Cabut').last);
     await tester.pumpAndSettle();
-    expect(find.text('Device dicabut.'), findsOneWidget);
+    expect(find.text('Perangkat dicabut.'), findsOneWidget);
     await tester.tap(find.text('iOS'));
     await tester.pumpAndSettle();
-    expect(find.text('Belum ada device yang login.'), findsOneWidget);
+    expect(find.text('Belum ada perangkat yang login.'), findsOneWidget);
     expect(app.adapter.requests.last.queryParameters, {'platform': 'ios'});
   });
 

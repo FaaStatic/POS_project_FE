@@ -29,6 +29,8 @@ class AppTextField extends StatefulWidget {
     this.autofocus = false,
     this.maxLines = 1,
     this.prefixIcon,
+    this.prefixText,
+    this.suffix,
     this.focusNode,
   });
 
@@ -50,6 +52,12 @@ class AppTextField extends StatefulWidget {
   final bool autofocus;
   final int maxLines;
   final IconData? prefixIcon;
+
+  /// Short unit before the value ("Rp"); wins over [prefixIcon].
+  final String? prefixText;
+
+  /// A trailing control sized like the password toggle (a dropdown arrow); ignored for [password].
+  final Widget? suffix;
   final FocusNode? focusNode;
 
   @override
@@ -87,8 +95,12 @@ class _AppTextFieldState extends State<AppTextField> {
         onSubmitted: widget.onSubmitted,
         placeholder: widget.hint == null ? null : Text(widget.hint!),
         // The toggle lays out at control - 4; 2 above and below keeps the field as tall as the others.
-        padding: widget.password ? const EdgeInsets.fromLTRB(Space.md, 2, 2, 2) : null,
-        leading: widget.prefixIcon == null ? null : Icon(widget.prefixIcon, size: iconSize, color: theme.colorScheme.onSurfaceVariant),
+        padding: widget.password || widget.suffix != null ? const EdgeInsets.fromLTRB(Space.md, 2, 2, 2) : null,
+        leading: widget.prefixText != null
+            ? Text(widget.prefixText!, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant))
+            : widget.prefixIcon == null
+                ? null
+                : Icon(widget.prefixIcon, size: iconSize, color: theme.colorScheme.onSurfaceVariant),
         trailing: widget.password
             ? Tooltip(
                 message: _obscured ? l10n.showPassword : l10n.hidePassword,
@@ -99,7 +111,7 @@ class _AppTextFieldState extends State<AppTextField> {
                   onPressed: () => setState(() => _obscured = !_obscured),
                 ),
               )
-            : null,
+            : widget.suffix,
       ),
     );
   }

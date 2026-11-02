@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
-import '../../../../app/shell/cms_page.dart' show designShotUrl;
 import '../../../../common/failure_text.dart';
-import '../../../../common/file_saver.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/auth_cubit.dart';
 
@@ -102,15 +100,7 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.all(Space.xl),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 440),
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                form,
-                const SizedBox(height: Space.lg),
-                DesignCredit(
-                  title: 'CMS Dashboard Design',
-                  author: 'Faysol Ahmed Sozib',
-                  onOpen: () => openInNewTab(designShotUrl),
-                ),
-              ]),
+              child: form,
             ),
           ),
         );

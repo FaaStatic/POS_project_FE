@@ -77,25 +77,25 @@ void main() {
     await app.pump(tester, location: '/staff');
     expect(find.text('kasir1'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(ShadButton, 'Tambah staff'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Tambah staf'));
     await tester.pumpAndSettle();
     await tester.enterText(formFields.at(0), 'kasir2');
     await tester.enterText(formFields.at(1), 'secret1');
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
-    expect(find.text('Staff ditambahkan.'), findsOneWidget);
+    expect(find.text('Staf ditambahkan.'), findsOneWidget);
     expect(app.adapter.requests.where((r) => r.path == ApiPaths.register).single.data, {'username': 'kasir2', 'password': 'secret1'});
 
-    await tester.tap(find.widgetWithText(ShadButton, 'Aksi'));
+    await tester.tap(find.byTooltip('Aksi'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Reset password'));
+    await tester.tap(find.text('Atur ulang kata sandi'));
     await tester.pumpAndSettle();
     await tester.enterText(formFields, 'newpass1');
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
-    expect(find.text('Password diganti. Sesi staff ini dicabut.'), findsOneWidget);
+    expect(find.text('Kata sandi diganti. Sesi staf ini dicabut.'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(ShadButton, 'Aksi'));
+    await tester.tap(find.byTooltip('Aksi'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Hapus permanen'));
     await tester.pumpAndSettle();
@@ -117,6 +117,6 @@ void main() {
     fail = false;
     await tester.tap(find.text('Coba lagi'));
     await tester.pumpAndSettle();
-    expect(find.text('Belum ada staff. Tambah staff pertama.'), findsOneWidget);
+    expect(find.text('Belum ada staf. Tambah staf pertama.'), findsOneWidget);
   });
 }

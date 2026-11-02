@@ -98,6 +98,7 @@ class TransactionsPage extends StatelessWidget {
                         ),
                         TableColumnSpec(
                           label: l10n.status,
+                          isEmpty: (t) => !t.stockConflict,
                           cell: (_, t) => t.stockConflict
                               ? StatusBadge(
                                   label: t.conflictReviewed ? l10n.reviewed : l10n.conflict,

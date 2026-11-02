@@ -64,20 +64,20 @@ void main() {
     await app.pump(tester, location: '/customers');
     expect(find.text('Bu Sri'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(ShadButton, 'Tambah customer'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Tambah pelanggan'));
     await tester.pumpAndSettle();
     await tester.enterText(formFields.first, 'Bu Sri');
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
     expect(find.text('Tersimpan.'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(ShadButton, 'Aksi'));
+    await tester.tap(find.byTooltip('Aksi'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Hapus permanen'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ShadButton, 'Hapus permanen'));
     await tester.pumpAndSettle();
-    expect(find.text('Customer masih punya hutang aktif, tidak bisa dihapus permanen.'), findsOneWidget);
+    expect(find.text('Pelanggan masih punya hutang aktif, tidak bisa dihapus permanen.'), findsOneWidget);
 
     await tester.tap(find.text('Bu Sri'));
     await tester.pumpAndSettle();

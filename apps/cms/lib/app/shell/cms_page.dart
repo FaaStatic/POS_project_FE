@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:ui/ui.dart';
 
-import '../../common/file_saver.dart';
 import '../../features/auth/presentation/bloc/auth_cubit.dart';
 import '../../features/settings/presentation/bloc/settings_cubit.dart';
 
@@ -27,7 +26,7 @@ class ShellScope extends InheritedWidget {
 }
 
 /// Page frame: white top bar (title, language, account), a wrapping row of
-/// labelled page actions, the body, and the design credit at the foot.
+/// labelled page actions, then the body. The design credit lives on Settings.
 class CmsPage extends StatelessWidget {
   const CmsPage({super.key, required this.title, required this.body, this.actions = const [], this.fab});
 
@@ -75,20 +74,6 @@ class CmsPage extends StatelessWidget {
                     child: Wrap(spacing: Space.sm, runSpacing: Space.sm, children: actions),
                   ),
           Expanded(child: body),
-          DecoratedBox(
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant))),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Space.sm),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: DesignCredit(
-                  title: 'CMS Dashboard Design',
-                  author: 'Faysol Ahmed Sozib',
-                  onOpen: () => openInNewTab(designShotUrl),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );

@@ -16,10 +16,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get loginTitle => 'Masuk Kasir';
 
   @override
-  String get loginSubtitle => 'Pakai akun staff atau admin toko.';
+  String get loginSubtitle => 'Pakai akun staf atau admin toko.';
 
   @override
-  String get username => 'Username';
+  String get username => 'Nama pengguna';
 
   @override
   String get password => 'Kata sandi';
@@ -44,7 +44,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get vRequired => 'Wajib diisi';
 
   @override
-  String get vUsernameLength => 'Username 3–100 karakter';
+  String get vUsernameLength => 'Nama pengguna 3–100 karakter';
 
   @override
   String get vPasswordLength => 'Kata sandi minimal 6 karakter';
@@ -85,16 +85,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get navHistory => 'Riwayat';
 
   @override
-  String get navCustomers => 'Customer';
+  String get navCustomers => 'Pelanggan';
 
   @override
   String get navProducts => 'Produk';
 
   @override
-  String get searchProducts => 'Cari nama, SKU, atau scan barcode';
+  String get searchProducts => 'Cari nama, SKU, atau pindai barcode';
 
   @override
-  String get scan => 'Scan';
+  String get scan => 'Pindai';
 
   @override
   String get allCategories => 'Semua';
@@ -134,13 +134,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get cartEmpty => 'Keranjang kosong. Tambah produk dari daftar.';
 
   @override
-  String get customer => 'Customer';
+  String get customer => 'Pelanggan';
 
   @override
-  String get chooseCustomer => 'Pilih customer (opsional)';
+  String get chooseCustomer => 'Pilih pelanggan (opsional)';
 
   @override
-  String get noCustomer => 'Tanpa customer';
+  String get noCustomer => 'Tanpa pelanggan';
 
   @override
   String get changeCustomer => 'Ganti';
@@ -184,7 +184,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get digitalCashOnly => 'Produk digital: tunai atau hutang';
 
   @override
-  String get debtNeedsCustomer => 'Pilih customer untuk hutang';
+  String get debtNeedsCustomer => 'Pilih pelanggan untuk hutang';
 
   @override
   String get pay => 'Bayar';
@@ -219,7 +219,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get chooseBank => 'Pilih bank VA';
 
   @override
-  String get scanQrHint => 'Minta pembeli scan kode QR ini.';
+  String get scanQrHint => 'Minta pembeli pindai kode QR ini.';
 
   @override
   String get vaHint => 'Minta pembeli transfer ke nomor VA ini.';
@@ -343,7 +343,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get receiptCashier => 'Kasir';
 
   @override
-  String get receiptCustomer => 'Customer';
+  String get receiptCustomer => 'Pelanggan';
 
   @override
   String get receiptTotal => 'TOTAL';
@@ -352,7 +352,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get receiptMethod => 'Bayar';
 
   @override
-  String get receiptOfflineNote => 'Nomor sementara, diganti setelah sync';
+  String get receiptOfflineNote => 'Nomor sementara, diganti setelah sinkron';
 
   @override
   String get storeNameMissing => 'Nama toko belum diatur';
@@ -405,7 +405,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get syncNow => 'Sync sekarang';
+  String get syncNow => 'Sinkronkan sekarang';
 
   @override
   String syncPending(int count) {
@@ -431,16 +431,16 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get customersTitle => 'Customer';
+  String get customersTitle => 'Pelanggan';
 
   @override
   String get searchCustomers => 'Cari nama atau nomor HP';
 
   @override
-  String get customersEmpty => 'Belum ada customer.';
+  String get customersEmpty => 'Belum ada pelanggan.';
 
   @override
-  String get addCustomer => 'Tambah customer';
+  String get addCustomer => 'Tambah pelanggan';
 
   @override
   String get customerName => 'Nama';
@@ -455,7 +455,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get save => 'Simpan';
 
   @override
-  String get customerSaved => 'Customer disimpan.';
+  String get customerSaved => 'Pelanggan disimpan.';
 
   @override
   String get onlineOnly => 'Fitur ini butuh internet.';
@@ -499,7 +499,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get productsTitle => 'Produk';
 
   @override
-  String get editProduct => 'Edit produk';
+  String get editProduct => 'Ubah produk';
 
   @override
   String get productName => 'Nama produk';
@@ -657,10 +657,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get cashHint => 'Bayar di kasir';
 
   @override
-  String get debtHint => 'Dicatat sebagai hutang customer';
+  String get debtHint => 'Dicatat sebagai hutang pelanggan';
 
   @override
-  String get qrisHint => 'Pembeli scan kode QR';
+  String get qrisHint => 'Pembeli pindai kode QR';
 
   @override
   String get vaHint2 => 'Transfer ke nomor virtual account';
@@ -700,4 +700,25 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get navMore => 'Lainnya';
+
+  @override
+  String get productImage => 'Gambar produk (opsional)';
+
+  @override
+  String get imageHint => 'WebP, rasio 1:1, maks 500 KB';
+
+  @override
+  String get vImageWebp => 'Gambar harus berformat WebP.';
+
+  @override
+  String get vImageSquare => 'Gambar harus persegi (rasio 1:1).';
+
+  @override
+  String get vImageSize => 'Ukuran gambar maksimal 500 KB.';
+
+  @override
+  String get categoryPickHint => 'Cari atau pilih kategori';
+
+  @override
+  String get vCategoryExisting => 'Pilih kategori yang sudah ada.';
 }

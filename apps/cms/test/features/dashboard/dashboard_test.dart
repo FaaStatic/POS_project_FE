@@ -102,9 +102,30 @@ void main() {
     serveDashboard(app.adapter);
     app.adapter.on('GET', ApiPaths.users, (_) => FakeReply(200, envelope({'staff': []})));
     await app.pump(tester, location: '/dashboard');
-    await tester.tap(find.widgetWithText(ShadButton, 'Tambah staff'));
+    await tester.tap(find.widgetWithText(ShadButton, 'Tambah staf'));
     await tester.pumpAndSettle();
     expect(find.byType(ShadDialog), findsOneWidget);
+  });
+
+  testWidgets('an unchanged metric shows a flat trend, not a rise', (tester) async {
+    final app = CmsHarness();
+    // Both periods get the same figures, so every change is 0%.
+    serveDashboard(app.adapter);
+    await app.pump(tester, location: '/dashboard');
+    expect(find.byIcon(Icons.trending_flat_rounded), findsWidgets);
+    expect(find.byIcon(Icons.trending_up_rounded), findsNothing);
+  });
+
+  testWidgets('design credit is not under every page', (tester) async {
+    final app = CmsHarness();
+    serveDashboard(app.adapter);
+    await app.pump(tester, location: '/dashboard');
+    expect(find.byType(DesignCredit), findsNothing);
+  });
+
+  testWidgets('design credit sits on Settings', (tester) async {
+    await CmsHarness().pump(tester, location: '/settings');
+    expect(find.byType(DesignCredit), findsOneWidget);
   });
 
   testWidgets('dashboard fits a phone at 200% text', (tester) async {

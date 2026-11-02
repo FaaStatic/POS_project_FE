@@ -20,7 +20,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Khusus admin toko. Kasir memakai aplikasi Kasir di HP.';
 
   @override
-  String get username => 'Username';
+  String get username => 'Nama pengguna';
 
   @override
   String get password => 'Kata sandi';
@@ -30,7 +30,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get cmsAdminOnly =>
-      'CMS khusus admin toko. Akun staff hanya bisa masuk lewat aplikasi Kasir.';
+      'CMS khusus admin toko. Akun staf hanya bisa masuk lewat aplikasi Kasir.';
 
   @override
   String get errorNetwork =>
@@ -49,7 +49,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get vRequired => 'Wajib diisi';
 
   @override
-  String get vUsernameLength => 'Username 3–100 karakter';
+  String get vUsernameLength => 'Nama pengguna 3–100 karakter';
 
   @override
   String get vPasswordLength => 'Kata sandi minimal 6 karakter';
@@ -87,7 +87,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get navSettings => 'Pengaturan';
 
   @override
-  String get navDashboard => 'Dashboard';
+  String get navDashboard => 'Dasbor';
 
   @override
   String get navTransactions => 'Transaksi';
@@ -99,19 +99,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get navCategories => 'Kategori';
 
   @override
-  String get navCustomers => 'Customer';
+  String get navCustomers => 'Pelanggan';
 
   @override
   String get navDebts => 'Hutang';
 
   @override
-  String get navStaff => 'Staff';
+  String get navStaff => 'Staf';
 
   @override
   String get navPayments => 'Pembayaran';
 
   @override
-  String get navDevices => 'Device';
+  String get navDevices => 'Perangkat';
 
   @override
   String get navReports => 'Laporan';
@@ -153,7 +153,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get delete => 'Hapus';
 
   @override
-  String get edit => 'Edit';
+  String get edit => 'Ubah';
 
   @override
   String get restore => 'Pulihkan';
@@ -177,41 +177,41 @@ class AppLocalizationsId extends AppLocalizations {
   String get roleSuper => 'Admin';
 
   @override
-  String get roleStaff => 'Staff';
+  String get roleStaff => 'Staf';
 
   @override
-  String get staffTitle => 'Staff';
+  String get staffTitle => 'Staf';
 
   @override
-  String get addStaff => 'Tambah staff';
+  String get addStaff => 'Tambah staf';
 
   @override
-  String get staffEmpty => 'Belum ada staff. Tambah staff pertama.';
+  String get staffEmpty => 'Belum ada staf. Tambah staf pertama.';
 
   @override
-  String get staffInactiveEmpty => 'Tidak ada staff nonaktif.';
+  String get staffInactiveEmpty => 'Tidak ada staf nonaktif.';
 
   @override
-  String get resetPassword => 'Reset password';
+  String get resetPassword => 'Atur ulang kata sandi';
 
   @override
-  String get newPassword => 'Password baru';
+  String get newPassword => 'Kata sandi baru';
 
   @override
-  String get resetPasswordHint => 'Semua sesi staff ini akan keluar.';
+  String get resetPasswordHint => 'Semua sesi staf ini akan keluar.';
 
   @override
-  String get passwordReset => 'Password diganti. Sesi staff ini dicabut.';
+  String get passwordReset => 'Kata sandi diganti. Sesi staf ini dicabut.';
 
   @override
-  String get staffAdded => 'Staff ditambahkan.';
+  String get staffAdded => 'Staf ditambahkan.';
 
   @override
   String get staffDeactivated =>
-      'Staff dinonaktifkan. Sesi dan token notifikasinya dicabut.';
+      'Staf dinonaktifkan. Sesi dan token notifikasinya dicabut.';
 
   @override
-  String get staffRestored => 'Staff dipulihkan.';
+  String get staffRestored => 'Staf dipulihkan.';
 
   @override
   String purgeTitle(String name) {
@@ -220,7 +220,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get purgeStaffHint =>
-      'Staff tanpa riwayat transaksi dihapus. Staff dengan riwayat dianonimkan supaya laporan lama tetap utuh.';
+      'Staf tanpa riwayat transaksi dihapus. Staf dengan riwayat dianonimkan supaya laporan lama tetap utuh.';
 
   @override
   String purgeTypeName(String name) {
@@ -237,19 +237,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get purgedAnonymized => 'Punya riwayat transaksi, jadi dianonimkan.';
 
   @override
-  String get customersTitle => 'Customer';
+  String get customersTitle => 'Pelanggan';
 
   @override
-  String get addCustomer => 'Tambah customer';
+  String get addCustomer => 'Tambah pelanggan';
 
   @override
-  String get editCustomer => 'Edit customer';
+  String get editCustomer => 'Ubah pelanggan';
 
   @override
-  String get customersEmpty => 'Belum ada customer. Tambah customer pertama.';
+  String get customersEmpty => 'Belum ada pelanggan. Tambah pelanggan pertama.';
 
   @override
-  String get customersInactiveEmpty => 'Tidak ada customer nonaktif.';
+  String get customersInactiveEmpty => 'Tidak ada pelanggan nonaktif.';
 
   @override
   String get customerName => 'Nama';
@@ -262,20 +262,20 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get customerHasDebt =>
-      'Customer masih punya hutang aktif, tidak bisa dihapus permanen.';
+      'Pelanggan masih punya hutang aktif, tidak bisa dihapus permanen.';
 
   @override
   String get purgeCustomerHint =>
-      'Customer dengan riwayat transaksi dianonimkan, tanpa riwayat dihapus.';
+      'Pelanggan dengan riwayat transaksi dianonimkan, tanpa riwayat dihapus.';
 
   @override
-  String get customerDeactivated => 'Customer dinonaktifkan.';
+  String get customerDeactivated => 'Pelanggan dinonaktifkan.';
 
   @override
-  String get customerRestored => 'Customer dipulihkan.';
+  String get customerRestored => 'Pelanggan dipulihkan.';
 
   @override
-  String get customerDetail => 'Detail customer';
+  String get customerDetail => 'Detail pelanggan';
 
   @override
   String get transactionsTitle => 'Transaksi';
@@ -342,7 +342,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get bulkAdd => 'Tambah massal';
 
   @override
-  String get editProduct => 'Edit produk';
+  String get editProduct => 'Ubah produk';
 
   @override
   String get productsEmpty => 'Belum ada produk. Tambah produk pertama.';
@@ -360,7 +360,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get barcode => 'Barcode';
 
   @override
-  String get barcodeHint => 'Opsional. Scanner USB bisa langsung mengisi.';
+  String get barcodeHint => 'Opsional';
 
   @override
   String get unit => 'Satuan';
@@ -393,7 +393,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get categoryNewHint => 'Pilih kategori atau ketik nama baru';
 
   @override
-  String get imageUrl => 'URL gambar (opsional)';
+  String get sectionProductInfo => 'Informasi produk';
+
+  @override
+  String get sectionPricing => 'Harga';
+
+  @override
+  String get sectionStockImage => 'Stok dan gambar';
 
   @override
   String get allCategories => 'Semua kategori';
@@ -455,10 +461,10 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get devicesTitle => 'Device';
+  String get devicesTitle => 'Perangkat';
 
   @override
-  String get devicesEmpty => 'Belum ada device yang login.';
+  String get devicesEmpty => 'Belum ada perangkat yang login.';
 
   @override
   String get allPlatforms => 'Semua platform';
@@ -477,15 +483,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String revokeTitle(String name) {
-    return 'Cabut device $name?';
+    return 'Cabut perangkat $name?';
   }
 
   @override
   String get revokeHint =>
-      'Device ini berhenti menerima notifikasi pembayaran.';
+      'Perangkat ini berhenti menerima notifikasi pembayaran.';
 
   @override
-  String get deviceRevoked => 'Device dicabut.';
+  String get deviceRevoked => 'Perangkat dicabut.';
 
   @override
   String get unknownUser => '(tanpa user)';
@@ -526,10 +532,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get allMethods => 'Semua metode';
 
   @override
-  String get invoice => 'No. invoice';
+  String get invoice => 'No. faktur';
 
   @override
-  String get searchInvoice => 'Cari no. invoice';
+  String get searchInvoice => 'Cari no. faktur';
 
   @override
   String get date => 'Tanggal';
@@ -669,13 +675,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get unpaidOnly => 'Belum lunas saja';
 
   @override
-  String get searchCustomer => 'Cari nama customer';
+  String get searchCustomer => 'Cari nama pelanggan';
 
   @override
   String get searchProduct => 'Cari nama produk';
 
   @override
-  String get searchUsername => 'Cari username';
+  String get searchUsername => 'Cari nama pengguna';
 
   @override
   String get remaining => 'Sisa';
@@ -706,7 +712,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get dueDate => 'Jatuh tempo (opsional)';
 
   @override
-  String get pickCustomer => 'Pilih customer';
+  String get pickCustomer => 'Pilih pelanggan';
 
   @override
   String get exceedsRemaining => 'Melebihi sisa hutang.';
@@ -734,7 +740,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get downloadThisMonth => 'Unduh laporan bulan ini';
 
   @override
-  String get dashboardTitle => 'Dashboard';
+  String get dashboardTitle => 'Dasbor';
 
   @override
   String get needsAction => 'Perlu tindakan';
@@ -815,7 +821,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get paidDebt => 'Dibayar';
 
   @override
-  String get devicesOnline => 'Device yang sedang login';
+  String get devicesOnline => 'Perangkat yang sedang login';
 
   @override
   String get noData => 'Belum ada data pada rentang ini.';
@@ -824,10 +830,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get quickAddProduct => 'Tambah produk';
 
   @override
-  String get quickAddStaff => 'Tambah staff';
+  String get quickAddStaff => 'Tambah staf';
 
   @override
-  String get quickAddCustomer => 'Tambah customer';
+  String get quickAddCustomer => 'Tambah pelanggan';
 
   @override
   String get quickMonthReport => 'Unduh laporan bulan ini';
@@ -909,4 +915,31 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get periodBefore => 'periode';
+
+  @override
+  String get productImage => 'Gambar produk (opsional)';
+
+  @override
+  String get imageHint => 'WebP, rasio 1:1, maks 500 KB';
+
+  @override
+  String get vImageWebp => 'Gambar harus berformat WebP.';
+
+  @override
+  String get vImageSquare => 'Gambar harus persegi (rasio 1:1).';
+
+  @override
+  String get vImageSize => 'Ukuran gambar maksimal 500 KB.';
+
+  @override
+  String get bulkImagesTooLarge =>
+      'Total gambar terlalu besar untuk satu unggahan. Kurangi jumlah gambar atau pisahkan jadi beberapa unggahan.';
+
+  @override
+  String get skuAutoHint => 'Otomatis dari kategori, tipe, dan nama';
+
+  @override
+  String createCategory(String name) {
+    return 'Buat kategori \"$name\"';
+  }
 }

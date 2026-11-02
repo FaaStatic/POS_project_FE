@@ -69,6 +69,10 @@ While a QRIS/VA charge is pending, the cashier can't close that tab or log out. 
 ### Products (More → Products)
 
 - Staff edit basic fields. Superadmins also change purchase price, product type, category (including a new one), and stock.
+- Category is a searchable dropdown of the store's existing categories. Staff cannot create one, so text that matches no category is refused; a superadmin adds a new one in a separate field. A product's current category, even an empty one, never blocks saving something else.
+- The product picture is changed the same way as in the CMS (WebP, square, at most 500 KB; see [Product SKU, category, and picture](#product-sku-category-and-picture)). The picker is the system file picker (`file_selector`).
+- Product lists and the checkout grid draw stored pictures, whether the backend holds a legacy URL or base64. A value that is not an image falls back to the product's initials.
+- The SKU is not generated here: Kasir only edits products, and the SKU is the key bulk imports match on.
 
 ### Printer and receipts
 
@@ -102,8 +106,8 @@ While a QRIS/VA charge is pending, the cashier can't close that tab or log out. 
 | Transactions | Paged list with filters, detail, void, download receipt PDF, mark stock conflicts from offline sync as reviewed |
 | Payments | Monitor QRIS/VA charges and check their status |
 | Debts | List and detail, add a manual debt, record a payment |
-| Products | List with filters, add or edit (category accepts an existing name or a new one), adjust stock, delete |
-| Bulk products | Multi-row form, or import an Excel/CSV file; a USB barcode scanner can type into each row |
+| Products | List with filters, add or edit, adjust stock, delete. The form is grouped into product info, pricing, and stock/picture. Category is a searchable dropdown that can also create a new category. A new product's SKU is generated, and a picture can be uploaded (see below) |
+| Bulk products | Multi-row form, or import an Excel/CSV file; a USB barcode scanner can type into each row. Each row has a category dropdown, a product type, a generated SKU, and an optional picture; the Save bar stays pinned to the bottom |
 | Categories | Add, rename, delete |
 | Customers | List, add, edit, detail with transaction history, deactivate and restore, delete permanently |
 | Staff | List, add, reset password, deactivate and restore, delete permanently |
@@ -112,6 +116,45 @@ While a QRIS/VA charge is pending, the cashier can't close that tab or log out. 
 | Settings | Language, theme (system, light, dark), logout |
 
 The shell uses a drawer below 600 px, a navigation rail up to 1024 px, and a persistent sidebar above that. List pages share one filter bar: every filter (search, date range, select, tabs) has its label above it, and search placeholders name the field the backend matches (product name, customer name, username).
+
+### Product SKU, category, and picture
+
+**SKU.** A new product's SKU is generated from its category, type, and name, like `MIE-P-IG-001`:
+
+| Part | Rule | Example |
+| --- | --- | --- |
+| Category | First 3 letters or digits, spaces and symbols dropped, upper case | `Mie Instan` → `MIE` |
+| Type | `P` physical, `D` digital | `P` |
+| Name acronym | Initials of the words, at most 6; words starting with a digit (`600ml`) are skipped; a one-word name uses its first 3 letters | `Indomie Goreng` → `IG`, `Aqua 600ml` → `AQU` |
+| Number | One past the highest number already used under the same prefix, 3 digits | `001` |
+
+The rule ports the store's spreadsheet formula, with the name acronym in the place of its store-code cell. The field fills in as the name, category, or type change, until the user types a SKU of their own; clearing the field hands it back. An existing product's SKU never changes by itself, because bulk imports match on it.
+
+The backend cannot search by SKU, and a SKU that repeats an existing one **overwrites** that product on a bulk import. So the CMS reads the SKUs already taken before it offers a number (`SkuBook`, using `GetTakenSkus`):
+
+- It lists the products of the product's category, plus any other category with the same 3-letter code (Minuman and Minyak both give `MIN`), and keeps only the `sku` column. It reads each code once per form and caches it.
+- If the read fails, the SKU is left empty instead of guessed.
+- In bulk, rows are numbered top to bottom, and a SKU typed in a lower row counts as taken.
+- Adding one product that the backend answers with 409 (SKU taken since it was read) retries with the next number, up to twice. It only does this when the SKU was generated and the barcode is empty, since the backend uses one message for a repeated SKU or barcode.
+- Remaining gap: two admins bulk-importing at the same moment can still collide. No backend endpoint was added for this.
+
+**Category.** `AppAutocomplete` (in `ui`) opens with every category when focused, narrows as you type, and supports arrow keys and Enter. The CMS also offers a "Buat kategori …" row for a name that does not exist; Kasir does not.
+
+**Picture.** The `image` field in the backend is a plain `text` column with no validation, so the rules live in the apps (`ProductImage.validate` in `core`, checked in this order):
+
+| Rule | Error key |
+| --- | --- |
+| The file is a WebP (read from the RIFF header, not the extension) | `image_not_webp` |
+| At most 500 KB (500 × 1024 bytes) | `image_too_large` |
+| Square, 1:1 (width and height read from the WebP header: lossy, lossless, or extended) | `image_not_square` |
+
+A rejected file is never sent; the previous picture stays and the reason shows under the field. An accepted file is sent as raw base64 without a `data:` prefix, and removing the picture sends an empty string. `imageProviderFor` (in `ui`) tells a legacy URL from base64, decodes at display size, and keeps up to 64 decoded pictures in memory so list rows do not decode again on every rebuild.
+
+Things to know:
+
+- The product list endpoint returns `image` for every product, and Kasir caches the whole catalog, so a catalog full of 500 KB pictures (about 667 KB each as base64) makes syncs and lists heavy. The alternative is storing files and sending URLs.
+- The backend refuses request bodies over 25 MB. The bulk CSV carries every picture as base64, so the form blocks a submit once the pictures total more than 20 MB.
+- Each field is shared between the apps through `ImageUploadField` (`ui`); only the picker differs: the browser file dialog in the CMS, `file_selector` in Kasir.
 
 ### Branding
 
@@ -144,7 +187,7 @@ shop_fe/
 │   │   └── lib/
 │   │       ├── core.dart         # web-safe exports
 │   │       ├── mobile.dart       # Kasir-only exports (drift, MMKV, secure storage)
-│   │       ├── testing.dart      # FakeAdapter and other test doubles
+│   │       ├── testing.dart      # FakeAdapter, shared WebP test fixtures, other test doubles
 │   │       └── src/
 │   │           ├── common/       # Result, Failure, NetworkStatus, paging
 │   │           ├── config/       # AppConfig from .env
@@ -152,7 +195,7 @@ shop_fe/
 │   │           ├── network/      # ApiClient (dio), AuthInterceptor, web adapter
 │   │           ├── storage/      # key-value store, MMKV, secure token store
 │   │           ├── database/     # drift tables and AppDatabase
-│   │           ├── validation/   # same rules as the backend (barcode, sku, password)
+│   │           ├── validation/   # same rules as the backend (barcode, sku, password), product picture
 │   │           ├── format/       # Rupiah and date formatting
 │   │           └── features/     # auth, catalog, category, customer, dashboard, debt,
 │   │                             # device, draft, payment, preferences, product,
@@ -180,16 +223,17 @@ apps/kasir ┘
 ```
 
 - `core` holds every entity, repository, and use case that both apps need. A feature in one app never imports a feature from the other.
-- `ui` holds look and feel only: tokens, theme, and reusable widgets such as `AppButton`, `AppTextField`, `SearchField`, `ResponsiveTable`, `TransactionTabStrip`, `QtyStepper`, `StatusBadge`, `OfflineBanner`, `ConfirmDialog`, and the loading/empty/error state views.
+- `ui` holds look and feel only: tokens, theme, and reusable widgets such as `AppButton`, `AppTextField`, `SearchField`, `ResponsiveTable`, `TransactionTabStrip`, `QtyStepper`, `StatusBadge`, `OfflineBanner`, `ConfirmDialog`, `AppAutocomplete`, `ImageUploadField`, `InitialAvatar`, and the loading/empty/error state views.
 - The CMS imports `core.dart` only. Kasir imports `core.dart` and `mobile.dart`. This keeps native plugins (drift, MMKV, secure storage) out of the web build.
 
 ### Shared vs app-specific code
 
 | Lives in | Example |
 | --- | --- |
-| `packages/core/lib/src/features/<resource>` | `Product` entity, `ProductRepository`, `GetProducts`, `ProductRemoteDatasource` |
+| `packages/core/lib/src/features/<resource>` | `Product` entity, `ProductRepository`, `GetProducts`, `ProductRemoteDatasource`, `SkuGenerator` |
 | `apps/kasir/lib/features/<feature>` | `CheckoutTransaction`, `SyncPendingTransactions`, printer, push |
 | `apps/cms/lib/features/<feature>` | Dashboard layout, bulk product form, report download |
+| `apps/cms/lib/common` | `SkuBook`, `AutoSku`, `FormSection`/`FieldRow` form layout, `ProductImageField` |
 
 ## Architecture
 
@@ -237,6 +281,7 @@ data           JSON model, datasource (dio / drift), repository impl
 | Secrets | flutter_secure_storage (Kasir refresh token) |
 | Codegen | freezed, json_serializable, build_runner |
 | Scanning | mobile_scanner |
+| File picking | file_selector (Kasir); the CMS uses the browser file dialog |
 | Printing | flutter_bluetooth_printer |
 | Push | firebase_messaging |
 | Background work | workmanager, connectivity_plus |
@@ -484,4 +529,6 @@ Write each step test-first (red, green, refactor):
 | `kasir-reload` says the app isn't running | Start it with `melos run kasir` first; the pid file only exists while it runs |
 | CMS debug web: `Stack Overflow` thrown by a `BlocBuilder` near `AppTheme.compact` | Something removed the `AppTheme.compact` warm-up in `bootstrap.dart`. DDC links the shadcn theme libraries on first use, which overflows the stack inside the widget tree, so the themes must be built before `runApp` |
 | `Failed to bind web development server ... port 5173` | An old CMS dev server still holds the port: `lsof -ti tcp:5173 \| xargs kill` |
+| Android build prints `WARNING: A restricted method in java.lang.System has been called` | Flutter uses the JDK bundled with Android Studio (25), and JDK 24+ warns when Gradle's native library loads. It is only a warning; `export GRADLE_OPTS="--enable-native-access=ALL-UNNAMED"` silences it (`org.gradle.jvmargs` does not, the warning comes from the Gradle client JVM) |
+| CMS: a new product's SKU stays empty | The SKU needs a category, a name, and a successful read of the existing SKUs; check the network tab for the `category_id` product requests, or type the SKU yourself |
 | A widget test that expires the session hangs | The test passed the same `ApiClient` as `api` and `bare`. The refresh call then queues behind the `AuthInterceptor` error it is handling; give `bare` its own client, as production does |

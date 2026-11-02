@@ -53,11 +53,12 @@ void main() {
     final fields = formFields;
     await tester.enterText(fields.at(0), 'Gula 1kg');
     await tester.enterText(fields.at(1), 'GL-1');
-    await tester.enterText(fields.at(3), '14000');
-    await tester.enterText(fields.at(4), '16000');
-    await tester.enterText(fields.at(5), '17000');
-    await tester.enterText(fields.at(6), '5');
-    await tester.enterText(fields.at(7), 'Sembako');
+    // Order on screen: name, SKU, barcode, category, purchase, selling, credit, stock.
+    await tester.enterText(fields.at(3), 'Sembako');
+    await tester.enterText(fields.at(4), '14000');
+    await tester.enterText(fields.at(5), '16000');
+    await tester.enterText(fields.at(6), '17000');
+    await tester.enterText(fields.at(7), '5');
     await tester.ensureVisible(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
     await tester.pumpAndSettle();
@@ -66,7 +67,7 @@ void main() {
     expect(body, containsPair('category', 'Sembako'));
     expect(body, containsPair('selling_price_debt', 17000));
 
-    await tester.tap(find.widgetWithText(ShadButton, 'Aksi'));
+    await tester.tap(find.byTooltip('Aksi'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Ubah stok'));
     await tester.pumpAndSettle();
@@ -75,7 +76,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Stok diperbarui.'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(ShadButton, 'Aksi'));
+    await tester.tap(find.byTooltip('Aksi'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Hapus'));
     await tester.pumpAndSettle();
@@ -84,11 +85,28 @@ void main() {
     expect(find.text('Produk dihapus.'), findsOneWidget);
   });
 
+  for (final (name, size, scale) in [('desktop dialog', const Size(1280, 900), 1.0), ('phone page', const Size(360, 780), 1.0), ('phone at 200% text', const Size(360, 780), 2.0)]) {
+    testWidgets('product form groups its fields and fits a $name', (tester) async {
+      final app = setup();
+      await app.pump(tester, location: '/products', size: size, textScale: scale);
+      final add = find.widgetWithText(ShadButton, 'Tambah produk');
+      await tester.ensureVisible(add);
+      await tester.tap(add);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      for (final title in ['Informasi produk', 'Harga', 'Stok dan gambar']) {
+        expect(find.text(title), findsOneWidget);
+      }
+      expect(find.text('Rp'), findsNWidgets(3));
+    });
+  }
+
   testWidgets('bulk add sends filled rows as CSV and shows per-row errors', (tester) async {
     final app = setup();
     await app.pump(tester, location: '/products/bulk');
     final fields = formFields;
-    for (final (i, v) in ['A1', '', 'Kopi', '1000', '1500', '1600', '3', 'Minuman'].indexed) {
+    // Order on screen: name, SKU, barcode, category, then purchase, selling, credit price, stock.
+    for (final (i, v) in ['Kopi', 'A1', '', 'Minuman', '1000', '1500', '1600', '3'].indexed) {
       await tester.enterText(fields.at(i), v);
     }
     await tester.scrollUntilVisible(find.text('Simpan semua'), 200, scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first);

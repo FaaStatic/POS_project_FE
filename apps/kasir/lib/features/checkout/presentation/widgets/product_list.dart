@@ -68,7 +68,16 @@ class _ProductPaneState extends State<ProductPane> {
                   ),
                 ),
                 const SizedBox(width: Space.sm),
-                AppButton(label: l10n.scan, icon: Iconsax.scan_barcode_copy, variant: AppButtonVariant.outline, onPressed: widget.onScan),
+                // Large text: the label would squeeze the search field to nothing, so the glyph carries it.
+                if (MediaQuery.textScalerOf(context).scale(1) > 1.3)
+                  IconButton.outlined(
+                    tooltip: l10n.scan,
+                    style: IconButton.styleFrom(minimumSize: const Size.square(TapSize.min)),
+                    onPressed: widget.onScan,
+                    icon: const Icon(Iconsax.scan_barcode_copy),
+                  )
+                else
+                  AppButton(label: l10n.scan, icon: Iconsax.scan_barcode_copy, variant: AppButtonVariant.outline, onPressed: widget.onScan),
               ],
             ),
           ),
@@ -180,34 +189,30 @@ class _ProductRow extends StatelessWidget {
       child: InkWell(
         onTap: () => context.read<CheckoutBloc>().add(ProductAdded(product)),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(Space.md, Space.md, Space.sm, Space.sm),
+          padding: const EdgeInsets.fromLTRB(Space.md, Space.md, Space.sm, Space.md),
+          // Name over price and stock, add button at the end: about 76 high, so a phone shows twice the items.
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: Space.md,
             children: [
-              InitialAvatar(name: product.name, imageUrl: product.image, size: 48, colorKey: product.categoryId),
-              const SizedBox(width: Space.md),
+              InitialAvatar(name: product.name, imageUrl: product.image, size: 44, colorKey: product.categoryId),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: Space.sm),
-                      child: Text(product.name, style: theme.textTheme.titleSmall),
-                    ),
+                    Text(product.name, style: theme.textTheme.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 2),
-                    _StockLine(product: product, inCart: inCart),
-                    // Price and the add button share the bottom line, as in the receipt.
-                    Row(
+                    Wrap(
+                      spacing: Space.sm,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Expanded(
-                          child: Text(rupiah(context, product.sellingPrice), style: theme.textTheme.titleMedium?.tabular),
-                        ),
-                        _AddButton(product: product),
+                        Text(rupiah(context, product.sellingPrice), style: theme.textTheme.titleMedium?.tabular),
+                        _StockLine(product: product, inCart: inCart),
                       ],
                     ),
                   ],
                 ),
               ),
+              _AddButton(product: product),
             ],
           ),
         ),
@@ -250,13 +255,15 @@ class _ProductTile extends StatelessWidget {
               ),
               const SizedBox(height: Space.md),
               Text(product.name, style: theme.textTheme.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
-              const Spacer(),
+              const SizedBox(height: 2),
+              // Stock stays under the name; spare height of a one-line name goes above the price row.
               // One line like the price: a wrapped stock line pushes the price row out of the fixed tile.
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
                 child: _StockLine(product: product, inCart: 0),
               ),
+              const Spacer(),
               Row(
                 children: [
                   Expanded(

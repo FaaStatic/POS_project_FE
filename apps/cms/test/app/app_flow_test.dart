@@ -121,7 +121,7 @@ void main() {
     serveDashboard(adapter);
     await pumpApp(tester);
     expect(find.text('Perlu tindakan'), findsOneWidget);
-    await tester.tap(find.text('Staff').first);
+    await tester.tap(find.text('Staf').first);
     // Not pumpAndSettle: the staff list spinner keeps animating until the redirect lands.
     for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 100));
@@ -144,8 +144,8 @@ void main() {
     await tester.tap(find.byTooltip('Buka menu'));
     await tester.pumpAndSettle();
     expect(find.byType(BrandLogo), findsOneWidget);
-    await tester.tap(find.text('Staff'));
+    await tester.tap(find.text('Staf'));
     await tester.pumpAndSettle();
-    expect(find.text('Tambah staff'), findsWidgets);
+    expect(find.text('Tambah staf'), findsWidgets);
   });
 }

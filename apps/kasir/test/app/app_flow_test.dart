@@ -39,7 +39,7 @@ void main() {
 
     await tester.tap(addButtons.first);
     await app.settle(tester);
-    await tester.tap(find.byTooltip('Lihat keranjang'));
+    await tester.tap(find.text('Lihat keranjang'));
     await app.settle(tester);
     await tester.tap(find.text('Lanjut ke pembayaran'));
     await app.settle(tester);
@@ -93,7 +93,7 @@ void main() {
     await app.pump(tester);
     await tester.tap(addButtons.first);
     await app.settle(tester);
-    await tester.tap(find.byTooltip('Lihat keranjang'));
+    await tester.tap(find.text('Lihat keranjang'));
     await app.settle(tester);
     await tester.tap(find.text('Lanjut ke pembayaran'));
     await app.settle(tester);
@@ -137,7 +137,7 @@ void main() {
     await app.pump(tester);
     await tester.tap(find.text('Lainnya'));
     await app.settle(tester);
-    final row = find.widgetWithText(ListTile, 'Sync sekarang');
+    final row = find.widgetWithText(ListTile, 'Sinkronkan sekarang');
     expect(find.text('Semua transaksi sudah terkirim'), findsOneWidget);
     await tester.tap(row);
     await app.settle(tester);
@@ -154,7 +154,11 @@ void main() {
     await app.tokens.writeRefreshToken('r0');
     await app.pump(tester, size: const Size(360, 780), textScale: 2);
     expect(tester.takeException(), isNull);
-    await tester.tap(find.byTooltip('Lihat keranjang'));
+    // The cart bar appears once the tab has an item.
+    await tester.tap(addButtons.first);
+    await app.settle(tester);
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('Lihat keranjang'));
     await app.settle(tester);
     expect(tester.takeException(), isNull);
     await tester.runAsync(app.close);

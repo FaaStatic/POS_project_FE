@@ -86,6 +86,7 @@ void setupDependencies({
     ..registerFactory(() => DeleteCategory(getIt()))
     ..registerFactory(() => CategoriesCubit(getIt(), getIt(), getIt(), getIt()))
     ..registerFactory(() => GetProducts(getIt()))
+    ..registerFactory(() => GetTakenSkus(getIt()))
     ..registerFactory(() => CreateProduct(getIt()))
     ..registerFactory(() => UpdateProduct(getIt()))
     ..registerFactory(() => AdjustStock(getIt()))

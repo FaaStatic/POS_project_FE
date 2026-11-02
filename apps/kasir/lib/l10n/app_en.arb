@@ -202,5 +202,12 @@
       }
     }
   },
-  "navMore": "More"
+  "navMore": "More",
+  "productImage": "Product image (optional)",
+  "imageHint": "WebP, 1:1 ratio, max 500 KB",
+  "vImageWebp": "The image must be a WebP file.",
+  "vImageSquare": "The image must be square (1:1 ratio).",
+  "vImageSize": "The image must be 500 KB or smaller.",
+  "categoryPickHint": "Search or pick a category",
+  "vCategoryExisting": "Pick a category that already exists."
 }

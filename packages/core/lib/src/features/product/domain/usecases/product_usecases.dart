@@ -12,6 +12,33 @@ class GetProducts {
   Future<Result<Paged<Product>>> call(ProductQuery query, {PageCursor? after}) => _repo.list(query, after: after);
 }
 
+/// SKUs already used by the products of [categoryIds], read page by page with only the SKU kept.
+/// The backend cannot search by SKU, and a SKU that repeats one already taken would overwrite
+/// that product on a bulk import, so a failed page fails the whole read instead of returning a
+/// list that might be missing some.
+class GetTakenSkus {
+  const GetTakenSkus(this._repo);
+  final ProductRepository _repo;
+
+  Future<Result<Set<String>>> call(Iterable<String> categoryIds) async {
+    final taken = <String>{};
+    for (final id in categoryIds.toSet()) {
+      PageCursor? cursor;
+      do {
+        final page = await _repo.list(ProductQuery(categoryId: id), after: cursor);
+        switch (page) {
+          case Ok(:final value):
+            taken.addAll(value.items.map((p) => p.sku));
+            cursor = value.hasNext ? value.cursor : null;
+          case Err(:final failure):
+            return Err(failure);
+        }
+      } while (cursor != null);
+    }
+    return Ok(taken);
+  }
+}
+
 class GetProduct {
   const GetProduct(this._repo);
   final ProductRepository _repo;
