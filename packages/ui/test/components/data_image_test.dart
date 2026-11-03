@@ -21,6 +21,15 @@ void main() {
       expect(imageProviderFor('${_png.substring(0, 20)}\n${_png.substring(20)}'), isA<MemoryImage>());
     });
 
+    test('a data URI, URL-safe letters, or missing padding still decode to the same bytes', () {
+      final expected = base64Decode(_png);
+      final urlSafe = _png.replaceAll('+', '-').replaceAll('/', '_');
+      final unpadded = _png.replaceAll('=', '');
+      for (final text in ['data:image/png;base64,$_png', 'data:image/webp;base64,$unpadded', urlSafe, unpadded]) {
+        expect((imageProviderFor(text) as MemoryImage).bytes, expected, reason: text);
+      }
+    });
+
     test('the bytes are what the base64 holds', () {
       final provider = imageProviderFor(_png) as MemoryImage;
       expect(provider.bytes, base64Decode(_png));

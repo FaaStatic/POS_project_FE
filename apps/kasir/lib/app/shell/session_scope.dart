@@ -100,6 +100,12 @@ class _SessionScopeState extends State<SessionScope> {
         show(l10n.chargeFailed(tabNumber), InfoKind.error);
       case StaleDraftsNotice(:final count):
         show(l10n.staleDraftsRemoved(count), InfoKind.info);
+      case OutOfStockNotice(:final productName):
+        // A scanner that keeps reading the same code would stack one dialog per frame.
+        if (_scanDialogOpen) return;
+        _scanDialogOpen = true;
+        await showInfoDialog(context, l10n.outOfStockAdd(productName), kind: InfoKind.info);
+        _scanDialogOpen = false;
       case TabLockedNotice():
         show(l10n.tabLocked, InfoKind.info);
       case FailureNotice(failure: TimeoutFailure()):

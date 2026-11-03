@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../tokens/colors.dart';
 
-/// Navigation surfaces (CMS sidebar, kasir bar) and the one solid mint panel
+/// Navigation surfaces (CMS sidebar, kasir bar) and the one solid blue panel
 /// per screen (kasir total, CMS login aside).
 @immutable
 class ShellColors extends ThemeExtension<ShellColors> {
@@ -36,12 +36,12 @@ class ShellColors extends ThemeExtension<ShellColors> {
     nav: Colors.white,
     onNav: Neutral.foreground,
     onNavMuted: Neutral.muted,
-    navSelected: Mint.c100,
-    onNavSelected: Mint.c800,
+    navSelected: Azure.c100,
+    onNavSelected: Azure.c800,
     border: Neutral.border,
-    brand: Mint.c800,
+    brand: Azure.c800,
     onBrand: Colors.white,
-    onBrandMuted: Mint.c100,
+    onBrandMuted: Azure.c100,
   );
 
   static const dark = ShellColors(
@@ -49,12 +49,12 @@ class ShellColors extends ThemeExtension<ShellColors> {
     nav: Neutral.surfaceDark,
     onNav: Neutral.foregroundDark,
     onNavMuted: Neutral.mutedDark,
-    navSelected: Mint.c900,
-    onNavSelected: Mint.c200,
+    navSelected: Azure.c900,
+    onNavSelected: Azure.c200,
     border: Neutral.borderDark,
-    brand: Mint.c900,
+    brand: Azure.c900,
     onBrand: Colors.white,
-    onBrandMuted: Mint.c200,
+    onBrandMuted: Azure.c200,
   );
 
   static ShellColors of(BuildContext context) => Theme.of(context).extension<ShellColors>()!;

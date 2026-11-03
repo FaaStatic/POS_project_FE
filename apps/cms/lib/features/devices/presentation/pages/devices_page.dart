@@ -34,6 +34,7 @@ class DevicesPage extends StatelessWidget {
           body = ResponsiveTable<Device>(
             rows: state.items,
             rowKey: (d) => d.id,
+            onRefresh: () => cubit.load(state.platform),
             columns: [
               TableColumnSpec(label: l10n.user, flex: 2, cell: (_, d) => Text(d.username ?? l10n.unknownUser)),
               TableColumnSpec(label: l10n.platform, cell: (_, d) => Text(d.platform == DevicePlatform.ios ? 'iOS' : 'Android')),

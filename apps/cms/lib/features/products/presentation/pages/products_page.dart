@@ -68,6 +68,7 @@ class ProductsPage extends StatelessWidget {
                   builder: (items) => ResponsiveTable<Product>(
                     rows: items,
                     rowKey: (p) => p.id,
+                    onRefresh: () => cubit.load(),
                     onTap: (p) => openProductForm(context, cubit, existing: p),
                     hasMore: state.hasNext,
                     loadingMore: state.loadingMore,

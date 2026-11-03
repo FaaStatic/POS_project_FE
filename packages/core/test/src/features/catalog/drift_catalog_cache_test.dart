@@ -45,6 +45,19 @@ void main() {
     expect((await cache.watchProducts(search: '222').first).single.id, 'b');
   });
 
+  test('a limit reads only that many rows, in the same order', () async {
+    await cache.replaceProducts([
+      product('a', name: 'Aqua 600ml'),
+      product('b', name: 'Indomie Goreng'),
+      product('c', name: 'Indomie Soto'),
+    ]);
+    await cache.adjustStock({'c': -1}, countSale: true);
+    expect((await cache.watchProducts(limit: 1).first).map((p) => p.id), ['c']);
+    expect((await cache.watchProducts(limit: 2).first).map((p) => p.id), ['c', 'a']);
+    expect(await cache.watchProducts(limit: 100).first, hasLength(3));
+    expect((await cache.watchProducts(search: 'indomie', limit: 1).first).map((p) => p.id), ['c']);
+  });
+
   test('replace keeps sold counts and barcode lookup works', () async {
     await cache.replaceProducts([product('a', barcode: '111')]);
     await cache.adjustStock({'a': -2}, countSale: true);

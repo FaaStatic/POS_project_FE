@@ -40,6 +40,7 @@ class ResponsiveTable<T> extends StatelessWidget {
     this.hasMore = false,
     this.loadingMore = false,
     this.onLoadMore,
+    this.onRefresh,
   });
 
   final List<T> rows;
@@ -52,6 +53,11 @@ class ResponsiveTable<T> extends StatelessWidget {
   final bool hasMore;
   final bool loadingMore;
   final VoidCallback? onLoadMore;
+
+  /// Pull to refresh; the future completes when the reload is done.
+  final Future<void> Function()? onRefresh;
+
+  Widget _refreshable(Widget list) => onRefresh == null ? list : RefreshIndicator(onRefresh: onRefresh!, child: list);
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -70,9 +76,9 @@ class ResponsiveTable<T> extends StatelessWidget {
               ),
             )
           : null;
-      if (width < Breakpoints.medium) return _cards(context, more);
+      if (width < Breakpoints.medium) return _refreshable(_cards(context, more));
       final visible = width > Breakpoints.expanded ? columns : columns.where((c) => !c.secondary).toList();
-      return _table(context, visible, more);
+      return _refreshable(_table(context, visible, more));
     },
   );
 
@@ -91,6 +97,8 @@ class ResponsiveTable<T> extends StatelessWidget {
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: ListView.builder(
+          // A short list still has to be pullable.
+          physics: const AlwaysScrollableScrollPhysics(),
           itemCount: rows.length + 1 + (more == null ? 0 : 1),
           itemBuilder: (context, i) {
             if (i == 0) {
@@ -156,6 +164,7 @@ class ResponsiveTable<T> extends StatelessWidget {
     final theme = Theme.of(context);
     final label = theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant);
     return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(Space.lg),
       itemCount: rows.length + (more == null ? 0 : 1),
       separatorBuilder: (_, _) => const SizedBox(height: Space.md),

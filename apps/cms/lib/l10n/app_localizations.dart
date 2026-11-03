@@ -749,7 +749,7 @@ abstract class AppLocalizations {
   /// No description provided for @barcodeHint.
   ///
   /// In id, this message translates to:
-  /// **'Opsional'**
+  /// **'Kosong: dibuat otomatis'**
   String get barcodeHint;
 
   /// No description provided for @unit.

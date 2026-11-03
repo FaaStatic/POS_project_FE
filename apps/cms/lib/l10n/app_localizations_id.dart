@@ -360,7 +360,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get barcode => 'Barcode';
 
   @override
-  String get barcodeHint => 'Opsional';
+  String get barcodeHint => 'Kosong: dibuat otomatis';
 
   @override
   String get unit => 'Satuan';

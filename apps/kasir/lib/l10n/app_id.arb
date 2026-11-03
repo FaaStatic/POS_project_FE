@@ -215,6 +215,9 @@
   "printed": "Struk dicetak.",
   "printFailed": "Gagal mencetak. Pastikan printer menyala dan terhubung.",
   "receiptNumber": "No.",
+  "receiptMarkPaid": "LUNAS",
+  "receiptMarkDebt": "HUTANG",
+  "receiptMarkCancelled": "DIBATALKAN",
   "receiptDate": "Tanggal",
   "receiptCashier": "Kasir",
   "receiptCustomer": "Pelanggan",
@@ -412,6 +415,63 @@
       }
     }
   },
+  "outOfStockAdd": "{name} stoknya habis, tidak bisa ditambahkan ke keranjang.",
+  "@outOfStockAdd": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "changeCash": "Tunai",
+  "changeCandy": "Permen",
+  "changeProduct": "Produk lain",
+  "addChange": "Tambah kembalian",
+  "changeToGive": "Kembalian {amount}",
+  "@changeToGive": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "changeRemaining": "Belum dibagi {amount}",
+  "@changeRemaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "changeComplete": "Kembalian sudah pas",
+  "changeOverBy": "Lebih {amount} dari kembalian",
+  "@changeOverBy": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "changeAddRestCash": "Sisa sebagai tunai",
+  "changeAmount": "Nominal tunai",
+  "changePickProduct": "Pilih produk",
+  "changeNoProducts": "Tidak ada produk fisik dengan stok.",
+  "changeQty": "Jumlah",
+  "changeValue": "Senilai {amount}",
+  "@changeValue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "changeSheetTitle": "Tambah kembalian",
+  "vAmountPaidShort": "Uang diterima kurang dari total.",
+  "vAmountPaidRequired": "Isi uang diterima untuk mencatat kembalian.",
+  "vChangeMismatch": "Rincian kembalian belum sama dengan kembalian yang harus diberikan.",
+  "vChangeInvalid": "Ada baris kembalian yang tidak valid.",
+  "vChangeTooMany": "Kembalian maksimal 20 baris.",
+  "vChangeCashOnly": "Kembalian hanya untuk pembayaran tunai.",
   "back": "Kembali",
   "subtotal": "Subtotal",
   "cashierLine": "Kasir: {name}",

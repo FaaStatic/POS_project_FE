@@ -20,8 +20,13 @@ Uint8List? _bytesOf(String text) {
   }
   Uint8List? bytes;
   try {
-    // Another client may have stored it wrapped at 76 columns; whitespace is not part of the data.
-    bytes = base64Decode(text.replaceAll(RegExp(r'\s+'), ''));
+    // Another client may have stored a data URI, the URL-safe alphabet, no padding, or lines wrapped
+    // at 76 columns; none of that is part of the data.
+    final comma = text.indexOf(',');
+    final body = text.startsWith('data:') && comma > 0 ? text.substring(comma + 1) : text;
+    bytes = base64.decode(
+      base64.normalize(body.replaceAll(RegExp(r'\s+'), '').replaceAll('-', '+').replaceAll('_', '/')),
+    );
   } on FormatException {
     // Not base64 (a stray path, free text): remembered as such so it is not retried on every build.
   }

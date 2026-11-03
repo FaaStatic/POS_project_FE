@@ -8,7 +8,7 @@ import 'cms_page.dart';
 import 'destinations.dart';
 
 /// Drawer below 600, navigation rail up to 1024, persistent sidebar above.
-/// All three are white; the open page is marked in mint.
+/// All three are white; the open page is marked in blue.
 class CmsShell extends StatefulWidget {
   const CmsShell({super.key, required this.shell});
 

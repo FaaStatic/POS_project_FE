@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../constants/payment_method.dart';
+import 'change_line.dart';
 
 part 'transaction.freezed.dart';
 
@@ -53,6 +54,10 @@ abstract class CheckoutRequest with _$CheckoutRequest {
     required PaymentMethod method,
     String? customerId,
     required List<CheckoutLine> lines,
+
+    /// Cash received and how the change is handed back; both only for cash sales.
+    int? amountPaid,
+    @Default([]) List<ChangeLine> change,
   }) = _CheckoutRequest;
 }
 
@@ -77,6 +82,8 @@ abstract class OfflineSale with _$OfflineSale {
     required PaymentMethod method,
     String? customerId,
     required List<CheckoutLine> lines,
+    int? amountPaid,
+    @Default([]) List<ChangeLine> change,
   }) = _OfflineSale;
 }
 

@@ -150,7 +150,7 @@
   "productName": "Nama produk",
   "sku": "SKU",
   "barcode": "Barcode",
-  "barcodeHint": "Opsional",
+  "barcodeHint": "Kosong: dibuat otomatis",
   "unit": "Satuan",
   "productType": "Tipe",
   "physical": "Fisik",

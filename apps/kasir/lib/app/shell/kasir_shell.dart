@@ -44,7 +44,7 @@ class KasirShell extends StatelessWidget {
         return Scaffold(
           body: Row(
             children: [
-              // Wide windows: white rail with the open tab in mint, as in the CMS.
+              // Wide windows: white rail with the open tab in blue, as in the CMS.
               DecoratedBox(
                 decoration: BoxDecoration(
                   color: shellColors.nav,
@@ -74,7 +74,7 @@ class KasirShell extends StatelessWidget {
   }
 }
 
-/// Narrow windows: the navigation bar floats as a solid mint pill above the content.
+/// Narrow windows: the navigation bar floats as a solid blue pill above the content.
 class _FloatingNav extends StatelessWidget {
   const _FloatingNav({required this.selected, required this.onSelect, required this.destinations});
   final int selected;
@@ -101,8 +101,8 @@ class _FloatingNav extends StatelessWidget {
               backgroundColor: Colors.transparent,
               elevation: 0,
               height: 68,
-              // A lighter mint pill behind the open tab; white vs soft mint carries it too.
-              indicatorColor: theme.colorScheme.brightness == Brightness.light ? Mint.c700 : Mint.c800,
+              // A lighter blue pill behind the open tab; white vs soft blue carries it too.
+              indicatorColor: theme.colorScheme.brightness == Brightness.light ? Azure.c700 : Azure.c800,
               iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(color: fg(s))),
               labelTextStyle: WidgetStateProperty.resolveWith(
                 (s) => theme.textTheme.labelSmall?.copyWith(color: fg(s), fontWeight: FontWeight.w600),

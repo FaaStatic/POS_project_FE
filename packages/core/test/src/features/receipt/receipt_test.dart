@@ -12,6 +12,9 @@ const labels = ReceiptLabels(
   method: 'Bayar',
   offlineNote: 'Nomor sementara',
   storeNameMissing: 'Nama toko belum diatur',
+  markPaid: 'LUNAS',
+  markDebt: 'HUTANG',
+  markCancelled: 'DIBATALKAN',
 );
 
 void main() {
@@ -40,6 +43,52 @@ void main() {
     expect(text, contains('Rp 18.500'));
     for (final line in text.split('\n')) {
       expect(line.length, lessThanOrEqualTo(32), reason: line);
+    }
+  });
+
+  test('number, date and cashier are listed with their colons aligned, a long value wraps under itself', () {
+    final doc = ReceiptDocument.fromSale(
+      sale.copyWith(receiptNumber: 'INV-0123456789ABCDEF0123456789ABCDEF'),
+      const ReceiptSettings(),
+      methodLabel: (_) => 'Tunai',
+      labels: labels,
+    );
+    final text = doc.lines.map((l) => l.text).toList();
+    final first = text.indexWhere((l) => l.startsWith('No.'));
+    expect(text.sublist(first, first + 5), [
+      'No.      : INV-0123456789ABCD',
+      '           EF0123456789ABCDEF',
+      'Tanggal  : 25 Okt 2026 09.05',
+      'Kasir    : kasir1',
+      'Customer : Bu Sri',
+    ]);
+  });
+
+  test('a status mark is centered and bold under the total: paid, on credit, or cancelled', () {
+    String markFor(Sale s) => ReceiptDocument.fromSale(s, const ReceiptSettings(), methodLabel: (_) => 'x', labels: labels)
+        .lines
+        .firstWhere((l) => l.text.startsWith('***'))
+        .text;
+    final line = ReceiptDocument.fromSale(sale, const ReceiptSettings(), methodLabel: (_) => 'x', labels: labels)
+        .lines
+        .firstWhere((l) => l.text.startsWith('***'));
+    expect(line.align, ReceiptAlign.center);
+    expect(line.bold, isTrue);
+    expect(markFor(sale), '*** LUNAS ***');
+    expect(markFor(sale.copyWith(method: PaymentMethod.debt)), '*** HUTANG ***');
+    expect(markFor(sale.copyWith(status: SaleStatus.cancelled)), '*** DIBATALKAN ***');
+  });
+
+  test('no line carries a line break, even when a value is wider than the paper', () {
+    final doc = ReceiptDocument.fromSale(
+      sale.copyWith(total: 99999999999, lines: const [SaleLine(productId: 'p', name: 'Barang', qty: 123456, unitPrice: 99999999)]),
+      const ReceiptSettings(),
+      methodLabel: (_) => 'Transfer Virtual Account',
+      labels: labels,
+    );
+    expect(doc.lines.where((l) => l.text.contains('\n')), isEmpty);
+    for (final line in doc.lines) {
+      expect(line.text.length, lessThanOrEqualTo(32), reason: line.text);
     }
   });
 

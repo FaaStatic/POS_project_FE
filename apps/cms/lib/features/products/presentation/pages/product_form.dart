@@ -192,6 +192,7 @@ class _ProductFormState extends State<ProductForm> {
               ),
               AppTextField(label: l10n.barcode, hint: l10n.barcodeHint, controller: _barcode, validator: (v) => validationText(context, Validators.barcode(v))),
             ]),
+            if (p != null && p!.barcodeImage.isNotEmpty) BarcodeImage(dataUri: p!.barcodeImage, semanticLabel: l10n.barcode),
             AppAutocomplete(
               label: l10n.category,
               hint: l10n.categoryNewHint,

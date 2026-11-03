@@ -8,6 +8,7 @@ import 'package:ui/ui.dart';
 import '../../../../app/di.dart';
 import '../../../../common/catalog/catalog_cubits.dart';
 import '../../../../common/labels.dart';
+import '../../../../common/scrolls_when_short.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/checkout_bloc.dart';
 import '../widgets/cart_panel.dart';
@@ -30,7 +31,7 @@ class CheckoutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return BlocProvider(
-      create: (_) => getIt<ProductsCubit>()..start(),
+      create: (_) => getIt<ProductsCubit>()..start(pageSize: 30),
       child: Scaffold(
         body: SafeArea(
           bottom: false,
@@ -77,11 +78,11 @@ class CheckoutPage extends StatelessWidget {
                       // Short windows (phone landscape) drop the big title to give the list room.
                       _Header(showTitle: roomy),
                       if (roomy) ...[strip, const SizedBox(height: Space.sm)],
-                      Expanded(child: products),
+                      Expanded(key: const ValueKey('products'), child: products),
                       if (!wide) const _CartBar(),
                     ],
                   );
-                  if (!wide) return main;
+                  if (!wide) return ScrollsWhenShort(child: main);
                   // Tablets: the order runs full height beside the catalog, like a POS counter screen.
                   return Row(
                     children: [

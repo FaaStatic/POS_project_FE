@@ -32,6 +32,9 @@ ReceiptDocument receiptFor(BuildContext context, Sale sale, ReceiptSettings sett
       method: l10n.receiptMethod,
       offlineNote: l10n.receiptOfflineNote,
       storeNameMissing: l10n.storeNameMissing,
+      markPaid: l10n.receiptMarkPaid,
+      markDebt: l10n.receiptMarkDebt,
+      markCancelled: l10n.receiptMarkCancelled,
     ),
   );
 }

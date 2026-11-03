@@ -108,7 +108,7 @@
   "productName": "Product name",
   "sku": "SKU",
   "barcode": "Barcode",
-  "barcodeHint": "Optional",
+  "barcodeHint": "Empty: generated automatically",
   "unit": "Unit",
   "productType": "Type",
   "physical": "Physical",

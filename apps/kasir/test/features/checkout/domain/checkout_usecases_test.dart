@@ -64,6 +64,51 @@ void main() {
       verifyNever(() => remote.create(any()));
     });
 
+    ChangeLine aquaChange(double qty) => ChangeLine.goods(
+          kind: ChangeKind.product,
+          productId: 'p2',
+          productName: 'Aqua 600ml',
+          qty: qty,
+          unitPrice: 4000,
+          wholeOnly: true,
+        );
+
+    test('change in goods is sent, stored, and leaves the shelf', () async {
+      final draft = await local.draftWith([(indomie, 2)]);
+      when(() => remote.create(any())).thenAnswer((_) async => const Ok(CheckoutResult(
+            transactionId: 't1', invoice: 'INV-1', total: 7000, method: PaymentMethod.cash)));
+      final outcome = (await checkout()(draft, PaymentMethod.cash, amountPaid: 11000, change: [aquaChange(1)])
+              as Ok<CheckoutOutcome>)
+          .value;
+      final sent = verify(() => remote.create(captureAny())).captured.single as CheckoutRequest;
+      expect(sent.amountPaid, 11000);
+      expect(sent.change.single.productId, 'p2');
+      expect(outcome.sale.amountPaid, 11000);
+      expect(outcome.sale.change.single.amount, 4000);
+      expect((await local.cache.product('p2'))!.stock, 0);
+      expect((await local.cache.product('p1'))!.stock, 8);
+    });
+
+    test('offline sale keeps its change for the later sync', () async {
+      network.online = false;
+      final draft = await local.draftWith([(indomie, 2)]);
+      await checkout()(draft, PaymentMethod.cash, amountPaid: 10000, change: [ChangeLine.cash(3000)]);
+      final queued = (await local.sales.pending()).single;
+      expect(queued.amountPaid, 10000);
+      expect(queued.change.single.amount, 3000);
+    });
+
+    test('change that does not add up is rejected before anything is sent', () async {
+      final draft = await local.draftWith([(indomie, 2)]);
+      expect(
+        await checkout()(draft, PaymentMethod.cash, amountPaid: 10000, change: [ChangeLine.cash(2000)]),
+        const Err<CheckoutOutcome>(ValidationFailure('change_mismatch')),
+      );
+      verifyNever(() => remote.create(any()));
+      expect(await local.drafts.byId(draft.id), isNotNull);
+      expect((await local.cache.product('p1'))!.stock, 10);
+    });
+
     test('connection refused online falls back to the offline queue', () async {
       final draft = await local.draftWith([(indomie, 1)]);
       when(() => remote.create(any())).thenAnswer((_) async => const Err(NetworkFailure()));
@@ -123,6 +168,27 @@ void main() {
   });
 
   group('tabs', () {
+    test('a product with no stock cannot be added, by tap or by scan; digital products have no stock to run out', () async {
+      final habis = indomie.copyWith(id: 'p9', name: 'Kopi Habis', barcode: '777', stock: 0);
+      await local.cache.upsertProduct(habis);
+      final draft = await OpenDraft(local.drafts)();
+      final add = AddItem(local.drafts);
+      final scan = ScanBarcode(local.cache, add);
+
+      expect(await add(draft, habis), const Err<void>(ValidationFailure('out_of_stock')));
+      expect(await scan(draft, '777'), isA<ScanOutOfStock>().having((o) => o.product.id, 'product', 'p9'));
+      expect((await local.drafts.byId(draft.id))!.items, isEmpty);
+
+      expect(await add(draft, pulsa), isA<Ok<void>>());
+      expect(await add(draft, indomie.copyWith(stock: 0.5)), isA<Ok<void>>(), reason: 'a half unit is still in stock');
+      expect((await local.drafts.byId(draft.id))!.items, hasLength(2));
+    });
+
+    test('a locked tab is reported as locked even for a product with no stock', () async {
+      final draft = (await OpenDraft(local.drafts)()).copyWith(status: DraftStatus.paid);
+      expect(await AddItem(local.drafts)(draft, indomie.copyWith(stock: 0)), const Err<void>(ConflictFailure('draft_locked')));
+    });
+
     test('add, scan known and unknown codes, close', () async {
       final draft = await OpenDraft(local.drafts)();
       final add = AddItem(local.drafts);

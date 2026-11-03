@@ -43,6 +43,7 @@ class DebtsPage extends StatelessWidget {
                 builder: (items) => ResponsiveTable<Debt>(
                   rows: items,
                   rowKey: (d) => d.id,
+                  onRefresh: () => cubit.load(),
                   onTap: (d) => context.push('/customers/${d.customerId}'),
                   hasMore: state.hasNext,
                   loadingMore: state.loadingMore,

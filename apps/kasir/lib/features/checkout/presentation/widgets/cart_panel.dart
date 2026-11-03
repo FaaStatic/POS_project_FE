@@ -9,6 +9,7 @@ import 'package:ui/ui.dart';
 import '../../../../common/labels.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/checkout_bloc.dart';
+import 'change_sheet.dart';
 import 'charge_view.dart';
 import 'customer_picker.dart';
 
@@ -248,10 +249,8 @@ class _CartLine extends StatelessWidget {
                     QtyStepper(
                       value: item.qty,
                       itemName: item.name,
-                      allowFraction:
-                          item.unit == ProductUnit.kg.index ||
-                          item.unit == ProductUnit.liter.index ||
-                          item.unit == ProductUnit.gram.index,
+                      // The backend takes fractions for every unit except pcs.
+                      allowFraction: item.unit != ProductUnit.pcs.index,
                       onChanged: (q) => bloc.add(QtyChanged(item.id, q)),
                     ),
                     Text(rupiah(context, item.subtotal(debt: debt)), style: theme.textTheme.titleSmall?.tabular),
@@ -315,6 +314,9 @@ class _PaymentStep extends StatefulWidget {
 class _PaymentStepState extends State<_PaymentStep> {
   final _received = TextEditingController();
 
+  /// How the change is handed back; only read once cash received is entered.
+  final _change = <ChangeLine>[];
+
   @override
   void dispose() {
     _received.dispose();
@@ -346,6 +348,10 @@ class _PaymentStepState extends State<_PaymentStep> {
     final received = int.tryParse(_received.text) ?? 0;
     final cash = state.method == PaymentMethod.cash;
     final short = cash && received > 0 && received < total;
+    final due = cash && received > total ? received - total : 0;
+    final remaining = due - _change.fold<int>(0, (sum, l) => sum + l.amount);
+    // Once cash received is typed, the change must be split exactly before the sale can finish.
+    final unsplit = cash && received > 0 && !short && remaining != 0;
 
     final methods = [
       (PaymentMethod.cash, Iconsax.money_copy, l10n.cashHint),
@@ -458,6 +464,42 @@ class _PaymentStepState extends State<_PaymentStep> {
                             strong: true,
                           ),
                         ],
+                        if (due > 0) ...[
+                          const SizedBox(height: Space.md),
+                          for (final (i, line) in _change.indexed)
+                            _ChangeRow(line: line, onRemove: () => setState(() => _change.removeAt(i))),
+                          _SummaryRow(
+                            label: remaining == 0
+                                ? l10n.changeComplete
+                                : remaining > 0
+                                ? l10n.changeRemaining(rupiah(context, remaining))
+                                : l10n.changeOverBy(rupiah(context, -remaining)),
+                            value: '',
+                            color: remaining == 0 ? status.success : status.danger,
+                          ),
+                          if (remaining > 0) ...[
+                            const SizedBox(height: Space.sm),
+                            Wrap(
+                              spacing: Space.sm,
+                              runSpacing: Space.sm,
+                              children: [
+                                AppButton(
+                                  label: l10n.addChange,
+                                  variant: AppButtonVariant.outline,
+                                  onPressed: () async {
+                                    final line = await showChangeLineSheet(context, remaining: remaining);
+                                    if (line != null && mounted) setState(() => _change.add(line));
+                                  },
+                                ),
+                                AppButton(
+                                  label: l10n.changeAddRestCash,
+                                  variant: AppButtonVariant.outline,
+                                  onPressed: () => setState(() => _change.add(ChangeLine.cash(remaining))),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
                       ],
                     ),
                   ),
@@ -474,10 +516,37 @@ class _PaymentStepState extends State<_PaymentStep> {
               large: true,
               expand: true,
               loading: state.paying,
-              onPressed: reason != null || short ? null : () => bloc.add(PayRequested(bank: state.vaBank)),
+              onPressed: reason != null || short || unsplit
+                  ? null
+                  : () => bloc.add(
+                      PayRequested(
+                        bank: state.vaBank,
+                        amountPaid: cash && received > 0 ? received : null,
+                        change: cash && received > 0 ? List.of(_change) : const [],
+                      ),
+                    ),
             ),
           ],
         ),
+      ],
+    );
+  }
+}
+
+class _ChangeRow extends StatelessWidget {
+  const _ChangeRow({required this.line, required this.onRemove});
+  final ChangeLine line;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final label = line.isCash ? l10n.changeCash : '${line.productName} × ${qty(context, line.qty)}';
+    return Row(
+      children: [
+        Expanded(child: Text(label, maxLines: 2, overflow: TextOverflow.ellipsis)),
+        Text(rupiah(context, line.amount), style: Theme.of(context).textTheme.titleSmall?.tabular),
+        IconButton(tooltip: l10n.remove, onPressed: onRemove, icon: const Icon(Icons.close_rounded, size: 20)),
       ],
     );
   }
@@ -505,7 +574,7 @@ class _MethodCard extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final fg = selected ? scheme.onPrimary : (enabled ? scheme.onSurface : scheme.onSurfaceVariant);
-    // Full strength on the mint fill: a faded subtitle drops under 4.5:1.
+    // Full strength on the blue fill: a faded subtitle drops under 4.5:1.
     final sub = selected ? scheme.onPrimary : scheme.onSurfaceVariant;
     return Semantics(
       selected: selected,

@@ -5,6 +5,8 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:ui/ui.dart';
 
 import '../../../../app/di.dart';
+import '../../../../common/pull_refresh.dart';
+import '../../../../common/scrolls_when_short.dart';
 import '../../../../app/shell/kasir_page.dart';
 import '../../../../common/catalog/catalog_cubits.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -30,7 +32,7 @@ class CustomersPage extends StatelessWidget {
                 onPressed: () => context.push('/customers/new'),
               ),
             ],
-            body: Column(
+            body: ScrollsWhenShort(child: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(Space.lg),
@@ -46,7 +48,8 @@ class CustomersPage extends StatelessWidget {
                           actionLabel: l10n.addCustomer,
                           onAction: () => context.push('/customers/new'),
                         )
-                      : ListView.separated(
+                      : PullRefresh(child: ListView.separated(
+                          physics: PullRefresh.physics,
                           padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.lg, Space.lg),
                           itemCount: state.customers.length,
                           separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
@@ -64,10 +67,10 @@ class CustomersPage extends StatelessWidget {
                               ),
                             );
                           },
-                        ),
+                        ),)
                 ),
               ],
-            ),
+            )),
           );
         },
       ),

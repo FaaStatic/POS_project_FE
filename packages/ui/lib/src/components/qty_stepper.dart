@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -7,6 +9,27 @@ import '../../l10n/ui_localizations.dart';
 import '../tokens/spacing.dart';
 import '../tokens/typography.dart';
 import 'app_button.dart';
+
+/// Whole numbers for pieces; otherwise digits with one comma or dot and at most three
+/// decimals, the most the backend keeps (`numeric(12,3)`).
+List<TextInputFormatter> qtyInputFormatters({required bool fraction}) => [
+  if (fraction)
+    TextInputFormatter.withFunction((old, next) {
+      final m = RegExp(r'^(\d*[.,]?)(\d*)$').firstMatch(next.text);
+      if (m == null) return old;
+      final text = '${m[1]}${m[2]!.length > 3 ? m[2]!.substring(0, 3) : m[2]}';
+      return text == next.text ? next : TextEditingValue(text: text, selection: TextSelection.collapsed(offset: text.length));
+    })
+  else
+    FilteringTextInputFormatter.digitsOnly,
+];
+
+/// 1 → "1", 0.25 → "0,25", 1.2500000000000002 → "1,25".
+String qtyText(double value) {
+  final rounded = (value * 1000).roundToDouble() / 1000;
+  if (rounded == rounded.roundToDouble()) return '${rounded.round()}';
+  return rounded.toStringAsFixed(3).replaceFirst(RegExp(r'0+$'), '').replaceAll('.', ',');
+}
 
 /// − qty + with 48dp targets. Tapping the number opens a numeric keypad for
 /// large or fractional quantities (kg, liter).
@@ -26,7 +49,10 @@ class QtyStepper extends StatelessWidget {
   final bool enabled;
   final bool allowFraction;
 
-  String get _label => value == value.roundToDouble() ? '${value.round()}' : '$value'.replaceAll('.', ',');
+  String get _label => qtyText(value);
+
+  /// ± 1 from the typed value, so 0,25 steps to 1,25; kept at three decimals like the backend.
+  double _stepped(double delta) => max(0, (value + delta) * 1000).roundToDouble() / 1000;
 
   Future<void> _edit(BuildContext context) async {
     final result = await showShadDialog<double>(
@@ -59,7 +85,7 @@ class QtyStepper extends StatelessWidget {
             backgroundColor: scheme.surfaceContainer,
             foregroundColor: scheme.onSurface,
           ),
-          onPressed: enabled ? () => onChanged(value - 1 < 0 ? 0 : value - 1) : null,
+          onPressed: enabled ? () => onChanged(_stepped(-1)) : null,
           icon: const Icon(Icons.remove_rounded, size: 20),
         ),
         Semantics(
@@ -78,7 +104,7 @@ class QtyStepper extends StatelessWidget {
         IconButton.filled(
           tooltip: l10n.increase,
           style: IconButton.styleFrom(shape: square, minimumSize: drawn, fixedSize: drawn, padding: EdgeInsets.zero),
-          onPressed: enabled ? () => onChanged(value + 1) : null,
+          onPressed: enabled ? () => onChanged(_stepped(1)) : null,
           icon: const Icon(Icons.add_rounded, size: 20),
         ),
       ],
@@ -121,7 +147,7 @@ class _QtyDialogState extends State<_QtyDialog> {
         autofocus: true,
         label: Text(l10n.quantity),
         keyboardType: TextInputType.numberWithOptions(decimal: widget.allowFraction),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(widget.allowFraction ? r'[0-9.,]' : r'[0-9]'))],
+        inputFormatters: qtyInputFormatters(fraction: widget.allowFraction),
         onSubmitted: (_) => _submit(),
       ),
     );

@@ -1578,6 +1578,28 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _amountPaidMeta = const VerificationMeta(
+    'amountPaid',
+  );
+  @override
+  late final GeneratedColumn<int> amountPaid = GeneratedColumn<int>(
+    'amount_paid',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _changeJsonMeta = const VerificationMeta(
+    'changeJson',
+  );
+  @override
+  late final GeneratedColumn<String> changeJson = GeneratedColumn<String>(
+    'change_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     clientRef,
@@ -1594,6 +1616,8 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
     transactionId,
     stockConflict,
     cancelReason,
+    amountPaid,
+    changeJson,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1723,6 +1747,18 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
         ),
       );
     }
+    if (data.containsKey('amount_paid')) {
+      context.handle(
+        _amountPaidMeta,
+        amountPaid.isAcceptableOrUnknown(data['amount_paid']!, _amountPaidMeta),
+      );
+    }
+    if (data.containsKey('change_json')) {
+      context.handle(
+        _changeJsonMeta,
+        changeJson.isAcceptableOrUnknown(data['change_json']!, _changeJsonMeta),
+      );
+    }
     return context;
   }
 
@@ -1788,6 +1824,14 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
         DriftSqlType.string,
         data['${effectivePrefix}cancel_reason'],
       ),
+      amountPaid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_paid'],
+      ),
+      changeJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}change_json'],
+      ),
     );
   }
 
@@ -1818,6 +1862,12 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
   final String? transactionId;
   final bool stockConflict;
   final String? cancelReason;
+
+  /// Cash received, set only when the cashier entered it.
+  final int? amountPaid;
+
+  /// JSON list of the change lines (kind, amount, product, qty); null when none were recorded.
+  final String? changeJson;
   const SaleRow({
     required this.clientRef,
     required this.receiptNumber,
@@ -1833,6 +1883,8 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     this.transactionId,
     required this.stockConflict,
     this.cancelReason,
+    this.amountPaid,
+    this.changeJson,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1860,6 +1912,12 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     map['stock_conflict'] = Variable<bool>(stockConflict);
     if (!nullToAbsent || cancelReason != null) {
       map['cancel_reason'] = Variable<String>(cancelReason);
+    }
+    if (!nullToAbsent || amountPaid != null) {
+      map['amount_paid'] = Variable<int>(amountPaid);
+    }
+    if (!nullToAbsent || changeJson != null) {
+      map['change_json'] = Variable<String>(changeJson);
     }
     return map;
   }
@@ -1890,6 +1948,12 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
       cancelReason: cancelReason == null && nullToAbsent
           ? const Value.absent()
           : Value(cancelReason),
+      amountPaid: amountPaid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(amountPaid),
+      changeJson: changeJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(changeJson),
     );
   }
 
@@ -1913,6 +1977,8 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
       transactionId: serializer.fromJson<String?>(json['transactionId']),
       stockConflict: serializer.fromJson<bool>(json['stockConflict']),
       cancelReason: serializer.fromJson<String?>(json['cancelReason']),
+      amountPaid: serializer.fromJson<int?>(json['amountPaid']),
+      changeJson: serializer.fromJson<String?>(json['changeJson']),
     );
   }
   @override
@@ -1933,6 +1999,8 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
       'transactionId': serializer.toJson<String?>(transactionId),
       'stockConflict': serializer.toJson<bool>(stockConflict),
       'cancelReason': serializer.toJson<String?>(cancelReason),
+      'amountPaid': serializer.toJson<int?>(amountPaid),
+      'changeJson': serializer.toJson<String?>(changeJson),
     };
   }
 
@@ -1951,6 +2019,8 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     Value<String?> transactionId = const Value.absent(),
     bool? stockConflict,
     Value<String?> cancelReason = const Value.absent(),
+    Value<int?> amountPaid = const Value.absent(),
+    Value<String?> changeJson = const Value.absent(),
   }) => SaleRow(
     clientRef: clientRef ?? this.clientRef,
     receiptNumber: receiptNumber ?? this.receiptNumber,
@@ -1968,6 +2038,8 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
         : this.transactionId,
     stockConflict: stockConflict ?? this.stockConflict,
     cancelReason: cancelReason.present ? cancelReason.value : this.cancelReason,
+    amountPaid: amountPaid.present ? amountPaid.value : this.amountPaid,
+    changeJson: changeJson.present ? changeJson.value : this.changeJson,
   );
   SaleRow copyWithCompanion(SalesCompanion data) {
     return SaleRow(
@@ -1999,6 +2071,12 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
       cancelReason: data.cancelReason.present
           ? data.cancelReason.value
           : this.cancelReason,
+      amountPaid: data.amountPaid.present
+          ? data.amountPaid.value
+          : this.amountPaid,
+      changeJson: data.changeJson.present
+          ? data.changeJson.value
+          : this.changeJson,
     );
   }
 
@@ -2018,7 +2096,9 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
           ..write('error: $error, ')
           ..write('transactionId: $transactionId, ')
           ..write('stockConflict: $stockConflict, ')
-          ..write('cancelReason: $cancelReason')
+          ..write('cancelReason: $cancelReason, ')
+          ..write('amountPaid: $amountPaid, ')
+          ..write('changeJson: $changeJson')
           ..write(')'))
         .toString();
   }
@@ -2039,6 +2119,8 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     transactionId,
     stockConflict,
     cancelReason,
+    amountPaid,
+    changeJson,
   );
   @override
   bool operator ==(Object other) =>
@@ -2057,7 +2139,9 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
           other.error == this.error &&
           other.transactionId == this.transactionId &&
           other.stockConflict == this.stockConflict &&
-          other.cancelReason == this.cancelReason);
+          other.cancelReason == this.cancelReason &&
+          other.amountPaid == this.amountPaid &&
+          other.changeJson == this.changeJson);
 }
 
 class SalesCompanion extends UpdateCompanion<SaleRow> {
@@ -2075,6 +2159,8 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
   final Value<String?> transactionId;
   final Value<bool> stockConflict;
   final Value<String?> cancelReason;
+  final Value<int?> amountPaid;
+  final Value<String?> changeJson;
   final Value<int> rowid;
   const SalesCompanion({
     this.clientRef = const Value.absent(),
@@ -2091,6 +2177,8 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     this.transactionId = const Value.absent(),
     this.stockConflict = const Value.absent(),
     this.cancelReason = const Value.absent(),
+    this.amountPaid = const Value.absent(),
+    this.changeJson = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SalesCompanion.insert({
@@ -2108,6 +2196,8 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     this.transactionId = const Value.absent(),
     this.stockConflict = const Value.absent(),
     this.cancelReason = const Value.absent(),
+    this.amountPaid = const Value.absent(),
+    this.changeJson = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : clientRef = Value(clientRef),
        receiptNumber = Value(receiptNumber),
@@ -2131,6 +2221,8 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     Expression<String>? transactionId,
     Expression<bool>? stockConflict,
     Expression<String>? cancelReason,
+    Expression<int>? amountPaid,
+    Expression<String>? changeJson,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2148,6 +2240,8 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
       if (transactionId != null) 'transaction_id': transactionId,
       if (stockConflict != null) 'stock_conflict': stockConflict,
       if (cancelReason != null) 'cancel_reason': cancelReason,
+      if (amountPaid != null) 'amount_paid': amountPaid,
+      if (changeJson != null) 'change_json': changeJson,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2167,6 +2261,8 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     Value<String?>? transactionId,
     Value<bool>? stockConflict,
     Value<String?>? cancelReason,
+    Value<int?>? amountPaid,
+    Value<String?>? changeJson,
     Value<int>? rowid,
   }) {
     return SalesCompanion(
@@ -2184,6 +2280,8 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
       transactionId: transactionId ?? this.transactionId,
       stockConflict: stockConflict ?? this.stockConflict,
       cancelReason: cancelReason ?? this.cancelReason,
+      amountPaid: amountPaid ?? this.amountPaid,
+      changeJson: changeJson ?? this.changeJson,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2233,6 +2331,12 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     if (cancelReason.present) {
       map['cancel_reason'] = Variable<String>(cancelReason.value);
     }
+    if (amountPaid.present) {
+      map['amount_paid'] = Variable<int>(amountPaid.value);
+    }
+    if (changeJson.present) {
+      map['change_json'] = Variable<String>(changeJson.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2256,6 +2360,8 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
           ..write('transactionId: $transactionId, ')
           ..write('stockConflict: $stockConflict, ')
           ..write('cancelReason: $cancelReason, ')
+          ..write('amountPaid: $amountPaid, ')
+          ..write('changeJson: $changeJson, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4318,6 +4424,8 @@ typedef $$SalesTableCreateCompanionBuilder = SalesCompanion Function({
   Value<String?> transactionId,
   Value<bool> stockConflict,
   Value<String?> cancelReason,
+  Value<int?> amountPaid,
+  Value<String?> changeJson,
   Value<int> rowid,
 });
 typedef $$SalesTableUpdateCompanionBuilder = SalesCompanion Function({
@@ -4335,6 +4443,8 @@ typedef $$SalesTableUpdateCompanionBuilder = SalesCompanion Function({
   Value<String?> transactionId,
   Value<bool> stockConflict,
   Value<String?> cancelReason,
+  Value<int?> amountPaid,
+  Value<String?> changeJson,
   Value<int> rowid,
 });
 
@@ -4413,6 +4523,16 @@ class $$SalesTableFilterComposer extends Composer<_$AppDatabase, $SalesTable> {
 
   ColumnFilters<String> get cancelReason => $composableBuilder(
     column: $table.cancelReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountPaid => $composableBuilder(
+    column: $table.amountPaid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get changeJson => $composableBuilder(
+    column: $table.changeJson,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4495,6 +4615,16 @@ class $$SalesTableOrderingComposer
     column: $table.cancelReason,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get amountPaid => $composableBuilder(
+    column: $table.amountPaid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get changeJson => $composableBuilder(
+    column: $table.changeJson,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SalesTableAnnotationComposer
@@ -4561,6 +4691,16 @@ class $$SalesTableAnnotationComposer
     column: $table.cancelReason,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get amountPaid => $composableBuilder(
+    column: $table.amountPaid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get changeJson => $composableBuilder(
+    column: $table.changeJson,
+    builder: (column) => column,
+  );
 }
 
 class $$SalesTableTableManager
@@ -4605,6 +4745,8 @@ class $$SalesTableTableManager
                 Value<String?> transactionId = const Value.absent(),
                 Value<bool> stockConflict = const Value.absent(),
                 Value<String?> cancelReason = const Value.absent(),
+                Value<int?> amountPaid = const Value.absent(),
+                Value<String?> changeJson = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SalesCompanion(
                 clientRef: clientRef,
@@ -4621,6 +4763,8 @@ class $$SalesTableTableManager
                 transactionId: transactionId,
                 stockConflict: stockConflict,
                 cancelReason: cancelReason,
+                amountPaid: amountPaid,
+                changeJson: changeJson,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4639,6 +4783,8 @@ class $$SalesTableTableManager
                 Value<String?> transactionId = const Value.absent(),
                 Value<bool> stockConflict = const Value.absent(),
                 Value<String?> cancelReason = const Value.absent(),
+                Value<int?> amountPaid = const Value.absent(),
+                Value<String?> changeJson = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SalesCompanion.insert(
                 clientRef: clientRef,
@@ -4655,6 +4801,8 @@ class $$SalesTableTableManager
                 transactionId: transactionId,
                 stockConflict: stockConflict,
                 cancelReason: cancelReason,
+                amountPaid: amountPaid,
+                changeJson: changeJson,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

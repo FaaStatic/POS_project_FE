@@ -53,6 +53,7 @@ export 'src/features/staff/domain/repositories/staff_repository.dart';
 export 'src/features/staff/domain/usecases/staff_usecases.dart';
 export 'src/features/transaction/data/models/transaction_model.dart';
 export 'src/features/transaction/data/repositories/transaction_repository_impl.dart';
+export 'src/features/transaction/domain/entities/change_line.dart';
 export 'src/features/transaction/domain/entities/transaction.dart';
 export 'src/features/transaction/domain/repositories/transaction_repository.dart';
 export 'src/features/transaction/domain/usecases/transaction_usecases.dart';

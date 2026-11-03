@@ -162,7 +162,7 @@ class _Tab extends StatelessWidget {
     final scheme = theme.colorScheme;
     final status = StatusColors.of(context);
     final radius = BorderRadius.circular(Radii.medium);
-    // Full-strength subtitle on the active mint tab: a faded one drops under 4.5:1.
+    // Full-strength subtitle on the active blue tab: a faded one drops under 4.5:1.
     final fg = active ? scheme.onPrimary : scheme.onSurface;
     final sub = active ? scheme.onPrimary : (highlight ? status.success : scheme.onSurfaceVariant);
     return Semantics(

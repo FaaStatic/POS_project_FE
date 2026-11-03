@@ -23,9 +23,9 @@ class StatusBadge extends StatelessWidget {
     final dark = theme.brightness == Brightness.dark;
     final (bg, fg) = switch (tone) {
       BadgeTone.neutral => (scheme.surfaceContainerHigh, scheme.onSurface),
-      BadgeTone.success => (status.successContainer, dark ? Mint.c200 : Mint.c800),
-      BadgeTone.warning => (status.warningContainer, dark ? BrandColors.amberDark : const Color(0xFF92400E)),
-      BadgeTone.danger => (status.dangerContainer, dark ? BrandColors.redDark : const Color(0xFF7F1D1D)),
+      BadgeTone.success => (status.successContainer, status.success),
+      BadgeTone.warning => (status.warningContainer, dark ? BrandColors.amberDark : const Color(0xFF5C3B09)),
+      BadgeTone.danger => (status.dangerContainer, dark ? BrandColors.redDark : const Color(0xFF8A0D20)),
     };
     return ShadBadge(
       backgroundColor: bg,

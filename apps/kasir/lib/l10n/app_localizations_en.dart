@@ -337,6 +337,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get receiptNumber => 'No.';
 
   @override
+  String get receiptMarkPaid => 'PAID';
+
+  @override
+  String get receiptMarkDebt => 'ON CREDIT';
+
+  @override
+  String get receiptMarkCancelled => 'CANCELLED';
+
+  @override
   String get receiptDate => 'Date';
 
   @override
@@ -679,6 +688,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String shortBy(String amount) {
     return 'Short by $amount';
   }
+
+  @override
+  String outOfStockAdd(String name) {
+    return '$name is out of stock and cannot be added to the cart.';
+  }
+
+  @override
+  String get changeCash => 'Cash';
+
+  @override
+  String get changeCandy => 'Candy';
+
+  @override
+  String get changeProduct => 'Other product';
+
+  @override
+  String get addChange => 'Add change';
+
+  @override
+  String changeToGive(String amount) {
+    return 'Change $amount';
+  }
+
+  @override
+  String changeRemaining(String amount) {
+    return 'Not yet split $amount';
+  }
+
+  @override
+  String get changeComplete => 'Change adds up';
+
+  @override
+  String changeOverBy(String amount) {
+    return '$amount over the change';
+  }
+
+  @override
+  String get changeAddRestCash => 'Rest as cash';
+
+  @override
+  String get changeAmount => 'Cash amount';
+
+  @override
+  String get changePickProduct => 'Pick a product';
+
+  @override
+  String get changeNoProducts => 'No physical product in stock.';
+
+  @override
+  String get changeQty => 'Quantity';
+
+  @override
+  String changeValue(String amount) {
+    return 'Worth $amount';
+  }
+
+  @override
+  String get changeSheetTitle => 'Add change';
+
+  @override
+  String get vAmountPaidShort => 'Cash received is less than the total.';
+
+  @override
+  String get vAmountPaidRequired => 'Enter the cash received to record change.';
+
+  @override
+  String get vChangeMismatch => 'The change lines do not match the change due.';
+
+  @override
+  String get vChangeInvalid => 'A change line is not valid.';
+
+  @override
+  String get vChangeTooMany => 'Change can have at most 20 lines.';
+
+  @override
+  String get vChangeCashOnly => 'Change only applies to cash payments.';
 
   @override
   String get back => 'Back';

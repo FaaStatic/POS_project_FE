@@ -6,6 +6,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:ui/ui.dart';
 
 import '../../../../app/di.dart';
+import '../../../../common/pull_refresh.dart';
 import '../../../../app/shell/kasir_page.dart';
 import '../../../../common/labels.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -25,11 +26,14 @@ class HistoryPage extends StatelessWidget {
           builder: (context, state) {
             if (state.loading) return const LoadingView();
             if (state.sales.isEmpty) return EmptyState(icon: Iconsax.receipt_2_copy, message: l10n.historyEmpty);
-            return ListView.separated(
-              padding: const EdgeInsets.all(Space.lg),
-              itemCount: state.sales.length,
-              separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
-              itemBuilder: (context, i) => SaleTile(key: ValueKey(state.sales[i].clientRef), sale: state.sales[i]),
+            return PullRefresh(
+              child: ListView.separated(
+                physics: PullRefresh.physics,
+                padding: const EdgeInsets.all(Space.lg),
+                itemCount: state.sales.length,
+                separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
+                itemBuilder: (context, i) => SaleTile(key: ValueKey(state.sales[i].clientRef), sale: state.sales[i]),
+              ),
             );
           },
         ),

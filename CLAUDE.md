@@ -29,7 +29,7 @@ dart run melos run kasir -- -d <id>   # kasir di device
 - Test double HTTP (`FakeAdapter`) diekspor dari `package:core/testing.dart`; jangan di-import kode produksi.
 - Enum backend: `type_payment` 0 tunai, 1 hutang, 2 transfer (VA), 3 qris; `unit` 0 pcs, 1 gram, 2 kg, 3 liter, 4 kardus, 5 ikat; `product_type` 0 fisik, 1 digital.
 - Komponen memakai `shadcn_ui` (dependency di `packages/ui`). Kedua app membungkus `MaterialApp.router` dengan `ShadApp.custom` + `ShadAppBuilder`. `ui.dart` hanya me-re-export widget Shad yang dipakai lewat `show`, karena `shadcn_ui` juga mengekspor boxy, flutter_animate, intl, dan two_dimensional_scrollables. Material tetap dipakai untuk widget yang tidak punya padanan Shad (`ListTile`, `ChoiceChip`, `Autocomplete`, `MenuAnchor`, `NavigationRail`/`NavigationBar`) dan untuk stepper qty, karena tombol Shad tidak punya area sentuh 48dp.
-- Skema warna putih + mint (`Mint`, `Neutral` di `ui/src/tokens/colors.dart`), terang dan gelap. Dua densitas: `AppTheme.compact` untuk CMS (kontrol 40, body 14) dan `AppTheme.touch` untuk kasir (kontrol 48, aksi utama 56, body 16). Ukuran dibaca lewat `AppSizes.of(context)`.
+- Skema warna putih + biru (`Azure`, `Neutral` di `ui/src/tokens/colors.dart`), terang dan gelap. Dua densitas: `AppTheme.compact` untuk CMS (kontrol 40, body 14) dan `AppTheme.touch` untuk kasir (kontrol 48, aksi utama 56, body 16). Ukuran dibaca lewat `AppSizes.of(context)`.
 - Ikon Iconsax memakai varian `_copy` (linear/outline). Nama tanpa `_copy` adalah varian bold.
 - Referensi desain: CMS dari "CMS Dashboard Design" oleh Faysol Ahmed Sozib (dribbble.com/shots/16763871), kasir dari "Mobile App Design for POS" oleh Vinz (dribbble.com/shots/27265995). Credit (`DesignCredit`) hanya ada di halaman Pengaturan CMS dan bawah halaman Lainnya kasir, tidak di footer atau login.
 - Gambar produk: file WebP, rasio 1:1, maks 500 KB (`ProductImage.validate` di `core`, kunci error `image_not_webp|image_not_square|image_too_large`). Field `image` backend hanya `text` tanpa validasi, jadi dikirim sebagai base64 mentah (tanpa awalan `data:`), dan `imageProviderFor` di `ui` yang membedakan URL lama dari base64. CMS dan kasir memakai `ImageUploadField` (`ui`) lewat `ProductImageField` masing-masing; hanya cara memilih file yang beda (CMS `common/file_picker`, kasir `file_selector`). Bulk CMS membawa base64 di kolom CSV `image`; backend membatasi body 25 MB, jadi total gambar dijaga 20 MB.
@@ -120,7 +120,7 @@ packages/core/lib/
 packages/ui/lib/
 ├── ui.dart
 └── src/
-    ├── tokens/        # colors.dart (hijau-putih, terang/gelap), spacing, radius, typography (Inter)
+    ├── tokens/        # colors.dart (biru-putih, terang/gelap), spacing, radius, typography (Inter)
     ├── theme/         # app_theme.dart → ThemeData M3 terang/gelap dari token, tanpa Dynamic Color
     ├── components/    # satu file per komponen dari daftar bagian 7 (button, input, data_table, tab_strip, ...)
     └── l10n/          # ARB teks komponen (id, en)

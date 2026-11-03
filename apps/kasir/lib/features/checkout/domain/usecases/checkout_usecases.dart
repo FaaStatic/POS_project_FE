@@ -27,6 +27,8 @@ class AddItem {
 
   Future<Result<void>> call(Draft draft, Product product, {double qty = 1}) async {
     if (draft.isLocked) return const Err(ConflictFailure('draft_locked'));
+    // Digital products (pulsa, e-wallet) have no stock to run out of.
+    if (!product.isDigital && product.stock <= 0) return const Err(ValidationFailure('out_of_stock'));
     await _drafts.addProduct(draft.id, product, qty: qty);
     return const Ok(null);
   }
@@ -50,6 +52,11 @@ final class ScanLocked extends ScanOutcome {
   const ScanLocked();
 }
 
+final class ScanOutOfStock extends ScanOutcome {
+  const ScanOutOfStock(this.product);
+  final Product product;
+}
+
 /// Looks the code up in the local cache so scanning works offline.
 class ScanBarcode {
   const ScanBarcode(this._cache, this._addItem);
@@ -61,6 +68,7 @@ class ScanBarcode {
     if (product == null) return ScanUnknown(code.trim());
     return switch (await _addItem(draft, product)) {
       Ok() => ScanAdded(product),
+      Err(failure: ValidationFailure(message: 'out_of_stock')) => ScanOutOfStock(product),
       Err() => const ScanLocked(),
     };
   }
@@ -107,12 +115,26 @@ class CheckoutTransaction {
   final DateTime Function() _clock;
   final String Function() _newRef;
 
-  Future<Result<CheckoutOutcome>> call(Draft draft, PaymentMethod method) async {
+  /// [amountPaid] and [change] are the cash received and how the change is handed back;
+  /// leave both out and nothing about the change is recorded.
+  Future<Result<CheckoutOutcome>> call(
+    Draft draft,
+    PaymentMethod method, {
+    int? amountPaid,
+    List<ChangeLine> change = const [],
+  }) async {
     final user = session();
     if (user == null) return const Err(UnauthorizedFailure());
     if (!method.worksOffline) return const Err(ValidationFailure('use_charge'));
     if (draft.isLocked) return const Err(ConflictFailure('draft_locked'));
     final debt = method == PaymentMethod.debt;
+    final badChange = validateChange(
+      method: method,
+      total: draft.total(debt: debt),
+      amountPaid: amountPaid,
+      change: change,
+    );
+    if (badChange != null) return Err(ValidationFailure(badChange));
     final lines = [
       for (final i in draft.items)
         CheckoutLine(
@@ -153,6 +175,8 @@ class CheckoutTransaction {
       status: status,
       transactionId: transactionId,
       stockConflict: conflict,
+      amountPaid: amountPaid,
+      change: change,
     );
 
     if (await network.isOnline()) {
@@ -163,6 +187,8 @@ class CheckoutTransaction {
           method: method,
           customerId: draft.customerId,
           lines: lines,
+          amountPaid: amountPaid,
+          change: change,
         ),
       );
       switch (result) {
@@ -191,6 +217,12 @@ class CheckoutTransaction {
   Future<void> _commit(Draft draft, Sale sale) async {
     await sales.add(sale);
     await cache.adjustStock({for (final l in sale.lines) l.productId: -l.qty}, countSale: true);
+    // Goods handed back as change leave the shelf too, but are not a sale of that product.
+    final given = <String, double>{};
+    for (final c in sale.change.where((c) => !c.isCash)) {
+      given.update(c.productId!, (q) => q - c.qty, ifAbsent: () => -c.qty);
+    }
+    if (given.isNotEmpty) await cache.adjustStock(given);
     await drafts.delete(draft.id);
   }
 }

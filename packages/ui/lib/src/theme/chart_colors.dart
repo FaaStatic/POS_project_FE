@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../tokens/colors.dart';
 
 /// Two-series chart palette, validated with the dataviz checker against the
-/// light (#FFFFFF) and dark (#111A17) surfaces. Series 2 is also dashed.
+/// light (#FFFFFF) and dark (#121A24) surfaces. Series 2 is also dashed.
 @immutable
 class ChartColors extends ThemeExtension<ChartColors> {
   const ChartColors({required this.series1, required this.series2, required this.grid});
@@ -12,8 +12,8 @@ class ChartColors extends ThemeExtension<ChartColors> {
   final Color series2;
   final Color grid;
 
-  static const light = ChartColors(series1: Mint.c700, series2: Color(0xFF2A78D6), grid: Neutral.border);
-  static const dark = ChartColors(series1: Mint.c400, series2: Color(0xFF3987E5), grid: Neutral.borderDark);
+  static const light = ChartColors(series1: Azure.c700, series2: Color(0xFFC37D16), grid: Neutral.border);
+  static const dark = ChartColors(series1: Azure.c400, series2: Color(0xFFF9C982), grid: Neutral.borderDark);
 
   static ChartColors of(BuildContext context) => Theme.of(context).extension<ChartColors>()!;
 

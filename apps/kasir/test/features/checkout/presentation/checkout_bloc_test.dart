@@ -91,6 +91,23 @@ void main() {
     await bloc.close();
   });
 
+  test('a product with no stock never reaches the cart and the cashier is told which one', () async {
+    final habis = indomie.copyWith(id: 'p9', name: 'Kopi Habis', barcode: '777', stock: 0);
+    await local.cache.upsertProduct(habis);
+    final bloc = await started();
+
+    bloc.add(ProductAdded(habis));
+    var s = await settle(bloc);
+    expect(s.notice, isA<OutOfStockNotice>().having((n) => n.productName, 'name', 'Kopi Habis'));
+    expect(s.active!.items, isEmpty);
+
+    bloc.add(const BarcodeSubmitted('777'));
+    s = await settle(bloc);
+    expect(s.notice, isA<OutOfStockNotice>().having((n) => n.productName, 'name', 'Kopi Habis'));
+    expect(s.active!.items, isEmpty);
+    await bloc.close();
+  });
+
   test('parallel tabs: pay Transaksi 2 offline, Transaksi 1 keeps its cart', () async {
     final bloc = await started();
     bloc.add(const ProductAdded(aqua));

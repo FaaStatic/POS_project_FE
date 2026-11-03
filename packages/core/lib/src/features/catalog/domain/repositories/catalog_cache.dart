@@ -5,7 +5,8 @@ import '../../../product/domain/entities/product.dart';
 /// Device-local copy of products, categories, and customers (kasir only).
 abstract interface class CatalogCache {
   /// Most-sold first, then by name.
-  Stream<List<Product>> watchProducts({String? search, String? categoryId});
+  /// [limit] reads only the first rows of that order; null reads them all.
+  Stream<List<Product>> watchProducts({String? search, String? categoryId, int? limit});
   Future<Product?> productByBarcode(String barcode);
   Future<Product?> product(String id);
   Future<Map<String, double>> stockOf(Iterable<String> productIds);

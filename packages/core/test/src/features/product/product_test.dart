@@ -47,6 +47,13 @@ void main() {
     expect(adapter.requests.single.queryParameters, {'search': 'mie', 'barcode': '899', 'limit': 100});
   });
 
+  test('get keeps the server barcode image and tolerates its absence', () async {
+    adapter.on('GET', ApiPaths.product('p1'), (_) => FakeReply(200, envelope({...productJson('p1', barcode: 'SKU-p1-1a2b3c4d'), 'barcode_image': 'data:image/webp;base64,AAAA'})));
+    adapter.on('GET', ApiPaths.product('p2'), (_) => FakeReply(200, envelope(productJson('p2'))));
+    expect(((await repo.get('p1')) as Ok<Product>).value.barcodeImage, 'data:image/webp;base64,AAAA');
+    expect(((await repo.get('p2')) as Ok<Product>).value.barcodeImage, '');
+  });
+
   test('listAll follows pages until has_next is false', () async {
     var calls = 0;
     adapter.on('GET', ApiPaths.products, (o) {

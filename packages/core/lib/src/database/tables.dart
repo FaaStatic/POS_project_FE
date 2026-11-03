@@ -68,6 +68,12 @@ class Sales extends Table {
   BoolColumn get stockConflict => boolean().withDefault(const Constant(false))();
   TextColumn get cancelReason => text().nullable()();
 
+  /// Cash received, set only when the cashier entered it.
+  IntColumn get amountPaid => integer().nullable()();
+
+  /// JSON list of the change lines (kind, amount, product, qty); null when none were recorded.
+  TextColumn get changeJson => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {clientRef};
 }

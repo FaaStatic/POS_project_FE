@@ -56,6 +56,7 @@ class StaffPage extends StatelessWidget {
                   builder: (items) => ResponsiveTable<Staff>(
                     rows: items,
                     rowKey: (s) => s.id,
+                    onRefresh: () => cubit.load(),
                     hasMore: state.hasNext,
                     loadingMore: state.loadingMore,
                     onLoadMore: cubit.loadMore,

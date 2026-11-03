@@ -111,6 +111,15 @@ void main() {
     await tester.enterText(received, '10000');
     await app.settle(tester);
     expect(find.text('Kembalian'), findsOneWidget);
+    // Cash received above the total: the change has to be split before the sale can finish.
+    expect(find.textContaining('Belum dibagi'), findsOneWidget);
+    expect(pay().onPressed, isNull);
+
+    await tester.ensureVisible(find.text('Sisa sebagai tunai'));
+    await tester.pump();
+    await tester.tap(find.text('Sisa sebagai tunai'));
+    await app.settle(tester);
+    expect(find.text('Kembalian sudah pas'), findsOneWidget);
     expect(pay().onPressed, isNotNull);
 
     await tester.tap(find.text('Uang pas'));
@@ -148,6 +157,31 @@ void main() {
     app.network.set(false);
     await app.settle(tester);
     expect(tester.widget<ListTile>(row).enabled, isFalse);
+    await tester.runAsync(app.close);
+  });
+
+  testWidgets('opening the keyboard on the search field keeps it focused', (tester) async {
+    final app = AppHarness(online: true)..serveBackend();
+    await app.tokens.writeRefreshToken('r0');
+    // Tall enough for the roomy layout; the keyboard then shrinks it to the compact one.
+    await app.pump(tester, size: const Size(400, 860));
+    addTearDown(tester.view.resetViewInsets);
+
+    final field = find.descendant(of: find.byType(SearchField), matching: find.byType(EditableText)).first;
+    await tester.tap(field);
+    await app.settle(tester);
+    expect(tester.widget<EditableText>(field).focusNode.hasFocus, isTrue);
+    expect(tester.testTextInput.isVisible, isTrue);
+    final strip = find.byType(TransactionTabStrip);
+    final stripInList = find.descendant(of: find.byType(CustomScrollView), matching: strip);
+    expect(stripInList, findsNothing, reason: 'roomy layout keeps the tabs outside the list');
+
+    tester.view.viewInsets = const FakeViewPadding(bottom: 420);
+    await app.settle(tester);
+    expect(stripInList, findsOneWidget, reason: 'compact layout moves the tabs into the list');
+    expect(find.byType(SearchField), findsOneWidget);
+    expect(tester.widget<EditableText>(field).focusNode.hasFocus, isTrue, reason: 'the field must stay focused');
+    expect(tester.testTextInput.isVisible, isTrue, reason: 'the keyboard must stay open');
     await tester.runAsync(app.close);
   });
 

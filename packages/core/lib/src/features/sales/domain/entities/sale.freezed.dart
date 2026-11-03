@@ -291,7 +291,8 @@ as String?,
 /// @nodoc
 mixin _$Sale {
 
- String get clientRef; String get receiptNumber; DateTime get createdAt; PaymentMethod get method; String? get customerId; String? get customerName; String get cashierName; int get total; List<SaleLine> get lines; SaleStatus get status; String? get error; String? get transactionId; bool get stockConflict; String? get cancelReason;
+ String get clientRef; String get receiptNumber; DateTime get createdAt; PaymentMethod get method; String? get customerId; String? get customerName; String get cashierName; int get total; List<SaleLine> get lines; SaleStatus get status; String? get error; String? get transactionId; bool get stockConflict; String? get cancelReason;/// Cash received and the change given back, when the cashier recorded them.
+ int? get amountPaid; List<ChangeLine> get change;
 /// Create a copy of Sale
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -303,20 +304,20 @@ $SaleCopyWith<Sale> get copyWith => _$SaleCopyWithImpl<Sale>(this as Sale, _$ide
 @override
 bool operator ==(Object other) {
   final _this = this as Sale;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Sale&&(identical(other.clientRef, _this.clientRef) || other.clientRef == _this.clientRef)&&(identical(other.receiptNumber, _this.receiptNumber) || other.receiptNumber == _this.receiptNumber)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.method, _this.method) || other.method == _this.method)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.cashierName, _this.cashierName) || other.cashierName == _this.cashierName)&&(identical(other.total, _this.total) || other.total == _this.total)&&const DeepCollectionEquality().equals(other.lines, _this.lines)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.transactionId, _this.transactionId) || other.transactionId == _this.transactionId)&&(identical(other.stockConflict, _this.stockConflict) || other.stockConflict == _this.stockConflict)&&(identical(other.cancelReason, _this.cancelReason) || other.cancelReason == _this.cancelReason));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Sale&&(identical(other.clientRef, _this.clientRef) || other.clientRef == _this.clientRef)&&(identical(other.receiptNumber, _this.receiptNumber) || other.receiptNumber == _this.receiptNumber)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.method, _this.method) || other.method == _this.method)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.cashierName, _this.cashierName) || other.cashierName == _this.cashierName)&&(identical(other.total, _this.total) || other.total == _this.total)&&const DeepCollectionEquality().equals(other.lines, _this.lines)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.transactionId, _this.transactionId) || other.transactionId == _this.transactionId)&&(identical(other.stockConflict, _this.stockConflict) || other.stockConflict == _this.stockConflict)&&(identical(other.cancelReason, _this.cancelReason) || other.cancelReason == _this.cancelReason)&&(identical(other.amountPaid, _this.amountPaid) || other.amountPaid == _this.amountPaid)&&const DeepCollectionEquality().equals(other.change, _this.change));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Sale;
-  return Object.hash(runtimeType,_this.clientRef,_this.receiptNumber,_this.createdAt,_this.method,_this.customerId,_this.customerName,_this.cashierName,_this.total,const DeepCollectionEquality().hash(_this.lines),_this.status,_this.error,_this.transactionId,_this.stockConflict,_this.cancelReason);
+  return Object.hash(runtimeType,_this.clientRef,_this.receiptNumber,_this.createdAt,_this.method,_this.customerId,_this.customerName,_this.cashierName,_this.total,const DeepCollectionEquality().hash(_this.lines),_this.status,_this.error,_this.transactionId,_this.stockConflict,_this.cancelReason,_this.amountPaid,const DeepCollectionEquality().hash(_this.change));
 }
 
 @override
 String toString() {
   final _this = this as Sale;
-  return 'Sale(clientRef: ${_this.clientRef}, receiptNumber: ${_this.receiptNumber}, createdAt: ${_this.createdAt}, method: ${_this.method}, customerId: ${_this.customerId}, customerName: ${_this.customerName}, cashierName: ${_this.cashierName}, total: ${_this.total}, lines: ${_this.lines}, status: ${_this.status}, error: ${_this.error}, transactionId: ${_this.transactionId}, stockConflict: ${_this.stockConflict}, cancelReason: ${_this.cancelReason})';
+  return 'Sale(clientRef: ${_this.clientRef}, receiptNumber: ${_this.receiptNumber}, createdAt: ${_this.createdAt}, method: ${_this.method}, customerId: ${_this.customerId}, customerName: ${_this.customerName}, cashierName: ${_this.cashierName}, total: ${_this.total}, lines: ${_this.lines}, status: ${_this.status}, error: ${_this.error}, transactionId: ${_this.transactionId}, stockConflict: ${_this.stockConflict}, cancelReason: ${_this.cancelReason}, amountPaid: ${_this.amountPaid}, change: ${_this.change})';
 }
 
 
@@ -327,7 +328,7 @@ abstract mixin class $SaleCopyWith<$Res>  {
   factory $SaleCopyWith(Sale value, $Res Function(Sale) _then) = _$SaleCopyWithImpl;
 @useResult
 $Res call({
- String clientRef, String receiptNumber, DateTime createdAt, PaymentMethod method, String? customerId, String? customerName, String cashierName, int total, List<SaleLine> lines, SaleStatus status, String? error, String? transactionId, bool stockConflict, String? cancelReason
+ String clientRef, String receiptNumber, DateTime createdAt, PaymentMethod method, String? customerId, String? customerName, String cashierName, int total, List<SaleLine> lines, SaleStatus status, String? error, String? transactionId, bool stockConflict, String? cancelReason, int? amountPaid, List<ChangeLine> change
 });
 
 
@@ -344,7 +345,7 @@ class _$SaleCopyWithImpl<$Res>
 
 /// Create a copy of Sale
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? clientRef = null,Object? receiptNumber = null,Object? createdAt = null,Object? method = null,Object? customerId = freezed,Object? customerName = freezed,Object? cashierName = null,Object? total = null,Object? lines = null,Object? status = null,Object? error = freezed,Object? transactionId = freezed,Object? stockConflict = null,Object? cancelReason = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? clientRef = null,Object? receiptNumber = null,Object? createdAt = null,Object? method = null,Object? customerId = freezed,Object? customerName = freezed,Object? cashierName = null,Object? total = null,Object? lines = null,Object? status = null,Object? error = freezed,Object? transactionId = freezed,Object? stockConflict = null,Object? cancelReason = freezed,Object? amountPaid = freezed,Object? change = null,}) {
   return _then(Sale(
 clientRef: null == clientRef ? _self.clientRef : clientRef // ignore: cast_nullable_to_non_nullable
 as String,receiptNumber: null == receiptNumber ? _self.receiptNumber : receiptNumber // ignore: cast_nullable_to_non_nullable
@@ -360,7 +361,9 @@ as SaleStatus,error: freezed == error ? _self.error : error // ignore: cast_null
 as String?,transactionId: freezed == transactionId ? _self.transactionId : transactionId // ignore: cast_nullable_to_non_nullable
 as String?,stockConflict: null == stockConflict ? _self.stockConflict : stockConflict // ignore: cast_nullable_to_non_nullable
 as bool,cancelReason: freezed == cancelReason ? _self.cancelReason : cancelReason // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,amountPaid: freezed == amountPaid ? _self.amountPaid : amountPaid // ignore: cast_nullable_to_non_nullable
+as int?,change: null == change ? _self.change : change // ignore: cast_nullable_to_non_nullable
+as List<ChangeLine>,
   ));
 }
 
@@ -445,10 +448,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String clientRef,  String receiptNumber,  DateTime createdAt,  PaymentMethod method,  String? customerId,  String? customerName,  String cashierName,  int total,  List<SaleLine> lines,  SaleStatus status,  String? error,  String? transactionId,  bool stockConflict,  String? cancelReason)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String clientRef,  String receiptNumber,  DateTime createdAt,  PaymentMethod method,  String? customerId,  String? customerName,  String cashierName,  int total,  List<SaleLine> lines,  SaleStatus status,  String? error,  String? transactionId,  bool stockConflict,  String? cancelReason,  int? amountPaid,  List<ChangeLine> change)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Sale() when $default != null:
-return $default(_that.clientRef,_that.receiptNumber,_that.createdAt,_that.method,_that.customerId,_that.customerName,_that.cashierName,_that.total,_that.lines,_that.status,_that.error,_that.transactionId,_that.stockConflict,_that.cancelReason);case _:
+return $default(_that.clientRef,_that.receiptNumber,_that.createdAt,_that.method,_that.customerId,_that.customerName,_that.cashierName,_that.total,_that.lines,_that.status,_that.error,_that.transactionId,_that.stockConflict,_that.cancelReason,_that.amountPaid,_that.change);case _:
   return orElse();
 
 }
@@ -466,10 +469,10 @@ return $default(_that.clientRef,_that.receiptNumber,_that.createdAt,_that.method
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String clientRef,  String receiptNumber,  DateTime createdAt,  PaymentMethod method,  String? customerId,  String? customerName,  String cashierName,  int total,  List<SaleLine> lines,  SaleStatus status,  String? error,  String? transactionId,  bool stockConflict,  String? cancelReason)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String clientRef,  String receiptNumber,  DateTime createdAt,  PaymentMethod method,  String? customerId,  String? customerName,  String cashierName,  int total,  List<SaleLine> lines,  SaleStatus status,  String? error,  String? transactionId,  bool stockConflict,  String? cancelReason,  int? amountPaid,  List<ChangeLine> change)  $default,) {final _that = this;
 switch (_that) {
 case _Sale():
-return $default(_that.clientRef,_that.receiptNumber,_that.createdAt,_that.method,_that.customerId,_that.customerName,_that.cashierName,_that.total,_that.lines,_that.status,_that.error,_that.transactionId,_that.stockConflict,_that.cancelReason);case _:
+return $default(_that.clientRef,_that.receiptNumber,_that.createdAt,_that.method,_that.customerId,_that.customerName,_that.cashierName,_that.total,_that.lines,_that.status,_that.error,_that.transactionId,_that.stockConflict,_that.cancelReason,_that.amountPaid,_that.change);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -486,10 +489,10 @@ return $default(_that.clientRef,_that.receiptNumber,_that.createdAt,_that.method
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String clientRef,  String receiptNumber,  DateTime createdAt,  PaymentMethod method,  String? customerId,  String? customerName,  String cashierName,  int total,  List<SaleLine> lines,  SaleStatus status,  String? error,  String? transactionId,  bool stockConflict,  String? cancelReason)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String clientRef,  String receiptNumber,  DateTime createdAt,  PaymentMethod method,  String? customerId,  String? customerName,  String cashierName,  int total,  List<SaleLine> lines,  SaleStatus status,  String? error,  String? transactionId,  bool stockConflict,  String? cancelReason,  int? amountPaid,  List<ChangeLine> change)?  $default,) {final _that = this;
 switch (_that) {
 case _Sale() when $default != null:
-return $default(_that.clientRef,_that.receiptNumber,_that.createdAt,_that.method,_that.customerId,_that.customerName,_that.cashierName,_that.total,_that.lines,_that.status,_that.error,_that.transactionId,_that.stockConflict,_that.cancelReason);case _:
+return $default(_that.clientRef,_that.receiptNumber,_that.createdAt,_that.method,_that.customerId,_that.customerName,_that.cashierName,_that.total,_that.lines,_that.status,_that.error,_that.transactionId,_that.stockConflict,_that.cancelReason,_that.amountPaid,_that.change);case _:
   return null;
 
 }
@@ -501,7 +504,7 @@ return $default(_that.clientRef,_that.receiptNumber,_that.createdAt,_that.method
 
 
 class _Sale extends Sale {
-  const _Sale({required this.clientRef, required this.receiptNumber, required this.createdAt, required this.method, this.customerId, this.customerName, required this.cashierName, required this.total, required  List<SaleLine> lines, this.status = SaleStatus.pending, this.error, this.transactionId, this.stockConflict = false, this.cancelReason}): _lines = lines,super._();
+  const _Sale({required this.clientRef, required this.receiptNumber, required this.createdAt, required this.method, this.customerId, this.customerName, required this.cashierName, required this.total, required  List<SaleLine> lines, this.status = SaleStatus.pending, this.error, this.transactionId, this.stockConflict = false, this.cancelReason, this.amountPaid,  List<ChangeLine> change = const []}): _lines = lines,_change = change,super._();
   
 
 @override final  String clientRef;
@@ -524,6 +527,15 @@ class _Sale extends Sale {
 @override final  String? transactionId;
 @override@JsonKey() final  bool stockConflict;
 @override final  String? cancelReason;
+/// Cash received and the change given back, when the cashier recorded them.
+@override final  int? amountPaid;
+ final  List<ChangeLine> _change;
+@override@JsonKey() List<ChangeLine> get change {
+  if (_change is EqualUnmodifiableListView) return _change;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_change);
+}
+
 
 /// Create a copy of Sale
 /// with the given fields replaced by the non-null parameter values.
@@ -535,18 +547,18 @@ _$SaleCopyWith<_Sale> get copyWith => __$SaleCopyWithImpl<_Sale>(this, _$identit
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Sale&&(identical(other.clientRef, clientRef) || other.clientRef == clientRef)&&(identical(other.receiptNumber, receiptNumber) || other.receiptNumber == receiptNumber)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.method, method) || other.method == method)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.cashierName, cashierName) || other.cashierName == cashierName)&&(identical(other.total, total) || other.total == total)&&const DeepCollectionEquality().equals(other.lines, _lines)&&(identical(other.status, status) || other.status == status)&&(identical(other.error, error) || other.error == error)&&(identical(other.transactionId, transactionId) || other.transactionId == transactionId)&&(identical(other.stockConflict, stockConflict) || other.stockConflict == stockConflict)&&(identical(other.cancelReason, cancelReason) || other.cancelReason == cancelReason));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Sale&&(identical(other.clientRef, clientRef) || other.clientRef == clientRef)&&(identical(other.receiptNumber, receiptNumber) || other.receiptNumber == receiptNumber)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.method, method) || other.method == method)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.cashierName, cashierName) || other.cashierName == cashierName)&&(identical(other.total, total) || other.total == total)&&const DeepCollectionEquality().equals(other.lines, _lines)&&(identical(other.status, status) || other.status == status)&&(identical(other.error, error) || other.error == error)&&(identical(other.transactionId, transactionId) || other.transactionId == transactionId)&&(identical(other.stockConflict, stockConflict) || other.stockConflict == stockConflict)&&(identical(other.cancelReason, cancelReason) || other.cancelReason == cancelReason)&&(identical(other.amountPaid, amountPaid) || other.amountPaid == amountPaid)&&const DeepCollectionEquality().equals(other.change, _change));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,clientRef,receiptNumber,createdAt,method,customerId,customerName,cashierName,total,const DeepCollectionEquality().hash(_lines),status,error,transactionId,stockConflict,cancelReason);
+    return Object.hash(runtimeType,clientRef,receiptNumber,createdAt,method,customerId,customerName,cashierName,total,const DeepCollectionEquality().hash(_lines),status,error,transactionId,stockConflict,cancelReason,amountPaid,const DeepCollectionEquality().hash(_change));
 }
 
 @override
 String toString() {
-    return 'Sale(clientRef: $clientRef, receiptNumber: $receiptNumber, createdAt: $createdAt, method: $method, customerId: $customerId, customerName: $customerName, cashierName: $cashierName, total: $total, lines: $lines, status: $status, error: $error, transactionId: $transactionId, stockConflict: $stockConflict, cancelReason: $cancelReason)';
+    return 'Sale(clientRef: $clientRef, receiptNumber: $receiptNumber, createdAt: $createdAt, method: $method, customerId: $customerId, customerName: $customerName, cashierName: $cashierName, total: $total, lines: $lines, status: $status, error: $error, transactionId: $transactionId, stockConflict: $stockConflict, cancelReason: $cancelReason, amountPaid: $amountPaid, change: $change)';
 }
 
 
@@ -557,7 +569,7 @@ abstract mixin class _$SaleCopyWith<$Res> implements $SaleCopyWith<$Res> {
   factory _$SaleCopyWith(_Sale value, $Res Function(_Sale) _then) = __$SaleCopyWithImpl;
 @override @useResult
 $Res call({
- String clientRef, String receiptNumber, DateTime createdAt, PaymentMethod method, String? customerId, String? customerName, String cashierName, int total, List<SaleLine> lines, SaleStatus status, String? error, String? transactionId, bool stockConflict, String? cancelReason
+ String clientRef, String receiptNumber, DateTime createdAt, PaymentMethod method, String? customerId, String? customerName, String cashierName, int total, List<SaleLine> lines, SaleStatus status, String? error, String? transactionId, bool stockConflict, String? cancelReason, int? amountPaid, List<ChangeLine> change
 });
 
 
@@ -574,7 +586,7 @@ class __$SaleCopyWithImpl<$Res>
 
 /// Create a copy of Sale
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? clientRef = null,Object? receiptNumber = null,Object? createdAt = null,Object? method = null,Object? customerId = freezed,Object? customerName = freezed,Object? cashierName = null,Object? total = null,Object? lines = null,Object? status = null,Object? error = freezed,Object? transactionId = freezed,Object? stockConflict = null,Object? cancelReason = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? clientRef = null,Object? receiptNumber = null,Object? createdAt = null,Object? method = null,Object? customerId = freezed,Object? customerName = freezed,Object? cashierName = null,Object? total = null,Object? lines = null,Object? status = null,Object? error = freezed,Object? transactionId = freezed,Object? stockConflict = null,Object? cancelReason = freezed,Object? amountPaid = freezed,Object? change = null,}) {
   return _then(_Sale(
 clientRef: null == clientRef ? _self.clientRef : clientRef // ignore: cast_nullable_to_non_nullable
 as String,receiptNumber: null == receiptNumber ? _self.receiptNumber : receiptNumber // ignore: cast_nullable_to_non_nullable
@@ -590,7 +602,9 @@ as SaleStatus,error: freezed == error ? _self.error : error // ignore: cast_null
 as String?,transactionId: freezed == transactionId ? _self.transactionId : transactionId // ignore: cast_nullable_to_non_nullable
 as String?,stockConflict: null == stockConflict ? _self.stockConflict : stockConflict // ignore: cast_nullable_to_non_nullable
 as bool,cancelReason: freezed == cancelReason ? _self.cancelReason : cancelReason // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,amountPaid: freezed == amountPaid ? _self.amountPaid : amountPaid // ignore: cast_nullable_to_non_nullable
+as int?,change: null == change ? _self._change : change // ignore: cast_nullable_to_non_nullable
+as List<ChangeLine>,
   ));
 }
 

@@ -5,6 +5,8 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:ui/ui.dart';
 
 import '../../../../common/labels.dart';
+import '../../../../common/load_more_on_scroll.dart';
+import '../../../../common/pull_refresh.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../common/catalog/catalog_cubits.dart';
 import '../bloc/checkout_bloc.dart';
@@ -47,65 +49,93 @@ class _ProductPaneState extends State<ProductPane> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final state = context.watch<ProductsCubit>().state;
+    final products = context.read<ProductsCubit>();
 
-    // Search and filters scroll away with the list so large text never squeezes it.
-    return CustomScrollView(
-      slivers: [
-        if (widget.header case final header?) SliverToBoxAdapter(child: header),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.sm),
-            child: Row(
-              children: [
-                Expanded(
-                  child: SearchField(
-                    controller: _search,
-                    focusNode: _focus,
-                    hint: l10n.searchProducts,
-                    onChanged: context.read<ProductsCubit>().search,
-                    onSubmitted: _submitted,
-                  ),
-                ),
-                const SizedBox(width: Space.sm),
-                // Large text: the label would squeeze the search field to nothing, so the glyph carries it.
-                if (MediaQuery.textScalerOf(context).scale(1) > 1.3)
-                  IconButton.outlined(
-                    tooltip: l10n.scan,
-                    style: IconButton.styleFrom(minimumSize: const Size.square(TapSize.min)),
-                    onPressed: widget.onScan,
-                    icon: const Icon(Iconsax.scan_barcode_copy),
-                  )
-                else
-                  AppButton(label: l10n.scan, icon: Iconsax.scan_barcode_copy, variant: AppButtonVariant.outline, onPressed: widget.onScan),
-              ],
-            ),
-          ),
-        ),
-        if (state.categories.isNotEmpty)
-          SliverToBoxAdapter(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.lg, Space.sm),
-              child: Row(
-                children: [
-                  _CategoryChip(
-                    label: l10n.allCategories,
-                    selected: state.categoryId == null,
-                    onTap: () => context.read<ProductsCubit>().filter(null),
-                  ),
-                  for (final c in state.categories)
-                    _CategoryChip(
-                      label: c.name,
-                      selected: state.categoryId == c.id,
-                      onTap: () => context.read<ProductsCubit>().filter(c.id),
+    // Search and filters scroll away with the list so large text never squeezes it. Each part
+    // listens only to the state it draws, so a stock change rebuilds the rows and not the search
+    // field, and a new category list leaves the rows alone.
+    return LoadMoreOnScroll(
+      onEnd: products.loadMore,
+      child: PullRefresh(
+        child: CustomScrollView(
+          physics: PullRefresh.physics,
+          slivers: [
+            if (widget.header case final header?) SliverToBoxAdapter(key: const ValueKey('tabs'), child: header),
+            // Keyed: the header appears above this when the keyboard shortens the screen, and an unkeyed
+            // sliver would be matched by position, rebuilding the field and closing the keyboard.
+            SliverToBoxAdapter(
+              key: const ValueKey('search'),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.sm),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SearchField(
+                        controller: _search,
+                        focusNode: _focus,
+                        hint: l10n.searchProducts,
+                        onChanged: products.search,
+                        onSubmitted: _submitted,
+                      ),
                     ),
-                ],
+                    const SizedBox(width: Space.sm),
+                    // Large text: the label would squeeze the search field to nothing, so the glyph carries it.
+                    if (MediaQuery.textScalerOf(context).scale(1) > 1.3)
+                      IconButton.outlined(
+                        tooltip: l10n.scan,
+                        style: IconButton.styleFrom(minimumSize: const Size.square(TapSize.min)),
+                        onPressed: widget.onScan,
+                        icon: const Icon(Iconsax.scan_barcode_copy),
+                      )
+                    else
+                      AppButton(
+                        label: l10n.scan,
+                        icon: Iconsax.scan_barcode_copy,
+                        variant: AppButtonVariant.outline,
+                        onPressed: widget.onScan,
+                      ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ..._list(context, state, l10n),
-      ],
+            BlocBuilder<ProductsCubit, ProductsState>(
+              buildWhen: (a, b) => a.categories != b.categories || a.categoryId != b.categoryId,
+              builder: (context, state) => SliverToBoxAdapter(
+                child: state.categories.isEmpty
+                    ? const SizedBox.shrink()
+                    : SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.lg, Space.sm),
+                        child: Row(
+                          children: [
+                            _CategoryChip(
+                              label: l10n.allCategories,
+                              selected: state.categoryId == null,
+                              onTap: () => products.filter(null),
+                            ),
+                            for (final c in state.categories)
+                              _CategoryChip(
+                                label: c.name,
+                                selected: state.categoryId == c.id,
+                                onTap: () => products.filter(c.id),
+                              ),
+                          ],
+                        ),
+                      ),
+              ),
+            ),
+            BlocBuilder<ProductsCubit, ProductsState>(
+              buildWhen: (a, b) =>
+                  a.loading != b.loading ||
+                  !identical(a.products, b.products) ||
+                  a.hasMore != b.hasMore ||
+                  a.query != b.query ||
+                  a.categoryId != b.categoryId,
+              builder: (context, state) => SliverMainAxisGroup(slivers: _list(context, state, l10n)),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -124,13 +154,18 @@ class _ProductPaneState extends State<ProductPane> {
         ),
       ];
     }
+    final products = state.products;
+    // Rows keep their element when the order changes (the best seller moves up after a sale)
+    // instead of being rebuilt from scratch.
+    final indexOf = {for (var i = 0; i < products.length; i++) products[i].id: i};
+    int? findIndex(Key key) => key is ValueKey<String> ? indexOf[key.value] : null;
     return [
       SliverLayoutBuilder(
         builder: (context, constraints) {
           // Tablets get a grid of product cards; phones keep a list so more fits and large text stays readable.
           if (constraints.crossAxisExtent >= 560) {
             return SliverPadding(
-              padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.xxl),
+              padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.md),
               sliver: SliverGrid.builder(
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 240,
@@ -138,21 +173,31 @@ class _ProductPaneState extends State<ProductPane> {
                   crossAxisSpacing: Space.md,
                   mainAxisExtent: _ProductTile.extent(context),
                 ),
-                itemCount: state.products.length,
-                itemBuilder: (context, i) =>
-                    _ProductTile(key: ValueKey(state.products[i].id), product: state.products[i]),
+                findChildIndexCallback: findIndex,
+                itemCount: products.length,
+                itemBuilder: (context, i) => _ProductTile(key: ValueKey(products[i].id), product: products[i]),
               ),
             );
           }
           return SliverPadding(
-            padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.xl),
+            padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.md),
             sliver: SliverList.separated(
-              itemCount: state.products.length,
+              findItemIndexCallback: findIndex,
+              itemCount: products.length,
               separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
-              itemBuilder: (context, i) => _ProductRow(key: ValueKey(state.products[i].id), product: state.products[i]),
+              itemBuilder: (context, i) => _ProductRow(key: ValueKey(products[i].id), product: products[i]),
             ),
           );
         },
+      ),
+      // The next page is read as the end nears; the spinner only shows in that short gap.
+      SliverToBoxAdapter(
+        child: state.hasMore
+            ? const Padding(
+                padding: EdgeInsets.symmetric(vertical: Space.lg),
+                child: Center(child: SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 2.5))),
+              )
+            : const SizedBox(height: Space.xl),
       ),
     ];
   }
@@ -335,8 +380,9 @@ class _CartCount extends StatelessWidget {
   }
 }
 
-/// Small mint square; the whole card is also tappable, so the glyph never has to
-/// carry the action alone.
+/// Small blue square; the whole card is also tappable, so the glyph never has to
+/// carry the action alone. A product with no stock has the
+/// button off; tapping its card still explains why it was not added.
 class _AddButton extends StatelessWidget {
   const _AddButton({required this.product});
   final Product product;
@@ -350,7 +396,7 @@ class _AddButton extends StatelessWidget {
       padding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.small + 4)),
     ),
-    onPressed: () => context.read<CheckoutBloc>().add(ProductAdded(product)),
+    onPressed: product.isDigital || product.stock > 0 ? () => context.read<CheckoutBloc>().add(ProductAdded(product)) : null,
     icon: const Icon(Icons.add_rounded, size: 20),
   );
 }

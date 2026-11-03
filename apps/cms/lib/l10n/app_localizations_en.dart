@@ -361,7 +361,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get barcode => 'Barcode';
 
   @override
-  String get barcodeHint => 'Optional';
+  String get barcodeHint => 'Empty: generated automatically';
 
   @override
   String get unit => 'Unit';

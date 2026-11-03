@@ -34,6 +34,7 @@ class CategoriesPage extends StatelessWidget {
           body = ResponsiveTable<Category>(
             rows: state.items,
             rowKey: (c) => c.id,
+            onRefresh: () => cubit.load(),
             columns: [
               TableColumnSpec(label: l10n.categoryName, flex: 2, cell: (_, c) => Text(c.name)),
               TableColumnSpec(label: l10n.navProducts, cell: (_, c) => Text(l10n.productCount(c.productCount))),

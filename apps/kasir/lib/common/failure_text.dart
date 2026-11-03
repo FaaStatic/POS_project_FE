@@ -19,6 +19,12 @@ String failureText(BuildContext context, Failure failure) {
 String? _keyText(AppLocalizations l10n, String key) => switch (key) {
       'empty_cart' => l10n.vEmptyCart,
       'invalid_qty' => l10n.vInvalidQty,
+      'amount_paid_short' => l10n.vAmountPaidShort,
+      'amount_paid_required' => l10n.vAmountPaidRequired,
+      'change_mismatch' => l10n.vChangeMismatch,
+      'change_invalid' => l10n.vChangeInvalid,
+      'change_too_many' => l10n.vChangeTooMany,
+      'change_cash_only' => l10n.vChangeCashOnly,
       'debt_needs_customer' => l10n.debtNeedsCustomer,
       'destination_required' => l10n.destinationRequired,
       'digital_needs_cash' => l10n.digitalCashOnly,

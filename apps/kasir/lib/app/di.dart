@@ -141,7 +141,7 @@ void setupDependencies({
           network: getIt(),
           scheduleNext: scheduleSync ?? const SyncScheduler().scheduleNext,
         ))
-    ..registerFactory(() => ProductsCubit(getIt()))
+    ..registerFactory(() => ProductsCubit(getIt(), debounce: const Duration(milliseconds: 250)))
     ..registerFactory(() => CustomersCubit(getIt()))
     ..registerFactory(() => AddCustomerCubit(getIt(), getIt(), getIt()))
     ..registerFactory(() => CustomerDetailCubit(getIt(), getIt()))

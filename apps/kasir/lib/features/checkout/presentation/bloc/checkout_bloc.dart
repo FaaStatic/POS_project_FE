@@ -126,7 +126,13 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   Future<void> _productAdded(ProductAdded e, Emitter<CheckoutState> emit) async {
     final draft = state.active;
     if (draft == null) return;
-    if (await addItem(draft, e.product) case Err()) emit(_notify(state, const TabLockedNotice()));
+    if (await addItem(draft, e.product) case Err(:final failure)) {
+      final CheckoutNotice notice = switch (failure) {
+        ValidationFailure(message: 'out_of_stock') => OutOfStockNotice(e.product.name),
+        _ => const TabLockedNotice(),
+      };
+      emit(_notify(state, notice));
+    }
   }
 
   Future<void> _barcode(BarcodeSubmitted e, Emitter<CheckoutState> emit) async {
@@ -138,6 +144,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
         ScanAdded(:final product) => ScanAddedNotice(product.name, draft.number),
         ScanUnknown(:final code) => ScanUnknownNotice(code),
         ScanLocked() => const TabLockedNotice(),
+        ScanOutOfStock(:final product) => OutOfStockNotice(product.name),
       }),
     );
   }
@@ -162,7 +169,13 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     emit(state.copyWith(paying: true));
     switch (state.method) {
       case PaymentMethod.cash || PaymentMethod.debt:
-        final result = await checkout(draft, state.method);
+        final cash = state.method == PaymentMethod.cash;
+        final result = await checkout(
+          draft,
+          state.method,
+          amountPaid: cash ? e.amountPaid : null,
+          change: cash ? e.change : const [],
+        );
         emit(switch (result) {
           Ok(:final value) => _notify(
             state.copyWith(paying: false, method: PaymentMethod.cash),

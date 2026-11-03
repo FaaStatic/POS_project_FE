@@ -6,6 +6,7 @@ import 'package:drift/drift.dart';
 import '../../../constants/payment_method.dart';
 import '../../../database/app_database.dart';
 import '../../../storage/key_value_store.dart';
+import '../../transaction/domain/entities/change_line.dart';
 import '../domain/entities/sale.dart';
 import '../domain/repositories/sales_log.dart';
 
@@ -121,6 +122,20 @@ class DriftSalesLog implements SalesLog {
         transactionId: r.transactionId,
         stockConflict: r.stockConflict,
         cancelReason: r.cancelReason,
+        amountPaid: r.amountPaid,
+        change: [
+          if (r.changeJson != null)
+            for (final c in (jsonDecode(r.changeJson!) as List).cast<Map<String, dynamic>>())
+              // A kind this build does not know (written by a newer one) is skipped, not fatal.
+              if (ChangeKind.values.where((k) => k.wire == c['kind']).firstOrNull case final kind?)
+                ChangeLine(
+                kind: kind,
+                amount: (c['amount'] as num).toInt(),
+                productId: c['product_id'] as String?,
+                productName: (c['name'] as String?) ?? '',
+                qty: (c['qty'] as num?)?.toDouble() ?? 0,
+              ),
+        ],
       );
 
   static SalesCompanion _companion(Sale s) => SalesCompanion.insert(
@@ -147,5 +162,19 @@ class DriftSalesLog implements SalesLog {
         transactionId: Value(s.transactionId),
         stockConflict: Value(s.stockConflict),
         cancelReason: Value(s.cancelReason),
+        amountPaid: Value(s.amountPaid),
+        changeJson: Value(
+          s.change.isEmpty
+              ? null
+              : jsonEncode([
+                  for (final c in s.change)
+                    {
+                      'kind': c.kind.wire,
+                      'amount': c.amount,
+                      'product_id': ?c.productId,
+                      if (!c.isCash) ...{'name': c.productName, 'qty': c.qty},
+                    },
+                ]),
+        ),
       );
 }

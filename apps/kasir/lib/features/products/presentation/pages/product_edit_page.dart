@@ -144,6 +144,10 @@ class _FormState extends State<_Form> {
                 controller: _barcode,
                 validator: (v) => validationText(context, Validators.barcode(v)),
               ),
+              if (widget.product.barcodeImage.isNotEmpty) ...[
+                const SizedBox(height: Space.md),
+                Center(child: BarcodeImage(dataUri: widget.product.barcodeImage, semanticLabel: l10n.barcode)),
+              ],
               const SizedBox(height: Space.lg),
               AppSelect<ProductUnit>(
                 label: l10n.unit,

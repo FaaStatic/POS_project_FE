@@ -33,6 +33,58 @@ void main() {
     await cubit.close();
   });
 
+  test('without a page size the cubit reads everything, as before', () async {
+    final cubit = ProductsCubit(local.cache)..start();
+    final s = await cubit.stream.firstWhere((s) => !s.loading);
+    expect(s.products, hasLength(3));
+    expect(s.hasMore, isFalse);
+    cubit.loadMore();
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(cubit.state.products, hasLength(3));
+    await cubit.close();
+  });
+
+  test('a page size reads one page, and loadMore grows the window until the cache runs out', () async {
+    final cubit = ProductsCubit(local.cache)..start(pageSize: 2);
+    var s = await cubit.stream.firstWhere((s) => !s.loading);
+    expect(s.products, hasLength(2));
+    expect(s.hasMore, isTrue);
+
+    cubit.loadMore();
+    cubit.loadMore(); // a second call while the first is in flight must not skip a page
+    s = await cubit.stream.firstWhere((s) => s.products.length == 3);
+    expect(s.hasMore, isFalse);
+
+    cubit.loadMore();
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(cubit.state.products, hasLength(3));
+    await cubit.close();
+  });
+
+  test('searching or filtering starts again from the first page', () async {
+    final cubit = ProductsCubit(local.cache)..start(pageSize: 1);
+    await cubit.stream.firstWhere((s) => !s.loading && s.products.length == 1);
+    cubit.loadMore();
+    await cubit.stream.firstWhere((s) => s.products.length == 2);
+    cubit.search('i');
+    final s = await cubit.stream.firstWhere((s) => s.query == 'i' && s.products.length == 1);
+    expect(s.hasMore, isTrue);
+    await cubit.close();
+  });
+
+  test('typing waits for a pause before the cache is queried again', () async {
+    final cubit = ProductsCubit(local.cache, debounce: const Duration(milliseconds: 60))..start();
+    await cubit.stream.firstWhere((s) => !s.loading);
+    cubit.search('a');
+    cubit.search('aq');
+    cubit.search('aqua');
+    expect(cubit.state.query, 'aqua', reason: 'the text field value is never delayed');
+    expect(cubit.state.products, hasLength(3), reason: 'the list has not been re-queried yet');
+    final s = await cubit.stream.firstWhere((s) => s.products.length == 1);
+    expect(s.products.single.id, 'p2');
+    await cubit.close();
+  });
+
   test('edit saves to the server, adjusts stock, and updates the cache', () async {
     when(() => remote.get('p1')).thenAnswer((_) async => const Ok(indomie));
     when(() => remote.adjustStock('p1', 5)).thenAnswer((_) async => const Ok(null));

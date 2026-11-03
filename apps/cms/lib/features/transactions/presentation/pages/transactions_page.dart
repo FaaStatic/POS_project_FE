@@ -73,6 +73,7 @@ class TransactionsPage extends StatelessWidget {
                     builder: (items) => ResponsiveTable<Transaction>(
                       rows: items,
                       rowKey: (t) => t.id,
+                      onRefresh: () => cubit.load(),
                       onTap: (t) => context.push('/transactions/${t.id}'),
                       hasMore: state.hasNext,
                       loadingMore: state.loadingMore,

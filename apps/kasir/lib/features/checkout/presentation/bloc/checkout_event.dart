@@ -76,8 +76,12 @@ final class VaBankChanged extends CheckoutEvent {
 }
 
 final class PayRequested extends CheckoutEvent {
-  const PayRequested({this.bank = VaBank.bca});
+  const PayRequested({this.bank = VaBank.bca, this.amountPaid, this.change = const []});
   final VaBank bank;
+
+  /// Cash received and how the change is handed back; only read for cash sales.
+  final int? amountPaid;
+  final List<ChangeLine> change;
 }
 
 /// Timer tick, FCM payment push, or the "Cek sekarang" button.

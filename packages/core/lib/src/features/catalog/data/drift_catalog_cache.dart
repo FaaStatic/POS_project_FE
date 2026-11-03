@@ -11,7 +11,7 @@ class DriftCatalogCache implements CatalogCache {
   final AppDatabase _db;
 
   @override
-  Stream<List<Product>> watchProducts({String? search, String? categoryId}) {
+  Stream<List<Product>> watchProducts({String? search, String? categoryId, int? limit}) {
     final q = _db.select(_db.cachedProducts);
     final term = search?.trim().toLowerCase();
     if (term != null && term.isNotEmpty) {
@@ -20,6 +20,7 @@ class DriftCatalogCache implements CatalogCache {
     }
     if (categoryId != null) q.where((p) => p.categoryId.equals(categoryId));
     q.orderBy([(p) => OrderingTerm.desc(p.soldCount), (p) => OrderingTerm.asc(p.name)]);
+    if (limit != null) q.limit(limit);
     return q.watch().map((rows) => rows.map(_product).toList());
   }
 

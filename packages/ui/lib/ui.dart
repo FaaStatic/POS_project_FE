@@ -22,6 +22,7 @@ export 'l10n/ui_localizations.dart';
 export 'src/components/app_autocomplete.dart';
 export 'src/components/app_button.dart';
 export 'src/components/app_text_field.dart';
+export 'src/components/barcode_image.dart';
 export 'src/components/brand_logo.dart';
 export 'src/components/choices.dart';
 export 'src/components/data_image.dart';

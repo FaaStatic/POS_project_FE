@@ -8,6 +8,9 @@ import '../../../../app/di.dart';
 import '../../../../app/shell/kasir_page.dart';
 import '../../../../common/catalog/catalog_cubits.dart';
 import '../../../../common/labels.dart';
+import '../../../../common/load_more_on_scroll.dart';
+import '../../../../common/pull_refresh.dart';
+import '../../../../common/scrolls_when_short.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class ProductsPage extends StatelessWidget {
@@ -17,14 +20,14 @@ class ProductsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return BlocProvider(
-      create: (_) => getIt<ProductsCubit>()..start(),
+      create: (_) => getIt<ProductsCubit>()..start(pageSize: 30),
       child: Builder(
         builder: (context) {
           final state = context.watch<ProductsCubit>().state;
           final theme = Theme.of(context);
           return KasirPage(
             title: l10n.productsTitle,
-            body: Column(
+            body: ScrollsWhenShort(child: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(Space.lg),
@@ -35,7 +38,10 @@ class ProductsPage extends StatelessWidget {
                       ? const LoadingView()
                       : state.products.isEmpty
                       ? EmptyState(icon: Iconsax.box_copy, message: l10n.noProducts)
-                      : ListView.separated(
+                      : LoadMoreOnScroll(
+                          onEnd: context.read<ProductsCubit>().loadMore,
+                          child: PullRefresh(child: ListView.separated(
+                          physics: PullRefresh.physics,
                           padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.lg, Space.lg),
                           itemCount: state.products.length,
                           separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
@@ -65,10 +71,10 @@ class ProductsPage extends StatelessWidget {
                               ),
                             );
                           },
-                        ),
+                        ),),)
                 ),
               ],
-            ),
+            )),
           );
         },
       ),

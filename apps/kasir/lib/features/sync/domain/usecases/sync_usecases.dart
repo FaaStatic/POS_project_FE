@@ -31,6 +31,8 @@ class SyncPendingTransactions {
             createdAt: s.createdAt,
             method: s.method,
             customerId: s.customerId,
+            amountPaid: s.amountPaid,
+            change: s.change,
             lines: [
               for (final l in s.lines)
                 CheckoutLine(productId: l.productId, qty: l.qty, unitPrice: l.unitPrice, destination: l.destination),

@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../constants/payment_method.dart';
+import '../../../transaction/domain/entities/change_line.dart';
 
 part 'sale.freezed.dart';
 
@@ -42,6 +43,10 @@ abstract class Sale with _$Sale {
     String? transactionId,
     @Default(false) bool stockConflict,
     String? cancelReason,
+
+    /// Cash received and the change given back, when the cashier recorded them.
+    int? amountPaid,
+    @Default([]) List<ChangeLine> change,
   }) = _Sale;
 
   bool get isSynced => status == SaleStatus.synced;

@@ -337,6 +337,15 @@ class AppLocalizationsId extends AppLocalizations {
   String get receiptNumber => 'No.';
 
   @override
+  String get receiptMarkPaid => 'LUNAS';
+
+  @override
+  String get receiptMarkDebt => 'HUTANG';
+
+  @override
+  String get receiptMarkCancelled => 'DIBATALKAN';
+
+  @override
   String get receiptDate => 'Tanggal';
 
   @override
@@ -678,6 +687,84 @@ class AppLocalizationsId extends AppLocalizations {
   String shortBy(String amount) {
     return 'Kurang $amount';
   }
+
+  @override
+  String outOfStockAdd(String name) {
+    return '$name stoknya habis, tidak bisa ditambahkan ke keranjang.';
+  }
+
+  @override
+  String get changeCash => 'Tunai';
+
+  @override
+  String get changeCandy => 'Permen';
+
+  @override
+  String get changeProduct => 'Produk lain';
+
+  @override
+  String get addChange => 'Tambah kembalian';
+
+  @override
+  String changeToGive(String amount) {
+    return 'Kembalian $amount';
+  }
+
+  @override
+  String changeRemaining(String amount) {
+    return 'Belum dibagi $amount';
+  }
+
+  @override
+  String get changeComplete => 'Kembalian sudah pas';
+
+  @override
+  String changeOverBy(String amount) {
+    return 'Lebih $amount dari kembalian';
+  }
+
+  @override
+  String get changeAddRestCash => 'Sisa sebagai tunai';
+
+  @override
+  String get changeAmount => 'Nominal tunai';
+
+  @override
+  String get changePickProduct => 'Pilih produk';
+
+  @override
+  String get changeNoProducts => 'Tidak ada produk fisik dengan stok.';
+
+  @override
+  String get changeQty => 'Jumlah';
+
+  @override
+  String changeValue(String amount) {
+    return 'Senilai $amount';
+  }
+
+  @override
+  String get changeSheetTitle => 'Tambah kembalian';
+
+  @override
+  String get vAmountPaidShort => 'Uang diterima kurang dari total.';
+
+  @override
+  String get vAmountPaidRequired =>
+      'Isi uang diterima untuk mencatat kembalian.';
+
+  @override
+  String get vChangeMismatch =>
+      'Rincian kembalian belum sama dengan kembalian yang harus diberikan.';
+
+  @override
+  String get vChangeInvalid => 'Ada baris kembalian yang tidak valid.';
+
+  @override
+  String get vChangeTooMany => 'Kembalian maksimal 20 baris.';
+
+  @override
+  String get vChangeCashOnly => 'Kembalian hanya untuk pembayaran tunai.';
 
   @override
   String get back => 'Kembali';
