@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -10,12 +11,28 @@ part 'history_cubit.freezed.dart';
 
 @freezed
 abstract class HistoryState with _$HistoryState {
-  const factory HistoryState({@Default(true) bool loading, @Default([]) List<Sale> sales}) = _HistoryState;
+  const HistoryState._();
+
+  const factory HistoryState({
+    @Default(true) bool loading,
+    @Default([]) List<Sale> sales,
+
+    /// The server's newest debt payments (any register, or the CMS), as last fetched.
+    @Default([]) List<DebtPaymentEntry> payments,
+  }) = _HistoryState;
+
+  /// Payments made on this device are already in [sales] under their receipt number.
+  List<DebtPaymentEntry> get otherPayments {
+    final mine = {for (final s in sales) s.receiptNumber};
+    return [for (final p in payments) if (p.clientRef.isEmpty || !mine.contains(p.clientRef)) p];
+  }
 }
 
 class HistoryCubit extends Cubit<HistoryState> {
-  HistoryCubit(this._watch) : super(const HistoryState());
+  HistoryCubit(this._watch, this._payments, this._network) : super(const HistoryState());
   final WatchSales _watch;
+  final GetDebtPayments _payments;
+  final NetworkStatus _network;
   StreamSubscription<List<Sale>>? _sub;
 
   void start() {
@@ -27,8 +44,18 @@ class HistoryCubit extends Cubit<HistoryState> {
           final pb = b.status == SaleStatus.pending || b.status == SaleStatus.failed ? 0 : 1;
           return pa != pb ? pa - pb : b.createdAt.compareTo(a.createdAt);
         });
-      emit(HistoryState(loading: false, sales: sorted));
+      if (!state.loading && listEquals(state.sales, sorted)) return;
+      emit(state.copyWith(loading: false, sales: sorted));
     });
+    refreshPayments();
+  }
+
+  /// Reads the server's payment history; offline or on an error the last copy stays.
+  Future<void> refreshPayments() async {
+    if (!await _network.isOnline()) return;
+    if (await _payments() case Ok(:final value) when !isClosed && !listEquals(value, state.payments)) {
+      emit(state.copyWith(payments: value));
+    }
   }
 
   @override

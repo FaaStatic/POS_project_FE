@@ -1,11 +1,14 @@
 import 'package:core/core.dart';
 
+import '../../../../common/products_stale.dart';
 import '../../../../common/paged_list_cubit.dart';
 
 class ProductsCubit extends PagedListCubit<Product, ProductQuery> {
-  ProductsCubit(GetProducts get, this._categories, this._create, this._update, this._adjust, this._delete)
+  ProductsCubit(GetProducts get, this._categories, this._create, this._update, this._adjust, this._delete, this._stale, this._exportBarcodes)
       : super(get.call, const ProductQuery(limit: 50));
 
+  final ProductsStale _stale;
+  final ExportBarcodes _exportBarcodes;
   final GetCategories _categories;
   final CreateProduct _create;
   final UpdateProduct _update;
@@ -21,6 +24,14 @@ class ProductsCubit extends PagedListCubit<Product, ProductQuery> {
     }
     return super.load(next);
   }
+
+  /// Called when the list is shown again; fetches only if a bulk import changed it meanwhile.
+  Future<void> refreshIfDirty() => _stale.take() ? refresh() : Future.value();
+
+  /// Every barcode sheet part for the search and category now applied to the list, passed to
+  /// [onPart] one at a time.
+  Future<Result<int>> exportBarcodes(Future<void> Function(BarcodeExport part) onPart) =>
+      _exportBarcodes(ProductQuery(search: query.search, categoryId: query.categoryId), onPart);
 
   void search(String text) => load(ProductQuery(search: text, categoryId: query.categoryId, limit: 50));
   void filter(String? categoryId) => load(ProductQuery(search: query.search, categoryId: categoryId, limit: 50));

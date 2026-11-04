@@ -26,6 +26,9 @@ abstract class Product with _$Product {
     String? categoryId,
     @Default('') String categoryName,
     @Default('') String image,
+
+    /// Code128 of [barcode] as a data URI, rendered by the server; empty on list/cache reads.
+    @Default('') String barcodeImage,
     DateTime? updatedAt,
   }) = _Product;
 

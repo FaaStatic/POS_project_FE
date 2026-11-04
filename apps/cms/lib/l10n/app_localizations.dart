@@ -749,7 +749,7 @@ abstract class AppLocalizations {
   /// No description provided for @barcodeHint.
   ///
   /// In id, this message translates to:
-  /// **'Opsional'**
+  /// **'Kosong: dibuat otomatis'**
   String get barcodeHint;
 
   /// No description provided for @unit.
@@ -1094,6 +1094,36 @@ abstract class AppLocalizations {
   /// **'Laba kotor'**
   String get profit;
 
+  /// No description provided for @amountPaid.
+  ///
+  /// In id, this message translates to:
+  /// **'Uang diterima'**
+  String get amountPaid;
+
+  /// No description provided for @changeGiven.
+  ///
+  /// In id, this message translates to:
+  /// **'Kembalian'**
+  String get changeGiven;
+
+  /// No description provided for @changeCash.
+  ///
+  /// In id, this message translates to:
+  /// **'Tunai'**
+  String get changeCash;
+
+  /// No description provided for @changeCandy.
+  ///
+  /// In id, this message translates to:
+  /// **'Permen'**
+  String get changeCandy;
+
+  /// No description provided for @changeProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Produk lain'**
+  String get changeProduct;
+
   /// No description provided for @conflictOnly.
   ///
   /// In id, this message translates to:
@@ -1394,6 +1424,36 @@ abstract class AppLocalizations {
   /// **'Hutang ditambahkan.'**
   String get debtAdded;
 
+  /// No description provided for @addDebt.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah hutang'**
+  String get addDebt;
+
+  /// No description provided for @currentDebt.
+  ///
+  /// In id, this message translates to:
+  /// **'Hutang saat ini'**
+  String get currentDebt;
+
+  /// No description provided for @debtBecomes.
+  ///
+  /// In id, this message translates to:
+  /// **'Menjadi {amount}'**
+  String debtBecomes(String amount);
+
+  /// No description provided for @debtNote.
+  ///
+  /// In id, this message translates to:
+  /// **'Keterangan (opsional)'**
+  String get debtNote;
+
+  /// No description provided for @debtNoteHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Mis. pinjam tunai'**
+  String get debtNoteHint;
+
   /// No description provided for @dueDate.
   ///
   /// In id, this message translates to:
@@ -1649,8 +1709,14 @@ abstract class AppLocalizations {
   /// No description provided for @downloadTemplate.
   ///
   /// In id, this message translates to:
-  /// **'Unduh template CSV'**
+  /// **'Unduh template Excel'**
   String get downloadTemplate;
+
+  /// No description provided for @exportBarcodes.
+  ///
+  /// In id, this message translates to:
+  /// **'Ekspor barcode'**
+  String get exportBarcodes;
 
   /// No description provided for @importing.
   ///
@@ -1784,6 +1850,36 @@ abstract class AppLocalizations {
   /// **'Ukuran gambar maksimal 500 KB.'**
   String get vImageSize;
 
+  /// No description provided for @vImageDimensions.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisi gambar maksimal 4000 piksel.'**
+  String get vImageDimensions;
+
+  /// No description provided for @vQtyWhole.
+  ///
+  /// In id, this message translates to:
+  /// **'Satuan pcs harus bilangan bulat.'**
+  String get vQtyWhole;
+
+  /// No description provided for @vQtyDecimals.
+  ///
+  /// In id, this message translates to:
+  /// **'Maksimal 3 angka desimal.'**
+  String get vQtyDecimals;
+
+  /// No description provided for @vQtyTooLarge.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah terlalu besar.'**
+  String get vQtyTooLarge;
+
+  /// No description provided for @exportTooManyParts.
+  ///
+  /// In id, this message translates to:
+  /// **'Terlalu banyak file untuk diekspor sekaligus. Persempit pencarian atau kategori.'**
+  String get exportTooManyParts;
+
   /// No description provided for @bulkImagesTooLarge.
   ///
   /// In id, this message translates to:
@@ -1801,6 +1897,78 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Buat kategori \"{name}\"'**
   String createCategory(String name);
+
+  /// No description provided for @statusSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Sukses'**
+  String get statusSuccess;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In id, this message translates to:
+  /// **'Batal'**
+  String get statusCancelled;
+
+  /// No description provided for @cancelledReasonLine.
+  ///
+  /// In id, this message translates to:
+  /// **'Alasan batal: {reason}'**
+  String cancelledReasonLine(String reason);
+
+  /// No description provided for @debtPaymentsTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran hutang'**
+  String get debtPaymentsTitle;
+
+  /// No description provided for @noDebtPayments.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada pembayaran hutang.'**
+  String get noDebtPayments;
+
+  /// No description provided for @paidAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Dibayar'**
+  String get paidAmount;
+
+  /// No description provided for @balanceLeft.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa hutang'**
+  String get balanceLeft;
+
+  /// No description provided for @cashierName.
+  ///
+  /// In id, this message translates to:
+  /// **'Kasir'**
+  String get cashierName;
+
+  /// No description provided for @paidViaCms.
+  ///
+  /// In id, this message translates to:
+  /// **'CMS'**
+  String get paidViaCms;
+
+  /// No description provided for @downloadDebtReceipt.
+  ///
+  /// In id, this message translates to:
+  /// **'Unduh struk pembayaran'**
+  String get downloadDebtReceipt;
+
+  /// No description provided for @debtRecapReport.
+  ///
+  /// In id, this message translates to:
+  /// **'Rekap pembayaran hutang'**
+  String get debtRecapReport;
+
+  /// No description provided for @debtRecapHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Satu tabel berisi semua pembayaran hutang dalam sebulan, untuk semua pelanggan: pelanggan, kasir, tanggal bayar, saldo total, dibayarkan, sisa saldo, dan status lunas.'**
+  String get debtRecapHint;
 }
 
 class _AppLocalizationsDelegate

@@ -576,4 +576,294 @@ as DateTime?,
 
 }
 
+/// @nodoc
+mixin _$DebtPaymentEntry {
+
+ String get id; String get debtId; String get customerName; int get amount; int get remaining; bool get paid; String get cashier;/// The receipt number the register sent as its idempotency key; empty for CMS payments.
+ String get clientRef; DateTime? get paidAt;
+/// Create a copy of DebtPaymentEntry
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DebtPaymentEntryCopyWith<DebtPaymentEntry> get copyWith => _$DebtPaymentEntryCopyWithImpl<DebtPaymentEntry>(this as DebtPaymentEntry, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as DebtPaymentEntry;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DebtPaymentEntry&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.debtId, _this.debtId) || other.debtId == _this.debtId)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.amount, _this.amount) || other.amount == _this.amount)&&(identical(other.remaining, _this.remaining) || other.remaining == _this.remaining)&&(identical(other.paid, _this.paid) || other.paid == _this.paid)&&(identical(other.cashier, _this.cashier) || other.cashier == _this.cashier)&&(identical(other.clientRef, _this.clientRef) || other.clientRef == _this.clientRef)&&(identical(other.paidAt, _this.paidAt) || other.paidAt == _this.paidAt));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as DebtPaymentEntry;
+  return Object.hash(runtimeType,_this.id,_this.debtId,_this.customerName,_this.amount,_this.remaining,_this.paid,_this.cashier,_this.clientRef,_this.paidAt);
+}
+
+@override
+String toString() {
+  final _this = this as DebtPaymentEntry;
+  return 'DebtPaymentEntry(id: ${_this.id}, debtId: ${_this.debtId}, customerName: ${_this.customerName}, amount: ${_this.amount}, remaining: ${_this.remaining}, paid: ${_this.paid}, cashier: ${_this.cashier}, clientRef: ${_this.clientRef}, paidAt: ${_this.paidAt})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DebtPaymentEntryCopyWith<$Res>  {
+  factory $DebtPaymentEntryCopyWith(DebtPaymentEntry value, $Res Function(DebtPaymentEntry) _then) = _$DebtPaymentEntryCopyWithImpl;
+@useResult
+$Res call({
+ String id, String debtId, String customerName, int amount, int remaining, bool paid, String cashier, String clientRef, DateTime? paidAt
+});
+
+
+
+
+}
+/// @nodoc
+class _$DebtPaymentEntryCopyWithImpl<$Res>
+    implements $DebtPaymentEntryCopyWith<$Res> {
+  _$DebtPaymentEntryCopyWithImpl(this._self, this._then);
+
+  final DebtPaymentEntry _self;
+  final $Res Function(DebtPaymentEntry) _then;
+
+/// Create a copy of DebtPaymentEntry
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? debtId = null,Object? customerName = null,Object? amount = null,Object? remaining = null,Object? paid = null,Object? cashier = null,Object? clientRef = null,Object? paidAt = freezed,}) {
+  return _then(DebtPaymentEntry(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,debtId: null == debtId ? _self.debtId : debtId // ignore: cast_nullable_to_non_nullable
+as String,customerName: null == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as int,remaining: null == remaining ? _self.remaining : remaining // ignore: cast_nullable_to_non_nullable
+as int,paid: null == paid ? _self.paid : paid // ignore: cast_nullable_to_non_nullable
+as bool,cashier: null == cashier ? _self.cashier : cashier // ignore: cast_nullable_to_non_nullable
+as String,clientRef: null == clientRef ? _self.clientRef : clientRef // ignore: cast_nullable_to_non_nullable
+as String,paidAt: freezed == paidAt ? _self.paidAt : paidAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [DebtPaymentEntry].
+extension DebtPaymentEntryPatterns on DebtPaymentEntry {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _DebtPaymentEntry value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _DebtPaymentEntry() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _DebtPaymentEntry value)  $default,){
+final _that = this;
+switch (_that) {
+case _DebtPaymentEntry():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _DebtPaymentEntry value)?  $default,){
+final _that = this;
+switch (_that) {
+case _DebtPaymentEntry() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String debtId,  String customerName,  int amount,  int remaining,  bool paid,  String cashier,  String clientRef,  DateTime? paidAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _DebtPaymentEntry() when $default != null:
+return $default(_that.id,_that.debtId,_that.customerName,_that.amount,_that.remaining,_that.paid,_that.cashier,_that.clientRef,_that.paidAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String debtId,  String customerName,  int amount,  int remaining,  bool paid,  String cashier,  String clientRef,  DateTime? paidAt)  $default,) {final _that = this;
+switch (_that) {
+case _DebtPaymentEntry():
+return $default(_that.id,_that.debtId,_that.customerName,_that.amount,_that.remaining,_that.paid,_that.cashier,_that.clientRef,_that.paidAt);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String debtId,  String customerName,  int amount,  int remaining,  bool paid,  String cashier,  String clientRef,  DateTime? paidAt)?  $default,) {final _that = this;
+switch (_that) {
+case _DebtPaymentEntry() when $default != null:
+return $default(_that.id,_that.debtId,_that.customerName,_that.amount,_that.remaining,_that.paid,_that.cashier,_that.clientRef,_that.paidAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _DebtPaymentEntry implements DebtPaymentEntry {
+  const _DebtPaymentEntry({required this.id, required this.debtId, required this.customerName, required this.amount, required this.remaining, required this.paid, this.cashier = '', this.clientRef = '', this.paidAt});
+  
+
+@override final  String id;
+@override final  String debtId;
+@override final  String customerName;
+@override final  int amount;
+@override final  int remaining;
+@override final  bool paid;
+@override@JsonKey() final  String cashier;
+/// The receipt number the register sent as its idempotency key; empty for CMS payments.
+@override@JsonKey() final  String clientRef;
+@override final  DateTime? paidAt;
+
+/// Create a copy of DebtPaymentEntry
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DebtPaymentEntryCopyWith<_DebtPaymentEntry> get copyWith => __$DebtPaymentEntryCopyWithImpl<_DebtPaymentEntry>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DebtPaymentEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.debtId, debtId) || other.debtId == debtId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.remaining, remaining) || other.remaining == remaining)&&(identical(other.paid, paid) || other.paid == paid)&&(identical(other.cashier, cashier) || other.cashier == cashier)&&(identical(other.clientRef, clientRef) || other.clientRef == clientRef)&&(identical(other.paidAt, paidAt) || other.paidAt == paidAt));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,id,debtId,customerName,amount,remaining,paid,cashier,clientRef,paidAt);
+}
+
+@override
+String toString() {
+    return 'DebtPaymentEntry(id: $id, debtId: $debtId, customerName: $customerName, amount: $amount, remaining: $remaining, paid: $paid, cashier: $cashier, clientRef: $clientRef, paidAt: $paidAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DebtPaymentEntryCopyWith<$Res> implements $DebtPaymentEntryCopyWith<$Res> {
+  factory _$DebtPaymentEntryCopyWith(_DebtPaymentEntry value, $Res Function(_DebtPaymentEntry) _then) = __$DebtPaymentEntryCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String debtId, String customerName, int amount, int remaining, bool paid, String cashier, String clientRef, DateTime? paidAt
+});
+
+
+
+
+}
+/// @nodoc
+class __$DebtPaymentEntryCopyWithImpl<$Res>
+    implements _$DebtPaymentEntryCopyWith<$Res> {
+  __$DebtPaymentEntryCopyWithImpl(this._self, this._then);
+
+  final _DebtPaymentEntry _self;
+  final $Res Function(_DebtPaymentEntry) _then;
+
+/// Create a copy of DebtPaymentEntry
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? debtId = null,Object? customerName = null,Object? amount = null,Object? remaining = null,Object? paid = null,Object? cashier = null,Object? clientRef = null,Object? paidAt = freezed,}) {
+  return _then(_DebtPaymentEntry(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,debtId: null == debtId ? _self.debtId : debtId // ignore: cast_nullable_to_non_nullable
+as String,customerName: null == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as int,remaining: null == remaining ? _self.remaining : remaining // ignore: cast_nullable_to_non_nullable
+as int,paid: null == paid ? _self.paid : paid // ignore: cast_nullable_to_non_nullable
+as bool,cashier: null == cashier ? _self.cashier : cashier // ignore: cast_nullable_to_non_nullable
+as String,clientRef: null == clientRef ? _self.clientRef : clientRef // ignore: cast_nullable_to_non_nullable
+as String,paidAt: freezed == paidAt ? _self.paidAt : paidAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
+  ));
+}
+
+
+}
+
 // dart format on

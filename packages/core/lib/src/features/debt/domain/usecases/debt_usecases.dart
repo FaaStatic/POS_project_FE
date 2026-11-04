@@ -11,11 +11,26 @@ class GetDebts {
   Future<Result<Paged<Debt>>> call(DebtQuery query, {PageCursor? after}) => _repo.list(query, after: after);
 }
 
-class GetDebt {
-  const GetDebt(this._repo);
+class GetDebtPayments {
+  const GetDebtPayments(this._repo);
   final DebtRepository _repo;
 
-  Future<Result<Debt>> call(String id) => _repo.get(id);
+  Future<Result<List<DebtPaymentEntry>>> call({int limit = 50, String? customerId}) =>
+      _repo.listPayments(limit: limit, customerId: customerId);
+}
+
+class GetDebtPaymentReceiptPdf {
+  const GetDebtPaymentReceiptPdf(this._repo);
+  final DebtRepository _repo;
+
+  Future<Result<String>> call(String paymentId) => _repo.paymentReceiptPdf(paymentId);
+}
+
+class GetDebtPaymentsRecapPdf {
+  const GetDebtPaymentsRecapPdf(this._repo);
+  final DebtRepository _repo;
+
+  Future<Result<String>> call(int month, int year) => _repo.paymentsRecapPdf(month, year);
 }
 
 class PayDebt {
@@ -38,8 +53,11 @@ class AddManualDebt {
   const AddManualDebt(this._repo);
   final DebtRepository _repo;
 
-  Future<Result<void>> call({required String customerId, required int amount, DateTime? dueDate}) {
+  /// The backend keeps [note] to 200 characters.
+  static const noteMaxLength = 200;
+
+  Future<Result<void>> call({required String customerId, required int amount, DateTime? dueDate, String? note}) {
     if (amount <= 0) return Future.value(const Err(ValidationFailure('positive_number')));
-    return _repo.add(customerId: customerId, amount: amount, dueDate: dueDate);
+    return _repo.add(customerId: customerId, amount: amount, dueDate: dueDate, note: note);
   }
 }

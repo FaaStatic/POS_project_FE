@@ -5,11 +5,17 @@ import 'receipt_settings.dart';
 
 enum ReceiptAlign { left, center }
 
+/// Which part of the slip a line belongs to. The printer ignores it; the on-screen paper sizes
+/// the store name, address and footer by it, sets the number/date/cashier rows ([info]) a size smaller, and
+/// everything else in the monospace grid.
+enum ReceiptRole { store, address, info, body, footer }
+
 class ReceiptLine {
-  const ReceiptLine(this.text, {this.align = ReceiptAlign.left, this.bold = false});
+  const ReceiptLine(this.text, {this.align = ReceiptAlign.left, this.bold = false, this.role = ReceiptRole.body});
   final String text;
   final ReceiptAlign align;
   final bool bold;
+  final ReceiptRole role;
 
   @override
   String toString() => text;
@@ -31,31 +37,53 @@ class ReceiptDocument {
     final rule = '-' * width;
     final lines = <ReceiptLine>[
       ReceiptLine(settings.storeName.isEmpty ? labels.storeNameMissing : settings.storeName,
-          align: ReceiptAlign.center, bold: true),
+          align: ReceiptAlign.center, bold: true, role: ReceiptRole.store),
       if (settings.storeAddress.isNotEmpty)
-        for (final part in _wrap(settings.storeAddress, width)) ReceiptLine(part, align: ReceiptAlign.center),
+        for (final part in _wrap(settings.storeAddress, width)) ReceiptLine(part, align: ReceiptAlign.center, role: ReceiptRole.address),
       ReceiptLine(rule),
-      ReceiptLine(_pair(labels.number, sale.receiptNumber, width)),
-      ReceiptLine(_pair(labels.date, formatDateTime(sale.createdAt, locale: locale), width)),
-      ReceiptLine(_pair(labels.cashier, sale.cashierName, width)),
-      if (sale.customerName != null) ReceiptLine(_pair(labels.customer, sale.customerName!, width)),
+      ..._fields([
+        (labels.number, sale.receiptNumber),
+        (labels.date, formatDateTime(sale.createdAt, locale: locale)),
+        (labels.cashier, sale.cashierName),
+        if (sale.customerName != null) (labels.customer, sale.customerName!),
+      ], width),
       ReceiptLine(rule),
-      for (final item in sale.lines) ...[
-        for (final part in _wrap(item.name, width)) ReceiptLine(part),
-        if (item.destination != null) ReceiptLine('  ${labels.destination}: ${item.destination}'),
-        ReceiptLine(_pair(
-          '  ${formatQty(item.qty, locale: locale)} x ${formatRupiah(item.unitPrice, locale: locale)}',
-          formatRupiah(item.subtotal, locale: locale),
-          width,
-        )),
+      if (sale.isDebtPayment) ...[
+        ReceiptLine(labels.debtPayment, align: ReceiptAlign.center, bold: true),
+        ReceiptLine(rule),
+        for (final row in _pair(labels.debtPaidNow, formatRupiah(sale.total, locale: locale), width)) ReceiptLine(row, bold: true),
+        for (final row in _pair(labels.debtPaidTotal, formatRupiah(sale.debtPaidSoFar, locale: locale), width)) ReceiptLine(row),
+        for (final row in _pair(labels.debtOwed, formatRupiah(sale.debtAfter ?? 0, locale: locale), width)) ReceiptLine(row),
+      ] else ...[
+        for (final item in sale.lines) ...[
+          for (final part in _wrap(item.name, width)) ReceiptLine(part),
+          if (item.destination != null) ReceiptLine('  ${labels.destination}: ${item.destination}'),
+          for (final row in _pair(
+            '  ${formatQty(item.qty, locale: locale)} x ${formatRupiah(item.unitPrice, locale: locale)}',
+            formatRupiah(item.subtotal, locale: locale),
+            width,
+          ))
+            ReceiptLine(row),
+        ],
+        ReceiptLine(rule),
+        for (final row in _pair(labels.total, formatRupiah(sale.total, locale: locale), width)) ReceiptLine(row, bold: true),
       ],
-      ReceiptLine(rule),
-      ReceiptLine(_pair(labels.total, formatRupiah(sale.total, locale: locale), width), bold: true),
-      ReceiptLine(_pair(labels.method, methodLabel(sale.method), width)),
+      for (final row in _pair(labels.method, methodLabel(sale.method), width)) ReceiptLine(row),
+      ReceiptLine(
+        '*** ${sale.status == SaleStatus.cancelled
+            ? labels.markCancelled
+            : sale.isDebtPayment
+            ? (sale.debtSettled ? labels.markPaid : labels.markUnpaid)
+            : sale.method == PaymentMethod.debt
+            ? labels.markDebt
+            : labels.markPaid} ***',
+        align: ReceiptAlign.center,
+        bold: true,
+      ),
       if (sale.isOffline) ReceiptLine(labels.offlineNote, align: ReceiptAlign.center),
       if (settings.footer.isNotEmpty) ...[
         ReceiptLine(rule),
-        for (final part in _wrap(settings.footer, width)) ReceiptLine(part, align: ReceiptAlign.center),
+        for (final part in _wrap(settings.footer, width)) ReceiptLine(part, align: ReceiptAlign.center, role: ReceiptRole.footer),
       ],
     ];
     return ReceiptDocument(lines);
@@ -63,10 +91,36 @@ class ReceiptDocument {
 
   final List<ReceiptLine> lines;
 
-  static String _pair(String left, String right, int width) {
+  /// Left text and right-aligned value on one row; when they do not fit, the value drops to its
+  /// own row so no line ever carries a line break.
+  static List<String> _pair(String left, String right, int width) {
     final gap = width - left.length - right.length;
-    if (gap >= 1) return '$left${' ' * gap}$right';
-    return '$left\n${right.padLeft(width)}';
+    if (gap >= 1) return ['$left${' ' * gap}$right'];
+    return [left, right.padLeft(width)];
+  }
+
+  /// "Label   : value" rows with the colons aligned, the way a till slip lists number, date and
+  /// cashier. A value longer than the paper wraps under itself.
+  static List<ReceiptLine> _fields(List<(String, String)> rows, int width) {
+    final labelWidth = rows.fold(0, (widest, r) => r.$1.length > widest ? r.$1.length : widest);
+    final valueWidth = width - labelWidth - 3;
+    return [
+      for (final (label, value) in rows)
+        for (final (i, part) in _fit(value, valueWidth).indexed)
+          ReceiptLine(
+            '${i == 0 ? label.padRight(labelWidth) : ' ' * labelWidth}${i == 0 ? ' : ' : '   '}$part',
+            role: ReceiptRole.info,
+          ),
+    ];
+  }
+
+  /// Words wrap as usual; one long code (an invoice number) is cut into equal rows instead of
+  /// being chopped at the paper edge, which would leave a stub on the last row.
+  static List<String> _fit(String text, int width) {
+    if (text.length <= width || text.contains(' ')) return _wrap(text, width);
+    final rows = (text.length / width).ceil();
+    final size = (text.length / rows).ceil();
+    return [for (var i = 0; i < text.length; i += size) text.substring(i, i + size > text.length ? text.length : i + size)];
   }
 
   static List<String> _wrap(String text, int width) {
@@ -103,7 +157,27 @@ class ReceiptLabels {
     required this.method,
     required this.offlineNote,
     required this.storeNameMissing,
+    required this.markPaid,
+    required this.markDebt,
+    required this.markCancelled,
+    required this.markUnpaid,
+    required this.debtPayment,
+    required this.debtPaidNow,
+    required this.debtPaidTotal,
+    required this.debtOwed,
   });
+
+  /// Centered status mark under the total, printed as "*** LUNAS ***".
+  final String markPaid;
+  final String markDebt;
+  final String markCancelled;
+  final String markUnpaid;
+
+  /// Debt payment slip: title and the three amounts (this payment, paid so far, still owed).
+  final String debtPayment;
+  final String debtPaidNow;
+  final String debtPaidTotal;
+  final String debtOwed;
 
   final String number;
   final String date;

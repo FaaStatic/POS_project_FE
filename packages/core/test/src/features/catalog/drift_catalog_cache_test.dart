@@ -10,6 +10,8 @@ class MockCategories extends Mock implements CategoryRepository {}
 
 class MockCustomers extends Mock implements CustomerRepository {}
 
+class MockDebts extends Mock implements DebtRepository {}
+
 Product product(String id, {String name = 'Indomie', String? barcode, double stock = 10, String? category}) => Product(
       id: id,
       sku: 'S$id',
@@ -43,6 +45,19 @@ void main() {
     expect((await cache.watchProducts(search: 'indomie').first).map((p) => p.id), ['c', 'b']);
     expect((await cache.watchProducts(search: 'Sa').first).map((p) => p.id), ['a']);
     expect((await cache.watchProducts(search: '222').first).single.id, 'b');
+  });
+
+  test('a limit reads only that many rows, in the same order', () async {
+    await cache.replaceProducts([
+      product('a', name: 'Aqua 600ml'),
+      product('b', name: 'Indomie Goreng'),
+      product('c', name: 'Indomie Soto'),
+    ]);
+    await cache.adjustStock({'c': -1}, countSale: true);
+    expect((await cache.watchProducts(limit: 1).first).map((p) => p.id), ['c']);
+    expect((await cache.watchProducts(limit: 2).first).map((p) => p.id), ['c', 'a']);
+    expect(await cache.watchProducts(limit: 100).first, hasLength(3));
+    expect((await cache.watchProducts(search: 'indomie', limit: 1).first).map((p) => p.id), ['c']);
   });
 
   test('replace keeps sold counts and barcode lookup works', () async {
@@ -84,15 +99,18 @@ void main() {
     final products = MockProducts();
     final categories = MockCategories();
     final customers = MockCustomers();
+    final debts = MockDebts();
+    when(debts.listUnpaid).thenAnswer((_) async => const Ok([Debt(id: 'd1', customerId: 'k1', customerName: 'Bu Sri', total: 9000, remaining: 4000, paid: false)]));
     when(products.listAll).thenAnswer((_) async => Ok([product('a')]));
     when(categories.list).thenAnswer((_) async => const Err(NetworkFailure()));
     when(customers.listAll).thenAnswer((_) async => const Ok([Customer(id: 'k1', name: 'Bu Sri')]));
-    final result = await RefreshCatalog(products, categories, customers, cache)();
+    final result = await RefreshCatalog(products, categories, customers, debts, cache)();
     expect(result, const Err<void>(NetworkFailure()));
     expect(await cache.product('a'), isNotNull);
     expect(await cache.customer('k1'), isNotNull);
+    expect((await cache.debtOfCustomer('k1'))?.remaining, 4000);
 
     when(categories.list).thenAnswer((_) async => const Ok([Category(id: 'c', name: 'X')]));
-    expect(await RefreshCatalog(products, categories, customers, cache)(), isA<Ok<void>>());
+    expect(await RefreshCatalog(products, categories, customers, debts, cache)(), isA<Ok<void>>());
   });
 }

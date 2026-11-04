@@ -161,7 +161,7 @@ class _ProductFormState extends State<ProductForm> {
       label: l10n.stock,
       controller: _stock,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      validator: (v) => validationText(context, Validators.nonNegativeNumber(v)),
+      validator: (v) => validationText(context, Validators.quantity(v, whole: _unit == ProductUnit.pcs)),
     );
     Widget price(String label, TextEditingController c) => AppTextField(
           label: label,
@@ -192,6 +192,7 @@ class _ProductFormState extends State<ProductForm> {
               ),
               AppTextField(label: l10n.barcode, hint: l10n.barcodeHint, controller: _barcode, validator: (v) => validationText(context, Validators.barcode(v))),
             ]),
+            if (p != null && p!.barcodeImage.isNotEmpty) BarcodeImage(image: p!.barcodeImage, semanticLabel: l10n.barcode),
             AppAutocomplete(
               label: l10n.category,
               hint: l10n.categoryNewHint,
@@ -248,6 +249,7 @@ class StockForm extends StatefulWidget {
 }
 
 class _StockFormState extends State<StockForm> {
+  final _formKey = GlobalKey<FormState>();
   final _delta = TextEditingController();
   bool _saving = false;
   Failure? _failure;
@@ -259,7 +261,8 @@ class _StockFormState extends State<StockForm> {
   }
 
   Future<void> _save() async {
-    final delta = double.tryParse(_delta.text.replaceAll(',', '.')) ?? 0;
+    if (!_formKey.currentState!.validate()) return;
+    final delta = double.parse(_delta.text.trim().replaceAll(',', '.'));
     setState(() => _saving = true);
     final result = await widget.onSubmit(delta);
     if (!mounted) return;
@@ -276,22 +279,26 @@ class _StockFormState extends State<StockForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('${l10n.stock}: ${formatQty(widget.product.stock, locale: Localizations.localeOf(context).languageCode)} ${widget.product.unit.name}'),
-        const SizedBox(height: Space.lg),
-        AppTextField(
-          label: l10n.stockDelta,
-          controller: _delta,
-          autofocus: true,
-          keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[-0-9.,]'))],
-          onSubmitted: (_) => _save(),
-        ),
-        const SizedBox(height: Space.xl),
-        FormActions(onSave: _save, saving: _saving, failure: _failure),
-      ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('${l10n.stock}: ${formatQty(widget.product.stock, locale: Localizations.localeOf(context).languageCode)} ${widget.product.unit.name}'),
+          const SizedBox(height: Space.lg),
+          AppTextField(
+            label: l10n.stockDelta,
+            controller: _delta,
+            autofocus: true,
+            keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[-0-9.,]'))],
+            validator: (v) => validationText(context, Validators.quantity(v, whole: widget.product.unit == ProductUnit.pcs, signed: true)),
+            onSubmitted: (_) => _save(),
+          ),
+          const SizedBox(height: Space.xl),
+          FormActions(onSave: _save, saving: _saving, failure: _failure),
+        ],
+      ),
     );
   }
 }

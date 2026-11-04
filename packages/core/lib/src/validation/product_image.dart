@@ -1,11 +1,15 @@
 /// Pixel size of a WebP, read from its header without decoding.
 typedef WebpSize = ({int width, int height});
 
-/// Rules for a product picture, checked before upload. The backend stores the string as-is
-/// (a `text` column, no validation), so these rules live here. Error keys follow [Validators].
+/// Rules for a product picture, checked before upload so the error shows before a round trip.
+/// The backend re-checks the format and size, shrinks the picture to 256 px, and refuses sources
+/// over 16 million pixels. Error keys follow [Validators].
 abstract final class ProductImage {
   /// 500 KB, counted in KiB like the file sizes the OS shows.
   static const maxBytes = 500 * 1024;
+
+  /// Longest side accepted; 4000 x 4000 is exactly the backend's 16 million pixel limit.
+  static const maxSide = 4000;
 
   /// Null when [bytes] is not a WebP or its header is cut short.
   ///
@@ -35,13 +39,14 @@ abstract final class ProductImage {
     return null;
   }
 
-  /// Null when valid, else `image_not_webp`, `image_too_large`, or `image_not_square`,
-  /// checked in that order so the most basic problem is reported first.
+  /// Null when valid, else `image_not_webp`, `image_too_large`, `image_not_square`, or
+  /// `image_dimensions`, checked in that order so the most basic problem is reported first.
   static String? validate(List<int> bytes) {
     final size = webpSize(bytes);
     if (size == null) return 'image_not_webp';
     if (bytes.length > maxBytes) return 'image_too_large';
-    return size.width == size.height ? null : 'image_not_square';
+    if (size.width != size.height) return 'image_not_square';
+    return size.width > maxSide ? 'image_dimensions' : null;
   }
 
   static bool _is(List<int> b, int offset, String text) {

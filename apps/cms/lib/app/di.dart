@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:get_it/get_it.dart';
 
+import '../common/products_stale.dart';
 import '../features/auth/presentation/bloc/auth_cubit.dart';
 import '../features/categories/presentation/bloc/categories_cubit.dart';
 import '../features/customers/presentation/bloc/customers_cubit.dart';
@@ -79,7 +80,7 @@ void setupDependencies({
     ..registerFactory(() => PurgeCustomer(getIt()))
     ..registerFactory(() => GetCustomerTransactions(getIt()))
     ..registerFactory(() => CustomersCubit(getIt(), getIt(), getIt(), getIt(), getIt(), getIt()))
-    ..registerFactory(() => CustomerDetailCubit(getIt(), getIt()))
+    ..registerFactory(() => CustomerDetailCubit(getIt(), getIt(), getIt(), getIt(), getIt(), getIt(), getIt()))
     ..registerFactory(() => GetCategories(getIt()))
     ..registerFactory(() => CreateCategory(getIt()))
     ..registerFactory(() => RenameCategory(getIt()))
@@ -92,9 +93,12 @@ void setupDependencies({
     ..registerFactory(() => AdjustStock(getIt()))
     ..registerFactory(() => DeleteProduct(getIt()))
     ..registerFactory(() => BulkCreateProducts(getIt()))
-    ..registerFactory(() => ProductsCubit(getIt(), getIt(), getIt(), getIt(), getIt(), getIt()))
+    ..registerLazySingleton(ProductsStale.new)
+    ..registerFactory(() => ExportBarcodes(getIt()))
+    ..registerFactory(() => ProductsCubit(getIt(), getIt(), getIt(), getIt(), getIt(), getIt(), getIt(), getIt()))
     ..registerFactory(() => ImportProductsFile(getIt()))
-    ..registerFactory(() => BulkProductsCubit(getIt(), getIt()))
+    ..registerFactory(() => DownloadImportTemplate(getIt()))
+    ..registerFactory(() => BulkProductsCubit(getIt(), getIt(), getIt(), getIt()))
     ..registerFactory(() => GetDevices(getIt()))
     ..registerFactory(() => RevokeDevice(getIt()))
     ..registerFactory(() => DevicesCubit(getIt(), getIt()))
@@ -110,10 +114,13 @@ void setupDependencies({
     ..registerFactory(() => GetPayments(getIt()))
     ..registerFactory(() => CheckPaymentStatus(getIt()))
     ..registerFactory(() => GetDebts(getIt()))
+    ..registerFactory(() => GetDebtPayments(getIt()))
+    ..registerFactory(() => GetDebtPaymentReceiptPdf(getIt()))
+    ..registerFactory(() => GetDebtPaymentsRecapPdf(getIt()))
     ..registerFactory(() => PayDebt(getIt()))
     ..registerFactory(() => AddManualDebt(getIt()))
     ..registerFactory(() => DebtsCubit(getIt(), getIt(), getIt(), getIt(), getIt()))
-    ..registerFactory(() => ReportsCubit(getIt(), getIt()))
+    ..registerFactory(() => ReportsCubit(getIt(), getIt(), getIt()))
     ..registerFactory(() => GetDashboard(getIt()))
     ..registerFactory(() => DashboardCubit(getIt(), getIt(), getIt(), getIt()));
 }

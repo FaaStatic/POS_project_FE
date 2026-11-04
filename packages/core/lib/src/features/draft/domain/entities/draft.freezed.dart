@@ -303,7 +303,7 @@ as String?,
 /// @nodoc
 mixin _$Draft {
 
- int get id; int get number; String? get customerId; String? get customerName; DateTime get createdAt; DateTime get updatedAt; DraftStatus get status; Charge? get charge; String? get paidSaleRef; List<DraftItem> get items;
+ int get id; int get number; String? get customerId; String? get customerName; DateTime get createdAt; DateTime get updatedAt; DraftStatus get status; DraftKind get kind; Charge? get charge; String? get paidSaleRef; List<DraftItem> get items;
 /// Create a copy of Draft
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -315,20 +315,20 @@ $DraftCopyWith<Draft> get copyWith => _$DraftCopyWithImpl<Draft>(this as Draft, 
 @override
 bool operator ==(Object other) {
   final _this = this as Draft;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Draft&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.number, _this.number) || other.number == _this.number)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.charge, _this.charge) || other.charge == _this.charge)&&(identical(other.paidSaleRef, _this.paidSaleRef) || other.paidSaleRef == _this.paidSaleRef)&&const DeepCollectionEquality().equals(other.items, _this.items));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Draft&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.number, _this.number) || other.number == _this.number)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.kind, _this.kind) || other.kind == _this.kind)&&(identical(other.charge, _this.charge) || other.charge == _this.charge)&&(identical(other.paidSaleRef, _this.paidSaleRef) || other.paidSaleRef == _this.paidSaleRef)&&const DeepCollectionEquality().equals(other.items, _this.items));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Draft;
-  return Object.hash(runtimeType,_this.id,_this.number,_this.customerId,_this.customerName,_this.createdAt,_this.updatedAt,_this.status,_this.charge,_this.paidSaleRef,const DeepCollectionEquality().hash(_this.items));
+  return Object.hash(runtimeType,_this.id,_this.number,_this.customerId,_this.customerName,_this.createdAt,_this.updatedAt,_this.status,_this.kind,_this.charge,_this.paidSaleRef,const DeepCollectionEquality().hash(_this.items));
 }
 
 @override
 String toString() {
   final _this = this as Draft;
-  return 'Draft(id: ${_this.id}, number: ${_this.number}, customerId: ${_this.customerId}, customerName: ${_this.customerName}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt}, status: ${_this.status}, charge: ${_this.charge}, paidSaleRef: ${_this.paidSaleRef}, items: ${_this.items})';
+  return 'Draft(id: ${_this.id}, number: ${_this.number}, customerId: ${_this.customerId}, customerName: ${_this.customerName}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt}, status: ${_this.status}, kind: ${_this.kind}, charge: ${_this.charge}, paidSaleRef: ${_this.paidSaleRef}, items: ${_this.items})';
 }
 
 
@@ -339,7 +339,7 @@ abstract mixin class $DraftCopyWith<$Res>  {
   factory $DraftCopyWith(Draft value, $Res Function(Draft) _then) = _$DraftCopyWithImpl;
 @useResult
 $Res call({
- int id, int number, String? customerId, String? customerName, DateTime createdAt, DateTime updatedAt, DraftStatus status, Charge? charge, String? paidSaleRef, List<DraftItem> items
+ int id, int number, String? customerId, String? customerName, DateTime createdAt, DateTime updatedAt, DraftStatus status, DraftKind kind, Charge? charge, String? paidSaleRef, List<DraftItem> items
 });
 
 
@@ -356,7 +356,7 @@ class _$DraftCopyWithImpl<$Res>
 
 /// Create a copy of Draft
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? number = null,Object? customerId = freezed,Object? customerName = freezed,Object? createdAt = null,Object? updatedAt = null,Object? status = null,Object? charge = freezed,Object? paidSaleRef = freezed,Object? items = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? number = null,Object? customerId = freezed,Object? customerName = freezed,Object? createdAt = null,Object? updatedAt = null,Object? status = null,Object? kind = null,Object? charge = freezed,Object? paidSaleRef = freezed,Object? items = null,}) {
   return _then(Draft(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,number: null == number ? _self.number : number // ignore: cast_nullable_to_non_nullable
@@ -365,7 +365,8 @@ as String?,customerName: freezed == customerName ? _self.customerName : customer
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as DraftStatus,charge: freezed == charge ? _self.charge : charge // ignore: cast_nullable_to_non_nullable
+as DraftStatus,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
+as DraftKind,charge: freezed == charge ? _self.charge : charge // ignore: cast_nullable_to_non_nullable
 as Charge?,paidSaleRef: freezed == paidSaleRef ? _self.paidSaleRef : paidSaleRef // ignore: cast_nullable_to_non_nullable
 as String?,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<DraftItem>,
@@ -465,10 +466,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int number,  String? customerId,  String? customerName,  DateTime createdAt,  DateTime updatedAt,  DraftStatus status,  Charge? charge,  String? paidSaleRef,  List<DraftItem> items)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int number,  String? customerId,  String? customerName,  DateTime createdAt,  DateTime updatedAt,  DraftStatus status,  DraftKind kind,  Charge? charge,  String? paidSaleRef,  List<DraftItem> items)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Draft() when $default != null:
-return $default(_that.id,_that.number,_that.customerId,_that.customerName,_that.createdAt,_that.updatedAt,_that.status,_that.charge,_that.paidSaleRef,_that.items);case _:
+return $default(_that.id,_that.number,_that.customerId,_that.customerName,_that.createdAt,_that.updatedAt,_that.status,_that.kind,_that.charge,_that.paidSaleRef,_that.items);case _:
   return orElse();
 
 }
@@ -486,10 +487,10 @@ return $default(_that.id,_that.number,_that.customerId,_that.customerName,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int number,  String? customerId,  String? customerName,  DateTime createdAt,  DateTime updatedAt,  DraftStatus status,  Charge? charge,  String? paidSaleRef,  List<DraftItem> items)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int number,  String? customerId,  String? customerName,  DateTime createdAt,  DateTime updatedAt,  DraftStatus status,  DraftKind kind,  Charge? charge,  String? paidSaleRef,  List<DraftItem> items)  $default,) {final _that = this;
 switch (_that) {
 case _Draft():
-return $default(_that.id,_that.number,_that.customerId,_that.customerName,_that.createdAt,_that.updatedAt,_that.status,_that.charge,_that.paidSaleRef,_that.items);case _:
+return $default(_that.id,_that.number,_that.customerId,_that.customerName,_that.createdAt,_that.updatedAt,_that.status,_that.kind,_that.charge,_that.paidSaleRef,_that.items);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -506,10 +507,10 @@ return $default(_that.id,_that.number,_that.customerId,_that.customerName,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int number,  String? customerId,  String? customerName,  DateTime createdAt,  DateTime updatedAt,  DraftStatus status,  Charge? charge,  String? paidSaleRef,  List<DraftItem> items)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int number,  String? customerId,  String? customerName,  DateTime createdAt,  DateTime updatedAt,  DraftStatus status,  DraftKind kind,  Charge? charge,  String? paidSaleRef,  List<DraftItem> items)?  $default,) {final _that = this;
 switch (_that) {
 case _Draft() when $default != null:
-return $default(_that.id,_that.number,_that.customerId,_that.customerName,_that.createdAt,_that.updatedAt,_that.status,_that.charge,_that.paidSaleRef,_that.items);case _:
+return $default(_that.id,_that.number,_that.customerId,_that.customerName,_that.createdAt,_that.updatedAt,_that.status,_that.kind,_that.charge,_that.paidSaleRef,_that.items);case _:
   return null;
 
 }
@@ -521,7 +522,7 @@ return $default(_that.id,_that.number,_that.customerId,_that.customerName,_that.
 
 
 class _Draft extends Draft {
-  const _Draft({required this.id, required this.number, this.customerId, this.customerName, required this.createdAt, required this.updatedAt, this.status = DraftStatus.open, this.charge, this.paidSaleRef,  List<DraftItem> items = const []}): _items = items,super._();
+  const _Draft({required this.id, required this.number, this.customerId, this.customerName, required this.createdAt, required this.updatedAt, this.status = DraftStatus.open, this.kind = DraftKind.sale, this.charge, this.paidSaleRef,  List<DraftItem> items = const []}): _items = items,super._();
   
 
 @override final  int id;
@@ -531,6 +532,7 @@ class _Draft extends Draft {
 @override final  DateTime createdAt;
 @override final  DateTime updatedAt;
 @override@JsonKey() final  DraftStatus status;
+@override@JsonKey() final  DraftKind kind;
 @override final  Charge? charge;
 @override final  String? paidSaleRef;
  final  List<DraftItem> _items;
@@ -551,18 +553,18 @@ _$DraftCopyWith<_Draft> get copyWith => __$DraftCopyWithImpl<_Draft>(this, _$ide
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Draft&&(identical(other.id, id) || other.id == id)&&(identical(other.number, number) || other.number == number)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.charge, charge) || other.charge == charge)&&(identical(other.paidSaleRef, paidSaleRef) || other.paidSaleRef == paidSaleRef)&&const DeepCollectionEquality().equals(other.items, _items));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Draft&&(identical(other.id, id) || other.id == id)&&(identical(other.number, number) || other.number == number)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.charge, charge) || other.charge == charge)&&(identical(other.paidSaleRef, paidSaleRef) || other.paidSaleRef == paidSaleRef)&&const DeepCollectionEquality().equals(other.items, _items));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,number,customerId,customerName,createdAt,updatedAt,status,charge,paidSaleRef,const DeepCollectionEquality().hash(_items));
+    return Object.hash(runtimeType,id,number,customerId,customerName,createdAt,updatedAt,status,kind,charge,paidSaleRef,const DeepCollectionEquality().hash(_items));
 }
 
 @override
 String toString() {
-    return 'Draft(id: $id, number: $number, customerId: $customerId, customerName: $customerName, createdAt: $createdAt, updatedAt: $updatedAt, status: $status, charge: $charge, paidSaleRef: $paidSaleRef, items: $items)';
+    return 'Draft(id: $id, number: $number, customerId: $customerId, customerName: $customerName, createdAt: $createdAt, updatedAt: $updatedAt, status: $status, kind: $kind, charge: $charge, paidSaleRef: $paidSaleRef, items: $items)';
 }
 
 
@@ -573,7 +575,7 @@ abstract mixin class _$DraftCopyWith<$Res> implements $DraftCopyWith<$Res> {
   factory _$DraftCopyWith(_Draft value, $Res Function(_Draft) _then) = __$DraftCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int number, String? customerId, String? customerName, DateTime createdAt, DateTime updatedAt, DraftStatus status, Charge? charge, String? paidSaleRef, List<DraftItem> items
+ int id, int number, String? customerId, String? customerName, DateTime createdAt, DateTime updatedAt, DraftStatus status, DraftKind kind, Charge? charge, String? paidSaleRef, List<DraftItem> items
 });
 
 
@@ -590,7 +592,7 @@ class __$DraftCopyWithImpl<$Res>
 
 /// Create a copy of Draft
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? number = null,Object? customerId = freezed,Object? customerName = freezed,Object? createdAt = null,Object? updatedAt = null,Object? status = null,Object? charge = freezed,Object? paidSaleRef = freezed,Object? items = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? number = null,Object? customerId = freezed,Object? customerName = freezed,Object? createdAt = null,Object? updatedAt = null,Object? status = null,Object? kind = null,Object? charge = freezed,Object? paidSaleRef = freezed,Object? items = null,}) {
   return _then(_Draft(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,number: null == number ? _self.number : number // ignore: cast_nullable_to_non_nullable
@@ -599,7 +601,8 @@ as String?,customerName: freezed == customerName ? _self.customerName : customer
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as DraftStatus,charge: freezed == charge ? _self.charge : charge // ignore: cast_nullable_to_non_nullable
+as DraftStatus,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
+as DraftKind,charge: freezed == charge ? _self.charge : charge // ignore: cast_nullable_to_non_nullable
 as Charge?,paidSaleRef: freezed == paidSaleRef ? _self.paidSaleRef : paidSaleRef // ignore: cast_nullable_to_non_nullable
 as String?,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<DraftItem>,

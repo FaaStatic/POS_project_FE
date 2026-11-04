@@ -6,9 +6,12 @@ import 'package:dio/dio.dart';
 typedef FakeHandler = FakeReply Function(RequestOptions options);
 
 class FakeReply {
-  const FakeReply(this.status, [this.body]);
+  const FakeReply(this.status, [this.body, this.headers = const {}]);
   final int status;
   final Object? body;
+
+  /// Extra response headers, e.g. the paging headers of a file download.
+  final Map<String, String> headers;
 }
 
 /// Scripted HTTP adapter: route by "METHOD path", record every request.
@@ -36,6 +39,7 @@ class FakeAdapter implements HttpClientAdapter {
       reply.status,
       headers: {
         Headers.contentTypeHeader: [Headers.jsonContentType],
+        for (final h in reply.headers.entries) h.key: [h.value],
       },
     );
   }

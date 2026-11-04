@@ -32,8 +32,8 @@ void main() {
         reviewed = true;
         return FakeReply(200, envelope(null));
       })
-      ..on('GET', ApiPaths.reportTransaction, (_) => FakeReply(200, envelope({'url_pdf': '/api/reports/inv-001.pdf'})))
-      ..on('GET', '/api/reports/inv-001.pdf', (_) => const FakeReply(200, [37, 80]))
+      ..on('GET', ApiPaths.reportTransaction, (_) => FakeReply(200, envelope({'url_pdf': '/api/v1/insight/reports/inv-001.pdf'})))
+      ..on('GET', '/insight/reports/inv-001.pdf', (_) => const FakeReply(200, [37, 80]))
       ..on('DELETE', ApiPaths.transaction('t1'), (_) => FakeReply(200, envelope(null)));
     await app.pump(tester, location: '/transactions');
     expect(find.text('INV-001'), findsOneWidget);
@@ -66,11 +66,56 @@ void main() {
     expect(find.text('INV-001'), findsOneWidget);
   });
 
+  testWidgets('detail shows the cash received and each part of the change', (tester) async {
+    final app = CmsHarness();
+    app.adapter.on('GET', ApiPaths.transaction('t1'), (_) => FakeReply(200, envelope({
+          ...trx(conflict: false),
+          'amount_paid': 10000,
+          'change_amount': 3000,
+          'change': [
+            {'kind': 'tunai', 'amount': 1000},
+            {'kind': 'permen', 'amount': 2000, 'product_id': 'p2', 'product_name': 'Mentos', 'qty': 4},
+          ],
+        })));
+    await app.pump(tester, location: '/transactions/t1');
+    expect(find.text('Uang diterima'), findsOneWidget);
+    expect(find.text('Kembalian'), findsOneWidget);
+    // Once for the payment method, once for the cash part of the change.
+    expect(find.text('Tunai'), findsNWidgets(2));
+    expect(find.text('Permen · Mentos × 4'), findsOneWidget);
+  });
+
+  testWidgets('detail without change info shows no cash rows', (tester) async {
+    final app = CmsHarness();
+    app.adapter.on('GET', ApiPaths.transaction('t1'), (_) => FakeReply(200, envelope(trx(conflict: false))));
+    await app.pump(tester, location: '/transactions/t1');
+    expect(find.text('INV-001'), findsOneWidget);
+    expect(find.text('Uang diterima'), findsNothing);
+    expect(find.text('Kembalian'), findsNothing);
+  });
+
   testWidgets('conflicts link from the dashboard opens the filtered list', (tester) async {
     final app = CmsHarness();
     app.adapter.on('GET', ApiPaths.transactions, (_) => FakeReply(200, envelope({'list_transaction': []})));
     await app.pump(tester, location: '/transactions?conflicts=1', size: const Size(400, 800));
     expect(app.adapter.requests.last.queryParameters['open_conflict'], true);
     expect(find.text('Belum ada transaksi pada filter ini.'), findsOneWidget);
+  });
+
+  testWidgets('every row has a status: success or cancelled with its reason; the list asks for all by default', (tester) async {
+    final app = CmsHarness();
+    final cancelled = {...trx(conflict: false), 'transaction_id': 't2', 'invoice_number': 'INV-002', 'status': 'cancelled', 'cancel_reason': 'salah input'};
+    app.adapter
+      ..on('GET', ApiPaths.transactions, (_) => FakeReply(200, envelope({'list_transaction': [{...trx(conflict: false), 'status': 'success'}, cancelled]})))
+      ..on('GET', ApiPaths.transaction('t2'), (_) => FakeReply(200, envelope(cancelled)));
+    await app.pump(tester, location: '/transactions', size: const Size(1200, 800));
+    expect(app.adapter.requests.firstWhere((r) => r.path == ApiPaths.transactions).queryParameters['status'], 'all');
+    expect(find.text('Sukses'), findsWidgets);
+    expect(find.text('Batal'), findsWidgets);
+
+    await tester.tap(find.text('INV-002'));
+    await tester.pumpAndSettle();
+    expect(find.text('Alasan batal: salah input'), findsOneWidget);
+    expect(find.widgetWithText(ShadButton, 'Batalkan transaksi'), findsNothing);
   });
 }

@@ -65,6 +65,13 @@ final class CustomerChanged extends CheckoutEvent {
   final String? name;
 }
 
+/// Opens a debt tab; with a customer it is set on the tab, reusing that customer's open debt tab.
+final class NewDebtTabRequested extends CheckoutEvent {
+  const NewDebtTabRequested({this.customerId, this.customerName});
+  final String? customerId;
+  final String? customerName;
+}
+
 final class MethodChanged extends CheckoutEvent {
   const MethodChanged(this.method);
   final PaymentMethod method;
@@ -76,8 +83,15 @@ final class VaBankChanged extends CheckoutEvent {
 }
 
 final class PayRequested extends CheckoutEvent {
-  const PayRequested({this.bank = VaBank.bca});
+  const PayRequested({this.bank = VaBank.bca, this.amountPaid, this.change = const [], this.debtAmount});
   final VaBank bank;
+
+  /// Cash received and how the change is handed back; only read for cash sales.
+  final int? amountPaid;
+  final List<ChangeLine> change;
+
+  /// Debt tabs only: what goes against the debt; [amountPaid] is then the cash handed over.
+  final int? debtAmount;
 }
 
 /// Timer tick, FCM payment push, or the "Cek sekarang" button.

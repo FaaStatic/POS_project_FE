@@ -361,7 +361,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get barcode => 'Barcode';
 
   @override
-  String get barcodeHint => 'Optional';
+  String get barcodeHint => 'Empty: generated automatically';
 
   @override
   String get unit => 'Unit';
@@ -549,6 +549,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profit => 'Gross profit';
 
   @override
+  String get amountPaid => 'Cash received';
+
+  @override
+  String get changeGiven => 'Change';
+
+  @override
+  String get changeCash => 'Cash';
+
+  @override
+  String get changeCandy => 'Candy';
+
+  @override
+  String get changeProduct => 'Other product';
+
+  @override
   String get conflictOnly => 'Stock conflicts';
 
   @override
@@ -709,6 +724,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get debtAdded => 'Credit added.';
 
   @override
+  String get addDebt => 'Add credit';
+
+  @override
+  String get currentDebt => 'Current credit';
+
+  @override
+  String debtBecomes(String amount) {
+    return 'Becomes $amount';
+  }
+
+  @override
+  String get debtNote => 'Note (optional)';
+
+  @override
+  String get debtNoteHint => 'E.g. cash lent';
+
+  @override
   String get dueDate => 'Due date (optional)';
 
   @override
@@ -857,7 +889,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pickFile => 'Choose an .xlsx or .csv file';
 
   @override
-  String get downloadTemplate => 'Download CSV template';
+  String get downloadTemplate => 'Download Excel template';
+
+  @override
+  String get exportBarcodes => 'Export barcodes';
 
   @override
   String importing(String name) {
@@ -932,6 +967,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vImageSize => 'The image must be 500 KB or smaller.';
 
   @override
+  String get vImageDimensions => 'The image side must be 4000 px or less.';
+
+  @override
+  String get vQtyWhole => 'A pcs quantity must be a whole number.';
+
+  @override
+  String get vQtyDecimals => 'At most 3 decimal places.';
+
+  @override
+  String get vQtyTooLarge => 'The quantity is too large.';
+
+  @override
+  String get exportTooManyParts =>
+      'Too many files to export at once. Narrow the search or category.';
+
+  @override
   String get bulkImagesTooLarge =>
       'The images are too large for one upload. Use fewer images or split them across uploads.';
 
@@ -942,4 +993,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String createCategory(String name) {
     return 'Create category \"$name\"';
   }
+
+  @override
+  String get statusSuccess => 'Success';
+
+  @override
+  String get statusCancelled => 'Cancelled';
+
+  @override
+  String cancelledReasonLine(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String get debtPaymentsTitle => 'Debt payments';
+
+  @override
+  String get noDebtPayments => 'No debt payments yet.';
+
+  @override
+  String get paidAmount => 'Paid';
+
+  @override
+  String get balanceLeft => 'Balance left';
+
+  @override
+  String get cashierName => 'Cashier';
+
+  @override
+  String get paidViaCms => 'CMS';
+
+  @override
+  String get downloadDebtReceipt => 'Download payment receipt';
+
+  @override
+  String get debtRecapReport => 'Debt payments recap';
+
+  @override
+  String get debtRecapHint =>
+      'One table of every debt payment in a month, for all customers: customer, cashier, date, balance, paid, balance left, and whether it is settled.';
 }

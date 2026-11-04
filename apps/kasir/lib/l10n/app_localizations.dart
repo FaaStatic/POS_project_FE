@@ -662,6 +662,24 @@ abstract class AppLocalizations {
   /// **'No.'**
   String get receiptNumber;
 
+  /// No description provided for @receiptMarkPaid.
+  ///
+  /// In id, this message translates to:
+  /// **'LUNAS'**
+  String get receiptMarkPaid;
+
+  /// No description provided for @receiptMarkDebt.
+  ///
+  /// In id, this message translates to:
+  /// **'HUTANG'**
+  String get receiptMarkDebt;
+
+  /// No description provided for @receiptMarkCancelled.
+  ///
+  /// In id, this message translates to:
+  /// **'DIBATALKAN'**
+  String get receiptMarkCancelled;
+
   /// No description provided for @receiptDate.
   ///
   /// In id, this message translates to:
@@ -890,12 +908,6 @@ abstract class AppLocalizations {
   /// **'Sisa {amount} dari {total}'**
   String remaining(String amount, String total);
 
-  /// No description provided for @receivePayment.
-  ///
-  /// In id, this message translates to:
-  /// **'Terima pembayaran tunai'**
-  String get receivePayment;
-
   /// No description provided for @paymentAmount.
   ///
   /// In id, this message translates to:
@@ -907,12 +919,6 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Lunasi {amount}'**
   String payFull(String amount);
-
-  /// No description provided for @paymentRecorded.
-  ///
-  /// In id, this message translates to:
-  /// **'Pembayaran dicatat. Sisa {amount}.'**
-  String paymentRecorded(String amount);
 
   /// No description provided for @exceedsRemaining.
   ///
@@ -1238,6 +1244,138 @@ abstract class AppLocalizations {
   /// **'Kurang {amount}'**
   String shortBy(String amount);
 
+  /// No description provided for @outOfStockAdd.
+  ///
+  /// In id, this message translates to:
+  /// **'{name} stoknya habis, tidak bisa ditambahkan ke keranjang.'**
+  String outOfStockAdd(String name);
+
+  /// No description provided for @changeCash.
+  ///
+  /// In id, this message translates to:
+  /// **'Tunai'**
+  String get changeCash;
+
+  /// No description provided for @changeCandy.
+  ///
+  /// In id, this message translates to:
+  /// **'Permen'**
+  String get changeCandy;
+
+  /// No description provided for @changeProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Produk lain'**
+  String get changeProduct;
+
+  /// No description provided for @addChange.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah kembalian'**
+  String get addChange;
+
+  /// No description provided for @changeToGive.
+  ///
+  /// In id, this message translates to:
+  /// **'Kembalian {amount}'**
+  String changeToGive(String amount);
+
+  /// No description provided for @changeRemaining.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum dibagi {amount}'**
+  String changeRemaining(String amount);
+
+  /// No description provided for @changeComplete.
+  ///
+  /// In id, this message translates to:
+  /// **'Kembalian sudah pas'**
+  String get changeComplete;
+
+  /// No description provided for @changeOverBy.
+  ///
+  /// In id, this message translates to:
+  /// **'Lebih {amount} dari kembalian'**
+  String changeOverBy(String amount);
+
+  /// No description provided for @changeAddRestCash.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa sebagai tunai'**
+  String get changeAddRestCash;
+
+  /// No description provided for @changeAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Nominal tunai'**
+  String get changeAmount;
+
+  /// No description provided for @changePickProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih produk'**
+  String get changePickProduct;
+
+  /// No description provided for @changeNoProducts.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada produk fisik dengan stok.'**
+  String get changeNoProducts;
+
+  /// No description provided for @changeQty.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah'**
+  String get changeQty;
+
+  /// No description provided for @changeValue.
+  ///
+  /// In id, this message translates to:
+  /// **'Senilai {amount}'**
+  String changeValue(String amount);
+
+  /// No description provided for @changeSheetTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah kembalian'**
+  String get changeSheetTitle;
+
+  /// No description provided for @vAmountPaidShort.
+  ///
+  /// In id, this message translates to:
+  /// **'Uang diterima kurang dari total.'**
+  String get vAmountPaidShort;
+
+  /// No description provided for @vAmountPaidRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Isi uang diterima untuk mencatat kembalian.'**
+  String get vAmountPaidRequired;
+
+  /// No description provided for @vChangeMismatch.
+  ///
+  /// In id, this message translates to:
+  /// **'Rincian kembalian belum sama dengan kembalian yang harus diberikan.'**
+  String get vChangeMismatch;
+
+  /// No description provided for @vChangeInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Ada baris kembalian yang tidak valid.'**
+  String get vChangeInvalid;
+
+  /// No description provided for @vChangeTooMany.
+  ///
+  /// In id, this message translates to:
+  /// **'Kembalian maksimal 20 baris.'**
+  String get vChangeTooMany;
+
+  /// No description provided for @vChangeCashOnly.
+  ///
+  /// In id, this message translates to:
+  /// **'Kembalian hanya untuk pembayaran tunai.'**
+  String get vChangeCashOnly;
+
   /// No description provided for @back.
   ///
   /// In id, this message translates to:
@@ -1304,6 +1442,12 @@ abstract class AppLocalizations {
   /// **'Ukuran gambar maksimal 500 KB.'**
   String get vImageSize;
 
+  /// No description provided for @vImageDimensions.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisi gambar maksimal 4000 piksel.'**
+  String get vImageDimensions;
+
   /// No description provided for @categoryPickHint.
   ///
   /// In id, this message translates to:
@@ -1315,6 +1459,126 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Pilih kategori yang sudah ada.'**
   String get vCategoryExisting;
+
+  /// No description provided for @receiptMarkUnpaid.
+  ///
+  /// In id, this message translates to:
+  /// **'BELUM LUNAS'**
+  String get receiptMarkUnpaid;
+
+  /// No description provided for @receiptDebtPayment.
+  ///
+  /// In id, this message translates to:
+  /// **'PEMBAYARAN HUTANG'**
+  String get receiptDebtPayment;
+
+  /// No description provided for @receiptDebtPaidNow.
+  ///
+  /// In id, this message translates to:
+  /// **'Dibayar sekarang'**
+  String get receiptDebtPaidNow;
+
+  /// No description provided for @receiptDebtPaidTotal.
+  ///
+  /// In id, this message translates to:
+  /// **'Saldo terbayar'**
+  String get receiptDebtPaidTotal;
+
+  /// No description provided for @receiptDebtOwed.
+  ///
+  /// In id, this message translates to:
+  /// **'Saldo terhutang'**
+  String get receiptDebtOwed;
+
+  /// No description provided for @payDebtTab.
+  ///
+  /// In id, this message translates to:
+  /// **'Bayar hutang'**
+  String get payDebtTab;
+
+  /// No description provided for @debtTabLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Hutang {number}'**
+  String debtTabLabel(int number);
+
+  /// No description provided for @debtTabPickCustomer.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih pelanggan'**
+  String get debtTabPickCustomer;
+
+  /// No description provided for @searchDebtCustomers.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari pelanggan berhutang'**
+  String get searchDebtCustomers;
+
+  /// No description provided for @debtsEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada pelanggan yang berhutang.'**
+  String get debtsEmpty;
+
+  /// No description provided for @debtTotalOwed.
+  ///
+  /// In id, this message translates to:
+  /// **'Total hutang'**
+  String get debtTotalOwed;
+
+  /// No description provided for @debtLeft.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa hutang'**
+  String get debtLeft;
+
+  /// No description provided for @debtSettledLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Hutang lunas'**
+  String get debtSettledLabel;
+
+  /// No description provided for @debtPickFromList.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih pelanggan dari daftar hutang.'**
+  String get debtPickFromList;
+
+  /// No description provided for @debtNoDebt.
+  ///
+  /// In id, this message translates to:
+  /// **'Pelanggan ini tidak punya hutang.'**
+  String get debtNoDebt;
+
+  /// No description provided for @historySalesTab.
+  ///
+  /// In id, this message translates to:
+  /// **'Penjualan'**
+  String get historySalesTab;
+
+  /// No description provided for @historyDebtTab.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran hutang'**
+  String get historyDebtTab;
+
+  /// No description provided for @historyDebtEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada pembayaran hutang di perangkat ini.'**
+  String get historyDebtEmpty;
+
+  /// No description provided for @debtLeftAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa {amount}'**
+  String debtLeftAmount(String amount);
+
+  /// No description provided for @addDebtAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah hutang {total}'**
+  String addDebtAmount(String total);
 }
 
 class _AppLocalizationsDelegate

@@ -35,7 +35,7 @@ class AddCustomerCubit extends Cubit<CustomerFormState> {
 
 @freezed
 abstract class CustomerDetailState with _$CustomerDetailState {
-  const factory CustomerDetailState({@Default(true) bool loading, Customer? customer, Failure? failure}) =
+  const factory CustomerDetailState({@Default(true) bool loading, Customer? customer, Debt? debt, Failure? failure}) =
       _CustomerDetailState;
 }
 
@@ -44,14 +44,16 @@ class CustomerDetailCubit extends Cubit<CustomerDetailState> {
   final GetCustomer _get;
   final CatalogCache _cache;
 
-  /// Shows the cached copy first, then the server copy with debts.
+  /// Shows the cached copy first, then the server copy. The open debt always comes from the cache,
+  /// which is what the debt tab pays against and works offline.
   Future<void> load(String id) async {
     final cached = await _cache.customer(id);
-    emit(CustomerDetailState(loading: true, customer: cached));
+    final debt = await _cache.debtOfCustomer(id);
+    emit(CustomerDetailState(loading: true, customer: cached, debt: debt));
     final result = await _get(id);
     emit(switch (result) {
-      Ok(:final value) => CustomerDetailState(loading: false, customer: value),
-      Err(:final failure) => CustomerDetailState(loading: false, customer: cached, failure: failure),
+      Ok(:final value) => CustomerDetailState(loading: false, customer: value, debt: debt),
+      Err(:final failure) => CustomerDetailState(loading: false, customer: cached, debt: debt, failure: failure),
     });
   }
 }

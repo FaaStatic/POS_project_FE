@@ -41,6 +41,7 @@ void main() {
       purge: PurgeStaleDrafts(local.drafts),
       checkout: CheckoutTransaction(
           transactions: remote, sales: local.sales, drafts: local.drafts, cache: local.cache, network: network, session: session),
+      payDebt: PayDebtAtCounter(debts: MockDebts(), sales: local.sales, drafts: local.drafts, cache: local.cache, network: network, session: session),
       startCharge: StartCharge(qris: ChargeQris(payments), va: ChargeVa(payments), drafts: local.drafts, network: network, session: session),
       resolveCharge: ResolveCharge(
           status: CheckPaymentStatus(payments), transactions: remote, sales: local.sales, drafts: local.drafts, cache: local.cache, session: session),
@@ -88,6 +89,23 @@ void main() {
     bloc.add(const BarcodeSubmitted('123'));
     s = await settle(bloc);
     expect(s.notice, isA<ScanUnknownNotice>().having((n) => n.code, 'code', '123'));
+    await bloc.close();
+  });
+
+  test('a product with no stock never reaches the cart and the cashier is told which one', () async {
+    final habis = indomie.copyWith(id: 'p9', name: 'Kopi Habis', barcode: '777', stock: 0);
+    await local.cache.upsertProduct(habis);
+    final bloc = await started();
+
+    bloc.add(ProductAdded(habis));
+    var s = await settle(bloc);
+    expect(s.notice, isA<OutOfStockNotice>().having((n) => n.productName, 'name', 'Kopi Habis'));
+    expect(s.active!.items, isEmpty);
+
+    bloc.add(const BarcodeSubmitted('777'));
+    s = await settle(bloc);
+    expect(s.notice, isA<OutOfStockNotice>().having((n) => n.productName, 'name', 'Kopi Habis'));
+    expect(s.active!.items, isEmpty);
     await bloc.close();
   });
 
@@ -215,6 +233,54 @@ void main() {
     final s = await settle(bloc);
     expect(s.notice, isA<FailureNotice>().having((n) => n.failure, 'f', const ValidationFailure('debt_needs_customer')));
     await bloc.close();
+  });
+
+  group('debt tabs', () {
+    const debt = Debt(id: 'd1', customerId: 'k1', customerName: 'Bu Sri', total: 9000, remaining: 5000, paid: false);
+
+    test('a debt tab for a customer is created once and then reused', () async {
+      await local.cache.replaceDebts(const [debt]);
+      final bloc = await started();
+      bloc.add(const NewDebtTabRequested(customerId: 'k1', customerName: 'Bu Sri'));
+      var s = await settle(bloc);
+      final first = s.active!;
+      expect([first.isDebtPayment, first.customerId, first.number], [true, 'k1', 2]);
+
+      bloc.add(TabSelected(s.drafts.first.id));
+      await settle(bloc);
+      bloc.add(const NewDebtTabRequested(customerId: 'k1', customerName: 'Bu Sri'));
+      s = await settle(bloc);
+      expect(s.active!.id, first.id);
+      expect(s.drafts.where((d) => d.isDebtPayment), hasLength(1));
+      await bloc.close();
+    });
+
+    test('paying offline queues the payment, lowers the cached debt and closes the tab', () async {
+      await local.cache.replaceDebts(const [debt]);
+      final bloc = await started();
+      bloc.add(const NewDebtTabRequested(customerId: 'k1', customerName: 'Bu Sri'));
+      final tab = (await settle(bloc)).activeId!;
+      bloc.add(const PayRequested(debtAmount: 3000, amountPaid: 5000));
+      final s = await settle(bloc);
+      final notice = s.notice! as SaleRecordedNotice;
+      expect([notice.offline, notice.sale.isDebtPayment, notice.sale.debtAfter], [true, true, 2000]);
+      expect(s.drafts.any((d) => d.id == tab), isFalse);
+      expect((await local.cache.debtOfCustomer('k1'))!.remaining, 2000);
+      expect(await local.sales.pending(kind: SaleKind.debtPayment), hasLength(1));
+      await bloc.close();
+    });
+
+    test('a payment above the debt is refused with the reason and nothing is queued', () async {
+      await local.cache.replaceDebts(const [debt]);
+      final bloc = await started();
+      bloc.add(const NewDebtTabRequested(customerId: 'k1', customerName: 'Bu Sri'));
+      await settle(bloc);
+      bloc.add(const PayRequested(debtAmount: 6000, amountPaid: 6000));
+      final s = await settle(bloc);
+      expect(s.notice, isA<FailureNotice>().having((n) => n.failure, 'failure', const ValidationFailure('exceeds_remaining')));
+      expect(await local.sales.pending(), isEmpty);
+      await bloc.close();
+    });
   });
 }
 

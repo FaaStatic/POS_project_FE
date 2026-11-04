@@ -33,12 +33,13 @@ class AppSizes extends ThemeExtension<AppSizes> {
   final double cardPadding;
 
   static const dense = AppSizes(compact: true, control: 40, primary: 44, controlRadius: 8, cardRadius: 12, cardPadding: Space.xl);
+  // shadcn radii (8 controls, 12 cards and dialogs); only the touch targets stay larger.
   static const touch = AppSizes(
     compact: false,
     control: TapSize.min,
     primary: TapSize.primary,
-    controlRadius: Radii.control,
-    cardRadius: 20,
+    controlRadius: 8,
+    cardRadius: 12,
     cardPadding: Space.lg,
   );
 
@@ -76,25 +77,28 @@ abstract final class AppTheme {
   /// CMS (desktop web).
   static final compact = _themes(AppSizes.dense);
 
+  /// shadcn shadows are black at 10%; Material tints its elevation shadow the same way.
+  static const _shadow = Color(0x1A000000);
+
   static const _light = ColorScheme(
     brightness: Brightness.light,
-    primary: Mint.c700,
+    primary: Azure.c700,
     onPrimary: Colors.white,
-    primaryContainer: Mint.c100,
-    onPrimaryContainer: Mint.c800,
-    secondary: Mint.c800,
+    primaryContainer: Azure.c100,
+    onPrimaryContainer: Azure.c800,
+    secondary: Azure.c800,
     onSecondary: Colors.white,
     secondaryContainer: Neutral.subtle,
     onSecondaryContainer: Neutral.foreground,
     error: BrandColors.redLight,
     onError: Colors.white,
     errorContainer: BrandColors.redContainerLight,
-    onErrorContainer: Color(0xFF7F1D1D),
+    onErrorContainer: Color(0xFF8A0D20),
     surface: Colors.white,
     onSurface: Neutral.foreground,
     onSurfaceVariant: Neutral.muted,
     surfaceContainerLowest: Colors.white,
-    surfaceContainerLow: Color(0xFFF8FAF9),
+    surfaceContainerLow: Color(0xFFFAF9F7),
     surfaceContainer: Neutral.subtle,
     surfaceContainerHigh: Neutral.subtle,
     surfaceContainerHighest: Neutral.border,
@@ -103,25 +107,25 @@ abstract final class AppTheme {
     outlineVariant: Neutral.border,
     inverseSurface: Neutral.foreground,
     onInverseSurface: Neutral.foregroundDark,
-    inversePrimary: Mint.c400,
+    inversePrimary: Azure.c400,
     shadow: Colors.black,
     scrim: Colors.black,
   );
 
   static const _dark = ColorScheme(
     brightness: Brightness.dark,
-    primary: Mint.c400,
-    onPrimary: Mint.c950,
-    primaryContainer: Mint.c900,
-    onPrimaryContainer: Mint.c200,
-    secondary: Mint.c200,
-    onSecondary: Mint.c950,
+    primary: Azure.c400,
+    onPrimary: Azure.c950,
+    primaryContainer: Azure.c900,
+    onPrimaryContainer: Azure.c200,
+    secondary: Azure.c200,
+    onSecondary: Azure.c950,
     secondaryContainer: Neutral.subtleDark,
     onSecondaryContainer: Neutral.foregroundDark,
     error: BrandColors.redDark,
-    onError: Color(0xFF450A0A),
+    onError: Color(0xFF45101A),
     errorContainer: BrandColors.redContainerDark,
-    onErrorContainer: Color(0xFFFEE2E2),
+    onErrorContainer: Color(0xFFFDE8EB),
     surface: Neutral.surfaceDark,
     onSurface: Neutral.foregroundDark,
     onSurfaceVariant: Neutral.mutedDark,
@@ -134,7 +138,7 @@ abstract final class AppTheme {
     outlineVariant: Neutral.borderDark,
     inverseSurface: Neutral.foregroundDark,
     onInverseSurface: Neutral.foreground,
-    inversePrimary: Mint.c700,
+    inversePrimary: Azure.c700,
     shadow: Colors.black,
     scrim: Colors.black,
   );
@@ -151,6 +155,7 @@ abstract final class AppTheme {
     final shell = material.extension<ShellColors>()!;
     final text = material.textTheme;
     final radius = BorderRadius.circular(sizes.controlRadius);
+    final dialog = ShadDialogTheme(radius: BorderRadius.circular(sizes.cardRadius));
     final inputPadding = (sizes.control - text.bodyMedium!.fontSize! * text.bodyMedium!.height!) / 2;
     ShadButtonSizeTheme size(double height, double horizontal) =>
         ShadButtonSizeTheme(height: height, padding: EdgeInsets.symmetric(horizontal: horizontal));
@@ -198,10 +203,11 @@ abstract final class AppTheme {
         backgroundColor: scheme.surface,
         radius: BorderRadius.circular(sizes.cardRadius),
         padding: EdgeInsets.all(sizes.cardPadding),
-        // Dense dashboards separate panels with a hairline; kasir cards sit flat on the canvas.
-        border: ShadBorder.all(width: 1, color: sizes.compact ? scheme.outlineVariant : Colors.transparent),
-        shadows: const [],
+        border: ShadBorder.all(width: 1, color: scheme.outlineVariant),
+        shadows: ShadShadows.sm,
       ),
+      alertDialogTheme: dialog,
+      primaryDialogTheme: dialog,
     );
   }
 
@@ -243,7 +249,7 @@ abstract final class AppTheme {
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: card,
-          side: sizes.compact ? BorderSide(color: scheme.outlineVariant) : BorderSide.none,
+          side: BorderSide(color: scheme.outlineVariant),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
@@ -299,7 +305,8 @@ abstract final class AppTheme {
         backgroundColor: scheme.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 8,
-        shape: RoundedRectangleBorder(borderRadius: card),
+        shadowColor: _shadow,
+        shape: RoundedRectangleBorder(borderRadius: card, side: BorderSide(color: scheme.outlineVariant)),
         titleTextStyle: text.titleLarge,
         contentTextStyle: text.bodyMedium,
       ),
@@ -307,8 +314,12 @@ abstract final class AppTheme {
         backgroundColor: scheme.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 8,
+        shadowColor: _shadow,
         showDragHandle: true,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(sizes.cardRadius))),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(sizes.cardRadius)),
+          side: BorderSide(color: scheme.outlineVariant),
+        ),
       ),
       chipTheme: ChipThemeData(
         shape: const StadiumBorder(),
@@ -398,7 +409,8 @@ abstract final class AppTheme {
       popupMenuTheme: PopupMenuThemeData(
         color: scheme.surface,
         surfaceTintColor: Colors.transparent,
-        elevation: 8,
+        elevation: 4,
+        shadowColor: _shadow,
         shape: RoundedRectangleBorder(borderRadius: control, side: BorderSide(color: scheme.outlineVariant)),
         textStyle: text.bodyMedium,
       ),

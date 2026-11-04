@@ -45,6 +45,12 @@ final class FailureNotice extends CheckoutNotice {
   final Failure failure;
 }
 
+/// A product with no stock was tapped or scanned; it is not added to the cart.
+final class OutOfStockNotice extends CheckoutNotice {
+  const OutOfStockNotice(this.productName);
+  final String productName;
+}
+
 final class TabLockedNotice extends CheckoutNotice {
   const TabLockedNotice();
 }

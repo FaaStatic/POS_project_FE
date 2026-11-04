@@ -24,6 +24,30 @@ void main() {
     expect(Validators.cancelReason('x' * 501), 'reason_length');
   });
 
+  test('quantity follows the backend rules: finite, 3 decimals, within range, whole for pcs', () {
+    expect(Validators.quantity('0'), isNull);
+    expect(Validators.quantity('2,125'), isNull);
+    expect(Validators.quantity('0.5'), isNull);
+    expect(Validators.quantity('999999999.999'), isNull);
+    expect(Validators.quantity(''), 'non_negative_number');
+    expect(Validators.quantity('abc'), 'non_negative_number');
+    expect(Validators.quantity('-1'), 'non_negative_number');
+    expect(Validators.quantity('NaN'), 'non_negative_number');
+    expect(Validators.quantity('Infinity'), 'non_negative_number');
+    expect(Validators.quantity('1.2345'), 'qty_decimals');
+    expect(Validators.quantity('1000000000'), 'qty_too_large');
+    expect(Validators.quantity('1e10'), 'qty_too_large');
+    expect(Validators.quantity('2.5', whole: true), 'qty_whole');
+    expect(Validators.quantity('3', whole: true), isNull);
+  });
+
+  test('quantity accepts a negative adjustment only when signed', () {
+    expect(Validators.quantity('-2.5', signed: true), isNull);
+    expect(Validators.quantity('-2.5'), 'non_negative_number');
+    expect(Validators.quantity('-2.5', signed: true, whole: true), 'qty_whole');
+    expect(Validators.quantity('-1000000000', signed: true), 'qty_too_large');
+  });
+
   test('numbers, sku, category', () {
     expect(Validators.positiveInt('0'), 'positive_number');
     expect(Validators.positiveInt('2500'), isNull);

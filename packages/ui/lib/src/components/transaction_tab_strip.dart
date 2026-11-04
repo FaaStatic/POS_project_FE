@@ -7,9 +7,12 @@ import '../tokens/typography.dart';
 import 'app_button.dart';
 
 class TransactionTab {
-  const TransactionTab({required this.id, required this.number, required this.subtitle, this.highlight = false});
+  const TransactionTab({required this.id, required this.number, required this.subtitle, this.highlight = false, this.label});
   final int id;
   final int number;
+
+  /// Replaces "Transaksi N", for tabs that are not sales ("Hutang N").
+  final String? label;
 
   /// "3 barang · Rp 27.500" or a status such as "Menunggu QRIS".
   final String subtitle;
@@ -28,6 +31,8 @@ class TransactionTabStrip extends StatefulWidget {
     required this.onSelect,
     required this.onNew,
     required this.onShowAll,
+    this.onNewDebt,
+    this.newDebtLabel = '',
   });
 
   final List<TransactionTab> tabs;
@@ -35,6 +40,10 @@ class TransactionTabStrip extends StatefulWidget {
   final ValueChanged<int> onSelect;
   final VoidCallback onNew;
   final VoidCallback onShowAll;
+
+  /// Opens a debt payment tab; the action is left out when null.
+  final VoidCallback? onNewDebt;
+  final String newDebtLabel;
 
   @override
   State<TransactionTabStrip> createState() => _TransactionTabStripState();
@@ -68,7 +77,7 @@ class _TransactionTabStripState extends State<TransactionTabStrip> {
           for (final tab in widget.tabs) ...[
             _Tab(
               key: _keys.putIfAbsent(tab.id, GlobalKey.new),
-              label: l10n.tabLabel(tab.number),
+              label: tab.label ?? l10n.tabLabel(tab.number),
               subtitle: tab.subtitle,
               highlight: tab.highlight,
               active: tab.id == widget.activeId,
@@ -93,6 +102,19 @@ class _TransactionTabStripState extends State<TransactionTabStrip> {
               large: true,
               onPressed: widget.onNew,
             );
+      final onNewDebt = widget.onNewDebt;
+      final newDebt = onNewDebt == null
+          ? null
+          // The third labelled action only fits on a wide strip; below that it is an icon with a tooltip.
+          : constraints.maxWidth < 860 * MediaQuery.textScalerOf(context).scale(1)
+              ? _SquareAction(tooltip: widget.newDebtLabel, onTap: onNewDebt, child: const Icon(Icons.payments_outlined))
+              : AppButton(
+                  label: widget.newDebtLabel,
+                  icon: Icons.payments_outlined,
+                  variant: AppButtonVariant.outline,
+                  large: true,
+                  onPressed: onNewDebt,
+                );
       final showAll = compact
           ? _SquareAction(
               tooltip: l10n.allTabs(widget.tabs.length),
@@ -113,6 +135,7 @@ class _TransactionTabStripState extends State<TransactionTabStrip> {
       return Row(children: [
         Expanded(child: tabs),
         newBuyer,
+        if (newDebt != null) ...[const SizedBox(width: Space.sm), newDebt],
         const SizedBox(width: Space.sm),
         showAll,
         SizedBox(width: compact ? Space.lg : Space.sm),
@@ -162,7 +185,7 @@ class _Tab extends StatelessWidget {
     final scheme = theme.colorScheme;
     final status = StatusColors.of(context);
     final radius = BorderRadius.circular(Radii.medium);
-    // Full-strength subtitle on the active mint tab: a faded one drops under 4.5:1.
+    // Full-strength subtitle on the active blue tab: a faded one drops under 4.5:1.
     final fg = active ? scheme.onPrimary : scheme.onSurface;
     final sub = active ? scheme.onPrimary : (highlight ? status.success : scheme.onSurfaceVariant);
     return Semantics(

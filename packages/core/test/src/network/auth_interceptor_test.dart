@@ -43,9 +43,12 @@ void main() {
   });
 
   test('does not attach token to login and refresh', () async {
-    adapter.on('POST', '/auth/login', (_) => FakeReply(200, envelope(null)));
-    await dio.post<dynamic>('/auth/login');
-    expect(adapter.requests.single.headers.containsKey('Authorization'), isFalse);
+    for (final path in [ApiPaths.login, ApiPaths.refresh]) {
+      adapter.on('POST', path, (_) => FakeReply(200, envelope(null)));
+      await dio.post<dynamic>(path);
+    }
+    expect(adapter.requests, hasLength(2));
+    expect(adapter.requests.any((r) => r.headers.containsKey('Authorization')), isFalse);
   });
 
   test('refreshes once on 401 and replays the request', () async {

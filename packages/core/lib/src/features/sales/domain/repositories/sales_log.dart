@@ -8,7 +8,7 @@ abstract interface class SalesLog {
   Stream<int> watchPendingCount();
 
   /// Oldest first, so the server sees sales in the order they happened.
-  Future<List<Sale>> pending({int limit = 100});
+  Future<List<Sale>> pending({int limit = 100, SaleKind? kind});
   Future<Sale?> byRef(String clientRef);
   Future<Sale?> byTransactionId(String transactionId);
 
@@ -20,4 +20,7 @@ abstract interface class SalesLog {
 
   /// `OFF-<deviceCode>-<seq>`, unique per device.
   Future<String> nextOfflineNumber();
+
+  /// `HTG-<deviceCode>-<seq>` for a debt payment; also the idempotency key sent to the server.
+  Future<String> nextDebtNumber();
 }

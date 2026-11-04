@@ -17,6 +17,7 @@ abstract final class ProductModel {
         categoryId: readNullableString(j['category_id']),
         categoryName: readString(j['category']),
         image: readString(j['image']),
+        barcodeImage: readString(j['barcode_image']),
         updatedAt: readDate(j['updated_at']),
       );
 

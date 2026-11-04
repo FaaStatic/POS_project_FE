@@ -5,7 +5,8 @@ import 'package:ui/ui.dart';
 import '../../l10n/app_localizations.dart';
 import 'destinations.dart';
 
-/// Navigation bar on narrow windows, navigation rail on wide ones.
+/// Floating navigation pill on every window width; on tablets it keeps phone-like
+/// proportions instead of stretching across the screen.
 class KasirShell extends StatelessWidget {
   const KasirShell({super.key, required this.shell, this.banner});
 
@@ -25,90 +26,74 @@ class KasirShell extends StatelessWidget {
         Expanded(child: shell),
       ],
     );
-    // NavigationBar/Rail need two destinations; a single-tab build shows the page alone.
+    // NavigationBar needs two destinations; a single-tab build shows the page alone.
     if (kasirDestinations.length < 2) return Scaffold(body: body);
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < Breakpoints.medium) {
-          return Scaffold(
-            body: body,
-            bottomNavigationBar: _FloatingNav(
-              selected: shell.currentIndex,
-              onSelect: _go,
-              destinations: [for (final d in kasirDestinations) NavigationDestination(icon: Icon(d.icon), label: d.label(l10n))],
-            ),
-          );
-        }
-        final shellColors = ShellColors.of(context);
-        return Scaffold(
-          body: Row(
-            children: [
-              // Wide windows: white rail with the open tab in mint, as in the CMS.
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: shellColors.nav,
-                  border: Border(right: BorderSide(color: shellColors.border)),
-                ),
-                child: SafeArea(
-                  // Scrolls on short landscape tablets at large text instead of overflowing.
-                  child: FillOrScroll(
-                    child: NavigationRail(
-                      selectedIndex: shell.currentIndex,
-                      onDestinationSelected: _go,
-                      labelType: NavigationRailLabelType.all,
-                      indicatorShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.control)),
-                      destinations: [
-                        for (final d in kasirDestinations) NavigationRailDestination(icon: Icon(d.icon), label: Text(d.label(l10n))),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(child: body),
-            ],
-          ),
-        );
-      },
+    return Scaffold(
+      body: body,
+      bottomNavigationBar: _FloatingNav(
+        selected: shell.currentIndex,
+        onSelect: _go,
+        destinations: [for (final d in kasirDestinations) NavigationDestination(icon: Icon(d.icon), label: d.label(l10n))],
+      ),
     );
   }
 }
 
-/// Narrow windows: the navigation bar floats as a solid mint pill above the content.
+/// The navigation bar floats as a solid blue pill above the content.
 class _FloatingNav extends StatelessWidget {
   const _FloatingNav({required this.selected, required this.onSelect, required this.destinations});
   final int selected;
   final ValueChanged<int> onSelect;
   final List<NavigationDestination> destinations;
 
+  /// Tablet width: 60% of the window, kept between what five tabs need and a thumb's reach.
+  static const _minWidth = 360.0;
+  static const _maxWidth = 560.0;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final brand = ShellColors.of(context);
+    final light = theme.colorScheme.brightness == Brightness.light;
     Color fg(Set<WidgetState> s) => s.contains(WidgetState.selected) ? brand.onBrand : brand.onBrandMuted;
+    final width = MediaQuery.sizeOf(context).width;
+    final pillWidth = width < Breakpoints.medium ? double.infinity : (width * 0.6).clamp(_minWidth, _maxWidth);
+    final radius = BorderRadius.circular(Radii.large);
     return SafeArea(
       top: false,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.sm),
-        child: Material(
-          color: brand.brand,
-          elevation: 6,
-          shadowColor: const Color(0x33000000),
-          borderRadius: BorderRadius.circular(Radii.large + 4),
-          clipBehavior: Clip.antiAlias,
-          child: NavigationBarTheme(
-            data: theme.navigationBarTheme.copyWith(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              height: 68,
-              // A lighter mint pill behind the open tab; white vs soft mint carries it too.
-              indicatorColor: theme.colorScheme.brightness == Brightness.light ? Mint.c700 : Mint.c800,
-              iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(color: fg(s))),
-              labelTextStyle: WidgetStateProperty.resolveWith(
-                (s) => theme.textTheme.labelSmall?.copyWith(color: fg(s), fontWeight: FontWeight.w600),
+        child: Center(
+          heightFactor: 1,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: pillWidth),
+            child: DecoratedBox(
+              // shadcn shadow-md with a 1px edge a step lighter than the fill, so the pill reads on both themes.
+              decoration: BoxDecoration(
+                color: brand.brand,
+                borderRadius: radius,
+                border: Border.all(color: Color.alphaBlend(brand.onBrand.withValues(alpha: 0.16), brand.brand)),
+                boxShadow: ShadShadows.md,
+              ),
+              child: ClipRRect(
+                borderRadius: radius,
+                child: NavigationBarTheme(
+                  data: theme.navigationBarTheme.copyWith(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    height: 68,
+                    // A lighter blue pill behind the open tab; white vs soft blue carries it too.
+                    indicatorColor: light ? Azure.c700 : Azure.c800,
+                    iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(color: fg(s))),
+                    labelTextStyle: WidgetStateProperty.resolveWith(
+                      (s) => theme.textTheme.labelSmall?.copyWith(color: fg(s), fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  child: NavigationBar(selectedIndex: selected, onDestinationSelected: onSelect, destinations: destinations),
+                ),
               ),
             ),
-            child: NavigationBar(selectedIndex: selected, onDestinationSelected: onSelect, destinations: destinations),
           ),
         ),
       ),

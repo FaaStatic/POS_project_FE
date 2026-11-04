@@ -6,7 +6,7 @@ class OpenDraft {
   const OpenDraft(this._drafts);
   final DraftRepository _drafts;
 
-  Future<Draft> call() => _drafts.create();
+  Future<Draft> call({DraftKind kind = DraftKind.sale}) => _drafts.create(kind: kind);
 }
 
 /// Discards a tab. Tabs waiting for QRIS/VA cannot be closed.
@@ -27,6 +27,8 @@ class AddItem {
 
   Future<Result<void>> call(Draft draft, Product product, {double qty = 1}) async {
     if (draft.isLocked) return const Err(ConflictFailure('draft_locked'));
+    // Digital products (pulsa, e-wallet) have no stock to run out of.
+    if (!product.isDigital && product.stock <= 0) return const Err(ValidationFailure('out_of_stock'));
     await _drafts.addProduct(draft.id, product, qty: qty);
     return const Ok(null);
   }
@@ -50,6 +52,11 @@ final class ScanLocked extends ScanOutcome {
   const ScanLocked();
 }
 
+final class ScanOutOfStock extends ScanOutcome {
+  const ScanOutOfStock(this.product);
+  final Product product;
+}
+
 /// Looks the code up in the local cache so scanning works offline.
 class ScanBarcode {
   const ScanBarcode(this._cache, this._addItem);
@@ -61,6 +68,7 @@ class ScanBarcode {
     if (product == null) return ScanUnknown(code.trim());
     return switch (await _addItem(draft, product)) {
       Ok() => ScanAdded(product),
+      Err(failure: ValidationFailure(message: 'out_of_stock')) => ScanOutOfStock(product),
       Err() => const ScanLocked(),
     };
   }
@@ -107,12 +115,26 @@ class CheckoutTransaction {
   final DateTime Function() _clock;
   final String Function() _newRef;
 
-  Future<Result<CheckoutOutcome>> call(Draft draft, PaymentMethod method) async {
+  /// [amountPaid] and [change] are the cash received and how the change is handed back;
+  /// leave both out and nothing about the change is recorded.
+  Future<Result<CheckoutOutcome>> call(
+    Draft draft,
+    PaymentMethod method, {
+    int? amountPaid,
+    List<ChangeLine> change = const [],
+  }) async {
     final user = session();
     if (user == null) return const Err(UnauthorizedFailure());
     if (!method.worksOffline) return const Err(ValidationFailure('use_charge'));
     if (draft.isLocked) return const Err(ConflictFailure('draft_locked'));
     final debt = method == PaymentMethod.debt;
+    final badChange = validateChange(
+      method: method,
+      total: draft.total(debt: debt),
+      amountPaid: amountPaid,
+      change: change,
+    );
+    if (badChange != null) return Err(ValidationFailure(badChange));
     final lines = [
       for (final i in draft.items)
         CheckoutLine(
@@ -153,6 +175,8 @@ class CheckoutTransaction {
       status: status,
       transactionId: transactionId,
       stockConflict: conflict,
+      amountPaid: amountPaid,
+      change: change,
     );
 
     if (await network.isOnline()) {
@@ -163,6 +187,8 @@ class CheckoutTransaction {
           method: method,
           customerId: draft.customerId,
           lines: lines,
+          amountPaid: amountPaid,
+          change: change,
         ),
       );
       switch (result) {
@@ -191,7 +217,97 @@ class CheckoutTransaction {
   Future<void> _commit(Draft draft, Sale sale) async {
     await sales.add(sale);
     await cache.adjustStock({for (final l in sale.lines) l.productId: -l.qty}, countSale: true);
+    // Goods handed back as change leave the shelf too, but are not a sale of that product.
+    final given = <String, double>{};
+    for (final c in sale.change.where((c) => !c.isCash)) {
+      given.update(c.productId!, (q) => q - c.qty, ifAbsent: () => -c.qty);
+    }
+    if (given.isNotEmpty) await cache.adjustStock(given);
     await drafts.delete(draft.id);
+  }
+}
+
+/// Cash payment toward a customer's open debt, from a debt tab. The amount is checked against
+/// the cached debt, so it works offline: online it goes to the server at once, offline (or when
+/// the connection drops mid-request) it is queued. The receipt number doubles as the idempotency
+/// key, which is why a timed-out request can be queued and resent without paying twice.
+class PayDebtAtCounter {
+  PayDebtAtCounter({
+    required this.debts,
+    required this.sales,
+    required this.drafts,
+    required this.cache,
+    required this.network,
+    required this.session,
+    DateTime Function()? clock,
+    String Function()? newRef,
+  }) : _clock = clock ?? DateTime.now,
+       _newRef = newRef ?? const Uuid().v4;
+
+  final DebtRepository debts;
+  final SalesLog sales;
+  final DraftRepository drafts;
+  final CatalogCache cache;
+  final NetworkStatus network;
+  final GetCurrentSession session;
+  final DateTime Function() _clock;
+  final String Function() _newRef;
+
+  /// [amount] is what goes against the debt; [cashReceived] is what the customer handed over,
+  /// and the difference is the change.
+  Future<Result<CheckoutOutcome>> call(Draft draft, {required int amount, required int cashReceived}) async {
+    final user = session();
+    if (user == null) return const Err(UnauthorizedFailure());
+    if (!draft.isDebtPayment) return const Err(ValidationFailure('not_debt_tab'));
+    final customerId = draft.customerId;
+    if (customerId == null) return const Err(ValidationFailure('customer_required'));
+    final debt = await cache.debtOfCustomer(customerId);
+    if (debt == null) return const Err(ValidationFailure('no_debt'));
+    if (amount <= 0) return const Err(ValidationFailure('positive_number'));
+    if (amount > debt.remaining) return const Err(ValidationFailure('exceeds_remaining'));
+    if (cashReceived < amount) return const Err(ValidationFailure('amount_paid_short'));
+
+    final number = await sales.nextDebtNumber();
+    Sale record(int after, SaleStatus status) => Sale(
+      clientRef: _newRef(),
+      receiptNumber: number,
+      createdAt: _clock(),
+      method: PaymentMethod.cash,
+      customerId: customerId,
+      customerName: draft.customerName ?? debt.customerName,
+      cashierName: user.username,
+      total: amount,
+      lines: const [],
+      status: status,
+      amountPaid: cashReceived,
+      change: cashReceived > amount ? [ChangeLine.cash(cashReceived - amount)] : const [],
+      kind: SaleKind.debtPayment,
+      debtId: debt.id,
+      debtTotal: debt.total,
+      debtBefore: debt.remaining,
+      debtAfter: after,
+    );
+
+    if (await network.isOnline()) {
+      final result = await debts.pay(debtId: debt.id, userId: user.userId, amount: amount, idempotencyKey: number);
+      switch (result) {
+        case Ok(:final value):
+          return Ok(CheckoutOutcome(await _commit(draft, record(value.remaining, SaleStatus.synced), debt.id, amount), offline: false));
+        case Err(failure: NetworkFailure() || TimeoutFailure()):
+          break;
+        case Err(:final failure):
+          return Err(failure);
+      }
+    }
+    final queued = record(debt.remaining - amount, SaleStatus.pending);
+    return Ok(CheckoutOutcome(await _commit(draft, queued, debt.id, amount), offline: true));
+  }
+
+  Future<Sale> _commit(Draft draft, Sale sale, String debtId, int amount) async {
+    await sales.add(sale);
+    await cache.reduceDebt(debtId, amount);
+    await drafts.delete(draft.id);
+    return sale;
   }
 }
 

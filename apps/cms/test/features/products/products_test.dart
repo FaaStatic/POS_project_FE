@@ -1,3 +1,4 @@
+import 'package:cms/common/file_saver.dart';
 import 'package:core/core.dart';
 import 'package:core/testing.dart';
 import 'package:dio/dio.dart';
@@ -85,6 +86,35 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Hapus'));
     await tester.pumpAndSettle();
     expect(find.text('Produk dihapus.'), findsOneWidget);
+  });
+
+  testWidgets('stock adjustment refuses a fraction of a pcs product before any request', (tester) async {
+    final app = setup();
+    await app.pump(tester, location: '/products');
+    await tester.tap(find.byTooltip('Aksi'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ubah stok'));
+    await tester.pumpAndSettle();
+    await tester.enterText(formFields, '2.5');
+    await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
+    await tester.pumpAndSettle();
+    expect(find.text('Satuan pcs harus bilangan bulat.'), findsOneWidget);
+    expect(app.adapter.requests.where((r) => r.method == 'PATCH'), isEmpty);
+
+    await tester.enterText(formFields, '-2');
+    await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
+    await tester.pumpAndSettle();
+    expect(app.adapter.requests.where((r) => r.method == 'PATCH'), hasLength(1));
+  });
+
+  testWidgets('export barcodes saves every part for the filter on screen', (tester) async {
+    final app = setup();
+    app.adapter.on('GET', ApiPaths.productsExportBarcodes, (_) => const FakeReply(200, [80, 75], {'x-total-parts': '2'}));
+    await app.pump(tester, location: '/products');
+    await tester.tap(find.text('Ekspor barcode'));
+    await tester.pumpAndSettle();
+    expect(savedFiles.sublist(savedFiles.length - 2), ['barcode-produk-part-1-of-2.xlsx', 'barcode-produk-part-2-of-2.xlsx']);
+    expect(app.adapter.requests.where((r) => r.path == ApiPaths.productsExportBarcodes).map((r) => r.queryParameters['part']), [1, 2]);
   });
 
   for (final (name, size, scale) in [('desktop dialog', const Size(1280, 900), 1.0), ('phone page', const Size(360, 780), 1.0), ('phone at 200% text', const Size(360, 780), 2.0)]) {

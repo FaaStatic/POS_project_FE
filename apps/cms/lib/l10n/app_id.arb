@@ -150,7 +150,7 @@
   "productName": "Nama produk",
   "sku": "SKU",
   "barcode": "Barcode",
-  "barcodeHint": "Opsional",
+  "barcodeHint": "Kosong: dibuat otomatis",
   "unit": "Satuan",
   "productType": "Tipe",
   "physical": "Fisik",
@@ -263,6 +263,11 @@
   "method": "Metode",
   "total": "Total",
   "profit": "Laba kotor",
+  "amountPaid": "Uang diterima",
+  "changeGiven": "Kembalian",
+  "changeCash": "Tunai",
+  "changeCandy": "Permen",
+  "changeProduct": "Produk lain",
   "conflictOnly": "Konflik stok",
   "conflict": "Konflik stok",
   "reviewed": "Sudah ditinjau",
@@ -341,6 +346,18 @@
     }
   },
   "debtAdded": "Hutang ditambahkan.",
+  "addDebt": "Tambah hutang",
+  "currentDebt": "Hutang saat ini",
+  "debtBecomes": "Menjadi {amount}",
+  "@debtBecomes": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "debtNote": "Keterangan (opsional)",
+  "debtNoteHint": "Mis. pinjam tunai",
   "dueDate": "Jatuh tempo (opsional)",
   "pickCustomer": "Pilih pelanggan",
   "exceedsRemaining": "Melebihi sisa hutang.",
@@ -411,7 +428,8 @@
   "importTitle": "Impor dari file Excel atau CSV",
   "importHint": "Kolom wajib: sku, product_name, purchase_price, selling_price, selling_price_debt. Opsional: barcode, unit (pcs, gram, kg, liter, kardus, ikat), stock, category, image, product_type (physical atau digital). Maks 10.000 baris, 25 MB. SKU yang sudah ada akan diperbarui.",
   "pickFile": "Pilih file .xlsx atau .csv",
-  "downloadTemplate": "Unduh template CSV",
+  "downloadTemplate": "Unduh template Excel",
+  "exportBarcodes": "Ekspor barcode",
   "importing": "Mengimpor {name}…",
   "@importing": {
     "placeholders": {
@@ -448,12 +466,38 @@
   "vImageWebp": "Gambar harus berformat WebP.",
   "vImageSquare": "Gambar harus persegi (rasio 1:1).",
   "vImageSize": "Ukuran gambar maksimal 500 KB.",
+  "vImageDimensions": "Sisi gambar maksimal 4000 piksel.",
+  "vQtyWhole": "Satuan pcs harus bilangan bulat.",
+  "vQtyDecimals": "Maksimal 3 angka desimal.",
+  "vQtyTooLarge": "Jumlah terlalu besar.",
+  "exportTooManyParts": "Terlalu banyak file untuk diekspor sekaligus. Persempit pencarian atau kategori.",
   "bulkImagesTooLarge": "Total gambar terlalu besar untuk satu unggahan. Kurangi jumlah gambar atau pisahkan jadi beberapa unggahan.",
   "skuAutoHint": "Otomatis dari kategori, tipe, dan nama",
   "createCategory": "Buat kategori \"{name}\"",
   "@createCategory": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "statusSuccess": "Sukses",
+  "statusCancelled": "Batal",
+  "cancelledReasonLine": "Alasan batal: {reason}",
+  "@cancelledReasonLine": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "debtPaymentsTitle": "Pembayaran hutang",
+  "noDebtPayments": "Belum ada pembayaran hutang.",
+  "paidAmount": "Dibayar",
+  "balanceLeft": "Sisa hutang",
+  "cashierName": "Kasir",
+  "paidViaCms": "CMS",
+  "downloadDebtReceipt": "Unduh struk pembayaran",
+  "debtRecapReport": "Rekap pembayaran hutang",
+  "debtRecapHint": "Satu tabel berisi semua pembayaran hutang dalam sebulan, untuk semua pelanggan: pelanggan, kasir, tanggal bayar, saldo total, dibayarkan, sisa saldo, dan status lunas."
 }

@@ -42,6 +42,12 @@ class TransactionDetailPage extends StatelessWidget {
   }
 }
 
+String _changeLabel(AppLocalizations l10n, ChangeLine line, String locale) {
+  if (line.isCash) return l10n.changeCash;
+  final kind = line.kind == ChangeKind.candy ? l10n.changeCandy : l10n.changeProduct;
+  return '$kind · ${line.productName} × ${formatQty(line.qty, locale: locale)}';
+}
+
 class _Body extends StatelessWidget {
   const _Body({required this.transaction, required this.working});
   final Transaction transaction;
@@ -54,6 +60,7 @@ class _Body extends StatelessWidget {
     final t = transaction;
     final cubit = context.read<TransactionDetailCubit>();
     final num = theme.textTheme.bodyLarge?.tabular;
+    final cancelled = t.status == TransactionStatus.cancelled;
 
     return ConstrainedBody(
       padding: const EdgeInsets.all(Space.lg),
@@ -70,6 +77,10 @@ class _Body extends StatelessWidget {
               children: [
                 Text(dateTimeText(context, t.createdAt), style: theme.textTheme.bodyLarge),
                 Text(methodLabel(l10n, t.method), style: theme.textTheme.bodyLarge),
+                StatusBadge(
+                  label: cancelled ? l10n.statusCancelled : l10n.statusSuccess,
+                  tone: cancelled ? BadgeTone.danger : BadgeTone.success,
+                ),
                 if (t.stockConflict)
                   StatusBadge(
                     label: t.conflictReviewed ? l10n.reviewed : l10n.conflict,
@@ -77,7 +88,11 @@ class _Body extends StatelessWidget {
                   ),
               ],
             ),
-            if (t.stockConflict && !t.conflictReviewed) ...[
+            if (cancelled && t.cancelReason.isNotEmpty) ...[
+              const SizedBox(height: Space.md),
+              Text(l10n.cancelledReasonLine(t.cancelReason), style: theme.textTheme.bodyMedium),
+            ],
+            if (t.stockConflict && !t.conflictReviewed && !cancelled) ...[
               const SizedBox(height: Space.lg),
               Text(l10n.conflictHint, style: theme.textTheme.bodyMedium),
               const SizedBox(height: Space.sm),
@@ -124,6 +139,33 @@ class _Body extends StatelessWidget {
                 Text(money(context, t.profit), style: num),
               ],
             ),
+            if (t.amountPaid != null) ...[
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                children: [
+                  Text(l10n.amountPaid, style: theme.textTheme.bodyLarge),
+                  Text(money(context, t.amountPaid!), style: num),
+                ],
+              ),
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                children: [
+                  Text(l10n.changeGiven, style: theme.textTheme.bodyLarge),
+                  Text(money(context, t.changeAmount ?? 0), style: num),
+                ],
+              ),
+              for (final c in t.change)
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: Space.lg),
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    children: [
+                      Text(_changeLabel(l10n, c, Localizations.localeOf(context).languageCode), style: theme.textTheme.bodyMedium),
+                      Text(money(context, c.amount), style: theme.textTheme.bodyMedium?.tabular),
+                    ],
+                  ),
+                ),
+            ],
             const SizedBox(height: Space.xxl),
             Wrap(
               spacing: Space.md,
@@ -140,6 +182,7 @@ class _Body extends StatelessWidget {
                     showResult(context, result, l10n.downloaded);
                   },
                 ),
+                if (!cancelled)
                 AppButton(
                   label: l10n.cancelTransaction,
                   variant: AppButtonVariant.destructive,

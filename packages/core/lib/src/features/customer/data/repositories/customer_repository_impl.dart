@@ -4,7 +4,6 @@ import '../../../../common/page.dart';
 import '../../../../common/result.dart';
 import '../../../../constants/api_paths.dart';
 import '../../../../network/api_client.dart';
-import '../../../debt/data/repositories/debt_repository_impl.dart';
 import '../../domain/entities/customer.dart';
 import '../../domain/repositories/customer_repository.dart';
 
@@ -15,7 +14,6 @@ Customer customerFromJson(Map<String, dynamic> j) => Customer(
       phone: readString(j['no_hp']),
       address: readString(j['alamat']),
       active: j['active'] == null || readBool(j['active']),
-      debts: readList(j['debts']).map(debtFromJson).toList(),
     );
 
 PurgeMode purgeModeFromJson(Object? data) =>

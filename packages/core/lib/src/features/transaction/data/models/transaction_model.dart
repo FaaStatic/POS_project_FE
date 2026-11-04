@@ -1,5 +1,6 @@
 import '../../../../common/json.dart';
 import '../../../../constants/payment_method.dart';
+import '../../domain/entities/change_line.dart';
 import '../../domain/entities/transaction.dart';
 
 abstract final class TransactionModel {
@@ -11,6 +12,8 @@ abstract final class TransactionModel {
         profit: readInt(j['total_profit']),
         stockConflict: readBool(j['stock_conflict']),
         conflictReviewed: readBool(j['conflict_reviewed']),
+        status: TransactionStatus.parse(readString(j['status'])),
+        cancelReason: readString(j['cancel_reason']),
         createdAt: readDate(j['created_at']),
         items: [
           for (final d in readList(j['transaction_details']))
@@ -20,6 +23,18 @@ abstract final class TransactionModel {
               price: readInt(d['price']),
               qty: readDouble(d['qty']),
               subtotal: readInt(d['subtotal']),
+            ),
+        ],
+        amountPaid: j['amount_paid'] == null ? null : readInt(j['amount_paid']),
+        changeAmount: j['change_amount'] == null ? null : readInt(j['change_amount']),
+        change: [
+          for (final c in readList(j['change']))
+            ChangeLine(
+              kind: ChangeKind.fromWire(readNullableString(c['kind'])),
+              amount: readInt(c['amount']),
+              productId: readNullableString(c['product_id']),
+              productName: readString(c['product_name']),
+              qty: readDouble(c['qty']),
             ),
         ],
       );
@@ -32,6 +47,19 @@ abstract final class TransactionModel {
         'details': [
           for (final l in r.lines) {'product_id': l.productId, 'qty': l.qty, 'destination': ?l.destination},
         ],
+        ..._changeToJson(r.amountPaid, r.change),
+      };
+
+  /// The server prices goods itself, so only cash lines send an amount.
+  static Map<String, dynamic> _changeToJson(int? amountPaid, List<ChangeLine> change) => {
+        'amount_paid': ?amountPaid,
+        if (change.isNotEmpty)
+          'change': [
+            for (final c in change)
+              c.isCash
+                  ? {'kind': c.kind.wire, 'amount': c.amount}
+                  : {'kind': c.kind.wire, 'product_id': c.productId, 'qty': c.qty},
+          ],
       };
 
   static CheckoutResult checkoutResultFromJson(Map<String, dynamic> j) => CheckoutResult(
@@ -52,6 +80,7 @@ abstract final class TransactionModel {
           for (final l in s.lines)
             {'product_id': l.productId, 'qty': l.qty, 'unit_price': l.unitPrice, 'destination': ?l.destination},
         ],
+        ..._changeToJson(s.amountPaid, s.change),
       };
 
   static SyncResult syncResultFromJson(Map<String, dynamic> j) => SyncResult(

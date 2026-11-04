@@ -36,6 +36,36 @@ void main() {
     expect(s.isOffline, isTrue);
   });
 
+  test('keeps the cash received and each change line through the queue', () async {
+    await log.add(sale('a').copyWith(
+      amountPaid: 10000,
+      change: [
+        ChangeLine.cash(500),
+        ChangeLine.goods(
+          kind: ChangeKind.candy,
+          productId: 'p9',
+          productName: 'Permen',
+          qty: 2,
+          unitPrice: 500,
+          wholeOnly: true,
+        ),
+      ],
+    ));
+    final s = (await log.byRef('a'))!;
+    expect(s.amountPaid, 10000);
+    expect(s.change.map((c) => (c.kind, c.amount)), [(ChangeKind.cash, 500), (ChangeKind.candy, 1000)]);
+    expect(s.change.last.productId, 'p9');
+    expect(s.change.last.qty, 2);
+    expect(s.change.last.productName, 'Permen');
+  });
+
+  test('a sale without change reads back with none', () async {
+    await log.add(sale('a'));
+    final s = (await log.byRef('a'))!;
+    expect(s.amountPaid, isNull);
+    expect(s.change, isEmpty);
+  });
+
   test('pending is oldest first and excludes other statuses', () async {
     await log.add(sale('late', at: DateTime(2026, 10, 25, 12)));
     await log.add(sale('early', at: DateTime(2026, 10, 25, 8)));

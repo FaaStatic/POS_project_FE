@@ -35,9 +35,6 @@ class InitialAvatar extends StatelessWidget {
     final (bg, fg) = key == null ? tiles.first : tiles[key.codeUnits.fold(0, (a, c) => a + c) % tiles.length];
     final radius = BorderRadius.circular(square ? Radii.control : size);
     // Decode at display size: a 500 KB source drawn in a 40 px tile should not be held at full pixels.
-    final image = imageUrl == null
-        ? null
-        : imageProviderFor(imageUrl!, cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil());
     final fallback = Center(
       child: Text(
         initials(name),
@@ -50,13 +47,16 @@ class InitialAvatar extends StatelessWidget {
         ),
       ),
     );
+    final image = imageUrl == null
+        ? null
+        : storedImageFor(imageUrl!, cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil(), fallback: fallback);
     return ExcludeSemantics(
       child: Container(
         width: size,
         height: size,
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(color: bg, borderRadius: radius),
-        child: image == null ? fallback : Image(image: image, fit: BoxFit.cover, errorBuilder: (_, _, _) => fallback),
+        child: image ?? fallback,
       ),
     );
   }

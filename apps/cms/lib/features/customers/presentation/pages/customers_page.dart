@@ -60,6 +60,7 @@ class CustomersPage extends StatelessWidget {
                     builder: (items) => ResponsiveTable<Customer>(
                       rows: items,
                       rowKey: (c) => c.id,
+                      onRefresh: () => cubit.load(),
                       onTap: (c) => context.push('/customers/${c.id}'),
                       hasMore: state.hasNext,
                       loadingMore: state.loadingMore,

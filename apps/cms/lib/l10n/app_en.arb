@@ -108,7 +108,7 @@
   "productName": "Product name",
   "sku": "SKU",
   "barcode": "Barcode",
-  "barcodeHint": "Optional",
+  "barcodeHint": "Empty: generated automatically",
   "unit": "Unit",
   "productType": "Type",
   "physical": "Physical",
@@ -166,6 +166,11 @@
   "method": "Method",
   "total": "Total",
   "profit": "Gross profit",
+  "amountPaid": "Cash received",
+  "changeGiven": "Change",
+  "changeCash": "Cash",
+  "changeCandy": "Candy",
+  "changeProduct": "Other product",
   "conflictOnly": "Stock conflicts",
   "conflict": "Stock conflict",
   "reviewed": "Reviewed",
@@ -216,6 +221,11 @@
   "payFull": "Pay off {amount}",
   "paymentRecorded": "Payment recorded. {amount} left.",
   "debtAdded": "Credit added.",
+  "addDebt": "Add credit",
+  "currentDebt": "Current credit",
+  "debtBecomes": "Becomes {amount}",
+  "debtNote": "Note (optional)",
+  "debtNoteHint": "E.g. cash lent",
   "dueDate": "Due date (optional)",
   "pickCustomer": "Choose customer",
   "exceedsRemaining": "More than the remaining credit.",
@@ -258,7 +268,8 @@
   "importTitle": "Import from an Excel or CSV file",
   "importHint": "Required columns: sku, product_name, purchase_price, selling_price, selling_price_debt. Optional: barcode, unit (pcs, gram, kg, liter, kardus, ikat), stock, category, image, product_type (physical or digital). Up to 10,000 rows, 25 MB. Existing SKUs are updated.",
   "pickFile": "Choose an .xlsx or .csv file",
-  "downloadTemplate": "Download CSV template",
+  "downloadTemplate": "Download Excel template",
+  "exportBarcodes": "Export barcodes",
   "importing": "Importing {name}…",
   "manualTitle": "Or fill in by hand",
   "importFormat": "Only .xlsx or .csv files.",
@@ -281,12 +292,31 @@
   "vImageWebp": "The image must be a WebP file.",
   "vImageSquare": "The image must be square (1:1 ratio).",
   "vImageSize": "The image must be 500 KB or smaller.",
+  "vImageDimensions": "The image side must be 4000 px or less.",
+  "vQtyWhole": "A pcs quantity must be a whole number.",
+  "vQtyDecimals": "At most 3 decimal places.",
+  "vQtyTooLarge": "The quantity is too large.",
+  "exportTooManyParts": "Too many files to export at once. Narrow the search or category.",
   "bulkImagesTooLarge": "The images are too large for one upload. Use fewer images or split them across uploads.",
   "skuAutoHint": "Filled in from category, type, and name",
   "createCategory": "Create category \"{name}\"",
   "@createCategory": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "statusSuccess": "Success",
+  "statusCancelled": "Cancelled",
+  "cancelledReasonLine": "Reason: {reason}",
+  "debtPaymentsTitle": "Debt payments",
+  "noDebtPayments": "No debt payments yet.",
+  "paidAmount": "Paid",
+  "balanceLeft": "Balance left",
+  "cashierName": "Cashier",
+  "paidViaCms": "CMS",
+  "downloadDebtReceipt": "Download payment receipt",
+  "debtRecapReport": "Debt payments recap",
+  "debtRecapHint": "One table of every debt payment in a month, for all customers: customer, cashier, date, balance, paid, balance left, and whether it is settled."
 }

@@ -1,8 +1,13 @@
 import 'package:core/core.dart';
+import 'package:core/mobile.dart' show DriftCatalogCache;
 import 'package:core/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kasir/features/checkout/presentation/bloc/checkout_bloc.dart';
+import 'package:kasir/features/checkout/presentation/widgets/cart_panel.dart';
+import 'package:ui/ui.dart' show AppButton;
 
 import '../helpers/app_harness.dart';
 import '../helpers/fixtures.dart';
@@ -42,5 +47,27 @@ void main() {
         await tester.runAsync(app.close);
       });
     }
+  }
+
+  for (final MapEntry(key: name, value: size) in sizes.entries) {
+    testWidgets('a debt tab with a long customer name lays out on $name', (tester) async {
+      final app = AppHarness()..serveBackend();
+      await app.tokens.writeRefreshToken('r0');
+      await app.pump(tester, size: size, textScale: name == 'phone' ? 1.5 : 1);
+      await tester.runAsync(
+        () => DriftCatalogCache(app.db).replaceDebts([Debt(id: 'd1', customerId: 'k1', customerName: _long, total: 987654321, remaining: 987654321, paid: false)]),
+      );
+      await app.settle(tester);
+      tester.element(find.byType(Scaffold).first).read<CheckoutBloc>().add(const NewDebtTabRequested(customerId: 'k1', customerName: _long));
+      await app.settle(tester);
+      // Phones and portrait tablets open the payment from the bar; wide screens already show it.
+      if (find.byType(CartPanel).evaluate().isEmpty) {
+        await tester.tap(find.widgetWithText(AppButton, 'Bayar hutang').last);
+        await app.settle(tester);
+      }
+      expect(tester.takeException(), isNull);
+      expect(find.text('Total hutang'), findsOneWidget);
+      await tester.runAsync(app.close);
+    });
   }
 }

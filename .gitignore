@@ -10,3 +10,6 @@ pubspec_overrides.yaml
 **/test/failures/
 # Widget Preview related
 .widget_preview/
+
+# IDE-generated DevTools settings
+devtools_options.yaml

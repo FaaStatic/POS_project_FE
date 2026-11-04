@@ -15,6 +15,8 @@ class MockCategories extends Mock implements CategoryRepository {}
 
 class MockCustomers extends Mock implements CustomerRepository {}
 
+class MockDebts extends Mock implements DebtRepository {}
+
 class MockAuth extends Mock implements AuthRepository {}
 
 class FakeNetwork implements NetworkStatus {

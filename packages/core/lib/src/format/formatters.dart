@@ -7,7 +7,7 @@ String formatRupiah(num amount, {String locale = 'id'}) {
 }
 
 /// Quantities may be fractional (kg, liter); trailing zeros are dropped.
-String formatQty(num qty, {String locale = 'id'}) => NumberFormat('#,##0.##', locale).format(qty);
+String formatQty(num qty, {String locale = 'id'}) => NumberFormat('#,##0.###', locale).format(qty);
 
 String formatDate(DateTime date, {String locale = 'id'}) => DateFormat.yMMMd(locale).format(date.toLocal());
 

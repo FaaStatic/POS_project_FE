@@ -29,10 +29,12 @@ class _SessionScopeState extends State<SessionScope> {
   late final CheckoutBloc _checkout = getIt<CheckoutBloc>()..add(const CheckoutStarted());
   late final SyncCubit _sync = getIt<SyncCubit>()..start();
   final _subs = <StreamSubscription<String>>[];
+  late final AppLifecycleListener _lifecycle;
 
   @override
   void initState() {
     super.initState();
+    _lifecycle = AppLifecycleListener(onResume: () => unawaited(_sync.refreshOnResume()));
     final push = getIt<PushService>();
     unawaited(push.registerDevice());
     _subs
@@ -55,6 +57,7 @@ class _SessionScopeState extends State<SessionScope> {
 
   @override
   void dispose() {
+    _lifecycle.dispose();
     for (final s in _subs) {
       s.cancel();
     }
@@ -100,6 +103,12 @@ class _SessionScopeState extends State<SessionScope> {
         show(l10n.chargeFailed(tabNumber), InfoKind.error);
       case StaleDraftsNotice(:final count):
         show(l10n.staleDraftsRemoved(count), InfoKind.info);
+      case OutOfStockNotice(:final productName):
+        // A scanner that keeps reading the same code would stack one dialog per frame.
+        if (_scanDialogOpen) return;
+        _scanDialogOpen = true;
+        await showInfoDialog(context, l10n.outOfStockAdd(productName), kind: InfoKind.info);
+        _scanDialogOpen = false;
       case TabLockedNotice():
         show(l10n.tabLocked, InfoKind.info);
       case FailureNotice(failure: TimeoutFailure()):
@@ -150,7 +159,7 @@ class SyncBanner extends StatelessWidget {
       pendingCount: s.pending,
       syncing: s.syncing,
       syncLabel: s.online ? AppLocalizations.of(context).syncNow : null,
-      onSync: () => context.read<SyncCubit>().syncNow(),
+      onSync: () => context.read<SyncCubit>().syncNow(pullCatalog: true),
     );
   }
 }
@@ -174,7 +183,7 @@ class SyncTile extends StatelessWidget {
             )
           : null,
       enabled: s.online && !s.syncing,
-      onTap: () => context.read<SyncCubit>().syncNow(),
+      onTap: () => context.read<SyncCubit>().syncNow(pullCatalog: true),
     );
   }
 }

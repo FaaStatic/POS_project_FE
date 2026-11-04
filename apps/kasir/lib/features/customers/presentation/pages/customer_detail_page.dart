@@ -5,7 +5,9 @@ import 'package:ui/ui.dart';
 
 import '../../../../app/di.dart';
 import '../../../../common/failure_text.dart';
+import '../../../../app/router.dart';
 import '../../../../common/labels.dart';
+import '../../../checkout/presentation/bloc/checkout_bloc.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/customers_cubit.dart';
 
@@ -22,7 +24,7 @@ class CustomerDetailPage extends StatelessWidget {
       child: BlocBuilder<CustomerDetailCubit, CustomerDetailState>(
         builder: (context, state) {
           final c = state.customer;
-          final unpaid = c?.debts.where((d) => !d.paid).toList() ?? const [];
+          final debt = state.debt;
           return Scaffold(
             appBar: AppBar(title: Text(c?.name ?? l10n.customer)),
             body: c == null
@@ -43,21 +45,13 @@ class CustomerDetailPage extends StatelessWidget {
                         Text(l10n.debtsTitle, style: theme.textTheme.titleMedium),
                         if (state.loading)
                           const Padding(padding: EdgeInsets.all(Space.lg), child: LinearProgressIndicator()),
-                        if (state.failure != null)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: Space.md),
-                            child: Text(
-                              '${failureText(context, state.failure!)} ${l10n.onlineOnly}',
-                              style: theme.textTheme.bodyMedium,
-                            ),
-                          )
-                        else if (!state.loading && unpaid.isEmpty)
+                        if (debt == null && !state.loading)
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: Space.md),
                             child: Text(l10n.noDebts),
                           ),
                         // A Wrap, not a ListTile: on phones the pay button drops under the amount.
-                        for (final d in unpaid)
+                        if (debt case final d?)
                           Padding(
                             key: ValueKey(d.id),
                             padding: const EdgeInsets.symmetric(vertical: Space.sm),
@@ -79,12 +73,11 @@ class CustomerDetailPage extends StatelessWidget {
                                   ],
                                 ),
                                 AppButton(
-                                  label: l10n.receivePayment,
+                                  label: l10n.payDebtTab,
                                   variant: AppButtonVariant.secondary,
-                                  onPressed: () async {
-                                    final cubit = context.read<CustomerDetailCubit>();
-                                    await context.push('/debts/${d.id}/pay');
-                                    await cubit.load(customerId);
+                                  onPressed: () {
+                                    context.read<CheckoutBloc>().add(NewDebtTabRequested(customerId: c.id, customerName: c.name));
+                                    context.go(Routes.checkout);
                                   },
                                 ),
                               ],

@@ -22,8 +22,8 @@ class DebtsCubit extends PagedListCubit<Debt, DebtQuery> {
     return act(() => _pay(debt: d, userId: user.userId, amount: amount, idempotencyKey: key));
   }
 
-  Future<Result<void>> addManual(String customerId, int amount, DateTime? due) =>
-      act(() => _add(customerId: customerId, amount: amount, dueDate: due));
+  Future<Result<void>> addManual(String customerId, int amount, DateTime? due, [String? note]) =>
+      act(() => _add(customerId: customerId, amount: amount, dueDate: due, note: note));
 
   Future<List<Customer>> findCustomers(String text) async => switch (await _customers(CustomerQuery(search: text, limit: 20))) {
         Ok(:final value) => value.items,

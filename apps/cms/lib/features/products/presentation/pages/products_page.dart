@@ -8,6 +8,7 @@ import 'package:ui/ui.dart';
 import '../../../../app/di.dart';
 import '../../../../app/shell/cms_page.dart';
 import '../../../../common/feedback.dart';
+import '../../../../common/file_saver.dart';
 import '../../../../common/widgets.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/products_cubit.dart';
@@ -37,7 +38,11 @@ class ProductsPage extends StatelessWidget {
         return CmsPage(
           title: l10n.productsTitle,
           actions: [
-            AppButton(label: l10n.bulkAdd, icon: Iconsax.document_upload_copy, variant: AppButtonVariant.outline, onPressed: () => context.push('/products/bulk')),
+            _ExportBarcodesButton(cubit: cubit),
+            AppButton(label: l10n.bulkAdd, icon: Iconsax.document_upload_copy, variant: AppButtonVariant.outline, onPressed: () async {
+              await context.push('/products/bulk');
+              if (!cubit.isClosed) await cubit.refreshIfDirty();
+            }),
             AppButton(label: l10n.addProduct, icon: Iconsax.add_copy, onPressed: () => openProductForm(context, cubit)),
           ],
           body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [FilterBar(children: [
@@ -68,6 +73,7 @@ class ProductsPage extends StatelessWidget {
                   builder: (items) => ResponsiveTable<Product>(
                     rows: items,
                     rowKey: (p) => p.id,
+                    onRefresh: () => cubit.load(),
                     onTap: (p) => openProductForm(context, cubit, existing: p),
                     hasMore: state.hasNext,
                     loadingMore: state.loadingMore,
@@ -119,6 +125,38 @@ class ProductsPage extends StatelessWidget {
     final result = await cubit.delete(p);
     if (context.mounted) showResult(context, result, l10n.productDeleted);
   }
+}
+
+/// Downloads the barcode sheets for the search and category now on screen: one .xlsx per
+/// 500 products, saved one after the other.
+class _ExportBarcodesButton extends StatefulWidget {
+  const _ExportBarcodesButton({required this.cubit});
+  final ProductsCubit cubit;
+
+  @override
+  State<_ExportBarcodesButton> createState() => _ExportBarcodesButtonState();
+}
+
+class _ExportBarcodesButtonState extends State<_ExportBarcodesButton> {
+  static const _xlsxMime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  bool _busy = false;
+
+  Future<void> _export() async {
+    setState(() => _busy = true);
+    final result = await widget.cubit.exportBarcodes((file) async => saveFile(file.bytes, file.fileName, mime: _xlsxMime));
+    if (!mounted) return;
+    setState(() => _busy = false);
+    showResult(context, result, AppLocalizations.of(context).downloaded);
+  }
+
+  @override
+  Widget build(BuildContext context) => AppButton(
+        label: AppLocalizations.of(context).exportBarcodes,
+        icon: Iconsax.scan_barcode_copy,
+        variant: AppButtonVariant.outline,
+        loading: _busy,
+        onPressed: _busy ? null : _export,
+      );
 }
 
 Future<void> openProductForm(BuildContext context, ProductsCubit cubit, {Product? existing}) async {

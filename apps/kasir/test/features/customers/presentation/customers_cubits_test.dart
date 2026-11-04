@@ -19,9 +19,34 @@ void main() {
   tearDown(() => local.close());
 
   test('search filters the cached list', () async {
-    final cubit = CustomersCubit(local.cache)..search('budi');
+    final cubit = CustomersCubit(local.cache, RefreshCustomers(remote, local.cache))..search('budi');
     final state = await cubit.stream.firstWhere((s) => !s.loading);
     expect(state.customers.single.id, 'k2');
+    await cubit.close();
+  });
+
+  test('refresh pulls customers added elsewhere into the list, and reuses a recent pull', () async {
+    when(remote.listAll).thenAnswer((_) async => const Ok([Customer(id: 'k3', name: 'Ibu Tini')]));
+    final cubit = CustomersCubit(local.cache, RefreshCustomers(remote, local.cache))..search('');
+    await cubit.stream.firstWhere((s) => !s.loading);
+
+    expect(await cubit.refresh(), isNull);
+    final state = await cubit.stream.firstWhere((s) => s.customers.length == 1);
+    expect(state.customers.single.id, 'k3');
+
+    expect(await cubit.refresh(), isNull);
+    verify(remote.listAll).called(1);
+    expect(await cubit.refresh(force: true), isNull);
+    verify(remote.listAll).called(1);
+    await cubit.close();
+  });
+
+  test('a failed pull is returned so the screen can say why, and the cache is kept', () async {
+    when(remote.listAll).thenAnswer((_) async => const Err(NetworkFailure()));
+    final cubit = CustomersCubit(local.cache, RefreshCustomers(remote, local.cache))..search('');
+    await cubit.stream.firstWhere((s) => !s.loading);
+    expect(await cubit.refresh(force: true), const NetworkFailure());
+    expect(cubit.state.customers, hasLength(2));
     await cubit.close();
   });
 

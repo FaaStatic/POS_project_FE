@@ -1,13 +1,15 @@
+import 'package:core/core.dart' show Customer, Debt, Product;
 import 'package:core/mobile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ui/ui.dart';
 
 import '../helpers/app_harness.dart';
 import '../helpers/fixtures.dart';
 
 /// Product "+" buttons, named "Tambah {produk}" for screen readers.
-final addButtons = find.byWidgetPredicate((w) => w is IconButton && (w.tooltip ?? '').startsWith('Tambah '));
+final addButtons = find.byWidgetPredicate((w) => w is Semantics && (w.properties.button ?? false) && (w.properties.label ?? '').startsWith('Tambah '));
 
 void main() {
   testWidgets('first launch shows login; signing in opens Transaksi 1 and stores the refresh token', (tester) async {
@@ -111,6 +113,15 @@ void main() {
     await tester.enterText(received, '10000');
     await app.settle(tester);
     expect(find.text('Kembalian'), findsOneWidget);
+    // Cash received above the total: the change has to be split before the sale can finish.
+    expect(find.textContaining('Belum dibagi'), findsOneWidget);
+    expect(pay().onPressed, isNull);
+
+    await tester.ensureVisible(find.text('Sisa sebagai tunai'));
+    await tester.pump();
+    await tester.tap(find.text('Sisa sebagai tunai'));
+    await app.settle(tester);
+    expect(find.text('Kembalian sudah pas'), findsOneWidget);
     expect(pay().onPressed, isNotNull);
 
     await tester.tap(find.text('Uang pas'));
@@ -151,6 +162,34 @@ void main() {
     await tester.runAsync(app.close);
   });
 
+  testWidgets('opening the keyboard on the search field keeps it focused', (tester) async {
+    final app = AppHarness(online: true)..serveBackend();
+    await app.tokens.writeRefreshToken('r0');
+    // Tall enough for the roomy layout; the keyboard then shrinks it to the compact one.
+    await app.pump(tester, size: const Size(400, 860));
+    addTearDown(tester.view.resetViewInsets);
+
+    final field = find.descendant(of: find.byType(SearchField), matching: find.byType(EditableText)).first;
+    await tester.tap(field);
+    await app.settle(tester);
+    expect(tester.widget<EditableText>(field).focusNode.hasFocus, isTrue);
+    expect(tester.testTextInput.isVisible, isTrue);
+    final strip = find.byType(TransactionTabStrip);
+    final inList = find.descendant(of: find.byType(CustomScrollView), matching: strip);
+    expect(strip, findsOneWidget);
+    expect(inList, findsNothing, reason: 'the tabs, search and categories never scroll with the products');
+
+    tester.view.viewInsets = const FakeViewPadding(bottom: 420);
+    await app.settle(tester);
+    expect(strip, findsOneWidget, reason: 'the compact layout moves the tabs into the product pane, above the search');
+    expect(inList, findsNothing);
+    expect(tester.getTopLeft(strip).dy, lessThan(tester.getTopLeft(find.byType(SearchField)).dy));
+    expect(find.byType(SearchField), findsOneWidget);
+    expect(tester.widget<EditableText>(field).focusNode.hasFocus, isTrue, reason: 'the field must stay focused');
+    expect(tester.testTextInput.isVisible, isTrue, reason: 'the keyboard must stay open');
+    await tester.runAsync(app.close);
+  });
+
   testWidgets('checkout survives 200% text on a narrow phone', (tester) async {
     final app = AppHarness(online: true)..serveBackend();
     await app.tokens.writeRefreshToken('r0');
@@ -163,6 +202,94 @@ void main() {
     await tester.tap(find.text('Lihat keranjang'));
     await app.settle(tester);
     expect(tester.takeException(), isNull);
+    await tester.runAsync(app.close);
+  });
+
+  testWidgets('debt tab: pick a customer, pay part offline, the receipt shows what is still owed, history lists it apart', (tester) async {
+    final app = AppHarness()..serveBackend();
+    await app.tokens.writeRefreshToken('r0');
+    await app.pump(tester, size: const Size(1100, 800));
+    await tester.runAsync(() => DriftCatalogCache(app.db).replaceProducts(const [indomie, aqua]));
+    await tester.runAsync(
+      () => DriftCatalogCache(app.db).replaceDebts(const [
+        Debt(id: 'd1', customerId: 'k1', customerName: 'Bu Sri', total: 9000, remaining: 5000, paid: false),
+        Debt(id: 'd2', customerId: 'k2', customerName: 'Pak Budi', total: 2000, remaining: 2000, paid: false),
+      ]),
+    );
+    await app.settle(tester);
+
+    await tester.tap(find.byTooltip('Bayar hutang'));
+    await app.settle(tester);
+    expect(find.text('Hutang 2'), findsWidgets);
+    expect(find.text('Pak Budi'), findsOneWidget);
+    expect(find.text('Indomie Goreng'), findsNothing);
+
+    await tester.tap(find.text('Bu Sri'));
+    await app.settle(tester);
+    expect(find.text('Total hutang'), findsOneWidget);
+    final pay = find.widgetWithText(AppButton, 'Bayar hutang');
+    await tester.enterText(find.descendant(of: find.widgetWithText(AppTextField, 'Jumlah dibayar'), matching: find.byType(EditableText)), '9000');
+    await app.settle(tester);
+    expect(tester.widget<AppButton>(pay).onPressed, isNull);
+
+    await tester.enterText(find.descendant(of: find.widgetWithText(AppTextField, 'Jumlah dibayar'), matching: find.byType(EditableText)), '3000');
+    await app.settle(tester);
+    expect(find.text('Rp 2.000'), findsWidgets);
+    await tester.tap(pay);
+    await app.settle(tester);
+    await dismissInfo(tester);
+
+    expect(find.textContaining('PEMBAYARAN HUTANG'), findsOneWidget);
+    expect(find.textContaining('BELUM LUNAS'), findsOneWidget);
+    expect(find.text('Batalkan penjualan'), findsNothing);
+
+    GoRouter.of(tester.element(find.byType(Navigator).first)).go('/history');
+    await app.settle(tester);
+    expect(find.text('Penjualan'), findsOneWidget);
+    expect(find.textContaining('HTG-'), findsNothing);
+    await tester.tap(find.text('Pembayaran hutang'));
+    await app.settle(tester);
+    expect(find.textContaining('HTG-'), findsOneWidget);
+    expect(find.text('Bu Sri'), findsOneWidget);
+    await tester.runAsync(app.close);
+  });
+
+  testWidgets('search stays in place while the product list scrolls', (tester) async {
+    final app = AppHarness(online: true)..serveBackend(products: [for (var i = 0; i < 40; i++) Product(id: 'p$i', sku: 'S$i', name: 'Barang ${i.toString().padLeft(2, '0')}', sellingPrice: 1000, sellingPriceDebt: 1100, stock: 5)]);
+    await app.tokens.writeRefreshToken('r0');
+    await app.pump(tester, size: const Size(400, 860));
+    await app.settle(tester);
+    final before = tester.getTopLeft(find.byType(SearchField));
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -500));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(tester.getTopLeft(find.byType(SearchField)), before);
+    await tester.runAsync(app.close);
+  });
+
+  testWidgets('paying on credit: the button adds to the debt and the total is the credit price', (tester) async {
+    final app = AppHarness()..serveBackend();
+    await app.tokens.writeRefreshToken('r0');
+    await app.pump(tester, size: const Size(1100, 800));
+    await tester.runAsync(() => DriftCatalogCache(app.db).replaceProducts(const [indomie, aqua]));
+    await tester.runAsync(() => DriftCatalogCache(app.db).replaceCustomers(const [Customer(id: 'k1', name: 'Bu Sri')]));
+    await app.settle(tester);
+
+    await tester.tap(addButtons.at(1)); // Indomie: 3.500 cash, 4.000 on credit
+    await app.settle(tester);
+    await tester.tap(find.text('Pilih pelanggan (opsional)'));
+    await app.settle(tester);
+    await tester.tap(find.text('Bu Sri'));
+    await app.settle(tester);
+    await tester.tap(find.text('Lanjut ke pembayaran'));
+    await app.settle(tester);
+    expect(find.textContaining('Bayar Rp 3.500'), findsOneWidget);
+
+    await tester.tap(find.text('Hutang'));
+    await app.settle(tester);
+    expect(find.text('Tambah hutang Rp 4.000'), findsOneWidget);
+    expect(find.textContaining('Bayar Rp'), findsNothing);
+    expect(find.text('Total hutang'), findsOneWidget);
+    expect(find.text('Rp 4.000'), findsWidgets);
     await tester.runAsync(app.close);
   });
 }

@@ -23,11 +23,11 @@ class ReportsPage extends StatefulWidget {
 class _ReportsPageState extends State<ReportsPage> {
   late int _month = DateTime.now().month;
   late int _year = DateTime.now().year;
+  _Kind _running = _Kind.monthly;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).languageCode;
     final now = DateTime.now();
     return BlocProvider(
@@ -42,14 +42,10 @@ class _ReportsPageState extends State<ReportsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l10n.monthlyReport, style: theme.textTheme.titleLarge),
-                  const SizedBox(height: Space.sm),
-                  Text(l10n.monthlyReportHint, style: theme.textTheme.bodyLarge),
-                  const SizedBox(height: Space.xl),
+                  // One period for both reports below.
                   Wrap(
                     spacing: Space.lg,
                     runSpacing: Space.lg,
-                    crossAxisAlignment: WrapCrossAlignment.end,
                     children: [
                       SizedBox(
                         width: 200,
@@ -69,8 +65,31 @@ class _ReportsPageState extends State<ReportsPage> {
                           onChanged: (y) => setState(() => _year = y),
                         ),
                       ),
-                      AppButton(label: l10n.download, loading: busy, onPressed: () => download(context, _month, _year)),
                     ],
+                  ),
+                  const SizedBox(height: Space.xxl),
+                  _ReportBlock(
+                    title: l10n.monthlyReport,
+                    hint: l10n.monthlyReportHint,
+                    busy: busy && _running == _Kind.monthly,
+                    disabled: busy,
+                    label: l10n.download,
+                    onDownload: () {
+                      setState(() => _running = _Kind.monthly);
+                      return download(context, _month, _year);
+                    },
+                  ),
+                  const SizedBox(height: Space.xl),
+                  _ReportBlock(
+                    title: l10n.debtRecapReport,
+                    hint: l10n.debtRecapHint,
+                    busy: busy && _running == _Kind.debtRecap,
+                    disabled: busy,
+                    label: l10n.download,
+                    onDownload: () {
+                      setState(() => _running = _Kind.debtRecap);
+                      return downloadDebtRecap(context, _month, _year);
+                    },
                   ),
                 ],
               ),
@@ -80,6 +99,49 @@ class _ReportsPageState extends State<ReportsPage> {
       ),
     );
   }
+}
+
+enum _Kind { monthly, debtRecap }
+
+/// A report's title, what it contains, and its download button.
+class _ReportBlock extends StatelessWidget {
+  const _ReportBlock({
+    required this.title,
+    required this.hint,
+    required this.busy,
+    required this.disabled,
+    required this.label,
+    required this.onDownload,
+  });
+  final String title;
+  final String hint;
+  final bool busy;
+  final bool disabled;
+  final String label;
+  final Future<void> Function() onDownload;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: theme.textTheme.titleLarge),
+        const SizedBox(height: Space.sm),
+        Text(hint, style: theme.textTheme.bodyLarge),
+        const SizedBox(height: Space.lg),
+        AppButton(label: label, loading: busy, onPressed: disabled ? null : onDownload),
+      ],
+    );
+  }
+}
+
+Future<void> downloadDebtRecap(BuildContext context, int month, int year) async {
+  final l10n = AppLocalizations.of(context);
+  final result = await context.read<ReportsCubit>().debtRecap(month, year);
+  if (!context.mounted) return;
+  if (result case Ok(value: (final bytes, final name))) saveFile(bytes, name);
+  showResult(context, result, l10n.downloaded);
 }
 
 /// Shared with the dashboard's "Unduh laporan bulan ini" action.

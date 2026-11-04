@@ -337,6 +337,15 @@ class AppLocalizationsId extends AppLocalizations {
   String get receiptNumber => 'No.';
 
   @override
+  String get receiptMarkPaid => 'LUNAS';
+
+  @override
+  String get receiptMarkDebt => 'HUTANG';
+
+  @override
+  String get receiptMarkCancelled => 'DIBATALKAN';
+
+  @override
   String get receiptDate => 'Tanggal';
 
   @override
@@ -477,19 +486,11 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get receivePayment => 'Terima pembayaran tunai';
-
-  @override
   String get paymentAmount => 'Jumlah dibayar';
 
   @override
   String payFull(String amount) {
     return 'Lunasi $amount';
-  }
-
-  @override
-  String paymentRecorded(String amount) {
-    return 'Pembayaran dicatat. Sisa $amount.';
   }
 
   @override
@@ -680,6 +681,84 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String outOfStockAdd(String name) {
+    return '$name stoknya habis, tidak bisa ditambahkan ke keranjang.';
+  }
+
+  @override
+  String get changeCash => 'Tunai';
+
+  @override
+  String get changeCandy => 'Permen';
+
+  @override
+  String get changeProduct => 'Produk lain';
+
+  @override
+  String get addChange => 'Tambah kembalian';
+
+  @override
+  String changeToGive(String amount) {
+    return 'Kembalian $amount';
+  }
+
+  @override
+  String changeRemaining(String amount) {
+    return 'Belum dibagi $amount';
+  }
+
+  @override
+  String get changeComplete => 'Kembalian sudah pas';
+
+  @override
+  String changeOverBy(String amount) {
+    return 'Lebih $amount dari kembalian';
+  }
+
+  @override
+  String get changeAddRestCash => 'Sisa sebagai tunai';
+
+  @override
+  String get changeAmount => 'Nominal tunai';
+
+  @override
+  String get changePickProduct => 'Pilih produk';
+
+  @override
+  String get changeNoProducts => 'Tidak ada produk fisik dengan stok.';
+
+  @override
+  String get changeQty => 'Jumlah';
+
+  @override
+  String changeValue(String amount) {
+    return 'Senilai $amount';
+  }
+
+  @override
+  String get changeSheetTitle => 'Tambah kembalian';
+
+  @override
+  String get vAmountPaidShort => 'Uang diterima kurang dari total.';
+
+  @override
+  String get vAmountPaidRequired =>
+      'Isi uang diterima untuk mencatat kembalian.';
+
+  @override
+  String get vChangeMismatch =>
+      'Rincian kembalian belum sama dengan kembalian yang harus diberikan.';
+
+  @override
+  String get vChangeInvalid => 'Ada baris kembalian yang tidak valid.';
+
+  @override
+  String get vChangeTooMany => 'Kembalian maksimal 20 baris.';
+
+  @override
+  String get vChangeCashOnly => 'Kembalian hanya untuk pembayaran tunai.';
+
+  @override
   String get back => 'Kembali';
 
   @override
@@ -717,8 +796,78 @@ class AppLocalizationsId extends AppLocalizations {
   String get vImageSize => 'Ukuran gambar maksimal 500 KB.';
 
   @override
+  String get vImageDimensions => 'Sisi gambar maksimal 4000 piksel.';
+
+  @override
   String get categoryPickHint => 'Cari atau pilih kategori';
 
   @override
   String get vCategoryExisting => 'Pilih kategori yang sudah ada.';
+
+  @override
+  String get receiptMarkUnpaid => 'BELUM LUNAS';
+
+  @override
+  String get receiptDebtPayment => 'PEMBAYARAN HUTANG';
+
+  @override
+  String get receiptDebtPaidNow => 'Dibayar sekarang';
+
+  @override
+  String get receiptDebtPaidTotal => 'Saldo terbayar';
+
+  @override
+  String get receiptDebtOwed => 'Saldo terhutang';
+
+  @override
+  String get payDebtTab => 'Bayar hutang';
+
+  @override
+  String debtTabLabel(int number) {
+    return 'Hutang $number';
+  }
+
+  @override
+  String get debtTabPickCustomer => 'Pilih pelanggan';
+
+  @override
+  String get searchDebtCustomers => 'Cari pelanggan berhutang';
+
+  @override
+  String get debtsEmpty => 'Tidak ada pelanggan yang berhutang.';
+
+  @override
+  String get debtTotalOwed => 'Total hutang';
+
+  @override
+  String get debtLeft => 'Sisa hutang';
+
+  @override
+  String get debtSettledLabel => 'Hutang lunas';
+
+  @override
+  String get debtPickFromList => 'Pilih pelanggan dari daftar hutang.';
+
+  @override
+  String get debtNoDebt => 'Pelanggan ini tidak punya hutang.';
+
+  @override
+  String get historySalesTab => 'Penjualan';
+
+  @override
+  String get historyDebtTab => 'Pembayaran hutang';
+
+  @override
+  String get historyDebtEmpty =>
+      'Belum ada pembayaran hutang di perangkat ini.';
+
+  @override
+  String debtLeftAmount(String amount) {
+    return 'Sisa $amount';
+  }
+
+  @override
+  String addDebtAmount(String total) {
+    return 'Tambah hutang $total';
+  }
 }

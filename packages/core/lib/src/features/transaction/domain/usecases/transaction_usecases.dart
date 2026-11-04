@@ -3,6 +3,7 @@ import '../../../../common/page.dart';
 import '../../../../common/result.dart';
 import '../../../../constants/payment_method.dart';
 import '../../../../validation/validators.dart';
+import '../entities/change_line.dart';
 import '../entities/transaction.dart';
 import '../repositories/transaction_repository.dart';
 
@@ -13,6 +14,32 @@ String? validateCheckout(PaymentMethod method, String? customerId, List<Checkout
   if (method == PaymentMethod.debt && (customerId == null || customerId.isEmpty)) return 'debt_needs_customer';
   if (lines.any((l) => l.destination != null && l.destination!.trim().isEmpty)) return 'destination_required';
   return null;
+}
+
+/// Cash received and the change handed back, mirroring the backend rule: lines add up
+/// to `amountPaid - total`. Without an amount paid nothing is recorded, as before.
+String? validateChange({
+  required PaymentMethod method,
+  required int total,
+  required int? amountPaid,
+  required List<ChangeLine> change,
+}) {
+  if (amountPaid == null) return change.isEmpty ? null : 'amount_paid_required';
+  if (method != PaymentMethod.cash) return 'change_cash_only';
+  if (amountPaid < total) return 'amount_paid_short';
+  if (change.length > 20) return 'change_too_many';
+  var given = 0;
+  for (final line in change) {
+    if (line.amount <= 0) return 'change_invalid';
+    if (!line.isCash) {
+      if (line.productId == null || line.qty <= 0) return 'change_invalid';
+      final scaled = line.qty * 1000;
+      final threeDecimals = (scaled - scaled.roundToDouble()).abs() < 1e-6;
+      if (!threeDecimals || (line.wholeOnly && line.qty != line.qty.truncateToDouble())) return 'invalid_qty';
+    }
+    given += line.amount;
+  }
+  return given == amountPaid - total ? null : 'change_mismatch';
 }
 
 class GetTransaction {

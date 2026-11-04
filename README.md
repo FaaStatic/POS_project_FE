@@ -297,7 +297,7 @@ DevicesPage  ──tap "Cabut", confirm──►  DevicesCubit.revoke(id)
   → RevokeDevice                        use case in core
   → DeviceRepository                    domain contract
   → DeviceRepositoryImpl → DeviceRemoteDatasource → ApiClient.delete
-  → DELETE /api/fcm/devices/:id
+  → DELETE /api/v1/account/fcm/devices/:id
   ← Ok   → cubit reloads the list, shows a toast
   ← Err  → error state, message shown
 ```
@@ -307,16 +307,16 @@ Every other CRUD screen in the CMS follows the same path.
 ### Authentication
 
 ```text
-Login → POST /auth/login → access token (memory) + refresh token
+Login → POST /api/v1/account/auth/login → access token (memory) + refresh token
   CMS:   backend sets an HttpOnly refresh cookie (requests send X-Client: web, withCredentials)
   Kasir: refresh token saved in secure storage
 Any request → AuthInterceptor adds "Authorization: Bearer <access>"
-  ← 401 → POST /auth/refresh once → retry the request
+  ← 401 → POST /api/v1/account/auth/refresh once → retry the request
           refresh fails → clear session → AuthCubit emits unauthenticated
           → BlocListener calls GoRouter.refresh() → redirect to /login
 ```
 
-On the CMS, a page load without the cookie gets `400` from `/auth/refresh` and shows the login page. That is expected.
+On the CMS, a page load without the cookie gets `400` from `/api/v1/account/auth/refresh` and shows the login page. That is expected.
 
 The cookie only reaches the CMS when the backend's `cms_origins` lists the CMS origin (`http://localhost:5173` in dev).
 
@@ -325,21 +325,21 @@ The cookie only reaches the CMS when the backend's `cms_origins` lists the CMS o
 ```text
 CheckoutPage (tab "Transaksi 2") → CheckoutBloc → CheckoutTransaction
   validate: signed in, tab not locked, debt has a customer, digital lines have a destination
-  online   → POST /api/transactions → store the sale as synced with the server invoice
+  online   → POST /api/v1/sales/transactions → store the sale as synced with the server invoice
   offline, or the request couldn't connect
            → store it in Sales as pending, receipt number OFF-<device>-<seq>
   then     → lower stock in the local cache → delete the tab's draft → show/print receipt
   ← the active tab moves to the next open one (e.g. Transaksi 1)
 ```
 
-A timeout does not go into the queue. The server may have recorded the sale already, and `POST /api/transactions` has no idempotency key.
+A timeout does not go into the queue. The server may have recorded the sale already, and `POST /api/v1/sales/transactions` has no idempotency key.
 
 ### Kasir checkout: QRIS or VA
 
 ```text
-StartCharge → POST /api/payments/qris  or  /api/payments/va (BCA, Mandiri)
+StartCharge → POST /api/v1/sales/payments/qris  or  /api/v1/sales/payments/va (BCA, Mandiri)
   → tab marked "awaiting payment", charge (QR / VA number, amount) saved on the tab
-Push message or status check → ResolveCharge → GET /api/payments/:orderId/status
+Push message or status check → ResolveCharge → GET /api/v1/sales/payments/:orderId/status
   success → store the sale as synced, lower local stock, tab shows the receipt
   failed / expired → tab unlocks, cashier picks another method
   still pending → nothing changes
@@ -350,7 +350,7 @@ Push message or status check → ResolveCharge → GET /api/payments/:orderId/st
 ```text
 Trigger: connection back | 12:00 / 00:00 background task | "Sync sekarang" | app start (online)
   → SyncPendingTransactions
-  → send pending sales in batches of 100 to POST /api/transactions/sync
+  → send pending sales in batches of 100 to POST /api/v1/sales/transactions/sync
     (each sale carries its client_ref, created_at, method, customer, lines)
   ← accepted → status synced, OFF number replaced by the server invoice
                stock short on the server → sale accepted but flagged as a conflict;
@@ -414,7 +414,15 @@ The examples below use `melos run`. `dart run melos run` does the same thing.
 
 ### 2. Set the API address
 
-Each app reads `API_BASE_URL` and `FLAVOR` from its `.env` file. `main_dev.dart` loads `.env.dev`; `main_prod.dart` loads `.env.prod`. Edit `apps/cms/.env.dev` and `apps/kasir/.env.dev`:
+Each app reads `API_BASE_URL`, `FLAVOR`, and `API_VERSION` from its `.env` file. `main_dev.dart` loads `.env.dev`; `main_prod.dart` loads `.env.prod`. Both files are git-ignored (so is `.env.staging`); only `.env.example` is tracked. Create them in each app before the first run, then edit `.env.dev`:
+
+```bash
+for app in cms kasir; do
+  cp apps/$app/.env.example apps/$app/.env.dev
+  cp apps/$app/.env.example apps/$app/.env.prod
+  sed -i.bak 's/^FLAVOR=.*/FLAVOR=prod/' apps/$app/.env.prod && rm apps/$app/.env.prod.bak
+done
+```
 
 | Running on | `API_BASE_URL` |
 | --- | --- |
@@ -422,7 +430,9 @@ Each app reads `API_BASE_URL` and `FLAVOR` from its `.env` file. `main_dev.dart`
 | Kasir in the Android emulator | `http://10.0.2.2:3030` |
 | Kasir on a real phone (same Wi-Fi) | `http://<laptop-IP>:3030` |
 
-`.env.prod` holds the production API address. The `.env` files ship inside the app bundle, so keep secrets out of them.
+Every request goes to `{API_BASE_URL}/api/{API_VERSION}/{group}/{service}`. `API_VERSION` (`v1`, `v2`, ...; empty means `v1`) must equal the backend's `server.api_version`; CI/CD rewrites it in `.env.prod` and rebuilds the apps whenever the server version goes up. A mismatch makes the backend answer 404 with `api version not supported, use /api/vN`.
+
+CI creates both files from `.env.example` before building, because `pubspec.yaml` declares them as assets. `.env.prod` holds the production API address; CI/CD writes it at deploy time. The `.env` files ship inside the app bundle, so keep secrets out of them.
 
 ### 3. Run the CMS (web)
 

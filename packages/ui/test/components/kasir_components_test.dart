@@ -74,6 +74,41 @@ void main() {
     expect(value, 1.5);
   });
 
+  testWidgets('fractional stepper adds and subtracts one from the typed value and caps at three decimals', (tester) async {
+    var value = 0.25;
+    await pumpUi(
+      tester,
+      StatefulBuilder(
+        builder: (context, setState) => Center(
+          child: QtyStepper(value: value, itemName: 'Gula', allowFraction: true, onChanged: (v) => setState(() => value = v)),
+        ),
+      ),
+    );
+    await tester.tap(find.byTooltip('Tambah'));
+    await tester.pump();
+    expect(value, 1.25);
+    expect(find.text('1,25'), findsOneWidget);
+
+    await tester.tap(find.text('1,25'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(EditableText), '0,12345');
+    expect(tester.widget<EditableText>(find.byType(EditableText)).controller.text, '0,123');
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(value, 0.123);
+
+    await tester.tap(find.byTooltip('Kurangi'));
+    await tester.pump();
+    expect(value, 0);
+  });
+
+  test('qtyText hides float noise and trailing zeros', () {
+    expect(qtyText(1.2500000000000002), '1,25');
+    expect(qtyText(3), '3');
+    expect(qtyText(0.5), '0,5');
+    expect(qtyText(2.125), '2,125');
+  });
+
   testWidgets('qty stepper meets tap target guidance at 200%', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpUi(tester, Center(child: QtyStepper(value: 3, itemName: 'Aqua', onChanged: (_) {})), textScale: 2, dark: true);

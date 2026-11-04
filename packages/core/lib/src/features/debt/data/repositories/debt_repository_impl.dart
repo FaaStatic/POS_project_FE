@@ -40,7 +40,29 @@ class DebtRemoteDatasource {
     );
   }
 
-  Future<Debt> get(String id) async => debtFromJson(readMap(await _api.get(ApiPaths.debt(id))));
+  Future<List<DebtPaymentEntry>> payments(int limit, String? customerId) async {
+    final data = readMap(await _api.get(ApiPaths.debtPayments, query: {'limit': limit, 'customer_id': customerId}));
+    return [
+      for (final j in readList(data['payment_list']))
+        DebtPaymentEntry(
+          id: readString(j['id']),
+          debtId: readString(j['debt_id']),
+          customerName: readString(j['customer_name']),
+          amount: readInt(j['nominal_bayar']),
+          remaining: readInt(j['remaining_debt']),
+          paid: readString(j['status']).toLowerCase() == 'lunas',
+          cashier: readString(j['cashier']),
+          clientRef: readString(j['client_ref']),
+          paidAt: readDate(j['paid_at']),
+        ),
+    ];
+  }
+
+  Future<String> receiptPdf(String paymentId) async =>
+      readString(readMap(await _api.get(ApiPaths.debtPaymentReceipt(paymentId)))['url_pdf']);
+
+  Future<String> recapPdf(int month, int year) async =>
+      readString(readMap(await _api.get(ApiPaths.debtPaymentsReport, query: {'month': month, 'year': year}))['url_pdf']);
 
   Future<DebtPaymentReceipt> pay(String debtId, String userId, int amount, String key) async {
     final j = readMap(await _api.post(ApiPaths.debtPay, body: {
@@ -60,10 +82,11 @@ class DebtRemoteDatasource {
     );
   }
 
-  Future<void> add(String customerId, int amount, DateTime? dueDate) => _api.post(ApiPaths.debts, body: {
+  Future<void> add(String customerId, int amount, DateTime? dueDate, String? note) => _api.post(ApiPaths.debts, body: {
         'customer_id': customerId,
         'total_transaksi': amount,
         if (dueDate != null) 'jatuh_tempo': apiDate(dueDate),
+        if (note != null && note.trim().isNotEmpty) 'note': note.trim(),
       });
 }
 
@@ -74,7 +97,23 @@ class DebtRepositoryImpl implements DebtRepository {
   @override
   Future<Result<Paged<Debt>>> list(DebtQuery query, {PageCursor? after}) => guard(() => _remote.list(query, after: after));
   @override
-  Future<Result<Debt>> get(String id) => guard(() => _remote.get(id));
+  Future<Result<List<DebtPaymentEntry>>> listPayments({int limit = 50, String? customerId}) =>
+      guard(() => _remote.payments(limit, customerId));
+  @override
+  Future<Result<String>> paymentReceiptPdf(String paymentId) => guard(() => _remote.receiptPdf(paymentId));
+  @override
+  Future<Result<String>> paymentsRecapPdf(int month, int year) => guard(() => _remote.recapPdf(month, year));
+  @override
+  Future<Result<List<Debt>>> listUnpaid() => guard(() async {
+        final all = <Debt>[];
+        PageCursor? cursor;
+        do {
+          final page = await _remote.list(const DebtQuery(unpaidOnly: true, limit: 100), after: cursor);
+          all.addAll(page.items);
+          cursor = page.hasNext ? page.cursor : null;
+        } while (cursor != null);
+        return all;
+      });
   @override
   Future<Result<DebtPaymentReceipt>> pay({
     required String debtId,
@@ -84,6 +123,6 @@ class DebtRepositoryImpl implements DebtRepository {
   }) =>
       guard(() => _remote.pay(debtId, userId, amount, idempotencyKey));
   @override
-  Future<Result<void>> add({required String customerId, required int amount, DateTime? dueDate}) =>
-      guard(() => _remote.add(customerId, amount, dueDate));
+  Future<Result<void>> add({required String customerId, required int amount, DateTime? dueDate, String? note}) =>
+      guard(() => _remote.add(customerId, amount, dueDate, note));
 }

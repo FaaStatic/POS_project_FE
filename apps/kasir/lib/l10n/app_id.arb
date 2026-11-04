@@ -215,6 +215,9 @@
   "printed": "Struk dicetak.",
   "printFailed": "Gagal mencetak. Pastikan printer menyala dan terhubung.",
   "receiptNumber": "No.",
+  "receiptMarkPaid": "LUNAS",
+  "receiptMarkDebt": "HUTANG",
+  "receiptMarkCancelled": "DIBATALKAN",
   "receiptDate": "Tanggal",
   "receiptCashier": "Kasir",
   "receiptCustomer": "Pelanggan",
@@ -298,18 +301,9 @@
       }
     }
   },
-  "receivePayment": "Terima pembayaran tunai",
   "paymentAmount": "Jumlah dibayar",
   "payFull": "Lunasi {amount}",
   "@payFull": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "paymentRecorded": "Pembayaran dicatat. Sisa {amount}.",
-  "@paymentRecorded": {
     "placeholders": {
       "amount": {
         "type": "String"
@@ -412,6 +406,63 @@
       }
     }
   },
+  "outOfStockAdd": "{name} stoknya habis, tidak bisa ditambahkan ke keranjang.",
+  "@outOfStockAdd": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "changeCash": "Tunai",
+  "changeCandy": "Permen",
+  "changeProduct": "Produk lain",
+  "addChange": "Tambah kembalian",
+  "changeToGive": "Kembalian {amount}",
+  "@changeToGive": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "changeRemaining": "Belum dibagi {amount}",
+  "@changeRemaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "changeComplete": "Kembalian sudah pas",
+  "changeOverBy": "Lebih {amount} dari kembalian",
+  "@changeOverBy": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "changeAddRestCash": "Sisa sebagai tunai",
+  "changeAmount": "Nominal tunai",
+  "changePickProduct": "Pilih produk",
+  "changeNoProducts": "Tidak ada produk fisik dengan stok.",
+  "changeQty": "Jumlah",
+  "changeValue": "Senilai {amount}",
+  "@changeValue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "changeSheetTitle": "Tambah kembalian",
+  "vAmountPaidShort": "Uang diterima kurang dari total.",
+  "vAmountPaidRequired": "Isi uang diterima untuk mencatat kembalian.",
+  "vChangeMismatch": "Rincian kembalian belum sama dengan kembalian yang harus diberikan.",
+  "vChangeInvalid": "Ada baris kembalian yang tidak valid.",
+  "vChangeTooMany": "Kembalian maksimal 20 baris.",
+  "vChangeCashOnly": "Kembalian hanya untuk pembayaran tunai.",
   "back": "Kembali",
   "subtotal": "Subtotal",
   "cashierLine": "Kasir: {name}",
@@ -437,6 +488,48 @@
   "vImageWebp": "Gambar harus berformat WebP.",
   "vImageSquare": "Gambar harus persegi (rasio 1:1).",
   "vImageSize": "Ukuran gambar maksimal 500 KB.",
+  "vImageDimensions": "Sisi gambar maksimal 4000 piksel.",
   "categoryPickHint": "Cari atau pilih kategori",
-  "vCategoryExisting": "Pilih kategori yang sudah ada."
+  "vCategoryExisting": "Pilih kategori yang sudah ada.",
+  "receiptMarkUnpaid": "BELUM LUNAS",
+  "receiptDebtPayment": "PEMBAYARAN HUTANG",
+  "receiptDebtPaidNow": "Dibayar sekarang",
+  "receiptDebtPaidTotal": "Saldo terbayar",
+  "receiptDebtOwed": "Saldo terhutang",
+  "payDebtTab": "Bayar hutang",
+  "debtTabLabel": "Hutang {number}",
+  "@debtTabLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "debtTabPickCustomer": "Pilih pelanggan",
+  "searchDebtCustomers": "Cari pelanggan berhutang",
+  "debtsEmpty": "Tidak ada pelanggan yang berhutang.",
+  "debtTotalOwed": "Total hutang",
+  "debtLeft": "Sisa hutang",
+  "debtSettledLabel": "Hutang lunas",
+  "debtPickFromList": "Pilih pelanggan dari daftar hutang.",
+  "debtNoDebt": "Pelanggan ini tidak punya hutang.",
+  "historySalesTab": "Penjualan",
+  "historyDebtTab": "Pembayaran hutang",
+  "historyDebtEmpty": "Belum ada pembayaran hutang di perangkat ini.",
+  "debtLeftAmount": "Sisa {amount}",
+  "@debtLeftAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "addDebtAmount": "Tambah hutang {total}",
+  "@addDebtAmount": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  }
 }

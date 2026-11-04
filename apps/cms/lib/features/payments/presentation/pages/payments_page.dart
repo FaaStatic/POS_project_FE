@@ -64,6 +64,7 @@ class PaymentsPage extends StatelessWidget {
                 builder: (items) => ResponsiveTable<PaymentRecord>(
                   rows: items,
                   rowKey: (p) => p.id,
+                  onRefresh: () => cubit.load(),
                   hasMore: state.hasNext,
                   loadingMore: state.loadingMore,
                   onLoadMore: cubit.loadMore,

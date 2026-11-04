@@ -20,6 +20,8 @@ void main() {
   late MockTransactions remote;
   late RefreshCatalog refresh;
   late MockProducts products;
+  late MockDebts debts;
+  late MockAuth auth;
 
   setUpAll(registerFallbacks);
 
@@ -29,14 +31,18 @@ void main() {
     products = MockProducts();
     final categories = MockCategories();
     final customers = MockCustomers();
+    debts = MockDebts();
+    auth = MockAuth();
+    when(() => auth.current).thenReturn(staff);
     when(products.listAll).thenAnswer((_) async => const Ok([]));
     when(categories.list).thenAnswer((_) async => const Ok([]));
     when(customers.listAll).thenAnswer((_) async => const Ok([]));
-    refresh = RefreshCatalog(products, categories, customers, local.cache);
+    when(debts.listUnpaid).thenAnswer((_) async => const Ok([]));
+    refresh = RefreshCatalog(products, categories, customers, debts, local.cache);
   });
   tearDown(() => local.close());
 
-  SyncPendingTransactions sync() => SyncPendingTransactions(local.sales, remote, refresh);
+  SyncPendingTransactions sync() => SyncPendingTransactions(local.sales, remote, debts, GetCurrentSession(auth), refresh);
 
   test('accepted items take the invoice; failures keep their reason per item', () async {
     await local.sales.add(queued('a', at: DateTime(2026, 10, 25, 8)));
@@ -104,5 +110,49 @@ void main() {
     expect(nextSyncSlot(DateTime(2026, 10, 25, 9)), DateTime(2026, 10, 25, 12));
     expect(nextSyncSlot(DateTime(2026, 10, 25, 12)), DateTime(2026, 10, 26));
     expect(nextSyncSlot(DateTime(2026, 10, 31, 23, 59)), DateTime(2026, 11, 1));
+  });
+
+  Sale debtPayment(String ref, {int amount = 3000}) => Sale(
+        clientRef: ref,
+        receiptNumber: 'HTG-AAAA-$ref',
+        createdAt: DateTime(2026, 10, 25, 9),
+        method: PaymentMethod.cash,
+        customerId: 'k1',
+        customerName: 'Bu Sri',
+        cashierName: 'kasir1',
+        total: amount,
+        lines: const [],
+        kind: SaleKind.debtPayment,
+        debtId: 'd1',
+        debtBefore: 5000,
+        debtAfter: 5000 - amount,
+      );
+
+  DebtPaymentReceipt receipt() =>
+      const DebtPaymentReceipt(debtId: 'd1', customerName: 'Bu Sri', amount: 3000, previousRemaining: 5000, remaining: 2000, paid: false);
+
+  test('queued debt payments are sent with the receipt number as their key', () async {
+    await local.sales.add(debtPayment('1'));
+    when(() => debts.pay(debtId: any(named: 'debtId'), userId: any(named: 'userId'), amount: any(named: 'amount'), idempotencyKey: any(named: 'idempotencyKey')))
+        .thenAnswer((_) async => Ok(receipt()));
+    final report = (await sync()() as Ok<SyncReport>).value;
+    expect([report.synced, report.remaining], [1, 0]);
+    expect((await local.sales.byRef('1'))!.status, SaleStatus.synced);
+    verify(() => debts.pay(debtId: 'd1', userId: 'u1', amount: 3000, idempotencyKey: 'HTG-AAAA-1')).called(1);
+    verifyNever(() => remote.sync(any()));
+  });
+
+  test('a rejected debt payment keeps its reason; a dropped connection leaves it queued', () async {
+    await local.sales.add(debtPayment('1'));
+    await local.sales.add(debtPayment('2'));
+    when(() => debts.pay(debtId: any(named: 'debtId'), userId: any(named: 'userId'), amount: any(named: 'amount'), idempotencyKey: 'HTG-AAAA-1'))
+        .thenAnswer((_) async => const Err(ValidationFailure('exceeds_remaining')));
+    when(() => debts.pay(debtId: any(named: 'debtId'), userId: any(named: 'userId'), amount: any(named: 'amount'), idempotencyKey: 'HTG-AAAA-2'))
+        .thenAnswer((_) async => const Err(NetworkFailure()));
+    final report = (await sync()() as Ok<SyncReport>).value;
+    expect([report.synced, report.failed, report.remaining], [0, 1, 1]);
+    expect((await local.sales.byRef('1'))!.status, SaleStatus.failed);
+    expect((await local.sales.byRef('1'))!.error, 'exceeds_remaining');
+    expect((await local.sales.byRef('2'))!.status, SaleStatus.pending);
   });
 }

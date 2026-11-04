@@ -104,13 +104,30 @@ void main() {
     expect(body['details'].single, {'product_id': 'p1', 'qty': 2.0, 'unit_price': 3500});
   });
 
+  test('status is read from the response, and the list asks for it only when told to', () async {
+    adapter.on('GET', ApiPaths.transactions, (_) => FakeReply(200, envelope({
+          'has_next': false,
+          'list_transaction': [
+            trxJson('t1'),
+            {...trxJson('t2'), 'status': 'cancelled', 'cancel_reason': 'salah input'},
+          ],
+        })));
+    final page = (await repo.list(const TransactionQuery(status: TransactionStatusFilter.all)) as Ok<Paged<Transaction>>).value;
+    expect(page.items.map((t) => t.status), [TransactionStatus.success, TransactionStatus.cancelled]);
+    expect(page.items.last.cancelReason, 'salah input');
+    expect(adapter.requests.last.queryParameters['status'], 'all');
+
+    await repo.list(const TransactionQuery());
+    expect(adapter.requests.last.queryParameters.containsKey('status'), isFalse);
+  });
+
   test('conflict review and PDFs', () async {
     adapter
       ..on('PATCH', ApiPaths.transactionConflictReview('t1'), (_) => FakeReply(200, envelope(null)))
-      ..on('GET', ApiPaths.reportTransaction, (_) => FakeReply(200, envelope({'url_pdf': '/api/reports/inv.pdf'})))
-      ..on('GET', ApiPaths.reportMonth, (_) => FakeReply(200, envelope({'url_pdf': '/api/reports/oct.pdf'})));
+      ..on('GET', ApiPaths.reportTransaction, (_) => FakeReply(200, envelope({'url_pdf': '/api/v1/insight/reports/inv.pdf'})))
+      ..on('GET', ApiPaths.reportMonth, (_) => FakeReply(200, envelope({'url_pdf': '/api/v1/insight/reports/oct.pdf'})));
     expect(await MarkConflictReviewed(repo)('t1'), isA<Ok<void>>());
-    expect(await GetReceiptPdf(repo)('t1'), const Ok('/api/reports/inv.pdf'));
-    expect(await GetMonthlyReportPdf(repo)(10, 2026), const Ok('/api/reports/oct.pdf'));
+    expect(await GetReceiptPdf(repo)('t1'), const Ok('/api/v1/insight/reports/inv.pdf'));
+    expect(await GetMonthlyReportPdf(repo)(10, 2026), const Ok('/api/v1/insight/reports/oct.pdf'));
   });
 }

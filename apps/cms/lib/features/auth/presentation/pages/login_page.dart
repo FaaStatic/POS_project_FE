@@ -7,7 +7,7 @@ import '../../../../common/failure_text.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/auth_cubit.dart';
 
-/// Wide windows: green brand panel beside the form. Narrow: the form card alone.
+/// Wide windows: blue brand panel beside the form. Narrow: the form card alone.
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 

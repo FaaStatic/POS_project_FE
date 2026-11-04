@@ -41,12 +41,12 @@ class DriftDraftRepository implements DraftRepository {
   }
 
   @override
-  Future<Draft> create() => _db.transaction(() async {
+  Future<Draft> create({DraftKind kind = DraftKind.sale}) => _db.transaction(() async {
         final max = _db.draftCarts.number.max();
         final highest = await (_db.selectOnly(_db.draftCarts)..addColumns([max])).map((r) => r.read(max)).getSingle();
         final now = _clock();
         final id = await _db.into(_db.draftCarts).insert(
-              DraftCartsCompanion.insert(number: (highest ?? 0) + 1, createdAt: now, updatedAt: now),
+              DraftCartsCompanion.insert(number: (highest ?? 0) + 1, createdAt: now, updatedAt: now, kind: Value(kind.index)),
             );
         return (await byId(id))!;
       });
@@ -166,6 +166,7 @@ class DriftDraftRepository implements DraftRepository {
         createdAt: c.createdAt,
         updatedAt: c.updatedAt,
         status: DraftStatus.values[c.status],
+        kind: DraftKind.values[c.kind],
         charge: c.chargeJson == null ? null : _chargeFromJson(jsonDecode(c.chargeJson!) as Map<String, dynamic>),
         paidSaleRef: c.paidSaleRef,
         items: [

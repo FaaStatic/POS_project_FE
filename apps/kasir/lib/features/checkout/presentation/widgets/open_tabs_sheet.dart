@@ -12,7 +12,6 @@ Future<int?> showOpenTabs(BuildContext context, List<Draft> drafts, int? activeI
   useSafeArea: true,
   builder: (context) {
     final l10n = AppLocalizations.of(context);
-    final ui = UiLocalizations.of(context);
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.6,
@@ -26,13 +25,11 @@ Future<int?> showOpenTabs(BuildContext context, List<Draft> drafts, int? activeI
           for (final d in drafts)
             ListTile(
               selected: d.id == activeId,
-              title: Text(ui.tabLabel(d.number)),
-              subtitle: Text(switch (d.status) {
-                DraftStatus.awaitingPayment => d.charge?.method == ChargeMethod.va ? l10n.waitingVa : l10n.waitingQris,
-                DraftStatus.paid => l10n.paid,
-                DraftStatus.open => l10n.cartSummary(qty(context, d.itemCount), rupiah(context, d.total())),
-              }),
-              trailing: Text(rupiah(context, d.total()), style: Theme.of(context).textTheme.titleSmall?.tabular),
+              title: Text(draftTitle(context, d)),
+              subtitle: Text(draftSubtitle(context, d)),
+              trailing: d.isDebtPayment
+                  ? null
+                  : Text(rupiah(context, d.total()), style: Theme.of(context).textTheme.titleSmall?.tabular),
               onTap: () => Navigator.pop(context, d.id),
             ),
         ],

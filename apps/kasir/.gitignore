@@ -46,3 +46,9 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Environment files: local values and CI/CD output. Only the template is tracked.
+.env.dev
+.env.prod
+.env.staging
+!.env.example

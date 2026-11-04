@@ -54,6 +54,19 @@ class TransactionsPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
+                      width: 200,
+                      child: AppSelect<TransactionStatusFilter>(
+                        label: l10n.status,
+                        value: q.status ?? TransactionStatusFilter.all,
+                        choices: [
+                          Choice(TransactionStatusFilter.all, l10n.allStatuses),
+                          Choice(TransactionStatusFilter.success, l10n.statusSuccess),
+                          Choice(TransactionStatusFilter.cancelled, l10n.statusCancelled),
+                        ],
+                        onChanged: cubit.status,
+                      ),
+                    ),
+                    SizedBox(
                       width: 260,
                       child: FilterField(
                         label: l10n.search,
@@ -73,6 +86,7 @@ class TransactionsPage extends StatelessWidget {
                     builder: (items) => ResponsiveTable<Transaction>(
                       rows: items,
                       rowKey: (t) => t.id,
+                      onRefresh: () => cubit.load(),
                       onTap: (t) => context.push('/transactions/${t.id}'),
                       hasMore: state.hasNext,
                       loadingMore: state.loadingMore,
@@ -98,13 +112,22 @@ class TransactionsPage extends StatelessWidget {
                         ),
                         TableColumnSpec(
                           label: l10n.status,
-                          isEmpty: (t) => !t.stockConflict,
-                          cell: (_, t) => t.stockConflict
-                              ? StatusBadge(
+                          flex: 2,
+                          cell: (_, t) => Wrap(
+                            spacing: Space.xs,
+                            runSpacing: Space.xs,
+                            children: [
+                              StatusBadge(
+                                label: t.status == TransactionStatus.cancelled ? l10n.statusCancelled : l10n.statusSuccess,
+                                tone: t.status == TransactionStatus.cancelled ? BadgeTone.danger : BadgeTone.success,
+                              ),
+                              if (t.stockConflict)
+                                StatusBadge(
                                   label: t.conflictReviewed ? l10n.reviewed : l10n.conflict,
                                   tone: t.conflictReviewed ? BadgeTone.neutral : BadgeTone.warning,
-                                )
-                              : const SizedBox.shrink(),
+                                ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
