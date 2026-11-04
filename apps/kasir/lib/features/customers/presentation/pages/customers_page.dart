@@ -5,7 +5,8 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:ui/ui.dart';
 
 import '../../../../app/di.dart';
-import '../../../../common/pull_refresh.dart';
+import '../../../../common/failure_text.dart';
+import '../../../../common/refresh_on_show.dart';
 import '../../../../common/scrolls_when_short.dart';
 import '../../../../app/shell/kasir_page.dart';
 import '../../../../common/catalog/catalog_cubits.dart';
@@ -22,7 +23,8 @@ class CustomersPage extends StatelessWidget {
       child: Builder(
         builder: (context) {
           final state = context.watch<CustomersCubit>().state;
-          return KasirPage(
+          final cubit = context.read<CustomersCubit>();
+          return RefreshOnShow(onShow: cubit.refresh, child: KasirPage(
             title: l10n.customersTitle,
             actions: [
               AppButton(
@@ -48,8 +50,8 @@ class CustomersPage extends StatelessWidget {
                           actionLabel: l10n.addCustomer,
                           onAction: () => context.push('/customers/new'),
                         )
-                      : PullRefresh(child: ListView.separated(
-                          physics: PullRefresh.physics,
+                      : RefreshIndicator(onRefresh: () => _pull(context, cubit), child: ListView.separated(
+                          physics: const AlwaysScrollableScrollPhysics(),
                           padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.lg, Space.lg),
                           itemCount: state.customers.length,
                           separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
@@ -71,9 +73,17 @@ class CustomersPage extends StatelessWidget {
                 ),
               ],
             )),
-          );
+          ));
         },
       ),
     );
+  }
+
+  /// A pull always goes to the server, and says why when it could not.
+  Future<void> _pull(BuildContext context, CustomersCubit cubit) async {
+    final failure = await cubit.refresh(force: true);
+    if (failure != null && context.mounted) {
+      showInfoDialog(context, failureText(context, failure), kind: InfoKind.error);
+    }
   }
 }

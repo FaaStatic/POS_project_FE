@@ -24,26 +24,76 @@ class CustomersCubit extends PagedListCubit<Customer, CustomerQuery> {
 }
 
 class CustomerDetailState {
-  const CustomerDetailState({this.loading = true, this.customer, this.transactions = const [], this.failure});
+  const CustomerDetailState({
+    this.loading = true,
+    this.customer,
+    this.openDebt,
+    this.payments = const [],
+    this.transactions = const [],
+    this.failure,
+  });
   final bool loading;
   final Customer? customer;
+
+  /// The customer's unpaid debt; the backend allows one at a time and never sends it with the customer.
+  final Debt? openDebt;
+
+  /// The customer's newest debt payments, from any register or the CMS.
+  final List<DebtPaymentEntry> payments;
   final List<Transaction> transactions;
   final Failure? failure;
 }
 
 /// Customer with debts plus the latest transactions.
 class CustomerDetailCubit extends Cubit<CustomerDetailState> {
-  CustomerDetailCubit(this._get, this._transactions) : super(const CustomerDetailState());
+  CustomerDetailCubit(this._get, this._transactions, this._debts, this._addDebt, this._payments, this._receipt, this._download)
+      : super(const CustomerDetailState());
   final GetCustomer _get;
   final GetCustomerTransactions _transactions;
+  final GetDebts _debts;
+  final AddManualDebt _addDebt;
+  final GetDebtPayments _payments;
+  final GetDebtPaymentReceiptPdf _receipt;
+  final DownloadReport _download;
+
+  /// Generates one payment's receipt PDF and returns its bytes and file name.
+  Future<Result<(List<int>, String)>> receipt(String paymentId) async {
+    final path = await _receipt(paymentId);
+    if (path case Err(:final failure)) return Err(failure);
+    final p = (path as Ok<String>).value;
+    return switch (await _download(p)) {
+      Ok(:final value) => Ok((value, reportFileName(p))),
+      Err(:final failure) => Err(failure),
+    };
+  }
+
+  /// More credit for this customer; reloads the page data on success.
+  Future<Result<void>> addDebt(String customerId, int amount, DateTime? due, String? note) async {
+    final result = await _addDebt(customerId: customerId, amount: amount, dueDate: due, note: note);
+    if (result case Ok()) await load(customerId);
+    return result;
+  }
 
   Future<void> load(String id) async {
     emit(const CustomerDetailState());
-    final (customer, trx) = await (_get(id), _transactions(id)).wait;
+    final (customer, trx, debts, payments) = await (
+      _get(id),
+      _transactions(id),
+      _debts(DebtQuery(customerId: id, unpaidOnly: true, limit: 1)),
+      _payments(limit: 20, customerId: id),
+    ).wait;
     emit(switch (customer) {
       Ok(:final value) => CustomerDetailState(
           loading: false,
           customer: value,
+          openDebt: switch (debts) {
+            Ok(:final value) => value.items.firstOrNull,
+            Err() => null,
+          },
+          payments: switch (payments) {
+            Ok(:final value) => value,
+            Err() => const [],
+          },
           transactions: switch (trx) {
             Ok(:final value) => value.items,
             Err() => const [],

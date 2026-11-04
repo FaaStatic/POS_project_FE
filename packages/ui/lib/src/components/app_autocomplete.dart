@@ -4,8 +4,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../l10n/ui_localizations.dart';
 import '../theme/app_theme.dart';
-import '../tokens/spacing.dart';
 import 'app_text_field.dart';
+import 'options_panel.dart';
 
 /// A text field with a dropdown of [options] that narrows as you type. An empty field lists
 /// every option, so it works as a select that can also be searched.
@@ -37,6 +37,7 @@ class AppAutocomplete extends StatefulWidget {
 
 class _AppAutocompleteState extends State<AppAutocomplete> {
   final _focus = FocusNode();
+  final _group = Object();
 
   @override
   void dispose() {
@@ -70,6 +71,7 @@ class _AppAutocompleteState extends State<AppAutocomplete> {
           hint: widget.hint,
           controller: controller,
           focusNode: focusNode,
+          groupId: _group,
           validator: widget.validator,
           // Enter picks the highlighted option; without this the field swallows it.
           onSubmitted: (_) => onSubmitted(),
@@ -83,61 +85,12 @@ class _AppAutocompleteState extends State<AppAutocomplete> {
             ),
           ),
         ),
-        optionsViewBuilder: (context, onSelected, options) => _OptionsPanel(
+        optionsViewBuilder: (context, onSelected, options) => OptionsPanel<String>(
+          groupId: _group,
           width: constraints.maxWidth,
           options: options.toList(),
           label: (o) => widget.options.contains(o) ? o : widget.createLabel!(o),
           onSelected: onSelected,
-        ),
-      ),
-    );
-  }
-}
-
-class _OptionsPanel extends StatelessWidget {
-  const _OptionsPanel({required this.width, required this.options, required this.label, required this.onSelected});
-  final double width;
-  final List<String> options;
-  final String Function(String option) label;
-  final AutocompleteOnSelected<String> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final highlighted = AutocompleteHighlightedOption.of(context);
-    return Align(
-      alignment: AlignmentDirectional.topStart,
-      child: Padding(
-        padding: const EdgeInsets.only(top: Space.xs),
-        child: Material(
-          elevation: 4,
-          color: theme.colorScheme.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.of(context).controlRadius),
-            side: BorderSide(color: theme.colorScheme.outlineVariant),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: width, maxHeight: 240),
-            child: SizedBox(
-              width: width,
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: Space.xs),
-                shrinkWrap: true,
-                itemCount: options.length,
-                itemBuilder: (context, i) => InkWell(
-                  onTap: () => onSelected(options[i]),
-                  child: Container(
-                    color: i == highlighted ? theme.colorScheme.primaryContainer : null,
-                    constraints: BoxConstraints(minHeight: AppSizes.of(context).control),
-                    padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.sm),
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Text(label(options[i]), style: theme.textTheme.bodyMedium),
-                  ),
-                ),
-              ),
-            ),
-          ),
         ),
       ),
     );

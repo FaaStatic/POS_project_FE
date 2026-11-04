@@ -10,7 +10,6 @@ import '../features/checkout/presentation/pages/scanner_page.dart';
 import '../features/customers/presentation/pages/add_customer_page.dart';
 import '../features/customers/presentation/pages/customer_detail_page.dart';
 import '../features/customers/presentation/pages/customers_page.dart';
-import '../features/debts/presentation/pages/debt_payment_page.dart';
 import '../features/history/presentation/pages/history_page.dart';
 import '../features/history/presentation/pages/sale_detail_page.dart';
 import '../features/printer/presentation/pages/printer_settings_page.dart';
@@ -109,7 +108,6 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
               path: '/sale/:ref',
               builder: (_, s) => SaleDetailPage(clientRef: s.pathParameters['ref']!, autoPrint: s.uri.queryParameters['print'] == '1'),
             ),
-            GoRoute(path: '/debts/:id/pay', builder: (_, s) => DebtPaymentPage(debtId: s.pathParameters['id']!)),
           ],
         ),
       ],

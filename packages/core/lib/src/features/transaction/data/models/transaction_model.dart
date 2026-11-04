@@ -12,6 +12,8 @@ abstract final class TransactionModel {
         profit: readInt(j['total_profit']),
         stockConflict: readBool(j['stock_conflict']),
         conflictReviewed: readBool(j['conflict_reviewed']),
+        status: TransactionStatus.parse(readString(j['status'])),
+        cancelReason: readString(j['cancel_reason']),
         createdAt: readDate(j['created_at']),
         items: [
           for (final d in readList(j['transaction_details']))

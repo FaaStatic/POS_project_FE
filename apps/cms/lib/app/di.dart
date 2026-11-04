@@ -80,7 +80,7 @@ void setupDependencies({
     ..registerFactory(() => PurgeCustomer(getIt()))
     ..registerFactory(() => GetCustomerTransactions(getIt()))
     ..registerFactory(() => CustomersCubit(getIt(), getIt(), getIt(), getIt(), getIt(), getIt()))
-    ..registerFactory(() => CustomerDetailCubit(getIt(), getIt()))
+    ..registerFactory(() => CustomerDetailCubit(getIt(), getIt(), getIt(), getIt(), getIt(), getIt(), getIt()))
     ..registerFactory(() => GetCategories(getIt()))
     ..registerFactory(() => CreateCategory(getIt()))
     ..registerFactory(() => RenameCategory(getIt()))
@@ -114,10 +114,13 @@ void setupDependencies({
     ..registerFactory(() => GetPayments(getIt()))
     ..registerFactory(() => CheckPaymentStatus(getIt()))
     ..registerFactory(() => GetDebts(getIt()))
+    ..registerFactory(() => GetDebtPayments(getIt()))
+    ..registerFactory(() => GetDebtPaymentReceiptPdf(getIt()))
+    ..registerFactory(() => GetDebtPaymentsRecapPdf(getIt()))
     ..registerFactory(() => PayDebt(getIt()))
     ..registerFactory(() => AddManualDebt(getIt()))
     ..registerFactory(() => DebtsCubit(getIt(), getIt(), getIt(), getIt(), getIt()))
-    ..registerFactory(() => ReportsCubit(getIt(), getIt()))
+    ..registerFactory(() => ReportsCubit(getIt(), getIt(), getIt()))
     ..registerFactory(() => GetDashboard(getIt()))
     ..registerFactory(() => DashboardCubit(getIt(), getIt(), getIt(), getIt()));
 }

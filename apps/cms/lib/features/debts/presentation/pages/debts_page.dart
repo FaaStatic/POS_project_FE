@@ -8,6 +8,7 @@ import 'package:ui/ui.dart';
 
 import '../../../../app/di.dart';
 import '../../../../app/shell/cms_page.dart';
+import '../../../../common/add_debt_form.dart';
 import '../../../../common/feedback.dart';
 import '../../../../common/widgets.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -57,7 +58,10 @@ class DebtsPage extends StatelessWidget {
                   ],
                   actions: (context, d) => d.paid
                       ? const SizedBox.shrink()
-                      : AppButton(label: l10n.receivePayment, variant: AppButtonVariant.outline, onPressed: () => _pay(context, cubit, d)),
+                      : Row(mainAxisSize: MainAxisSize.min, children: [
+                          IconAction(icon: Iconsax.wallet_add_copy, tooltip: l10n.addDebt, onPressed: () => _addTo(context, cubit, d)),
+                          IconAction(icon: Iconsax.money_recive_copy, tooltip: l10n.receivePayment, onPressed: () => _pay(context, cubit, d)),
+                        ]),
                 ),
               ),
             ),
@@ -79,8 +83,21 @@ class DebtsPage extends StatelessWidget {
 
   Future<void> _addManual(BuildContext context, DebtsCubit cubit) async {
     final l10n = AppLocalizations.of(context);
-    final ok = await showFormSurface<bool>(context, title: l10n.addManualDebt, child: _ManualDebtForm(cubit: cubit));
-    if (ok == true && context.mounted) toast(context, l10n.debtAdded);
+    final saved = await showAddDebt(context, search: cubit.findCustomers, submit: cubit.addManual);
+    if (saved && context.mounted) toast(context, l10n.debtAdded);
+  }
+
+  /// More credit for a customer who already owes: the form shows what is owed now and what it becomes.
+  Future<void> _addTo(BuildContext context, DebtsCubit cubit, Debt d) async {
+    final l10n = AppLocalizations.of(context);
+    final saved = await showAddDebt(
+      context,
+      customer: Customer(id: d.customerId, name: d.customerName),
+      current: d.remaining,
+      search: cubit.findCustomers,
+      submit: cubit.addManual,
+    );
+    if (saved && context.mounted) toast(context, l10n.debtAdded);
   }
 }
 
@@ -146,97 +163,6 @@ class _PayFormState extends State<_PayForm> {
           ),
         ),
         const SizedBox(height: Space.lg),
-        FormActions(onSave: _save, saving: _saving, failure: _failure),
-      ],
-    );
-  }
-}
-
-class _ManualDebtForm extends StatefulWidget {
-  const _ManualDebtForm({required this.cubit});
-  final DebtsCubit cubit;
-
-  @override
-  State<_ManualDebtForm> createState() => _ManualDebtFormState();
-}
-
-class _ManualDebtFormState extends State<_ManualDebtForm> {
-  final _amount = TextEditingController();
-  Customer? _customer;
-  DateTime? _due;
-  bool _saving = false;
-  Failure? _failure;
-
-  @override
-  void dispose() {
-    _amount.dispose();
-    super.dispose();
-  }
-
-  Future<void> _save() async {
-    final customer = _customer;
-    if (customer == null) {
-      setState(() => _failure = const ValidationFailure('required'));
-      return;
-    }
-    setState(() => _saving = true);
-    final result = await widget.cubit.addManual(customer.id, int.tryParse(_amount.text) ?? 0, _due);
-    if (!mounted) return;
-    if (result case Err(:final failure)) {
-      setState(() {
-        _saving = false;
-        _failure = failure;
-      });
-    } else {
-      Navigator.pop(context, true);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final today = DateTime.now();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Autocomplete<Customer>(
-          displayStringForOption: (c) => c.phone.isEmpty ? c.name : '${c.name} · ${c.phone}',
-          optionsBuilder: (v) => v.text.trim().length < 2 ? const <Customer>[] : widget.cubit.findCustomers(v.text.trim()),
-          onSelected: (c) => setState(() => _customer = c),
-          fieldViewBuilder: (context, controller, focus, _) => AppTextField(
-            label: l10n.pickCustomer,
-            helper: _customer?.name,
-            controller: controller,
-            focusNode: focus,
-            autofocus: true,
-          ),
-        ),
-        const SizedBox(height: Space.lg),
-        AppTextField(
-          label: l10n.amount,
-          controller: _amount,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        ),
-        const SizedBox(height: Space.lg),
-        // Full width like the inputs above; height 0 lets the date wrap at large text.
-        ConstrainedBox(
-          constraints: BoxConstraints(minHeight: AppSizes.of(context).control),
-          child: ShadDatePicker(
-            width: 0,
-            height: 0,
-            expands: true,
-            buttonPadding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.sm),
-            placeholder: Text(l10n.dueDate),
-            selected: _due,
-            formatDate: (d) => dateText(context, d),
-            fromMonth: today,
-            toMonth: DateTime(today.year + 2),
-            selectableDayPredicate: (d) => !d.isBefore(DateUtils.dateOnly(today)),
-            onChanged: (d) => setState(() => _due = d),
-          ),
-        ),
-        const SizedBox(height: Space.xl),
         FormActions(onSave: _save, saving: _saving, failure: _failure),
       ],
     );

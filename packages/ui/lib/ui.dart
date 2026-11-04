@@ -22,6 +22,7 @@ export 'package:shadcn_ui/shadcn_ui.dart'
 export 'l10n/ui_localizations.dart';
 export 'src/components/app_autocomplete.dart';
 export 'src/components/app_button.dart';
+export 'src/components/app_search_select.dart';
 export 'src/components/app_text_field.dart';
 export 'src/components/barcode_image.dart';
 export 'src/components/brand_logo.dart';
@@ -33,6 +34,7 @@ export 'src/components/date_range_field.dart';
 export 'src/components/design_credit.dart';
 export 'src/components/fill_or_scroll.dart';
 export 'src/components/form_surface.dart';
+export 'src/components/icon_action.dart';
 export 'src/components/image_upload_field.dart';
 export 'src/components/initial_avatar.dart';
 export 'src/components/offline_banner.dart';

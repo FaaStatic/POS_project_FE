@@ -486,19 +486,11 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get receivePayment => 'Terima pembayaran tunai';
-
-  @override
   String get paymentAmount => 'Jumlah dibayar';
 
   @override
   String payFull(String amount) {
     return 'Lunasi $amount';
-  }
-
-  @override
-  String paymentRecorded(String amount) {
-    return 'Pembayaran dicatat. Sisa $amount.';
   }
 
   @override
@@ -811,4 +803,71 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get vCategoryExisting => 'Pilih kategori yang sudah ada.';
+
+  @override
+  String get receiptMarkUnpaid => 'BELUM LUNAS';
+
+  @override
+  String get receiptDebtPayment => 'PEMBAYARAN HUTANG';
+
+  @override
+  String get receiptDebtPaidNow => 'Dibayar sekarang';
+
+  @override
+  String get receiptDebtPaidTotal => 'Saldo terbayar';
+
+  @override
+  String get receiptDebtOwed => 'Saldo terhutang';
+
+  @override
+  String get payDebtTab => 'Bayar hutang';
+
+  @override
+  String debtTabLabel(int number) {
+    return 'Hutang $number';
+  }
+
+  @override
+  String get debtTabPickCustomer => 'Pilih pelanggan';
+
+  @override
+  String get searchDebtCustomers => 'Cari pelanggan berhutang';
+
+  @override
+  String get debtsEmpty => 'Tidak ada pelanggan yang berhutang.';
+
+  @override
+  String get debtTotalOwed => 'Total hutang';
+
+  @override
+  String get debtLeft => 'Sisa hutang';
+
+  @override
+  String get debtSettledLabel => 'Hutang lunas';
+
+  @override
+  String get debtPickFromList => 'Pilih pelanggan dari daftar hutang.';
+
+  @override
+  String get debtNoDebt => 'Pelanggan ini tidak punya hutang.';
+
+  @override
+  String get historySalesTab => 'Penjualan';
+
+  @override
+  String get historyDebtTab => 'Pembayaran hutang';
+
+  @override
+  String get historyDebtEmpty =>
+      'Belum ada pembayaran hutang di perangkat ini.';
+
+  @override
+  String debtLeftAmount(String amount) {
+    return 'Sisa $amount';
+  }
+
+  @override
+  String addDebtAmount(String total) {
+    return 'Tambah hutang $total';
+  }
 }

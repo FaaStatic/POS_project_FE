@@ -346,6 +346,18 @@
     }
   },
   "debtAdded": "Hutang ditambahkan.",
+  "addDebt": "Tambah hutang",
+  "currentDebt": "Hutang saat ini",
+  "debtBecomes": "Menjadi {amount}",
+  "@debtBecomes": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "debtNote": "Keterangan (opsional)",
+  "debtNoteHint": "Mis. pinjam tunai",
   "dueDate": "Jatuh tempo (opsional)",
   "pickCustomer": "Pilih pelanggan",
   "exceedsRemaining": "Melebihi sisa hutang.",
@@ -464,7 +476,28 @@
   "createCategory": "Buat kategori \"{name}\"",
   "@createCategory": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "statusSuccess": "Sukses",
+  "statusCancelled": "Batal",
+  "cancelledReasonLine": "Alasan batal: {reason}",
+  "@cancelledReasonLine": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "debtPaymentsTitle": "Pembayaran hutang",
+  "noDebtPayments": "Belum ada pembayaran hutang.",
+  "paidAmount": "Dibayar",
+  "balanceLeft": "Sisa hutang",
+  "cashierName": "Kasir",
+  "paidViaCms": "CMS",
+  "downloadDebtReceipt": "Unduh struk pembayaran",
+  "debtRecapReport": "Rekap pembayaran hutang",
+  "debtRecapHint": "Satu tabel berisi semua pembayaran hutang dalam sebulan, untuk semua pelanggan: pelanggan, kasir, tanggal bayar, saldo total, dibayarkan, sisa saldo, dan status lunas."
 }

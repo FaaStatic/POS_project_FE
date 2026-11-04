@@ -16,6 +16,18 @@ abstract class TransactionItem with _$TransactionItem {
   }) = _TransactionItem;
 }
 
+enum TransactionStatus {
+  success,
+
+  /// Soft-deleted on the server, with a reason.
+  cancelled;
+
+  static TransactionStatus parse(String raw) => raw == 'cancelled' ? cancelled : success;
+}
+
+/// Which transactions a list asks for. The server's own default is [success].
+enum TransactionStatusFilter { success, cancelled, all }
+
 /// Server transaction. The backend response carries no cashier, customer, or
 /// destination; callers that need them keep their own copy.
 @freezed
@@ -28,6 +40,8 @@ abstract class Transaction with _$Transaction {
     @Default(0) int profit,
     @Default(false) bool stockConflict,
     @Default(false) bool conflictReviewed,
+    @Default(TransactionStatus.success) TransactionStatus status,
+    @Default('') String cancelReason,
     DateTime? createdAt,
     @Default([]) List<TransactionItem> items,
 
@@ -118,6 +132,7 @@ class TransactionQuery {
     this.method,
     this.invoice,
     this.openConflict = false,
+    this.status,
     this.limit = 20,
   });
 
@@ -126,5 +141,8 @@ class TransactionQuery {
   final PaymentMethod? method;
   final String? invoice;
   final bool openConflict;
+
+  /// Null leaves it to the server (cancelled ones are left out).
+  final TransactionStatusFilter? status;
   final int limit;
 }

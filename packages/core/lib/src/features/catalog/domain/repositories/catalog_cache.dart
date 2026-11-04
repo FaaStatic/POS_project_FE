@@ -1,5 +1,6 @@
 import '../../../category/domain/entities/category.dart';
 import '../../../customer/domain/entities/customer.dart';
+import '../../../debt/domain/entities/debt.dart';
 import '../../../product/domain/entities/product.dart';
 
 /// Device-local copy of products, categories, and customers (kasir only).
@@ -25,4 +26,12 @@ abstract interface class CatalogCache {
   Future<Customer?> customer(String id);
   Future<void> replaceCustomers(List<Customer> customers);
   Future<void> upsertCustomer(Customer customer);
+
+  /// Open debts by customer name, for the debt tab. Offline-safe like the rest of the cache.
+  Stream<List<Debt>> watchDebts({String? search});
+  Future<Debt?> debtOfCustomer(String customerId);
+  Future<void> replaceDebts(List<Debt> debts);
+
+  /// Takes [amount] off a debt the moment a payment is recorded here; a cleared debt leaves the cache.
+  Future<void> reduceDebt(String debtId, int amount);
 }

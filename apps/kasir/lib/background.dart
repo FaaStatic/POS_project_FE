@@ -34,10 +34,13 @@ void callbackDispatcher() {
       final sync = SyncPendingTransactions(
         DriftSalesLog(db, store),
         TransactionRepositoryImpl(TransactionRemoteDatasource(api)),
+        DebtRepositoryImpl(DebtRemoteDatasource(api)),
+        GetCurrentSession(auth),
         RefreshCatalog(
           ProductRepositoryImpl(ProductRemoteDatasource(api)),
           CategoryRepositoryImpl(CategoryRemoteDatasource(api)),
           CustomerRepositoryImpl(CustomerRemoteDatasource(api)),
+          DebtRepositoryImpl(DebtRemoteDatasource(api)),
           cache,
         ),
       );

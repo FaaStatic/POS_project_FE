@@ -12,6 +12,7 @@ import '../bloc/checkout_bloc.dart';
 import 'change_sheet.dart';
 import 'charge_view.dart';
 import 'customer_picker.dart';
+import 'debt_panel.dart';
 
 /// Cart of the active tab in two steps: items, then payment. Bayar stays at the
 /// bottom, apart from the product list.
@@ -42,6 +43,11 @@ class _CartPanelState extends State<CartPanel> {
     return ColoredBox(
       color: ShellColors.of(context).canvas,
       child: switch (draft.status) {
+        DraftStatus.open when draft.isDebtPayment => DebtPanel(
+          draft: draft,
+          paying: state.paying,
+          scrollController: widget.scrollController,
+        ),
         DraftStatus.awaitingPayment => ChargeView(draft: draft),
         DraftStatus.paid => _PaidView(draft: draft),
         DraftStatus.open when _paying && !draft.isEmpty => _PaymentStep(
@@ -378,7 +384,10 @@ class _PaymentStepState extends State<_PaymentStep> {
                 decoration: BoxDecoration(color: shell.brand, borderRadius: BorderRadius.circular(Radii.large)),
                 child: Column(
                   children: [
-                    Text(l10n.totalAmount, style: theme.textTheme.bodyMedium?.copyWith(color: shell.onBrandMuted)),
+                    Text(
+                      state.method == PaymentMethod.debt ? l10n.debtTotalOwed : l10n.totalAmount,
+                      style: theme.textTheme.bodyMedium?.copyWith(color: shell.onBrandMuted),
+                    ),
                     const SizedBox(height: Space.xs),
                     FittedBox(
                       fit: BoxFit.scaleDown,
@@ -511,8 +520,9 @@ class _PaymentStepState extends State<_PaymentStep> {
         _BottomBar(
           children: [
             AppButton(
-              label: l10n.payAmount(rupiah(context, total)),
-              icon: Iconsax.tick_circle_copy,
+              // A credit sale takes no money now: the button adds to what the customer owes, at the credit prices.
+              label: state.method == PaymentMethod.debt ? l10n.addDebtAmount(rupiah(context, total)) : l10n.payAmount(rupiah(context, total)),
+              icon: state.method == PaymentMethod.debt ? Iconsax.note_text_copy : Iconsax.tick_circle_copy,
               large: true,
               expand: true,
               loading: state.paying,

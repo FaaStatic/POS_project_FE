@@ -41,7 +41,9 @@ abstract final class ApiPaths {
 
   static const debts = '/sales/debts';
   static const debtPay = '/sales/debts/pay';
-  static String debt(String id) => '/sales/debts/$id';
+  static const debtPayments = '/sales/debts/payments';
+  static const debtPaymentsReport = '/sales/debts/payments/report';
+  static String debtPaymentReceipt(String id) => '/sales/debts/payments/$id/receipt';
 
   static const dashboard = '/insight/dashboard/summary';
 

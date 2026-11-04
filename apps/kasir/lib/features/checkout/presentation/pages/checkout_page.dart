@@ -12,6 +12,7 @@ import '../../../../common/scrolls_when_short.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/checkout_bloc.dart';
 import '../widgets/cart_panel.dart';
+import '../widgets/debt_list.dart';
 import '../widgets/open_tabs_sheet.dart';
 import '../widgets/product_list.dart';
 
@@ -30,8 +31,11 @@ class CheckoutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return BlocProvider(
-      create: (_) => getIt<ProductsCubit>()..start(pageSize: 30),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<ProductsCubit>()..start(pageSize: 30)),
+        BlocProvider(create: (_) => getIt<DebtsCubit>()..search('')),
+      ],
       child: Scaffold(
         body: SafeArea(
           bottom: false,
@@ -45,18 +49,16 @@ class CheckoutPage extends StatelessWidget {
                     TransactionTab(
                       id: d.id,
                       number: d.number,
+                      label: d.isDebtPayment ? draftTitle(context, d) : null,
                       highlight: d.status != DraftStatus.open,
-                      subtitle: switch (d.status) {
-                        DraftStatus.awaitingPayment =>
-                          d.charge?.method == ChargeMethod.va ? l10n.waitingVa : l10n.waitingQris,
-                        DraftStatus.paid => l10n.paid,
-                        DraftStatus.open => l10n.cartSummary(qty(context, d.itemCount), rupiah(context, d.total())),
-                      },
+                      subtitle: draftSubtitle(context, d),
                     ),
                 ],
                 activeId: state.activeId,
                 onSelect: (id) => context.read<CheckoutBloc>().add(TabSelected(id)),
                 onNew: () => context.read<CheckoutBloc>().add(const NewTabRequested()),
+                onNewDebt: () => context.read<CheckoutBloc>().add(const NewDebtTabRequested()),
+                newDebtLabel: l10n.payDebtTab,
                 onShowAll: () async {
                   final bloc = context.read<CheckoutBloc>();
                   final id = await showOpenTabs(context, state.drafts, state.activeId);
@@ -69,10 +71,10 @@ class CheckoutPage extends StatelessWidget {
                   // Short phones at large text: the tab strip scrolls with the products so the
                   // list keeps room. The header stays pinned because it holds the cart button.
                   final roomy = wide || constraints.maxHeight >= 600 * MediaQuery.textScalerOf(context).scale(1);
-                  final products = ProductPane(
-                    onScan: () => _scan(context),
-                    header: roomy ? null : Padding(padding: const EdgeInsets.only(bottom: Space.sm), child: strip),
-                  );
+                  final header = roomy ? null : Padding(padding: const EdgeInsets.only(bottom: Space.sm), child: strip);
+                  final products = state.active?.isDebtPayment ?? false
+                      ? DebtPane(header: header)
+                      : ProductPane(onScan: () => _scan(context), header: header);
                   final main = Column(
                     children: [
                       // Short windows (phone landscape) drop the big title to give the list room.
@@ -159,10 +161,16 @@ class _CartBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final debtOnly = context.select<CheckoutBloc, bool>((b) => b.state.active?.isDebtPayment ?? false);
     final summary = context.select<CheckoutBloc, (double, int)?>((b) {
       final draft = b.state.active;
       return draft == null || draft.isEmpty ? null : (draft.itemCount, draft.total());
     });
+    final debtCustomer = context.select<CheckoutBloc, String?>((b) {
+      final draft = b.state.active;
+      return draft != null && draft.isDebtPayment ? draft.customerName : null;
+    });
+    if (debtOnly) return debtCustomer == null ? const SizedBox.shrink() : _DebtBar(customer: debtCustomer, onOpen: () => _openCart(context));
     if (summary == null) return const SizedBox.shrink();
     final (count, total) = summary;
     final figures = Column(
@@ -215,4 +223,33 @@ class _CartBar extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// The phone counterpart of the cart bar for a debt tab: who is being paid, and the way into the payment.
+class _DebtBar extends StatelessWidget {
+  const _DebtBar({required this.customer, required this.onOpen});
+  final String customer;
+  final VoidCallback onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final stacked = MediaQuery.textScalerOf(context).scale(1) > 1.3;
+    final name = Text(customer, style: theme.textTheme.titleMedium, maxLines: 2, overflow: TextOverflow.ellipsis);
+    final open = AppButton(label: l10n.payDebtTab, icon: Iconsax.wallet_check_copy, large: true, expand: stacked, onPressed: onOpen);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.md),
+        // Large text: the button gets its own full-width line, like the sale cart bar.
+        child: stacked
+            ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, spacing: Space.sm, children: [name, open])
+            : Row(spacing: Space.md, children: [Expanded(child: name), open]),
+      ),
+    );
+  }
 }

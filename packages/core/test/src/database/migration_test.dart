@@ -5,7 +5,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('a v1 database upgrades to v2 keeping its sales and gaining the cash and change columns', () async {
+  test('a v1 database upgrades to the latest schema keeping its sales and tabs, gaining cash, change and debt columns', () async {
     // The `sales` table exactly as schema version 1 created it, with one sale already in it.
     final executor = NativeDatabase.memory(
       setup: (raw) {
@@ -26,6 +26,28 @@ void main() {
             stock_conflict INTEGER NOT NULL DEFAULT 0 CHECK (stock_conflict IN (0, 1)),
             cancel_reason TEXT NULL
           )''');
+        raw.execute('''
+          CREATE TABLE draft_carts (
+            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            number INTEGER NOT NULL,
+            customer_id TEXT NULL,
+            customer_name TEXT NULL,
+            created_at INTEGER NOT NULL,
+            updated_at INTEGER NOT NULL,
+            status INTEGER NOT NULL DEFAULT 0,
+            charge_json TEXT NULL,
+            paid_sale_ref TEXT NULL
+          )''');
+        raw.execute('''
+          CREATE TABLE cached_customers (
+            id TEXT NOT NULL PRIMARY KEY,
+            name TEXT NOT NULL,
+            phone TEXT NOT NULL DEFAULT '',
+            address TEXT NOT NULL DEFAULT '',
+            outstanding_debt INTEGER NOT NULL DEFAULT 0
+          )''');
+        raw.execute("INSERT INTO cached_customers (id, name, outstanding_debt) VALUES ('k1', 'Bu Sri', 5000)");
+        raw.execute("INSERT INTO draft_carts (number, created_at, updated_at) VALUES (1, 1790000000, 1790000000)");
         raw.execute(
           "INSERT INTO sales (client_ref, receipt_number, created_at, method, cashier_name, total, lines_json) "
           "VALUES ('old', 'OFF-ABCD-1', 1790000000, 0, 'kasir', 7000, "
@@ -41,6 +63,11 @@ void main() {
     expect(old.total, 7000);
     expect(old.amountPaid, isNull);
     expect(old.changeJson, isNull);
+    expect([old.kind, old.debtId, old.debtTotal], [0, isNull, isNull]);
+    expect((await db.select(db.draftCarts).getSingle()).kind, 0);
+    expect(await db.select(db.cachedDebts).get(), isEmpty);
+    // The customer cache lost its debt total column but kept the customer.
+    expect((await db.select(db.cachedCustomers).getSingle()).name, 'Bu Sri');
 
     await (db.update(db.sales)..where((s) => s.clientRef.equals('old'))).write(
       const SalesCompanion(amountPaid: Value(10000), changeJson: Value('[{"kind":"tunai","amount":3000}]')),

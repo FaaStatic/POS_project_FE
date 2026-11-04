@@ -56,8 +56,6 @@ class PurgeCustomer {
   const PurgeCustomer(this._repo);
   final CustomerRepository _repo;
 
-  Future<Result<PurgeMode>> call(Customer customer) {
-    if (customer.hasActiveDebt) return Future.value(const Err(ConflictFailure('customer_has_debt')));
-    return _repo.purge(customer.id);
-  }
+  /// The backend refuses while the customer still has an open debt.
+  Future<Result<PurgeMode>> call(Customer customer) => _repo.purge(customer.id);
 }

@@ -1111,26 +1111,8 @@ class $CachedCustomersTable extends CachedCustomers
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
-  static const VerificationMeta _outstandingDebtMeta = const VerificationMeta(
-    'outstandingDebt',
-  );
   @override
-  late final GeneratedColumn<int> outstandingDebt = GeneratedColumn<int>(
-    'outstanding_debt',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    name,
-    phone,
-    address,
-    outstandingDebt,
-  ];
+  List<GeneratedColumn> get $columns => [id, name, phone, address];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1168,15 +1150,6 @@ class $CachedCustomersTable extends CachedCustomers
         address.isAcceptableOrUnknown(data['address']!, _addressMeta),
       );
     }
-    if (data.containsKey('outstanding_debt')) {
-      context.handle(
-        _outstandingDebtMeta,
-        outstandingDebt.isAcceptableOrUnknown(
-          data['outstanding_debt']!,
-          _outstandingDebtMeta,
-        ),
-      );
-    }
     return context;
   }
 
@@ -1202,10 +1175,6 @@ class $CachedCustomersTable extends CachedCustomers
         DriftSqlType.string,
         data['${effectivePrefix}address'],
       )!,
-      outstandingDebt: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}outstanding_debt'],
-      )!,
     );
   }
 
@@ -1220,13 +1189,11 @@ class CachedCustomer extends DataClass implements Insertable<CachedCustomer> {
   final String name;
   final String phone;
   final String address;
-  final int outstandingDebt;
   const CachedCustomer({
     required this.id,
     required this.name,
     required this.phone,
     required this.address,
-    required this.outstandingDebt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1235,7 +1202,6 @@ class CachedCustomer extends DataClass implements Insertable<CachedCustomer> {
     map['name'] = Variable<String>(name);
     map['phone'] = Variable<String>(phone);
     map['address'] = Variable<String>(address);
-    map['outstanding_debt'] = Variable<int>(outstandingDebt);
     return map;
   }
 
@@ -1245,7 +1211,6 @@ class CachedCustomer extends DataClass implements Insertable<CachedCustomer> {
       name: Value(name),
       phone: Value(phone),
       address: Value(address),
-      outstandingDebt: Value(outstandingDebt),
     );
   }
 
@@ -1259,7 +1224,6 @@ class CachedCustomer extends DataClass implements Insertable<CachedCustomer> {
       name: serializer.fromJson<String>(json['name']),
       phone: serializer.fromJson<String>(json['phone']),
       address: serializer.fromJson<String>(json['address']),
-      outstandingDebt: serializer.fromJson<int>(json['outstandingDebt']),
     );
   }
   @override
@@ -1270,7 +1234,6 @@ class CachedCustomer extends DataClass implements Insertable<CachedCustomer> {
       'name': serializer.toJson<String>(name),
       'phone': serializer.toJson<String>(phone),
       'address': serializer.toJson<String>(address),
-      'outstandingDebt': serializer.toJson<int>(outstandingDebt),
     };
   }
 
@@ -1279,13 +1242,11 @@ class CachedCustomer extends DataClass implements Insertable<CachedCustomer> {
     String? name,
     String? phone,
     String? address,
-    int? outstandingDebt,
   }) => CachedCustomer(
     id: id ?? this.id,
     name: name ?? this.name,
     phone: phone ?? this.phone,
     address: address ?? this.address,
-    outstandingDebt: outstandingDebt ?? this.outstandingDebt,
   );
   CachedCustomer copyWithCompanion(CachedCustomersCompanion data) {
     return CachedCustomer(
@@ -1293,9 +1254,6 @@ class CachedCustomer extends DataClass implements Insertable<CachedCustomer> {
       name: data.name.present ? data.name.value : this.name,
       phone: data.phone.present ? data.phone.value : this.phone,
       address: data.address.present ? data.address.value : this.address,
-      outstandingDebt: data.outstandingDebt.present
-          ? data.outstandingDebt.value
-          : this.outstandingDebt,
     );
   }
 
@@ -1305,14 +1263,13 @@ class CachedCustomer extends DataClass implements Insertable<CachedCustomer> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('phone: $phone, ')
-          ..write('address: $address, ')
-          ..write('outstandingDebt: $outstandingDebt')
+          ..write('address: $address')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, phone, address, outstandingDebt);
+  int get hashCode => Object.hash(id, name, phone, address);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1320,8 +1277,7 @@ class CachedCustomer extends DataClass implements Insertable<CachedCustomer> {
           other.id == this.id &&
           other.name == this.name &&
           other.phone == this.phone &&
-          other.address == this.address &&
-          other.outstandingDebt == this.outstandingDebt);
+          other.address == this.address);
 }
 
 class CachedCustomersCompanion extends UpdateCompanion<CachedCustomer> {
@@ -1329,14 +1285,12 @@ class CachedCustomersCompanion extends UpdateCompanion<CachedCustomer> {
   final Value<String> name;
   final Value<String> phone;
   final Value<String> address;
-  final Value<int> outstandingDebt;
   final Value<int> rowid;
   const CachedCustomersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.phone = const Value.absent(),
     this.address = const Value.absent(),
-    this.outstandingDebt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CachedCustomersCompanion.insert({
@@ -1344,7 +1298,6 @@ class CachedCustomersCompanion extends UpdateCompanion<CachedCustomer> {
     required String name,
     this.phone = const Value.absent(),
     this.address = const Value.absent(),
-    this.outstandingDebt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name);
@@ -1353,7 +1306,6 @@ class CachedCustomersCompanion extends UpdateCompanion<CachedCustomer> {
     Expression<String>? name,
     Expression<String>? phone,
     Expression<String>? address,
-    Expression<int>? outstandingDebt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1361,7 +1313,6 @@ class CachedCustomersCompanion extends UpdateCompanion<CachedCustomer> {
       if (name != null) 'name': name,
       if (phone != null) 'phone': phone,
       if (address != null) 'address': address,
-      if (outstandingDebt != null) 'outstanding_debt': outstandingDebt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1371,7 +1322,6 @@ class CachedCustomersCompanion extends UpdateCompanion<CachedCustomer> {
     Value<String>? name,
     Value<String>? phone,
     Value<String>? address,
-    Value<int>? outstandingDebt,
     Value<int>? rowid,
   }) {
     return CachedCustomersCompanion(
@@ -1379,7 +1329,6 @@ class CachedCustomersCompanion extends UpdateCompanion<CachedCustomer> {
       name: name ?? this.name,
       phone: phone ?? this.phone,
       address: address ?? this.address,
-      outstandingDebt: outstandingDebt ?? this.outstandingDebt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1399,9 +1348,6 @@ class CachedCustomersCompanion extends UpdateCompanion<CachedCustomer> {
     if (address.present) {
       map['address'] = Variable<String>(address.value);
     }
-    if (outstandingDebt.present) {
-      map['outstanding_debt'] = Variable<int>(outstandingDebt.value);
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1415,7 +1361,416 @@ class CachedCustomersCompanion extends UpdateCompanion<CachedCustomer> {
           ..write('name: $name, ')
           ..write('phone: $phone, ')
           ..write('address: $address, ')
-          ..write('outstandingDebt: $outstandingDebt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CachedDebtsTable extends CachedDebts
+    with TableInfo<$CachedDebtsTable, CachedDebt> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CachedDebtsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _customerIdMeta = const VerificationMeta(
+    'customerId',
+  );
+  @override
+  late final GeneratedColumn<String> customerId = GeneratedColumn<String>(
+    'customer_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _customerNameMeta = const VerificationMeta(
+    'customerName',
+  );
+  @override
+  late final GeneratedColumn<String> customerName = GeneratedColumn<String>(
+    'customer_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _totalMeta = const VerificationMeta('total');
+  @override
+  late final GeneratedColumn<int> total = GeneratedColumn<int>(
+    'total',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _remainingMeta = const VerificationMeta(
+    'remaining',
+  );
+  @override
+  late final GeneratedColumn<int> remaining = GeneratedColumn<int>(
+    'remaining',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    customerId,
+    customerName,
+    total,
+    remaining,
+    date,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cached_debts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CachedDebt> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('customer_id')) {
+      context.handle(
+        _customerIdMeta,
+        customerId.isAcceptableOrUnknown(data['customer_id']!, _customerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_customerIdMeta);
+    }
+    if (data.containsKey('customer_name')) {
+      context.handle(
+        _customerNameMeta,
+        customerName.isAcceptableOrUnknown(
+          data['customer_name']!,
+          _customerNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('total')) {
+      context.handle(
+        _totalMeta,
+        total.isAcceptableOrUnknown(data['total']!, _totalMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_totalMeta);
+    }
+    if (data.containsKey('remaining')) {
+      context.handle(
+        _remainingMeta,
+        remaining.isAcceptableOrUnknown(data['remaining']!, _remainingMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_remainingMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CachedDebt map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CachedDebt(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      customerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}customer_id'],
+      )!,
+      customerName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}customer_name'],
+      )!,
+      total: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total'],
+      )!,
+      remaining: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}remaining'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      ),
+    );
+  }
+
+  @override
+  $CachedDebtsTable createAlias(String alias) {
+    return $CachedDebtsTable(attachedDatabase, alias);
+  }
+}
+
+class CachedDebt extends DataClass implements Insertable<CachedDebt> {
+  final String id;
+  final String customerId;
+  final String customerName;
+  final int total;
+  final int remaining;
+  final DateTime? date;
+  const CachedDebt({
+    required this.id,
+    required this.customerId,
+    required this.customerName,
+    required this.total,
+    required this.remaining,
+    this.date,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['customer_id'] = Variable<String>(customerId);
+    map['customer_name'] = Variable<String>(customerName);
+    map['total'] = Variable<int>(total);
+    map['remaining'] = Variable<int>(remaining);
+    if (!nullToAbsent || date != null) {
+      map['date'] = Variable<DateTime>(date);
+    }
+    return map;
+  }
+
+  CachedDebtsCompanion toCompanion(bool nullToAbsent) {
+    return CachedDebtsCompanion(
+      id: Value(id),
+      customerId: Value(customerId),
+      customerName: Value(customerName),
+      total: Value(total),
+      remaining: Value(remaining),
+      date: date == null && nullToAbsent ? const Value.absent() : Value(date),
+    );
+  }
+
+  factory CachedDebt.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CachedDebt(
+      id: serializer.fromJson<String>(json['id']),
+      customerId: serializer.fromJson<String>(json['customerId']),
+      customerName: serializer.fromJson<String>(json['customerName']),
+      total: serializer.fromJson<int>(json['total']),
+      remaining: serializer.fromJson<int>(json['remaining']),
+      date: serializer.fromJson<DateTime?>(json['date']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'customerId': serializer.toJson<String>(customerId),
+      'customerName': serializer.toJson<String>(customerName),
+      'total': serializer.toJson<int>(total),
+      'remaining': serializer.toJson<int>(remaining),
+      'date': serializer.toJson<DateTime?>(date),
+    };
+  }
+
+  CachedDebt copyWith({
+    String? id,
+    String? customerId,
+    String? customerName,
+    int? total,
+    int? remaining,
+    Value<DateTime?> date = const Value.absent(),
+  }) => CachedDebt(
+    id: id ?? this.id,
+    customerId: customerId ?? this.customerId,
+    customerName: customerName ?? this.customerName,
+    total: total ?? this.total,
+    remaining: remaining ?? this.remaining,
+    date: date.present ? date.value : this.date,
+  );
+  CachedDebt copyWithCompanion(CachedDebtsCompanion data) {
+    return CachedDebt(
+      id: data.id.present ? data.id.value : this.id,
+      customerId: data.customerId.present
+          ? data.customerId.value
+          : this.customerId,
+      customerName: data.customerName.present
+          ? data.customerName.value
+          : this.customerName,
+      total: data.total.present ? data.total.value : this.total,
+      remaining: data.remaining.present ? data.remaining.value : this.remaining,
+      date: data.date.present ? data.date.value : this.date,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedDebt(')
+          ..write('id: $id, ')
+          ..write('customerId: $customerId, ')
+          ..write('customerName: $customerName, ')
+          ..write('total: $total, ')
+          ..write('remaining: $remaining, ')
+          ..write('date: $date')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, customerId, customerName, total, remaining, date);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CachedDebt &&
+          other.id == this.id &&
+          other.customerId == this.customerId &&
+          other.customerName == this.customerName &&
+          other.total == this.total &&
+          other.remaining == this.remaining &&
+          other.date == this.date);
+}
+
+class CachedDebtsCompanion extends UpdateCompanion<CachedDebt> {
+  final Value<String> id;
+  final Value<String> customerId;
+  final Value<String> customerName;
+  final Value<int> total;
+  final Value<int> remaining;
+  final Value<DateTime?> date;
+  final Value<int> rowid;
+  const CachedDebtsCompanion({
+    this.id = const Value.absent(),
+    this.customerId = const Value.absent(),
+    this.customerName = const Value.absent(),
+    this.total = const Value.absent(),
+    this.remaining = const Value.absent(),
+    this.date = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CachedDebtsCompanion.insert({
+    required String id,
+    required String customerId,
+    this.customerName = const Value.absent(),
+    required int total,
+    required int remaining,
+    this.date = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       customerId = Value(customerId),
+       total = Value(total),
+       remaining = Value(remaining);
+  static Insertable<CachedDebt> custom({
+    Expression<String>? id,
+    Expression<String>? customerId,
+    Expression<String>? customerName,
+    Expression<int>? total,
+    Expression<int>? remaining,
+    Expression<DateTime>? date,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (customerId != null) 'customer_id': customerId,
+      if (customerName != null) 'customer_name': customerName,
+      if (total != null) 'total': total,
+      if (remaining != null) 'remaining': remaining,
+      if (date != null) 'date': date,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CachedDebtsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? customerId,
+    Value<String>? customerName,
+    Value<int>? total,
+    Value<int>? remaining,
+    Value<DateTime?>? date,
+    Value<int>? rowid,
+  }) {
+    return CachedDebtsCompanion(
+      id: id ?? this.id,
+      customerId: customerId ?? this.customerId,
+      customerName: customerName ?? this.customerName,
+      total: total ?? this.total,
+      remaining: remaining ?? this.remaining,
+      date: date ?? this.date,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (customerId.present) {
+      map['customer_id'] = Variable<String>(customerId.value);
+    }
+    if (customerName.present) {
+      map['customer_name'] = Variable<String>(customerName.value);
+    }
+    if (total.present) {
+      map['total'] = Variable<int>(total.value);
+    }
+    if (remaining.present) {
+      map['remaining'] = Variable<int>(remaining.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedDebtsCompanion(')
+          ..write('id: $id, ')
+          ..write('customerId: $customerId, ')
+          ..write('customerName: $customerName, ')
+          ..write('total: $total, ')
+          ..write('remaining: $remaining, ')
+          ..write('date: $date, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1600,6 +1955,58 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<int> kind = GeneratedColumn<int>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _debtIdMeta = const VerificationMeta('debtId');
+  @override
+  late final GeneratedColumn<String> debtId = GeneratedColumn<String>(
+    'debt_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _debtTotalMeta = const VerificationMeta(
+    'debtTotal',
+  );
+  @override
+  late final GeneratedColumn<int> debtTotal = GeneratedColumn<int>(
+    'debt_total',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _debtBeforeMeta = const VerificationMeta(
+    'debtBefore',
+  );
+  @override
+  late final GeneratedColumn<int> debtBefore = GeneratedColumn<int>(
+    'debt_before',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _debtAfterMeta = const VerificationMeta(
+    'debtAfter',
+  );
+  @override
+  late final GeneratedColumn<int> debtAfter = GeneratedColumn<int>(
+    'debt_after',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     clientRef,
@@ -1618,6 +2025,11 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
     cancelReason,
     amountPaid,
     changeJson,
+    kind,
+    debtId,
+    debtTotal,
+    debtBefore,
+    debtAfter,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1759,6 +2171,36 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
         changeJson.isAcceptableOrUnknown(data['change_json']!, _changeJsonMeta),
       );
     }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    }
+    if (data.containsKey('debt_id')) {
+      context.handle(
+        _debtIdMeta,
+        debtId.isAcceptableOrUnknown(data['debt_id']!, _debtIdMeta),
+      );
+    }
+    if (data.containsKey('debt_total')) {
+      context.handle(
+        _debtTotalMeta,
+        debtTotal.isAcceptableOrUnknown(data['debt_total']!, _debtTotalMeta),
+      );
+    }
+    if (data.containsKey('debt_before')) {
+      context.handle(
+        _debtBeforeMeta,
+        debtBefore.isAcceptableOrUnknown(data['debt_before']!, _debtBeforeMeta),
+      );
+    }
+    if (data.containsKey('debt_after')) {
+      context.handle(
+        _debtAfterMeta,
+        debtAfter.isAcceptableOrUnknown(data['debt_after']!, _debtAfterMeta),
+      );
+    }
     return context;
   }
 
@@ -1832,6 +2274,26 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
         DriftSqlType.string,
         data['${effectivePrefix}change_json'],
       ),
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}kind'],
+      )!,
+      debtId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}debt_id'],
+      ),
+      debtTotal: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}debt_total'],
+      ),
+      debtBefore: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}debt_before'],
+      ),
+      debtAfter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}debt_after'],
+      ),
     );
   }
 
@@ -1868,6 +2330,15 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
 
   /// JSON list of the change lines (kind, amount, product, qty); null when none were recorded.
   final String? changeJson;
+
+  /// 0 sale, 1 debt payment. A debt payment has no lines; `total` is the amount paid toward the debt.
+  final int kind;
+  final String? debtId;
+
+  /// What the customer still owed before and after a debt payment.
+  final int? debtTotal;
+  final int? debtBefore;
+  final int? debtAfter;
   const SaleRow({
     required this.clientRef,
     required this.receiptNumber,
@@ -1885,6 +2356,11 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     this.cancelReason,
     this.amountPaid,
     this.changeJson,
+    required this.kind,
+    this.debtId,
+    this.debtTotal,
+    this.debtBefore,
+    this.debtAfter,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1918,6 +2394,19 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     }
     if (!nullToAbsent || changeJson != null) {
       map['change_json'] = Variable<String>(changeJson);
+    }
+    map['kind'] = Variable<int>(kind);
+    if (!nullToAbsent || debtId != null) {
+      map['debt_id'] = Variable<String>(debtId);
+    }
+    if (!nullToAbsent || debtTotal != null) {
+      map['debt_total'] = Variable<int>(debtTotal);
+    }
+    if (!nullToAbsent || debtBefore != null) {
+      map['debt_before'] = Variable<int>(debtBefore);
+    }
+    if (!nullToAbsent || debtAfter != null) {
+      map['debt_after'] = Variable<int>(debtAfter);
     }
     return map;
   }
@@ -1954,6 +2443,19 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
       changeJson: changeJson == null && nullToAbsent
           ? const Value.absent()
           : Value(changeJson),
+      kind: Value(kind),
+      debtId: debtId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(debtId),
+      debtTotal: debtTotal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(debtTotal),
+      debtBefore: debtBefore == null && nullToAbsent
+          ? const Value.absent()
+          : Value(debtBefore),
+      debtAfter: debtAfter == null && nullToAbsent
+          ? const Value.absent()
+          : Value(debtAfter),
     );
   }
 
@@ -1979,6 +2481,11 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
       cancelReason: serializer.fromJson<String?>(json['cancelReason']),
       amountPaid: serializer.fromJson<int?>(json['amountPaid']),
       changeJson: serializer.fromJson<String?>(json['changeJson']),
+      kind: serializer.fromJson<int>(json['kind']),
+      debtId: serializer.fromJson<String?>(json['debtId']),
+      debtTotal: serializer.fromJson<int?>(json['debtTotal']),
+      debtBefore: serializer.fromJson<int?>(json['debtBefore']),
+      debtAfter: serializer.fromJson<int?>(json['debtAfter']),
     );
   }
   @override
@@ -2001,6 +2508,11 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
       'cancelReason': serializer.toJson<String?>(cancelReason),
       'amountPaid': serializer.toJson<int?>(amountPaid),
       'changeJson': serializer.toJson<String?>(changeJson),
+      'kind': serializer.toJson<int>(kind),
+      'debtId': serializer.toJson<String?>(debtId),
+      'debtTotal': serializer.toJson<int?>(debtTotal),
+      'debtBefore': serializer.toJson<int?>(debtBefore),
+      'debtAfter': serializer.toJson<int?>(debtAfter),
     };
   }
 
@@ -2021,6 +2533,11 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     Value<String?> cancelReason = const Value.absent(),
     Value<int?> amountPaid = const Value.absent(),
     Value<String?> changeJson = const Value.absent(),
+    int? kind,
+    Value<String?> debtId = const Value.absent(),
+    Value<int?> debtTotal = const Value.absent(),
+    Value<int?> debtBefore = const Value.absent(),
+    Value<int?> debtAfter = const Value.absent(),
   }) => SaleRow(
     clientRef: clientRef ?? this.clientRef,
     receiptNumber: receiptNumber ?? this.receiptNumber,
@@ -2040,6 +2557,11 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     cancelReason: cancelReason.present ? cancelReason.value : this.cancelReason,
     amountPaid: amountPaid.present ? amountPaid.value : this.amountPaid,
     changeJson: changeJson.present ? changeJson.value : this.changeJson,
+    kind: kind ?? this.kind,
+    debtId: debtId.present ? debtId.value : this.debtId,
+    debtTotal: debtTotal.present ? debtTotal.value : this.debtTotal,
+    debtBefore: debtBefore.present ? debtBefore.value : this.debtBefore,
+    debtAfter: debtAfter.present ? debtAfter.value : this.debtAfter,
   );
   SaleRow copyWithCompanion(SalesCompanion data) {
     return SaleRow(
@@ -2077,6 +2599,13 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
       changeJson: data.changeJson.present
           ? data.changeJson.value
           : this.changeJson,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      debtId: data.debtId.present ? data.debtId.value : this.debtId,
+      debtTotal: data.debtTotal.present ? data.debtTotal.value : this.debtTotal,
+      debtBefore: data.debtBefore.present
+          ? data.debtBefore.value
+          : this.debtBefore,
+      debtAfter: data.debtAfter.present ? data.debtAfter.value : this.debtAfter,
     );
   }
 
@@ -2098,13 +2627,18 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
           ..write('stockConflict: $stockConflict, ')
           ..write('cancelReason: $cancelReason, ')
           ..write('amountPaid: $amountPaid, ')
-          ..write('changeJson: $changeJson')
+          ..write('changeJson: $changeJson, ')
+          ..write('kind: $kind, ')
+          ..write('debtId: $debtId, ')
+          ..write('debtTotal: $debtTotal, ')
+          ..write('debtBefore: $debtBefore, ')
+          ..write('debtAfter: $debtAfter')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     clientRef,
     receiptNumber,
     createdAt,
@@ -2121,7 +2655,12 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     cancelReason,
     amountPaid,
     changeJson,
-  );
+    kind,
+    debtId,
+    debtTotal,
+    debtBefore,
+    debtAfter,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2141,7 +2680,12 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
           other.stockConflict == this.stockConflict &&
           other.cancelReason == this.cancelReason &&
           other.amountPaid == this.amountPaid &&
-          other.changeJson == this.changeJson);
+          other.changeJson == this.changeJson &&
+          other.kind == this.kind &&
+          other.debtId == this.debtId &&
+          other.debtTotal == this.debtTotal &&
+          other.debtBefore == this.debtBefore &&
+          other.debtAfter == this.debtAfter);
 }
 
 class SalesCompanion extends UpdateCompanion<SaleRow> {
@@ -2161,6 +2705,11 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
   final Value<String?> cancelReason;
   final Value<int?> amountPaid;
   final Value<String?> changeJson;
+  final Value<int> kind;
+  final Value<String?> debtId;
+  final Value<int?> debtTotal;
+  final Value<int?> debtBefore;
+  final Value<int?> debtAfter;
   final Value<int> rowid;
   const SalesCompanion({
     this.clientRef = const Value.absent(),
@@ -2179,6 +2728,11 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     this.cancelReason = const Value.absent(),
     this.amountPaid = const Value.absent(),
     this.changeJson = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.debtId = const Value.absent(),
+    this.debtTotal = const Value.absent(),
+    this.debtBefore = const Value.absent(),
+    this.debtAfter = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SalesCompanion.insert({
@@ -2198,6 +2752,11 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     this.cancelReason = const Value.absent(),
     this.amountPaid = const Value.absent(),
     this.changeJson = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.debtId = const Value.absent(),
+    this.debtTotal = const Value.absent(),
+    this.debtBefore = const Value.absent(),
+    this.debtAfter = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : clientRef = Value(clientRef),
        receiptNumber = Value(receiptNumber),
@@ -2223,6 +2782,11 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     Expression<String>? cancelReason,
     Expression<int>? amountPaid,
     Expression<String>? changeJson,
+    Expression<int>? kind,
+    Expression<String>? debtId,
+    Expression<int>? debtTotal,
+    Expression<int>? debtBefore,
+    Expression<int>? debtAfter,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2242,6 +2806,11 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
       if (cancelReason != null) 'cancel_reason': cancelReason,
       if (amountPaid != null) 'amount_paid': amountPaid,
       if (changeJson != null) 'change_json': changeJson,
+      if (kind != null) 'kind': kind,
+      if (debtId != null) 'debt_id': debtId,
+      if (debtTotal != null) 'debt_total': debtTotal,
+      if (debtBefore != null) 'debt_before': debtBefore,
+      if (debtAfter != null) 'debt_after': debtAfter,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2263,6 +2832,11 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     Value<String?>? cancelReason,
     Value<int?>? amountPaid,
     Value<String?>? changeJson,
+    Value<int>? kind,
+    Value<String?>? debtId,
+    Value<int?>? debtTotal,
+    Value<int?>? debtBefore,
+    Value<int?>? debtAfter,
     Value<int>? rowid,
   }) {
     return SalesCompanion(
@@ -2282,6 +2856,11 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
       cancelReason: cancelReason ?? this.cancelReason,
       amountPaid: amountPaid ?? this.amountPaid,
       changeJson: changeJson ?? this.changeJson,
+      kind: kind ?? this.kind,
+      debtId: debtId ?? this.debtId,
+      debtTotal: debtTotal ?? this.debtTotal,
+      debtBefore: debtBefore ?? this.debtBefore,
+      debtAfter: debtAfter ?? this.debtAfter,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2337,6 +2916,21 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     if (changeJson.present) {
       map['change_json'] = Variable<String>(changeJson.value);
     }
+    if (kind.present) {
+      map['kind'] = Variable<int>(kind.value);
+    }
+    if (debtId.present) {
+      map['debt_id'] = Variable<String>(debtId.value);
+    }
+    if (debtTotal.present) {
+      map['debt_total'] = Variable<int>(debtTotal.value);
+    }
+    if (debtBefore.present) {
+      map['debt_before'] = Variable<int>(debtBefore.value);
+    }
+    if (debtAfter.present) {
+      map['debt_after'] = Variable<int>(debtAfter.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2362,6 +2956,11 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
           ..write('cancelReason: $cancelReason, ')
           ..write('amountPaid: $amountPaid, ')
           ..write('changeJson: $changeJson, ')
+          ..write('kind: $kind, ')
+          ..write('debtId: $debtId, ')
+          ..write('debtTotal: $debtTotal, ')
+          ..write('debtBefore: $debtBefore, ')
+          ..write('debtAfter: $debtAfter, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2440,6 +3039,16 @@ class $DraftCartsTable extends DraftCarts
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<int> kind = GeneratedColumn<int>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
   late final GeneratedColumn<int> status = GeneratedColumn<int>(
@@ -2480,6 +3089,7 @@ class $DraftCartsTable extends DraftCarts
     customerName,
     createdAt,
     updatedAt,
+    kind,
     status,
     chargeJson,
     paidSaleRef,
@@ -2538,6 +3148,12 @@ class $DraftCartsTable extends DraftCarts
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    }
     if (data.containsKey('status')) {
       context.handle(
         _statusMeta,
@@ -2592,6 +3208,10 @@ class $DraftCartsTable extends DraftCarts
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}kind'],
+      )!,
       status: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}status'],
@@ -2621,6 +3241,9 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  /// 0 sale tab ("Transaksi N"), 1 debt payment tab ("Hutang N").
+  final int kind;
+
   /// 0 open, 1 awaiting QRIS/VA, 2 paid (receipt not yet dismissed).
   final int status;
 
@@ -2636,6 +3259,7 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
     this.customerName,
     required this.createdAt,
     required this.updatedAt,
+    required this.kind,
     required this.status,
     this.chargeJson,
     this.paidSaleRef,
@@ -2653,6 +3277,7 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['kind'] = Variable<int>(kind);
     map['status'] = Variable<int>(status);
     if (!nullToAbsent || chargeJson != null) {
       map['charge_json'] = Variable<String>(chargeJson);
@@ -2675,6 +3300,7 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
           : Value(customerName),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      kind: Value(kind),
       status: Value(status),
       chargeJson: chargeJson == null && nullToAbsent
           ? const Value.absent()
@@ -2697,6 +3323,7 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
       customerName: serializer.fromJson<String?>(json['customerName']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      kind: serializer.fromJson<int>(json['kind']),
       status: serializer.fromJson<int>(json['status']),
       chargeJson: serializer.fromJson<String?>(json['chargeJson']),
       paidSaleRef: serializer.fromJson<String?>(json['paidSaleRef']),
@@ -2712,6 +3339,7 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
       'customerName': serializer.toJson<String?>(customerName),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'kind': serializer.toJson<int>(kind),
       'status': serializer.toJson<int>(status),
       'chargeJson': serializer.toJson<String?>(chargeJson),
       'paidSaleRef': serializer.toJson<String?>(paidSaleRef),
@@ -2725,6 +3353,7 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
     Value<String?> customerName = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? kind,
     int? status,
     Value<String?> chargeJson = const Value.absent(),
     Value<String?> paidSaleRef = const Value.absent(),
@@ -2735,6 +3364,7 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
     customerName: customerName.present ? customerName.value : this.customerName,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    kind: kind ?? this.kind,
     status: status ?? this.status,
     chargeJson: chargeJson.present ? chargeJson.value : this.chargeJson,
     paidSaleRef: paidSaleRef.present ? paidSaleRef.value : this.paidSaleRef,
@@ -2751,6 +3381,7 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
           : this.customerName,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      kind: data.kind.present ? data.kind.value : this.kind,
       status: data.status.present ? data.status.value : this.status,
       chargeJson: data.chargeJson.present
           ? data.chargeJson.value
@@ -2770,6 +3401,7 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
           ..write('customerName: $customerName, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('kind: $kind, ')
           ..write('status: $status, ')
           ..write('chargeJson: $chargeJson, ')
           ..write('paidSaleRef: $paidSaleRef')
@@ -2785,6 +3417,7 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
     customerName,
     createdAt,
     updatedAt,
+    kind,
     status,
     chargeJson,
     paidSaleRef,
@@ -2799,6 +3432,7 @@ class DraftCart extends DataClass implements Insertable<DraftCart> {
           other.customerName == this.customerName &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
+          other.kind == this.kind &&
           other.status == this.status &&
           other.chargeJson == this.chargeJson &&
           other.paidSaleRef == this.paidSaleRef);
@@ -2811,6 +3445,7 @@ class DraftCartsCompanion extends UpdateCompanion<DraftCart> {
   final Value<String?> customerName;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<int> kind;
   final Value<int> status;
   final Value<String?> chargeJson;
   final Value<String?> paidSaleRef;
@@ -2821,6 +3456,7 @@ class DraftCartsCompanion extends UpdateCompanion<DraftCart> {
     this.customerName = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.kind = const Value.absent(),
     this.status = const Value.absent(),
     this.chargeJson = const Value.absent(),
     this.paidSaleRef = const Value.absent(),
@@ -2832,6 +3468,7 @@ class DraftCartsCompanion extends UpdateCompanion<DraftCart> {
     this.customerName = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.kind = const Value.absent(),
     this.status = const Value.absent(),
     this.chargeJson = const Value.absent(),
     this.paidSaleRef = const Value.absent(),
@@ -2845,6 +3482,7 @@ class DraftCartsCompanion extends UpdateCompanion<DraftCart> {
     Expression<String>? customerName,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<int>? kind,
     Expression<int>? status,
     Expression<String>? chargeJson,
     Expression<String>? paidSaleRef,
@@ -2856,6 +3494,7 @@ class DraftCartsCompanion extends UpdateCompanion<DraftCart> {
       if (customerName != null) 'customer_name': customerName,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (kind != null) 'kind': kind,
       if (status != null) 'status': status,
       if (chargeJson != null) 'charge_json': chargeJson,
       if (paidSaleRef != null) 'paid_sale_ref': paidSaleRef,
@@ -2869,6 +3508,7 @@ class DraftCartsCompanion extends UpdateCompanion<DraftCart> {
     Value<String?>? customerName,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<int>? kind,
     Value<int>? status,
     Value<String?>? chargeJson,
     Value<String?>? paidSaleRef,
@@ -2880,6 +3520,7 @@ class DraftCartsCompanion extends UpdateCompanion<DraftCart> {
       customerName: customerName ?? this.customerName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      kind: kind ?? this.kind,
       status: status ?? this.status,
       chargeJson: chargeJson ?? this.chargeJson,
       paidSaleRef: paidSaleRef ?? this.paidSaleRef,
@@ -2907,6 +3548,9 @@ class DraftCartsCompanion extends UpdateCompanion<DraftCart> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (kind.present) {
+      map['kind'] = Variable<int>(kind.value);
+    }
     if (status.present) {
       map['status'] = Variable<int>(status.value);
     }
@@ -2928,6 +3572,7 @@ class DraftCartsCompanion extends UpdateCompanion<DraftCart> {
           ..write('customerName: $customerName, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('kind: $kind, ')
           ..write('status: $status, ')
           ..write('chargeJson: $chargeJson, ')
           ..write('paidSaleRef: $paidSaleRef')
@@ -3594,6 +4239,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CachedCustomersTable cachedCustomers = $CachedCustomersTable(
     this,
   );
+  late final $CachedDebtsTable cachedDebts = $CachedDebtsTable(this);
   late final $SalesTable sales = $SalesTable(this);
   late final $DraftCartsTable draftCarts = $DraftCartsTable(this);
   late final $DraftCartItemsTable draftCartItems = $DraftCartItemsTable(this);
@@ -3605,6 +4251,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cachedProducts,
     cachedCategories,
     cachedCustomers,
+    cachedDebts,
     sales,
     draftCarts,
     draftCartItems,
@@ -4198,7 +4845,6 @@ typedef $$CachedCustomersTableCreateCompanionBuilder =
       required String name,
       Value<String> phone,
       Value<String> address,
-      Value<int> outstandingDebt,
       Value<int> rowid,
     });
 typedef $$CachedCustomersTableUpdateCompanionBuilder =
@@ -4207,7 +4853,6 @@ typedef $$CachedCustomersTableUpdateCompanionBuilder =
       Value<String> name,
       Value<String> phone,
       Value<String> address,
-      Value<int> outstandingDebt,
       Value<int> rowid,
     });
 
@@ -4237,11 +4882,6 @@ class $$CachedCustomersTableFilterComposer
 
   ColumnFilters<String> get address => $composableBuilder(
     column: $table.address,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get outstandingDebt => $composableBuilder(
-    column: $table.outstandingDebt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4274,11 +4914,6 @@ class $$CachedCustomersTableOrderingComposer
     column: $table.address,
     builder: (column) => ColumnOrderings(column),
   );
-
-  ColumnOrderings<int> get outstandingDebt => $composableBuilder(
-    column: $table.outstandingDebt,
-    builder: (column) => ColumnOrderings(column),
-  );
 }
 
 class $$CachedCustomersTableAnnotationComposer
@@ -4301,11 +4936,6 @@ class $$CachedCustomersTableAnnotationComposer
 
   GeneratedColumn<String> get address =>
       $composableBuilder(column: $table.address, builder: (column) => column);
-
-  GeneratedColumn<int> get outstandingDebt => $composableBuilder(
-    column: $table.outstandingDebt,
-    builder: (column) => column,
-  );
 }
 
 class $$CachedCustomersTableTableManager
@@ -4349,14 +4979,12 @@ class $$CachedCustomersTableTableManager
                 Value<String> name = const Value.absent(),
                 Value<String> phone = const Value.absent(),
                 Value<String> address = const Value.absent(),
-                Value<int> outstandingDebt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedCustomersCompanion(
                 id: id,
                 name: name,
                 phone: phone,
                 address: address,
-                outstandingDebt: outstandingDebt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4365,14 +4993,12 @@ class $$CachedCustomersTableTableManager
                 required String name,
                 Value<String> phone = const Value.absent(),
                 Value<String> address = const Value.absent(),
-                Value<int> outstandingDebt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CachedCustomersCompanion.insert(
                 id: id,
                 name: name,
                 phone: phone,
                 address: address,
-                outstandingDebt: outstandingDebt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -4409,6 +5035,238 @@ typedef $$CachedCustomersTableProcessedTableManager =
       CachedCustomer,
       PrefetchHooks Function()
     >;
+typedef $$CachedDebtsTableCreateCompanionBuilder =
+    CachedDebtsCompanion Function({
+      required String id,
+      required String customerId,
+      Value<String> customerName,
+      required int total,
+      required int remaining,
+      Value<DateTime?> date,
+      Value<int> rowid,
+    });
+typedef $$CachedDebtsTableUpdateCompanionBuilder =
+    CachedDebtsCompanion Function({
+      Value<String> id,
+      Value<String> customerId,
+      Value<String> customerName,
+      Value<int> total,
+      Value<int> remaining,
+      Value<DateTime?> date,
+      Value<int> rowid,
+    });
+
+class $$CachedDebtsTableFilterComposer
+    extends Composer<_$AppDatabase, $CachedDebtsTable> {
+  $$CachedDebtsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get customerId => $composableBuilder(
+    column: $table.customerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get customerName => $composableBuilder(
+    column: $table.customerName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get total => $composableBuilder(
+    column: $table.total,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get remaining => $composableBuilder(
+    column: $table.remaining,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CachedDebtsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CachedDebtsTable> {
+  $$CachedDebtsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get customerId => $composableBuilder(
+    column: $table.customerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get customerName => $composableBuilder(
+    column: $table.customerName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get total => $composableBuilder(
+    column: $table.total,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get remaining => $composableBuilder(
+    column: $table.remaining,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CachedDebtsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CachedDebtsTable> {
+  $$CachedDebtsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get customerId => $composableBuilder(
+    column: $table.customerId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get customerName => $composableBuilder(
+    column: $table.customerName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get total =>
+      $composableBuilder(column: $table.total, builder: (column) => column);
+
+  GeneratedColumn<int> get remaining =>
+      $composableBuilder(column: $table.remaining, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+}
+
+class $$CachedDebtsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CachedDebtsTable,
+          CachedDebt,
+          $$CachedDebtsTableFilterComposer,
+          $$CachedDebtsTableOrderingComposer,
+          $$CachedDebtsTableAnnotationComposer,
+          $$CachedDebtsTableCreateCompanionBuilder,
+          $$CachedDebtsTableUpdateCompanionBuilder,
+          (
+            CachedDebt,
+            BaseReferences<_$AppDatabase, $CachedDebtsTable, CachedDebt>,
+          ),
+          CachedDebt,
+          PrefetchHooks Function()
+        > {
+  $$CachedDebtsTableTableManager(_$AppDatabase db, $CachedDebtsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CachedDebtsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CachedDebtsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CachedDebtsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> customerId = const Value.absent(),
+                Value<String> customerName = const Value.absent(),
+                Value<int> total = const Value.absent(),
+                Value<int> remaining = const Value.absent(),
+                Value<DateTime?> date = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CachedDebtsCompanion(
+                id: id,
+                customerId: customerId,
+                customerName: customerName,
+                total: total,
+                remaining: remaining,
+                date: date,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String customerId,
+                Value<String> customerName = const Value.absent(),
+                required int total,
+                required int remaining,
+                Value<DateTime?> date = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CachedDebtsCompanion.insert(
+                id: id,
+                customerId: customerId,
+                customerName: customerName,
+                total: total,
+                remaining: remaining,
+                date: date,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CachedDebtsTable, CachedDebt>(table),
+                  BaseReferences<_$AppDatabase, $CachedDebtsTable, CachedDebt>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CachedDebtsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CachedDebtsTable,
+      CachedDebt,
+      $$CachedDebtsTableFilterComposer,
+      $$CachedDebtsTableOrderingComposer,
+      $$CachedDebtsTableAnnotationComposer,
+      $$CachedDebtsTableCreateCompanionBuilder,
+      $$CachedDebtsTableUpdateCompanionBuilder,
+      (
+        CachedDebt,
+        BaseReferences<_$AppDatabase, $CachedDebtsTable, CachedDebt>,
+      ),
+      CachedDebt,
+      PrefetchHooks Function()
+    >;
 typedef $$SalesTableCreateCompanionBuilder = SalesCompanion Function({
   required String clientRef,
   required String receiptNumber,
@@ -4426,6 +5284,11 @@ typedef $$SalesTableCreateCompanionBuilder = SalesCompanion Function({
   Value<String?> cancelReason,
   Value<int?> amountPaid,
   Value<String?> changeJson,
+  Value<int> kind,
+  Value<String?> debtId,
+  Value<int?> debtTotal,
+  Value<int?> debtBefore,
+  Value<int?> debtAfter,
   Value<int> rowid,
 });
 typedef $$SalesTableUpdateCompanionBuilder = SalesCompanion Function({
@@ -4445,6 +5308,11 @@ typedef $$SalesTableUpdateCompanionBuilder = SalesCompanion Function({
   Value<String?> cancelReason,
   Value<int?> amountPaid,
   Value<String?> changeJson,
+  Value<int> kind,
+  Value<String?> debtId,
+  Value<int?> debtTotal,
+  Value<int?> debtBefore,
+  Value<int?> debtAfter,
   Value<int> rowid,
 });
 
@@ -4533,6 +5401,31 @@ class $$SalesTableFilterComposer extends Composer<_$AppDatabase, $SalesTable> {
 
   ColumnFilters<String> get changeJson => $composableBuilder(
     column: $table.changeJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get debtId => $composableBuilder(
+    column: $table.debtId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get debtTotal => $composableBuilder(
+    column: $table.debtTotal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get debtBefore => $composableBuilder(
+    column: $table.debtBefore,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get debtAfter => $composableBuilder(
+    column: $table.debtAfter,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4625,6 +5518,31 @@ class $$SalesTableOrderingComposer
     column: $table.changeJson,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get debtId => $composableBuilder(
+    column: $table.debtId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get debtTotal => $composableBuilder(
+    column: $table.debtTotal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get debtBefore => $composableBuilder(
+    column: $table.debtBefore,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get debtAfter => $composableBuilder(
+    column: $table.debtAfter,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SalesTableAnnotationComposer
@@ -4701,6 +5619,23 @@ class $$SalesTableAnnotationComposer
     column: $table.changeJson,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get debtId =>
+      $composableBuilder(column: $table.debtId, builder: (column) => column);
+
+  GeneratedColumn<int> get debtTotal =>
+      $composableBuilder(column: $table.debtTotal, builder: (column) => column);
+
+  GeneratedColumn<int> get debtBefore => $composableBuilder(
+    column: $table.debtBefore,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get debtAfter =>
+      $composableBuilder(column: $table.debtAfter, builder: (column) => column);
 }
 
 class $$SalesTableTableManager
@@ -4747,6 +5682,11 @@ class $$SalesTableTableManager
                 Value<String?> cancelReason = const Value.absent(),
                 Value<int?> amountPaid = const Value.absent(),
                 Value<String?> changeJson = const Value.absent(),
+                Value<int> kind = const Value.absent(),
+                Value<String?> debtId = const Value.absent(),
+                Value<int?> debtTotal = const Value.absent(),
+                Value<int?> debtBefore = const Value.absent(),
+                Value<int?> debtAfter = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SalesCompanion(
                 clientRef: clientRef,
@@ -4765,6 +5705,11 @@ class $$SalesTableTableManager
                 cancelReason: cancelReason,
                 amountPaid: amountPaid,
                 changeJson: changeJson,
+                kind: kind,
+                debtId: debtId,
+                debtTotal: debtTotal,
+                debtBefore: debtBefore,
+                debtAfter: debtAfter,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4785,6 +5730,11 @@ class $$SalesTableTableManager
                 Value<String?> cancelReason = const Value.absent(),
                 Value<int?> amountPaid = const Value.absent(),
                 Value<String?> changeJson = const Value.absent(),
+                Value<int> kind = const Value.absent(),
+                Value<String?> debtId = const Value.absent(),
+                Value<int?> debtTotal = const Value.absent(),
+                Value<int?> debtBefore = const Value.absent(),
+                Value<int?> debtAfter = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SalesCompanion.insert(
                 clientRef: clientRef,
@@ -4803,6 +5753,11 @@ class $$SalesTableTableManager
                 cancelReason: cancelReason,
                 amountPaid: amountPaid,
                 changeJson: changeJson,
+                kind: kind,
+                debtId: debtId,
+                debtTotal: debtTotal,
+                debtBefore: debtBefore,
+                debtAfter: debtAfter,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -4843,6 +5798,7 @@ typedef $$DraftCartsTableCreateCompanionBuilder = DraftCartsCompanion Function({
   Value<String?> customerName,
   required DateTime createdAt,
   required DateTime updatedAt,
+  Value<int> kind,
   Value<int> status,
   Value<String?> chargeJson,
   Value<String?> paidSaleRef,
@@ -4854,6 +5810,7 @@ typedef $$DraftCartsTableUpdateCompanionBuilder = DraftCartsCompanion Function({
   Value<String?> customerName,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
+  Value<int> kind,
   Value<int> status,
   Value<String?> chargeJson,
   Value<String?> paidSaleRef,
@@ -4918,6 +5875,11 @@ class $$DraftCartsTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get kind => $composableBuilder(
+    column: $table.kind,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5001,6 +5963,11 @@ class $$DraftCartsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get status => $composableBuilder(
     column: $table.status,
     builder: (column) => ColumnOrderings(column),
@@ -5047,6 +6014,9 @@ class $$DraftCartsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
 
   GeneratedColumn<int> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
@@ -5121,6 +6091,7 @@ class $$DraftCartsTableTableManager
                 Value<String?> customerName = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> kind = const Value.absent(),
                 Value<int> status = const Value.absent(),
                 Value<String?> chargeJson = const Value.absent(),
                 Value<String?> paidSaleRef = const Value.absent(),
@@ -5131,6 +6102,7 @@ class $$DraftCartsTableTableManager
                 customerName: customerName,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                kind: kind,
                 status: status,
                 chargeJson: chargeJson,
                 paidSaleRef: paidSaleRef,
@@ -5143,6 +6115,7 @@ class $$DraftCartsTableTableManager
                 Value<String?> customerName = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<int> kind = const Value.absent(),
                 Value<int> status = const Value.absent(),
                 Value<String?> chargeJson = const Value.absent(),
                 Value<String?> paidSaleRef = const Value.absent(),
@@ -5153,6 +6126,7 @@ class $$DraftCartsTableTableManager
                 customerName: customerName,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                kind: kind,
                 status: status,
                 chargeJson: chargeJson,
                 paidSaleRef: paidSaleRef,
@@ -5657,6 +6631,8 @@ class $AppDatabaseManager {
       $$CachedCategoriesTableTableManager(_db, _db.cachedCategories);
   $$CachedCustomersTableTableManager get cachedCustomers =>
       $$CachedCustomersTableTableManager(_db, _db.cachedCustomers);
+  $$CachedDebtsTableTableManager get cachedDebts =>
+      $$CachedDebtsTableTableManager(_db, _db.cachedDebts);
   $$SalesTableTableManager get sales =>
       $$SalesTableTableManager(_db, _db.sales);
   $$DraftCartsTableTableManager get draftCarts =>

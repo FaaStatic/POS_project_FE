@@ -24,6 +24,7 @@ class TransactionRemoteDatasource {
         'type_payment': q.method?.index,
         'number_invoices': q.invoice,
         'open_conflict': q.openConflict ? true : null,
+        'status': q.status?.name,
         'limit': q.limit,
         'after_id': after?.id,
         'after_time': after?.time,

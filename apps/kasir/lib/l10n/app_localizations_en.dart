@@ -487,19 +487,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get receivePayment => 'Receive cash payment';
-
-  @override
   String get paymentAmount => 'Amount paid';
 
   @override
   String payFull(String amount) {
     return 'Pay off $amount';
-  }
-
-  @override
-  String paymentRecorded(String amount) {
-    return 'Payment recorded. $amount left.';
   }
 
   @override
@@ -810,4 +802,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vCategoryExisting => 'Pick a category that already exists.';
+
+  @override
+  String get receiptMarkUnpaid => 'NOT PAID OFF';
+
+  @override
+  String get receiptDebtPayment => 'DEBT PAYMENT';
+
+  @override
+  String get receiptDebtPaidNow => 'Paid now';
+
+  @override
+  String get receiptDebtPaidTotal => 'Total paid';
+
+  @override
+  String get receiptDebtOwed => 'Balance owed';
+
+  @override
+  String get payDebtTab => 'Pay debt';
+
+  @override
+  String debtTabLabel(int number) {
+    return 'Debt $number';
+  }
+
+  @override
+  String get debtTabPickCustomer => 'Pick a customer';
+
+  @override
+  String get searchDebtCustomers => 'Search customers with debt';
+
+  @override
+  String get debtsEmpty => 'No customer owes anything.';
+
+  @override
+  String get debtTotalOwed => 'Total owed';
+
+  @override
+  String get debtLeft => 'Debt left';
+
+  @override
+  String get debtSettledLabel => 'Debt paid off';
+
+  @override
+  String get debtPickFromList => 'Pick a customer from the debt list.';
+
+  @override
+  String get debtNoDebt => 'This customer has no debt.';
+
+  @override
+  String get historySalesTab => 'Sales';
+
+  @override
+  String get historyDebtTab => 'Debt payments';
+
+  @override
+  String get historyDebtEmpty => 'No debt payments on this device yet.';
+
+  @override
+  String debtLeftAmount(String amount) {
+    return '$amount left';
+  }
+
+  @override
+  String addDebtAmount(String total) {
+    return 'Add $total to debt';
+  }
 }

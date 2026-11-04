@@ -15,6 +15,11 @@ const labels = ReceiptLabels(
   markPaid: 'LUNAS',
   markDebt: 'HUTANG',
   markCancelled: 'DIBATALKAN',
+  markUnpaid: 'BELUM LUNAS',
+  debtPayment: 'PEMBAYARAN HUTANG',
+  debtPaidNow: 'Dibayar sekarang',
+  debtPaidTotal: 'Saldo terbayar',
+  debtOwed: 'Saldo terhutang',
 );
 
 void main() {
@@ -112,5 +117,46 @@ void main() {
     await SaveReceiptSettings(repo)(const ReceiptSettings(storeName: ' Toko ', autoPrint: true));
     expect((await next).storeName, 'Toko');
     expect(GetReceiptSettings(repo)().autoPrint, isTrue);
+  });
+
+  test('a debt payment slip lists what was paid, what is paid so far and what is still owed', () {
+    final payment = sale.copyWith(
+      receiptNumber: 'HTG-ABCD-1',
+      total: 3000,
+      lines: const [],
+      kind: SaleKind.debtPayment,
+      debtTotal: 9000,
+      debtBefore: 5000,
+      debtAfter: 2000,
+    );
+    String text(Sale s) => ReceiptDocument.fromSale(s, const ReceiptSettings(), methodLabel: (_) => 'Tunai', labels: labels)
+        .lines
+        .map((l) => l.text)
+        .join('\n');
+    final partly = text(payment);
+    expect(partly, contains('PEMBAYARAN HUTANG'));
+    expect(partly, contains('Dibayar sekarang'));
+    expect(partly, contains('Rp 3.000'));
+    expect(partly, matches(RegExp(r'Saldo terbayar\s+Rp 7\.000')));
+    expect(partly, matches(RegExp(r'Saldo terhutang\s+Rp 2\.000')));
+    expect(partly, contains('*** BELUM LUNAS ***'));
+    expect(partly, isNot(contains('TOTAL')));
+    for (final line in partly.split('\n')) {
+      expect(line.length, lessThanOrEqualTo(32), reason: line);
+    }
+
+    final settled = text(payment.copyWith(debtBefore: 3000, debtAfter: 0, debtTotal: 9000));
+    expect(settled, contains('*** LUNAS ***'));
+    expect(settled, matches(RegExp(r'Saldo terhutang\s+Rp 0')));
+  });
+
+  test('number, date, cashier and customer rows carry the info role; items and totals do not', () {
+    final doc = ReceiptDocument.fromSale(sale, const ReceiptSettings(), methodLabel: (_) => 'Tunai', labels: labels);
+    String? roleOf(String start) => doc.lines.where((l) => l.text.startsWith(start)).firstOrNull?.role.name;
+    expect(roleOf('No.'), 'info');
+    expect(roleOf('Tanggal'), 'info');
+    expect(roleOf('Kasir'), 'info');
+    expect(roleOf('Customer'), 'info');
+    expect(roleOf('TOTAL'), 'body');
   });
 }

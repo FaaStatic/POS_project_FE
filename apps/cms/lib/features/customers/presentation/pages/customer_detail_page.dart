@@ -1,9 +1,14 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ui/ui.dart';
 
 import '../../../../app/di.dart';
+import '../../../../common/add_debt_form.dart';
 import '../../../../common/failure_text.dart';
+import '../../../../common/feedback.dart';
+import '../../../../common/file_saver.dart';
 import '../../../../common/widgets.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/customers_cubit.dart';
@@ -47,14 +52,29 @@ class CustomerDetailPage extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: Space.xxl),
-                          Text(l10n.debtsTitle, style: theme.textTheme.titleMedium),
-                          const SizedBox(height: Space.sm),
-                          if (c.debts.isEmpty) Text(l10n.noDebts),
-                          // A Wrap, not a ListTile: the badge drops under the amount on narrow screens.
-                          for (final d in c.debts)
+                          _SectionHeader(
+                            title: l10n.debtsTitle,
+                            trailing: c.active
+                                ? IconAction(
+                                    icon: Iconsax.wallet_add_copy,
+                                    tooltip: l10n.addDebt,
+                                    onPressed: () async {
+                                      final cubit = context.read<CustomerDetailCubit>();
+                                      final saved = await showAddDebt(
+                                        context,
+                                        customer: c,
+                                        current: state.openDebt?.remaining ?? 0,
+                                        submit: cubit.addDebt,
+                                      );
+                                      if (saved && context.mounted) toast(context, l10n.debtAdded);
+                                    },
+                                  )
+                                : null,
+                          ),
+                          if (state.openDebt case final d?)
                             Padding(
                               key: ValueKey(d.id),
-                              padding: const EdgeInsets.symmetric(vertical: Space.sm),
+                              padding: const EdgeInsets.only(top: Space.sm),
                               child: Wrap(
                                 alignment: WrapAlignment.spaceBetween,
                                 crossAxisAlignment: WrapCrossAlignment.center,
@@ -65,11 +85,11 @@ class CustomerDetailPage extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
+                                      Text(money(context, d.remaining), style: theme.textTheme.headlineSmall?.tabular),
                                       Text(
-                                        '${money(context, d.remaining)} / ${money(context, d.total)}',
-                                        style: theme.textTheme.bodyLarge?.tabular,
+                                        '${l10n.total} ${money(context, d.total)} · ${dateText(context, d.date)}',
+                                        style: theme.textTheme.bodySmall,
                                       ),
-                                      Text(dateText(context, d.date), style: theme.textTheme.bodySmall),
                                     ],
                                   ),
                                   StatusBadge(
@@ -78,11 +98,30 @@ class CustomerDetailPage extends StatelessWidget {
                                   ),
                                 ],
                               ),
+                            )
+                          else
+                            Padding(padding: const EdgeInsets.only(top: Space.sm), child: Text(l10n.noDebts)),
+                          const SizedBox(height: Space.xxl),
+                          _SectionHeader(title: l10n.debtPaymentsTitle),
+                          const SizedBox(height: Space.xs),
+                          if (state.payments.isEmpty)
+                            Padding(padding: const EdgeInsets.only(top: Space.sm), child: Text(l10n.noDebtPayments)),
+                          for (final p in state.payments)
+                            _PaymentRow(
+                              key: ValueKey(p.id),
+                              payment: p,
+                              onReceipt: () async {
+                                final result = await context.read<CustomerDetailCubit>().receipt(p.id);
+                                if (!context.mounted) return;
+                                if (result case Ok(value: (final bytes, final name))) saveFile(bytes, name);
+                                showResult(context, result, l10n.downloaded);
+                              },
                             ),
                           const SizedBox(height: Space.xxl),
-                          Text(l10n.transactionsTitle, style: theme.textTheme.titleMedium),
-                          const SizedBox(height: Space.sm),
-                          if (state.transactions.isEmpty) Text(l10n.noTransactions),
+                          _SectionHeader(title: l10n.transactionsTitle),
+                          const SizedBox(height: Space.xs),
+                          if (state.transactions.isEmpty)
+                            Padding(padding: const EdgeInsets.only(top: Space.sm), child: Text(l10n.noTransactions)),
                           for (final t in state.transactions)
                             ListTile(
                               key: ValueKey(t.id),
@@ -97,6 +136,75 @@ class CustomerDetailPage extends StatelessWidget {
                   ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Section title with one optional trailing action, the same rhythm for every block on the page.
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title, this.trailing});
+  final String title;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      constraints: const BoxConstraints(minHeight: 40),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant))),
+      child: Row(
+        children: [
+          Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
+          ?trailing,
+        ],
+      ),
+    );
+  }
+}
+
+/// One installment: when and who took it on the left, what was paid and what is left on the right.
+class _PaymentRow extends StatelessWidget {
+  const _PaymentRow({super.key, required this.payment, required this.onReceipt});
+  final DebtPaymentEntry payment;
+  final VoidCallback onReceipt;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: Space.sm),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant))),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(dateTimeText(context, payment.paidAt), style: theme.textTheme.bodyLarge),
+                Text(
+                  '${l10n.cashierName}: ${payment.cashier.isEmpty ? l10n.paidViaCms : payment.cashier}',
+                  style: theme.textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: Space.md),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(money(context, payment.amount), style: theme.textTheme.titleSmall?.tabular),
+              Text('${l10n.balanceLeft} ${money(context, payment.remaining)}', style: theme.textTheme.bodySmall?.tabular),
+              const SizedBox(height: Space.xs),
+              StatusBadge(
+                label: payment.paid ? l10n.debtPaid : l10n.debtUnpaid,
+                tone: payment.paid ? BadgeTone.success : BadgeTone.warning,
+              ),
+            ],
+          ),
+          IconAction(icon: Iconsax.document_download_copy, tooltip: l10n.downloadDebtReceipt, onPressed: onReceipt),
+        ],
       ),
     );
   }

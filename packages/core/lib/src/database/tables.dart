@@ -37,7 +37,20 @@ class CachedCustomers extends Table {
   TextColumn get name => text()();
   TextColumn get phone => text().withDefault(const Constant(''))();
   TextColumn get address => text().withDefault(const Constant(''))();
-  IntColumn get outstandingDebt => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Open debts, one per customer, cached for the "Bayar hutang" tab so it works offline.
+/// Payments made on this device lower `remaining` here before the server hears of them.
+class CachedDebts extends Table {
+  TextColumn get id => text()();
+  TextColumn get customerId => text()();
+  TextColumn get customerName => text().withDefault(const Constant(''))();
+  IntColumn get total => integer()();
+  IntColumn get remaining => integer()();
+  DateTimeColumn get date => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -74,6 +87,15 @@ class Sales extends Table {
   /// JSON list of the change lines (kind, amount, product, qty); null when none were recorded.
   TextColumn get changeJson => text().nullable()();
 
+  /// 0 sale, 1 debt payment. A debt payment has no lines; `total` is the amount paid toward the debt.
+  IntColumn get kind => integer().withDefault(const Constant(0))();
+  TextColumn get debtId => text().nullable()();
+
+  /// What the customer still owed before and after a debt payment.
+  IntColumn get debtTotal => integer().nullable()();
+  IntColumn get debtBefore => integer().nullable()();
+  IntColumn get debtAfter => integer().nullable()();
+
   @override
   Set<Column> get primaryKey => {clientRef};
 }
@@ -86,6 +108,9 @@ class DraftCarts extends Table {
   TextColumn get customerName => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
+
+  /// 0 sale tab ("Transaksi N"), 1 debt payment tab ("Hutang N").
+  IntColumn get kind => integer().withDefault(const Constant(0))();
 
   /// 0 open, 1 awaiting QRIS/VA, 2 paid (receipt not yet dismissed).
   IntColumn get status => integer().withDefault(const Constant(0))();

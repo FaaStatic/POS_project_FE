@@ -301,18 +301,9 @@
       }
     }
   },
-  "receivePayment": "Terima pembayaran tunai",
   "paymentAmount": "Jumlah dibayar",
   "payFull": "Lunasi {amount}",
   "@payFull": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "paymentRecorded": "Pembayaran dicatat. Sisa {amount}.",
-  "@paymentRecorded": {
     "placeholders": {
       "amount": {
         "type": "String"
@@ -499,5 +490,46 @@
   "vImageSize": "Ukuran gambar maksimal 500 KB.",
   "vImageDimensions": "Sisi gambar maksimal 4000 piksel.",
   "categoryPickHint": "Cari atau pilih kategori",
-  "vCategoryExisting": "Pilih kategori yang sudah ada."
+  "vCategoryExisting": "Pilih kategori yang sudah ada.",
+  "receiptMarkUnpaid": "BELUM LUNAS",
+  "receiptDebtPayment": "PEMBAYARAN HUTANG",
+  "receiptDebtPaidNow": "Dibayar sekarang",
+  "receiptDebtPaidTotal": "Saldo terbayar",
+  "receiptDebtOwed": "Saldo terhutang",
+  "payDebtTab": "Bayar hutang",
+  "debtTabLabel": "Hutang {number}",
+  "@debtTabLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "debtTabPickCustomer": "Pilih pelanggan",
+  "searchDebtCustomers": "Cari pelanggan berhutang",
+  "debtsEmpty": "Tidak ada pelanggan yang berhutang.",
+  "debtTotalOwed": "Total hutang",
+  "debtLeft": "Sisa hutang",
+  "debtSettledLabel": "Hutang lunas",
+  "debtPickFromList": "Pilih pelanggan dari daftar hutang.",
+  "debtNoDebt": "Pelanggan ini tidak punya hutang.",
+  "historySalesTab": "Penjualan",
+  "historyDebtTab": "Pembayaran hutang",
+  "historyDebtEmpty": "Belum ada pembayaran hutang di perangkat ini.",
+  "debtLeftAmount": "Sisa {amount}",
+  "@debtLeftAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "addDebtAmount": "Tambah hutang {total}",
+  "@addDebtAmount": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  }
 }

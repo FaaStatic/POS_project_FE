@@ -19,6 +19,7 @@ class DriftSalesLog implements SalesLog {
 
   static const _deviceCodeKey = 'device_code';
   static const _seqKey = 'offline_seq';
+  static const _debtSeqKey = 'debt_seq';
 
   @override
   Future<void> add(Sale sale) => _db.into(_db.sales).insertOnConflictUpdate(_companion(sale));
@@ -41,8 +42,8 @@ class DriftSalesLog implements SalesLog {
   }
 
   @override
-  Future<List<Sale>> pending({int limit = 100}) async => (await (_db.select(_db.sales)
-            ..where((s) => s.status.equals(SaleStatus.pending.index))
+  Future<List<Sale>> pending({int limit = 100, SaleKind? kind}) async => (await (_db.select(_db.sales)
+            ..where((s) => s.status.equals(SaleStatus.pending.index) & (kind == null ? const Constant(true) : s.kind.equals(kind.index)))
             ..orderBy([(s) => OrderingTerm.asc(s.createdAt)])
             ..limit(limit))
           .get())
@@ -86,16 +87,21 @@ class DriftSalesLog implements SalesLog {
       ));
 
   @override
-  Future<String> nextOfflineNumber() async {
+  Future<String> nextOfflineNumber() => _next('OFF', _seqKey);
+
+  @override
+  Future<String> nextDebtNumber() => _next('HTG', _debtSeqKey);
+
+  Future<String> _next(String prefix, String seqKey) async {
     var code = _store.getString(_deviceCodeKey);
     if (code == null) {
       const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       code = List.generate(4, (_) => alphabet[_random.nextInt(alphabet.length)]).join();
       await _store.setString(_deviceCodeKey, code);
     }
-    final seq = (_store.getInt(_seqKey) ?? 0) + 1;
-    await _store.setInt(_seqKey, seq);
-    return 'OFF-$code-$seq';
+    final seq = (_store.getInt(seqKey) ?? 0) + 1;
+    await _store.setInt(seqKey, seq);
+    return '$prefix-$code-$seq';
   }
 
   static Sale _sale(SaleRow r) => Sale(
@@ -122,6 +128,11 @@ class DriftSalesLog implements SalesLog {
         transactionId: r.transactionId,
         stockConflict: r.stockConflict,
         cancelReason: r.cancelReason,
+        kind: SaleKind.values[r.kind],
+        debtId: r.debtId,
+        debtTotal: r.debtTotal,
+        debtBefore: r.debtBefore,
+        debtAfter: r.debtAfter,
         amountPaid: r.amountPaid,
         change: [
           if (r.changeJson != null)
@@ -162,6 +173,11 @@ class DriftSalesLog implements SalesLog {
         transactionId: Value(s.transactionId),
         stockConflict: Value(s.stockConflict),
         cancelReason: Value(s.cancelReason),
+        kind: Value(s.kind.index),
+        debtId: Value(s.debtId),
+        debtTotal: Value(s.debtTotal),
+        debtBefore: Value(s.debtBefore),
+        debtAfter: Value(s.debtAfter),
         amountPaid: Value(s.amountPaid),
         changeJson: Value(
           s.change.isEmpty

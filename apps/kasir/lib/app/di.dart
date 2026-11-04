@@ -9,7 +9,6 @@ import '../features/checkout/domain/usecases/checkout_usecases.dart';
 import '../features/checkout/presentation/bloc/assign_barcode_cubit.dart';
 import '../features/checkout/presentation/bloc/checkout_bloc.dart';
 import '../features/customers/presentation/bloc/customers_cubit.dart';
-import '../features/debts/presentation/bloc/debt_payment_cubit.dart';
 import '../features/history/domain/usecases/history_usecases.dart';
 import '../features/history/presentation/bloc/history_cubit.dart';
 import '../features/printer/data/bluetooth_receipt_printer.dart';
@@ -84,15 +83,13 @@ void setupDependencies({
     ..registerFactory(() => GetPreferences(getIt()))
     ..registerFactory(() => SetTheme(getIt()))
     ..registerFactory(() => SetLanguage(getIt()))
-    ..registerFactory(() => RefreshCatalog(getIt(), getIt(), getIt(), getIt()))
+    ..registerFactory(() => RefreshCatalog(getIt(), getIt(), getIt(), getIt(), getIt()))
     ..registerFactory(() => GetProduct(getIt()))
     ..registerFactory(() => UpdateProduct(getIt()))
     ..registerFactory(() => AdjustStock(getIt()))
     ..registerFactory(() => AssignBarcode(getIt()))
     ..registerFactory(() => CreateCustomer(getIt()))
     ..registerFactory(() => GetCustomer(getIt()))
-    ..registerFactory(() => GetDebt(getIt()))
-    ..registerFactory(() => PayDebt(getIt()))
     ..registerFactory(() => ChargeQris(getIt()))
     ..registerFactory(() => ChargeVa(getIt()))
     ..registerFactory(() => CheckPaymentStatus(getIt()))
@@ -109,11 +106,14 @@ void setupDependencies({
     ..registerFactory(() => FindStockShortfalls(getIt()))
     ..registerFactory(() => CheckoutTransaction(
           transactions: getIt(), sales: getIt(), drafts: getIt(), cache: getIt(), network: getIt(), session: getIt()))
+    ..registerFactory(() => PayDebtAtCounter(
+          debts: getIt(), sales: getIt(), drafts: getIt(), cache: getIt(), network: getIt(), session: getIt()))
     ..registerFactory(() => StartCharge(qris: getIt(), va: getIt(), drafts: getIt(), network: getIt(), session: getIt()))
     ..registerFactory(() => ResolveCharge(
           status: getIt(), transactions: getIt(), sales: getIt(), drafts: getIt(), cache: getIt(), session: getIt()))
-    ..registerFactory(() => SyncPendingTransactions(getIt(), getIt(), getIt()))
+    ..registerFactory(() => SyncPendingTransactions(getIt(), getIt(), getIt(), getIt(), getIt()))
     ..registerFactory(() => WatchSales(getIt()))
+    ..registerFactory(() => GetDebtPayments(getIt()))
     ..registerFactory(() => GetSale(getIt()))
     ..registerFactory(() => CancelSale(getIt(), getIt(), getIt()))
     ..registerFactory(() => CheckLogout(getIt(), getIt()))
@@ -130,6 +130,7 @@ void setupDependencies({
           scan: getIt(),
           purge: getIt(),
           checkout: getIt(),
+          payDebt: getIt(),
           startCharge: getIt(),
           resolveCharge: getIt(),
           shortfalls: getIt(),
@@ -142,13 +143,14 @@ void setupDependencies({
           scheduleNext: scheduleSync ?? const SyncScheduler().scheduleNext,
         ))
     ..registerFactory(() => ProductsCubit(getIt(), debounce: const Duration(milliseconds: 250)))
-    ..registerFactory(() => CustomersCubit(getIt()))
+    ..registerFactory(() => RefreshCustomers(getIt(), getIt()))
+    ..registerFactory(() => CustomersCubit(getIt(), getIt()))
+    ..registerFactory(() => DebtsCubit(getIt()))
     ..registerFactory(() => AddCustomerCubit(getIt(), getIt(), getIt()))
     ..registerFactory(() => CustomerDetailCubit(getIt(), getIt()))
-    ..registerFactory(() => DebtPaymentCubit(getIt(), getIt(), getIt()))
     ..registerFactory(() => ProductEditCubit(getIt(), getIt(), getIt(), getIt()))
     ..registerFactory(() => AssignBarcodeCubit(getIt(), getIt()))
-    ..registerFactory(() => HistoryCubit(getIt()))
+    ..registerFactory(() => HistoryCubit(getIt(), getIt(), getIt()))
     ..registerFactory(() => SaleDetailCubit(getIt(), getIt(), getIt()))
     ..registerFactory(() => ReceiptSettingsCubit(getIt(), getIt()));
 }

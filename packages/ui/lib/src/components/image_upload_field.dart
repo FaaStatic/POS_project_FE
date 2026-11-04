@@ -82,10 +82,10 @@ class _ImageUploadFieldState extends State<ImageUploadField> {
     const size = _size;
     final picked = _picked;
     // A file just picked is drawn from its own bytes, so its base64 is not decoded for nothing.
+    final tile = Center(child: Icon(Iconsax.gallery_copy, size: size * 0.4, color: scheme.onSurfaceVariant));
     final stored = has && picked == null
-        ? imageProviderFor(widget.value, cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil())
+        ? storedImageFor(widget.value, cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil(), fallback: tile)
         : null;
-    final tile = Icon(Iconsax.gallery_copy, size: size * 0.4, color: scheme.onSurfaceVariant);
 
     return MergeSemantics(
       child: Column(
@@ -109,12 +109,10 @@ class _ImageUploadFieldState extends State<ImageUploadField> {
                 ),
                 child: ExcludeSemantics(
                   child: !has
-                      ? Center(child: tile)
+                      ? tile
                       : picked != null
-                          ? Image.memory(picked.bytes, fit: BoxFit.cover, cacheWidth: (size * 2).ceil(), errorBuilder: (_, _, _) => Center(child: tile))
-                          : stored == null
-                              ? Center(child: tile)
-                              : Image(image: stored, fit: BoxFit.cover, errorBuilder: (_, _, _) => Center(child: tile)),
+                          ? Image.memory(picked.bytes, fit: BoxFit.cover, cacheWidth: (size * 2).ceil(), errorBuilder: (_, _, _) => tile)
+                          : stored ?? tile,
                 ),
               ),
               Expanded(

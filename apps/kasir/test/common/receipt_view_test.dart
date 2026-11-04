@@ -8,7 +8,7 @@ ReceiptDocument _doc() => ReceiptDocument(const [
       ReceiptLine('Toko Maju', align: ReceiptAlign.center, bold: true, role: ReceiptRole.store),
       ReceiptLine('Jl. Melati 1', align: ReceiptAlign.center, role: ReceiptRole.address),
       ReceiptLine('--------------------------------'),
-      ReceiptLine('Kasir    : kasir1'),
+      ReceiptLine('Kasir    : kasir1', role: ReceiptRole.info),
       ReceiptLine('Indomie Goreng'),
       ReceiptLine('  2 x Rp 3.500           Rp 7.000'),
       ReceiptLine('TOTAL                    Rp 7.000', bold: true),
@@ -69,12 +69,13 @@ void main() {
     expect(opacity.opacity, lessThan(0.1));
   });
 
-  testWidgets('store name, address and footer are sized from the type scale and the body is 14sp', (tester) async {
+  testWidgets('store name, address and footer are sized from the type scale and the body is 15sp', (tester) async {
     await _pump(tester);
     expect(_line(tester, 'Toko Maju').style?.fontSize, 28);
-    expect(_line(tester, 'Jl. Melati 1').style?.fontSize, 16);
-    expect(_line(tester, 'Terima kasih').style?.fontSize, 18);
-    expect(_line(tester, 'Kasir    : kasir1').style?.fontSize, 14);
+    expect(_line(tester, 'Jl. Melati 1').style?.fontSize, 8);
+    expect(_line(tester, 'Terima kasih').style?.fontSize, 12);
+    expect(_line(tester, 'Kasir    : kasir1').style?.fontSize, 12);
+    expect(_line(tester, 'Indomie Goreng').style?.fontSize, 15);
   });
 
   testWidgets('a screen reader reads the receipt as one block', (tester) async {
@@ -82,5 +83,33 @@ void main() {
     await _pump(tester);
     expect(find.bySemanticsLabel(RegExp('Toko Maju')), findsOneWidget);
     handle.dispose();
+  });
+
+  testWidgets('fill grows the slip into the width it is given, in proportion; without it the phone size stays', (tester) async {
+    Future<Size> paper({required bool fill}) async {
+      tester.view.physicalSize = const Size(1000, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 800), child: ReceiptView(document: _doc(), fill: fill))),
+        ),
+      ));
+      return tester.getSize(find.descendant(of: find.byType(ReceiptView), matching: find.byType(DecoratedBox)).first);
+    }
+
+    Future<double> ink({required bool fill}) async {
+      await paper(fill: fill);
+      final line = find.text('TOTAL                    Rp 7.000');
+      // Corners are mapped through the FittedBox, so this is the width drawn on screen.
+      return tester.getTopRight(line).dx - tester.getTopLeft(line).dx;
+    }
+
+    // The paper takes the width it is given either way; fill scales the writing on it, as a whole.
+    final natural = await ink(fill: false);
+    final grown = await ink(fill: true);
+    expect((await paper(fill: true)).width, 800);
+    expect(grown, greaterThan(natural * 1.2));
+    expect(grown, lessThanOrEqualTo(800));
   });
 }

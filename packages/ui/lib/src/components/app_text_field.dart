@@ -32,6 +32,7 @@ class AppTextField extends StatefulWidget {
     this.prefixText,
     this.suffix,
     this.focusNode,
+    this.groupId,
   });
 
   final String label;
@@ -60,6 +61,9 @@ class AppTextField extends StatefulWidget {
   final Widget? suffix;
   final FocusNode? focusNode;
 
+  /// Taps inside a [TextFieldTapRegion] of this group do not count as outside the field.
+  final Object? groupId;
+
   @override
   State<AppTextField> createState() => _AppTextFieldState();
 }
@@ -83,6 +87,7 @@ class _AppTextFieldState extends State<AppTextField> {
         controller: widget.controller,
         initialValue: widget.controller == null ? widget.initialValue : null,
         focusNode: widget.focusNode,
+        groupId: widget.groupId,
         enabled: widget.enabled,
         autofocus: widget.autofocus,
         obscureText: widget.password && _obscured,

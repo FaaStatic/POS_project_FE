@@ -51,9 +51,9 @@ class SyncCubit extends Cubit<SyncState> {
     });
     unawaited(scheduleNext().catchError((_) {}));
     if (online) {
-      await refreshCatalog();
-      _lastRefresh = DateTime.now();
-      await syncNow(quiet: true);
+      // Queued sales and debt payments go first: the server does not know them yet, so a catalog pulled
+      // before they are sent would show the old stock and debts again.
+      await syncNow(quiet: true, pullCatalog: true);
     }
   }
 
@@ -80,11 +80,22 @@ class SyncCubit extends Cubit<SyncState> {
     }
   }
 
-  /// [quiet] syncs do not produce a snackbar report.
-  Future<void> syncNow({bool quiet = false}) async {
+  /// [quiet] syncs do not produce a snackbar report. [pullCatalog] is for a person asking to
+  /// refresh (button, pull-to-refresh): products, categories and customers are re-read too, so
+  /// an edit made in the CMS shows up. Sending sales alone only refreshes the catalog when some
+  /// were accepted.
+  Future<void> syncNow({bool quiet = false, bool pullCatalog = false}) async {
     if (state.syncing) return;
     emit(state.copyWith(syncing: true, failure: null));
     final result = await sync();
+    // Sales still waiting are not in the server stock yet, so a pull now would undo them locally.
+    // Sending sales already refreshes the catalog, so it is only pulled when nothing was sent.
+    final report = result is Ok<SyncReport> ? result.value : null;
+    final idle = report == null ? state.pending == 0 : report.remaining == 0;
+    if (pullCatalog && state.online && idle) {
+      if ((report?.synced ?? 0) == 0) await refreshCatalog();
+      _lastRefresh = DateTime.now();
+    }
     emit(switch (result) {
       Ok(:final value) => state.copyWith(
         syncing: false,

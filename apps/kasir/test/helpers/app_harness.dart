@@ -46,6 +46,7 @@ class AppHarness {
       ..on('POST', ApiPaths.refresh, (_) => FakeReply(200, loginData()))
       ..on('GET', ApiPaths.products, (_) => FakeReply(200, envelope({'has_next': false, 'product_list': products.map(productJson).toList()})))
       ..on('GET', ApiPaths.categories, (_) => FakeReply(200, envelope([])))
+      ..on('GET', ApiPaths.debts, (_) => FakeReply(200, envelope({'has_next': false, 'transaction_list': []})))
       ..on('GET', ApiPaths.customers, (_) => FakeReply(200, envelope({'has_next': false, 'customer_lists': []})))
       ..on('POST', ApiPaths.transactionsSync, (o) => FakeReply(200, envelope({
             'results': [

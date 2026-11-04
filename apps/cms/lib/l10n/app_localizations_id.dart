@@ -724,6 +724,23 @@ class AppLocalizationsId extends AppLocalizations {
   String get debtAdded => 'Hutang ditambahkan.';
 
   @override
+  String get addDebt => 'Tambah hutang';
+
+  @override
+  String get currentDebt => 'Hutang saat ini';
+
+  @override
+  String debtBecomes(String amount) {
+    return 'Menjadi $amount';
+  }
+
+  @override
+  String get debtNote => 'Keterangan (opsional)';
+
+  @override
+  String get debtNoteHint => 'Mis. pinjam tunai';
+
+  @override
   String get dueDate => 'Jatuh tempo (opsional)';
 
   @override
@@ -976,4 +993,43 @@ class AppLocalizationsId extends AppLocalizations {
   String createCategory(String name) {
     return 'Buat kategori \"$name\"';
   }
+
+  @override
+  String get statusSuccess => 'Sukses';
+
+  @override
+  String get statusCancelled => 'Batal';
+
+  @override
+  String cancelledReasonLine(String reason) {
+    return 'Alasan batal: $reason';
+  }
+
+  @override
+  String get debtPaymentsTitle => 'Pembayaran hutang';
+
+  @override
+  String get noDebtPayments => 'Belum ada pembayaran hutang.';
+
+  @override
+  String get paidAmount => 'Dibayar';
+
+  @override
+  String get balanceLeft => 'Sisa hutang';
+
+  @override
+  String get cashierName => 'Kasir';
+
+  @override
+  String get paidViaCms => 'CMS';
+
+  @override
+  String get downloadDebtReceipt => 'Unduh struk pembayaran';
+
+  @override
+  String get debtRecapReport => 'Rekap pembayaran hutang';
+
+  @override
+  String get debtRecapHint =>
+      'Satu tabel berisi semua pembayaran hutang dalam sebulan, untuk semua pelanggan: pelanggan, kasir, tanggal bayar, saldo total, dibayarkan, sisa saldo, dan status lunas.';
 }

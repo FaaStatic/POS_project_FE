@@ -60,6 +60,7 @@ class _Body extends StatelessWidget {
     final t = transaction;
     final cubit = context.read<TransactionDetailCubit>();
     final num = theme.textTheme.bodyLarge?.tabular;
+    final cancelled = t.status == TransactionStatus.cancelled;
 
     return ConstrainedBody(
       padding: const EdgeInsets.all(Space.lg),
@@ -76,6 +77,10 @@ class _Body extends StatelessWidget {
               children: [
                 Text(dateTimeText(context, t.createdAt), style: theme.textTheme.bodyLarge),
                 Text(methodLabel(l10n, t.method), style: theme.textTheme.bodyLarge),
+                StatusBadge(
+                  label: cancelled ? l10n.statusCancelled : l10n.statusSuccess,
+                  tone: cancelled ? BadgeTone.danger : BadgeTone.success,
+                ),
                 if (t.stockConflict)
                   StatusBadge(
                     label: t.conflictReviewed ? l10n.reviewed : l10n.conflict,
@@ -83,7 +88,11 @@ class _Body extends StatelessWidget {
                   ),
               ],
             ),
-            if (t.stockConflict && !t.conflictReviewed) ...[
+            if (cancelled && t.cancelReason.isNotEmpty) ...[
+              const SizedBox(height: Space.md),
+              Text(l10n.cancelledReasonLine(t.cancelReason), style: theme.textTheme.bodyMedium),
+            ],
+            if (t.stockConflict && !t.conflictReviewed && !cancelled) ...[
               const SizedBox(height: Space.lg),
               Text(l10n.conflictHint, style: theme.textTheme.bodyMedium),
               const SizedBox(height: Space.sm),
@@ -173,6 +182,7 @@ class _Body extends StatelessWidget {
                     showResult(context, result, l10n.downloaded);
                   },
                 ),
+                if (!cancelled)
                 AppButton(
                   label: l10n.cancelTransaction,
                   variant: AppButtonVariant.destructive,

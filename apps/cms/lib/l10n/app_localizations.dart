@@ -1424,6 +1424,36 @@ abstract class AppLocalizations {
   /// **'Hutang ditambahkan.'**
   String get debtAdded;
 
+  /// No description provided for @addDebt.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah hutang'**
+  String get addDebt;
+
+  /// No description provided for @currentDebt.
+  ///
+  /// In id, this message translates to:
+  /// **'Hutang saat ini'**
+  String get currentDebt;
+
+  /// No description provided for @debtBecomes.
+  ///
+  /// In id, this message translates to:
+  /// **'Menjadi {amount}'**
+  String debtBecomes(String amount);
+
+  /// No description provided for @debtNote.
+  ///
+  /// In id, this message translates to:
+  /// **'Keterangan (opsional)'**
+  String get debtNote;
+
+  /// No description provided for @debtNoteHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Mis. pinjam tunai'**
+  String get debtNoteHint;
+
   /// No description provided for @dueDate.
   ///
   /// In id, this message translates to:
@@ -1867,6 +1897,78 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Buat kategori \"{name}\"'**
   String createCategory(String name);
+
+  /// No description provided for @statusSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Sukses'**
+  String get statusSuccess;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In id, this message translates to:
+  /// **'Batal'**
+  String get statusCancelled;
+
+  /// No description provided for @cancelledReasonLine.
+  ///
+  /// In id, this message translates to:
+  /// **'Alasan batal: {reason}'**
+  String cancelledReasonLine(String reason);
+
+  /// No description provided for @debtPaymentsTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran hutang'**
+  String get debtPaymentsTitle;
+
+  /// No description provided for @noDebtPayments.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada pembayaran hutang.'**
+  String get noDebtPayments;
+
+  /// No description provided for @paidAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Dibayar'**
+  String get paidAmount;
+
+  /// No description provided for @balanceLeft.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa hutang'**
+  String get balanceLeft;
+
+  /// No description provided for @cashierName.
+  ///
+  /// In id, this message translates to:
+  /// **'Kasir'**
+  String get cashierName;
+
+  /// No description provided for @paidViaCms.
+  ///
+  /// In id, this message translates to:
+  /// **'CMS'**
+  String get paidViaCms;
+
+  /// No description provided for @downloadDebtReceipt.
+  ///
+  /// In id, this message translates to:
+  /// **'Unduh struk pembayaran'**
+  String get downloadDebtReceipt;
+
+  /// No description provided for @debtRecapReport.
+  ///
+  /// In id, this message translates to:
+  /// **'Rekap pembayaran hutang'**
+  String get debtRecapReport;
+
+  /// No description provided for @debtRecapHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Satu tabel berisi semua pembayaran hutang dalam sebulan, untuk semua pelanggan: pelanggan, kasir, tanggal bayar, saldo total, dibayarkan, sisa saldo, dan status lunas.'**
+  String get debtRecapHint;
 }
 
 class _AppLocalizationsDelegate

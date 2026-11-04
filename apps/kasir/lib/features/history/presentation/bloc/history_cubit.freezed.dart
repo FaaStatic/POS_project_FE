@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HistoryState {
 
- bool get loading; List<Sale> get sales;
+ bool get loading; List<Sale> get sales;/// The server's newest debt payments (any register, or the CMS), as last fetched.
+ List<DebtPaymentEntry> get payments;
 /// Create a copy of HistoryState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +28,20 @@ $HistoryStateCopyWith<HistoryState> get copyWith => _$HistoryStateCopyWithImpl<H
 @override
 bool operator ==(Object other) {
   final _this = this as HistoryState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryState&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&const DeepCollectionEquality().equals(other.sales, _this.sales));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryState&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&const DeepCollectionEquality().equals(other.sales, _this.sales)&&const DeepCollectionEquality().equals(other.payments, _this.payments));
 }
 
 
 @override
 int get hashCode {
   final _this = this as HistoryState;
-  return Object.hash(runtimeType,_this.loading,const DeepCollectionEquality().hash(_this.sales));
+  return Object.hash(runtimeType,_this.loading,const DeepCollectionEquality().hash(_this.sales),const DeepCollectionEquality().hash(_this.payments));
 }
 
 @override
 String toString() {
   final _this = this as HistoryState;
-  return 'HistoryState(loading: ${_this.loading}, sales: ${_this.sales})';
+  return 'HistoryState(loading: ${_this.loading}, sales: ${_this.sales}, payments: ${_this.payments})';
 }
 
 
@@ -51,7 +52,7 @@ abstract mixin class $HistoryStateCopyWith<$Res>  {
   factory $HistoryStateCopyWith(HistoryState value, $Res Function(HistoryState) _then) = _$HistoryStateCopyWithImpl;
 @useResult
 $Res call({
- bool loading, List<Sale> sales
+ bool loading, List<Sale> sales, List<DebtPaymentEntry> payments
 });
 
 
@@ -68,11 +69,12 @@ class _$HistoryStateCopyWithImpl<$Res>
 
 /// Create a copy of HistoryState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? loading = null,Object? sales = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? loading = null,Object? sales = null,Object? payments = null,}) {
   return _then(HistoryState(
 loading: null == loading ? _self.loading : loading // ignore: cast_nullable_to_non_nullable
 as bool,sales: null == sales ? _self.sales : sales // ignore: cast_nullable_to_non_nullable
-as List<Sale>,
+as List<Sale>,payments: null == payments ? _self.payments : payments // ignore: cast_nullable_to_non_nullable
+as List<DebtPaymentEntry>,
   ));
 }
 
@@ -157,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool loading,  List<Sale> sales)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool loading,  List<Sale> sales,  List<DebtPaymentEntry> payments)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HistoryState() when $default != null:
-return $default(_that.loading,_that.sales);case _:
+return $default(_that.loading,_that.sales,_that.payments);case _:
   return orElse();
 
 }
@@ -178,10 +180,10 @@ return $default(_that.loading,_that.sales);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool loading,  List<Sale> sales)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool loading,  List<Sale> sales,  List<DebtPaymentEntry> payments)  $default,) {final _that = this;
 switch (_that) {
 case _HistoryState():
-return $default(_that.loading,_that.sales);case _:
+return $default(_that.loading,_that.sales,_that.payments);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +200,10 @@ return $default(_that.loading,_that.sales);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool loading,  List<Sale> sales)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool loading,  List<Sale> sales,  List<DebtPaymentEntry> payments)?  $default,) {final _that = this;
 switch (_that) {
 case _HistoryState() when $default != null:
-return $default(_that.loading,_that.sales);case _:
+return $default(_that.loading,_that.sales,_that.payments);case _:
   return null;
 
 }
@@ -212,8 +214,8 @@ return $default(_that.loading,_that.sales);case _:
 /// @nodoc
 
 
-class _HistoryState implements HistoryState {
-  const _HistoryState({this.loading = true,  List<Sale> sales = const []}): _sales = sales;
+class _HistoryState extends HistoryState {
+  const _HistoryState({this.loading = true,  List<Sale> sales = const [],  List<DebtPaymentEntry> payments = const []}): _sales = sales,_payments = payments,super._();
   
 
 @override@JsonKey() final  bool loading;
@@ -222,6 +224,15 @@ class _HistoryState implements HistoryState {
   if (_sales is EqualUnmodifiableListView) return _sales;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_sales);
+}
+
+/// The server's newest debt payments (any register, or the CMS), as last fetched.
+ final  List<DebtPaymentEntry> _payments;
+/// The server's newest debt payments (any register, or the CMS), as last fetched.
+@override@JsonKey() List<DebtPaymentEntry> get payments {
+  if (_payments is EqualUnmodifiableListView) return _payments;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_payments);
 }
 
 
@@ -235,18 +246,18 @@ _$HistoryStateCopyWith<_HistoryState> get copyWith => __$HistoryStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryState&&(identical(other.loading, loading) || other.loading == loading)&&const DeepCollectionEquality().equals(other.sales, _sales));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryState&&(identical(other.loading, loading) || other.loading == loading)&&const DeepCollectionEquality().equals(other.sales, _sales)&&const DeepCollectionEquality().equals(other.payments, _payments));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,loading,const DeepCollectionEquality().hash(_sales));
+    return Object.hash(runtimeType,loading,const DeepCollectionEquality().hash(_sales),const DeepCollectionEquality().hash(_payments));
 }
 
 @override
 String toString() {
-    return 'HistoryState(loading: $loading, sales: $sales)';
+    return 'HistoryState(loading: $loading, sales: $sales, payments: $payments)';
 }
 
 
@@ -257,7 +268,7 @@ abstract mixin class _$HistoryStateCopyWith<$Res> implements $HistoryStateCopyWi
   factory _$HistoryStateCopyWith(_HistoryState value, $Res Function(_HistoryState) _then) = __$HistoryStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool loading, List<Sale> sales
+ bool loading, List<Sale> sales, List<DebtPaymentEntry> payments
 });
 
 
@@ -274,11 +285,12 @@ class __$HistoryStateCopyWithImpl<$Res>
 
 /// Create a copy of HistoryState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? loading = null,Object? sales = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? loading = null,Object? sales = null,Object? payments = null,}) {
   return _then(_HistoryState(
 loading: null == loading ? _self.loading : loading // ignore: cast_nullable_to_non_nullable
 as bool,sales: null == sales ? _self._sales : sales // ignore: cast_nullable_to_non_nullable
-as List<Sale>,
+as List<Sale>,payments: null == payments ? _self._payments : payments // ignore: cast_nullable_to_non_nullable
+as List<DebtPaymentEntry>,
   ));
 }
 

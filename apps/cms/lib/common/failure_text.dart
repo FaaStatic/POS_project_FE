@@ -10,6 +10,8 @@ String failureText(BuildContext context, Failure failure) {
     NetworkFailure() => l10n.errorNetwork,
     TimeoutFailure() => l10n.errorTimeout,
     UnauthorizedFailure(message: null) => l10n.sessionExpired,
+    // The backend refuses a permanent delete with this text while the customer still owes.
+    ConflictFailure(:final message?) when message.contains('unpaid debt') => l10n.customerHasDebt,
     ValidationFailure(:final message?) || ConflictFailure(:final message?) => _keyText(l10n, message) ?? message,
     _ => failure.message ?? l10n.errorUnknown,
   };
@@ -17,7 +19,6 @@ String failureText(BuildContext context, Failure failure) {
 
 String? _keyText(AppLocalizations l10n, String key) => switch (key) {
       'confirm_mismatch' => l10n.purgeMismatch,
-      'customer_has_debt' => l10n.customerHasDebt,
       'category_duplicate' => l10n.categoryDuplicate,
       'category_length' => l10n.vCategoryLength,
       'zero_delta' => l10n.vZero,

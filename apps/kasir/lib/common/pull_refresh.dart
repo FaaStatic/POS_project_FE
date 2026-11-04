@@ -15,5 +15,5 @@ class PullRefresh extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      RefreshIndicator(onRefresh: () => context.read<SyncCubit>().syncNow(quiet: true), child: child);
+      RefreshIndicator(onRefresh: () => context.read<SyncCubit>().syncNow(quiet: true, pullCatalog: true), child: child);
 }

@@ -6,7 +6,7 @@ class OpenDraft {
   const OpenDraft(this._drafts);
   final DraftRepository _drafts;
 
-  Future<Draft> call() => _drafts.create();
+  Future<Draft> call({DraftKind kind = DraftKind.sale}) => _drafts.create(kind: kind);
 }
 
 /// Discards a tab. Tabs waiting for QRIS/VA cannot be closed.
@@ -224,6 +224,90 @@ class CheckoutTransaction {
     }
     if (given.isNotEmpty) await cache.adjustStock(given);
     await drafts.delete(draft.id);
+  }
+}
+
+/// Cash payment toward a customer's open debt, from a debt tab. The amount is checked against
+/// the cached debt, so it works offline: online it goes to the server at once, offline (or when
+/// the connection drops mid-request) it is queued. The receipt number doubles as the idempotency
+/// key, which is why a timed-out request can be queued and resent without paying twice.
+class PayDebtAtCounter {
+  PayDebtAtCounter({
+    required this.debts,
+    required this.sales,
+    required this.drafts,
+    required this.cache,
+    required this.network,
+    required this.session,
+    DateTime Function()? clock,
+    String Function()? newRef,
+  }) : _clock = clock ?? DateTime.now,
+       _newRef = newRef ?? const Uuid().v4;
+
+  final DebtRepository debts;
+  final SalesLog sales;
+  final DraftRepository drafts;
+  final CatalogCache cache;
+  final NetworkStatus network;
+  final GetCurrentSession session;
+  final DateTime Function() _clock;
+  final String Function() _newRef;
+
+  /// [amount] is what goes against the debt; [cashReceived] is what the customer handed over,
+  /// and the difference is the change.
+  Future<Result<CheckoutOutcome>> call(Draft draft, {required int amount, required int cashReceived}) async {
+    final user = session();
+    if (user == null) return const Err(UnauthorizedFailure());
+    if (!draft.isDebtPayment) return const Err(ValidationFailure('not_debt_tab'));
+    final customerId = draft.customerId;
+    if (customerId == null) return const Err(ValidationFailure('customer_required'));
+    final debt = await cache.debtOfCustomer(customerId);
+    if (debt == null) return const Err(ValidationFailure('no_debt'));
+    if (amount <= 0) return const Err(ValidationFailure('positive_number'));
+    if (amount > debt.remaining) return const Err(ValidationFailure('exceeds_remaining'));
+    if (cashReceived < amount) return const Err(ValidationFailure('amount_paid_short'));
+
+    final number = await sales.nextDebtNumber();
+    Sale record(int after, SaleStatus status) => Sale(
+      clientRef: _newRef(),
+      receiptNumber: number,
+      createdAt: _clock(),
+      method: PaymentMethod.cash,
+      customerId: customerId,
+      customerName: draft.customerName ?? debt.customerName,
+      cashierName: user.username,
+      total: amount,
+      lines: const [],
+      status: status,
+      amountPaid: cashReceived,
+      change: cashReceived > amount ? [ChangeLine.cash(cashReceived - amount)] : const [],
+      kind: SaleKind.debtPayment,
+      debtId: debt.id,
+      debtTotal: debt.total,
+      debtBefore: debt.remaining,
+      debtAfter: after,
+    );
+
+    if (await network.isOnline()) {
+      final result = await debts.pay(debtId: debt.id, userId: user.userId, amount: amount, idempotencyKey: number);
+      switch (result) {
+        case Ok(:final value):
+          return Ok(CheckoutOutcome(await _commit(draft, record(value.remaining, SaleStatus.synced), debt.id, amount), offline: false));
+        case Err(failure: NetworkFailure() || TimeoutFailure()):
+          break;
+        case Err(:final failure):
+          return Err(failure);
+      }
+    }
+    final queued = record(debt.remaining - amount, SaleStatus.pending);
+    return Ok(CheckoutOutcome(await _commit(draft, queued, debt.id, amount), offline: true));
+  }
+
+  Future<Sale> _commit(Draft draft, Sale sale, String debtId, int amount) async {
+    await sales.add(sale);
+    await cache.reduceDebt(debtId, amount);
+    await drafts.delete(draft.id);
+    return sale;
   }
 }
 

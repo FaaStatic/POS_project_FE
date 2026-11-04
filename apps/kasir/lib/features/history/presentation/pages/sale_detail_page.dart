@@ -62,6 +62,9 @@ class SaleDetailPage extends StatelessWidget {
 }
 
 class _Body extends StatelessWidget {
+  /// Width from which the slip and the actions sit side by side (a portrait tablet and wider).
+  static const _sideBySide = 720.0;
+
   const _Body({required this.sale, required this.working});
   final Sale sale;
   final bool working;
@@ -86,68 +89,112 @@ class _Body extends StatelessWidget {
     final settings = getIt<GetReceiptSettings>()();
     final cubit = context.read<SaleDetailCubit>();
 
-    return ListView(
-      padding: const EdgeInsets.all(Space.lg),
-      children: [
-        Wrap(
-          spacing: Space.sm,
-          runSpacing: Space.sm,
-          children: [
-            SaleStatusBadge(sale: sale),
-            if (sale.stockConflict) StatusBadge(label: l10n.stockConflict, tone: BadgeTone.warning),
-          ],
-        ),
-        if (sale.error != null) ...[
-          const SizedBox(height: Space.sm),
-          Text(
-            l10n.syncError(sale.error!),
-            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error),
-          ),
+    final info = [
+      Wrap(
+        spacing: Space.sm,
+        runSpacing: Space.sm,
+        children: [
+          SaleStatusBadge(sale: sale),
+          if (sale.stockConflict) StatusBadge(label: l10n.stockConflict, tone: BadgeTone.warning),
         ],
-        if (sale.cancelReason != null) ...[
-          const SizedBox(height: Space.sm),
-          Text('${l10n.cancelReason}: ${sale.cancelReason}', style: theme.textTheme.bodyMedium),
-        ],
-        const SizedBox(height: Space.lg),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 480),
-          child: ReceiptView(document: receiptFor(context, sale, settings)),
+      ),
+      if (sale.error != null) ...[
+        const SizedBox(height: Space.sm),
+        Text(
+          l10n.syncError(sale.error!),
+          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error),
         ),
-        const SizedBox(height: Space.xl),
-        if (settings.printerAddress == null)
-          AppButton(
-            label: l10n.setupPrinter,
-            variant: AppButtonVariant.outline,
-            expand: true,
-            onPressed: () => context.push('/settings/printer'),
-          )
-        else
-          AppButton(
-            label: l10n.reprint,
-            variant: AppButtonVariant.outline,
-            expand: true,
-            loading: working,
-            onPressed: () => cubit.print(receiptFor(context, sale, settings)),
-          ),
-        const SizedBox(height: Space.md),
-        AppButton(
-          label: l10n.done,
-          large: true,
-          expand: true,
-          onPressed: () => context.canPop() ? context.pop() : context.go('/checkout'),
-        ),
-        if (sale.status != SaleStatus.cancelled) ...[
-          const SizedBox(height: Space.xl),
-          AppButton(
-            label: l10n.cancelSale,
-            variant: AppButtonVariant.ghost,
-            expand: true,
-            onPressed: working ? null : () => _cancel(context),
-          ),
-          if (sale.isSynced)
-            Text(l10n.cancelNeedsInternet, textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
-        ],
       ],
+      if (sale.cancelReason != null) ...[
+        const SizedBox(height: Space.sm),
+        Text('${l10n.cancelReason}: ${sale.cancelReason}', style: theme.textTheme.bodyMedium),
+      ],
+    ];
+    final actions = [
+      if (settings.printerAddress == null)
+        AppButton(
+          label: l10n.setupPrinter,
+          variant: AppButtonVariant.outline,
+          expand: true,
+          onPressed: () => context.push('/settings/printer'),
+        )
+      else
+        AppButton(
+          label: l10n.reprint,
+          variant: AppButtonVariant.outline,
+          expand: true,
+          loading: working,
+          onPressed: () => cubit.print(receiptFor(context, sale, settings)),
+        ),
+      const SizedBox(height: Space.md),
+      AppButton(
+        label: l10n.done,
+        large: true,
+        expand: true,
+        onPressed: () => context.canPop() ? context.pop() : context.go('/checkout'),
+      ),
+      if (sale.status != SaleStatus.cancelled && !sale.isDebtPayment) ...[
+        const SizedBox(height: Space.xl),
+        AppButton(
+          label: l10n.cancelSale,
+          variant: AppButtonVariant.ghost,
+          expand: true,
+          onPressed: working ? null : () => _cancel(context),
+        ),
+        if (sale.isSynced)
+          Text(l10n.cancelNeedsInternet, textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
+      ],
+    ];
+
+    return LayoutBuilder(
+      builder: (context, box) {
+        // Tablets: the slip on the left at a readable size, its status and actions beside it, so neither
+        // a small paper floats in an empty page nor the buttons sit below the fold.
+        if (box.maxWidth >= _sideBySide) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(Space.xl),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 920),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 460),
+                          child: ReceiptView(document: receiptFor(context, sale, settings), fill: true),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: Space.xxl),
+                    SizedBox(
+                      width: 320,
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [...info, const SizedBox(height: Space.xl), ...actions]),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+        return ListView(
+          padding: const EdgeInsets.all(Space.lg),
+          children: [
+            ...info,
+            const SizedBox(height: Space.lg),
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: ReceiptView(document: receiptFor(context, sale, settings)),
+              ),
+            ),
+            const SizedBox(height: Space.xl),
+            ...actions,
+          ],
+        );
+      },
     );
   }
 }

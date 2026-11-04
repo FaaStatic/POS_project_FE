@@ -9,7 +9,7 @@ abstract interface class DraftRepository {
   Future<Draft?> byId(int id);
 
   /// Number = highest open number + 1, or 1 when no tab is open.
-  Future<Draft> create();
+  Future<Draft> create({DraftKind kind = DraftKind.sale});
 
   /// Physical products merge into one line; digital products always get a new
   /// line because each needs its own destination.

@@ -159,7 +159,7 @@ class SyncBanner extends StatelessWidget {
       pendingCount: s.pending,
       syncing: s.syncing,
       syncLabel: s.online ? AppLocalizations.of(context).syncNow : null,
-      onSync: () => context.read<SyncCubit>().syncNow(),
+      onSync: () => context.read<SyncCubit>().syncNow(pullCatalog: true),
     );
   }
 }
@@ -183,7 +183,7 @@ class SyncTile extends StatelessWidget {
             )
           : null,
       enabled: s.online && !s.syncing,
-      onTap: () => context.read<SyncCubit>().syncNow(),
+      onTap: () => context.read<SyncCubit>().syncNow(pullCatalog: true),
     );
   }
 }

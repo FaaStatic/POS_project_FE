@@ -724,6 +724,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get debtAdded => 'Credit added.';
 
   @override
+  String get addDebt => 'Add credit';
+
+  @override
+  String get currentDebt => 'Current credit';
+
+  @override
+  String debtBecomes(String amount) {
+    return 'Becomes $amount';
+  }
+
+  @override
+  String get debtNote => 'Note (optional)';
+
+  @override
+  String get debtNoteHint => 'E.g. cash lent';
+
+  @override
   String get dueDate => 'Due date (optional)';
 
   @override
@@ -976,4 +993,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String createCategory(String name) {
     return 'Create category \"$name\"';
   }
+
+  @override
+  String get statusSuccess => 'Success';
+
+  @override
+  String get statusCancelled => 'Cancelled';
+
+  @override
+  String cancelledReasonLine(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String get debtPaymentsTitle => 'Debt payments';
+
+  @override
+  String get noDebtPayments => 'No debt payments yet.';
+
+  @override
+  String get paidAmount => 'Paid';
+
+  @override
+  String get balanceLeft => 'Balance left';
+
+  @override
+  String get cashierName => 'Cashier';
+
+  @override
+  String get paidViaCms => 'CMS';
+
+  @override
+  String get downloadDebtReceipt => 'Download payment receipt';
+
+  @override
+  String get debtRecapReport => 'Debt payments recap';
+
+  @override
+  String get debtRecapHint =>
+      'One table of every debt payment in a month, for all customers: customer, cashier, date, balance, paid, balance left, and whether it is settled.';
 }

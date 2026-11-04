@@ -2,8 +2,8 @@ import 'package:core/core.dart';
 import 'package:core/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Map<String, dynamic> customerJson(String id, {String name = 'Bu Sri', List<Map<String, dynamic>> debts = const []}) =>
-    {'id': id, 'nama': name, 'no_hp': '0812', 'alamat': 'Jl. Melati', 'active': true, 'debts': debts};
+Map<String, dynamic> customerJson(String id, {String name = 'Bu Sri'}) =>
+    {'id': id, 'nama': name, 'no_hp': '0812', 'alamat': 'Jl. Melati', 'active': true};
 
 Map<String, dynamic> debtJson({String status = 'Belum Lunas', int remaining = 5000}) => {
       'debt_id': 'd1',
@@ -24,14 +24,11 @@ void main() {
     repo = CustomerRepositoryImpl(CustomerRemoteDatasource(ApiClient(fakeDio(adapter))));
   });
 
-  test('get maps Indonesian keys and debts', () async {
-    adapter.on('GET', ApiPaths.customer('k1'), (_) => FakeReply(200, envelope(customerJson('k1', debts: [debtJson()]))));
+  test('get maps Indonesian keys', () async {
+    adapter.on('GET', ApiPaths.customer('k1'), (_) => FakeReply(200, envelope(customerJson('k1'))));
     final c = (await GetCustomer(repo)('k1') as Ok<Customer>).value;
     expect(c.name, 'Bu Sri');
     expect(c.phone, '0812');
-    expect(c.outstandingDebt, 5000);
-    expect(c.hasActiveDebt, isTrue);
-    expect(c.debts.single.paidAmount, 3000);
   });
 
   test('create posts then finds the new customer by name', () async {
@@ -70,8 +67,8 @@ void main() {
     expect(await PurgeCustomer(repo)(const Customer(id: 'k1', name: 'Bu Sri')), const Ok(PurgeMode.anonymized));
   });
 
-  test('purge is refused locally while a debt is active', () async {
-    final c = Customer(id: 'k1', name: 'Bu Sri', debts: [debtFromJson(debtJson())]);
-    expect(await PurgeCustomer(repo)(c), const Err<PurgeMode>(ConflictFailure('customer_has_debt')));
+  test('purge while a debt is open comes back from the server as a conflict', () async {
+    adapter.on('DELETE', ApiPaths.customerPurge('k1'), (_) => FakeReply(409, errorBody('customer has an open debt')));
+    expect(await PurgeCustomer(repo)(const Customer(id: 'k1', name: 'Bu Sri')), const Err<PurgeMode>(ConflictFailure('customer has an open debt')));
   });
 }

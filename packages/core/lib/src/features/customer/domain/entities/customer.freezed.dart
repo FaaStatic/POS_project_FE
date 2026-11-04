@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Customer {
 
- String get id; String get name; String get phone; String get address; bool get active; List<Debt> get debts;
+ String get id; String get name; String get phone; String get address; bool get active;
 /// Create a copy of Customer
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $CustomerCopyWith<Customer> get copyWith => _$CustomerCopyWithImpl<Customer>(thi
 @override
 bool operator ==(Object other) {
   final _this = this as Customer;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Customer&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.address, _this.address) || other.address == _this.address)&&(identical(other.active, _this.active) || other.active == _this.active)&&const DeepCollectionEquality().equals(other.debts, _this.debts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Customer&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.address, _this.address) || other.address == _this.address)&&(identical(other.active, _this.active) || other.active == _this.active));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Customer;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.phone,_this.address,_this.active,const DeepCollectionEquality().hash(_this.debts));
+  return Object.hash(runtimeType,_this.id,_this.name,_this.phone,_this.address,_this.active);
 }
 
 @override
 String toString() {
   final _this = this as Customer;
-  return 'Customer(id: ${_this.id}, name: ${_this.name}, phone: ${_this.phone}, address: ${_this.address}, active: ${_this.active}, debts: ${_this.debts})';
+  return 'Customer(id: ${_this.id}, name: ${_this.name}, phone: ${_this.phone}, address: ${_this.address}, active: ${_this.active})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $CustomerCopyWith<$Res>  {
   factory $CustomerCopyWith(Customer value, $Res Function(Customer) _then) = _$CustomerCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String phone, String address, bool active, List<Debt> debts
+ String id, String name, String phone, String address, bool active
 });
 
 
@@ -68,15 +68,14 @@ class _$CustomerCopyWithImpl<$Res>
 
 /// Create a copy of Customer
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? phone = null,Object? address = null,Object? active = null,Object? debts = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? phone = null,Object? address = null,Object? active = null,}) {
   return _then(Customer(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
 as String,active: null == active ? _self.active : active // ignore: cast_nullable_to_non_nullable
-as bool,debts: null == debts ? _self.debts : debts // ignore: cast_nullable_to_non_nullable
-as List<Debt>,
+as bool,
   ));
 }
 
@@ -161,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String phone,  String address,  bool active,  List<Debt> debts)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String phone,  String address,  bool active)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Customer() when $default != null:
-return $default(_that.id,_that.name,_that.phone,_that.address,_that.active,_that.debts);case _:
+return $default(_that.id,_that.name,_that.phone,_that.address,_that.active);case _:
   return orElse();
 
 }
@@ -182,10 +181,10 @@ return $default(_that.id,_that.name,_that.phone,_that.address,_that.active,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String phone,  String address,  bool active,  List<Debt> debts)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String phone,  String address,  bool active)  $default,) {final _that = this;
 switch (_that) {
 case _Customer():
-return $default(_that.id,_that.name,_that.phone,_that.address,_that.active,_that.debts);case _:
+return $default(_that.id,_that.name,_that.phone,_that.address,_that.active);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +201,10 @@ return $default(_that.id,_that.name,_that.phone,_that.address,_that.active,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String phone,  String address,  bool active,  List<Debt> debts)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String phone,  String address,  bool active)?  $default,) {final _that = this;
 switch (_that) {
 case _Customer() when $default != null:
-return $default(_that.id,_that.name,_that.phone,_that.address,_that.active,_that.debts);case _:
+return $default(_that.id,_that.name,_that.phone,_that.address,_that.active);case _:
   return null;
 
 }
@@ -216,8 +215,8 @@ return $default(_that.id,_that.name,_that.phone,_that.address,_that.active,_that
 /// @nodoc
 
 
-class _Customer extends Customer {
-  const _Customer({required this.id, required this.name, this.phone = '', this.address = '', this.active = true,  List<Debt> debts = const []}): _debts = debts,super._();
+class _Customer implements Customer {
+  const _Customer({required this.id, required this.name, this.phone = '', this.address = '', this.active = true});
   
 
 @override final  String id;
@@ -225,13 +224,6 @@ class _Customer extends Customer {
 @override@JsonKey() final  String phone;
 @override@JsonKey() final  String address;
 @override@JsonKey() final  bool active;
- final  List<Debt> _debts;
-@override@JsonKey() List<Debt> get debts {
-  if (_debts is EqualUnmodifiableListView) return _debts;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_debts);
-}
-
 
 /// Create a copy of Customer
 /// with the given fields replaced by the non-null parameter values.
@@ -243,18 +235,18 @@ _$CustomerCopyWith<_Customer> get copyWith => __$CustomerCopyWithImpl<_Customer>
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Customer&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.address, address) || other.address == address)&&(identical(other.active, active) || other.active == active)&&const DeepCollectionEquality().equals(other.debts, _debts));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Customer&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.address, address) || other.address == address)&&(identical(other.active, active) || other.active == active));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,name,phone,address,active,const DeepCollectionEquality().hash(_debts));
+    return Object.hash(runtimeType,id,name,phone,address,active);
 }
 
 @override
 String toString() {
-    return 'Customer(id: $id, name: $name, phone: $phone, address: $address, active: $active, debts: $debts)';
+    return 'Customer(id: $id, name: $name, phone: $phone, address: $address, active: $active)';
 }
 
 
@@ -265,7 +257,7 @@ abstract mixin class _$CustomerCopyWith<$Res> implements $CustomerCopyWith<$Res>
   factory _$CustomerCopyWith(_Customer value, $Res Function(_Customer) _then) = __$CustomerCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String phone, String address, bool active, List<Debt> debts
+ String id, String name, String phone, String address, bool active
 });
 
 
@@ -282,15 +274,14 @@ class __$CustomerCopyWithImpl<$Res>
 
 /// Create a copy of Customer
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? phone = null,Object? address = null,Object? active = null,Object? debts = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? phone = null,Object? address = null,Object? active = null,}) {
   return _then(_Customer(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
 as String,active: null == active ? _self.active : active // ignore: cast_nullable_to_non_nullable
-as bool,debts: null == debts ? _self._debts : debts // ignore: cast_nullable_to_non_nullable
-as List<Debt>,
+as bool,
   ));
 }
 

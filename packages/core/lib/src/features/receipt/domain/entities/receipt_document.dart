@@ -6,8 +6,9 @@ import 'receipt_settings.dart';
 enum ReceiptAlign { left, center }
 
 /// Which part of the slip a line belongs to. The printer ignores it; the on-screen paper sizes
-/// the store name, address and footer by it and sets everything else in the monospace grid.
-enum ReceiptRole { store, address, body, footer }
+/// the store name, address and footer by it, sets the number/date/cashier rows ([info]) a size smaller, and
+/// everything else in the monospace grid.
+enum ReceiptRole { store, address, info, body, footer }
 
 class ReceiptLine {
   const ReceiptLine(this.text, {this.align = ReceiptAlign.left, this.bold = false, this.role = ReceiptRole.body});
@@ -47,22 +48,32 @@ class ReceiptDocument {
         if (sale.customerName != null) (labels.customer, sale.customerName!),
       ], width),
       ReceiptLine(rule),
-      for (final item in sale.lines) ...[
-        for (final part in _wrap(item.name, width)) ReceiptLine(part),
-        if (item.destination != null) ReceiptLine('  ${labels.destination}: ${item.destination}'),
-        for (final row in _pair(
-          '  ${formatQty(item.qty, locale: locale)} x ${formatRupiah(item.unitPrice, locale: locale)}',
-          formatRupiah(item.subtotal, locale: locale),
-          width,
-        ))
-          ReceiptLine(row),
+      if (sale.isDebtPayment) ...[
+        ReceiptLine(labels.debtPayment, align: ReceiptAlign.center, bold: true),
+        ReceiptLine(rule),
+        for (final row in _pair(labels.debtPaidNow, formatRupiah(sale.total, locale: locale), width)) ReceiptLine(row, bold: true),
+        for (final row in _pair(labels.debtPaidTotal, formatRupiah(sale.debtPaidSoFar, locale: locale), width)) ReceiptLine(row),
+        for (final row in _pair(labels.debtOwed, formatRupiah(sale.debtAfter ?? 0, locale: locale), width)) ReceiptLine(row),
+      ] else ...[
+        for (final item in sale.lines) ...[
+          for (final part in _wrap(item.name, width)) ReceiptLine(part),
+          if (item.destination != null) ReceiptLine('  ${labels.destination}: ${item.destination}'),
+          for (final row in _pair(
+            '  ${formatQty(item.qty, locale: locale)} x ${formatRupiah(item.unitPrice, locale: locale)}',
+            formatRupiah(item.subtotal, locale: locale),
+            width,
+          ))
+            ReceiptLine(row),
+        ],
+        ReceiptLine(rule),
+        for (final row in _pair(labels.total, formatRupiah(sale.total, locale: locale), width)) ReceiptLine(row, bold: true),
       ],
-      ReceiptLine(rule),
-      for (final row in _pair(labels.total, formatRupiah(sale.total, locale: locale), width)) ReceiptLine(row, bold: true),
       for (final row in _pair(labels.method, methodLabel(sale.method), width)) ReceiptLine(row),
       ReceiptLine(
         '*** ${sale.status == SaleStatus.cancelled
             ? labels.markCancelled
+            : sale.isDebtPayment
+            ? (sale.debtSettled ? labels.markPaid : labels.markUnpaid)
             : sale.method == PaymentMethod.debt
             ? labels.markDebt
             : labels.markPaid} ***',
@@ -96,7 +107,10 @@ class ReceiptDocument {
     return [
       for (final (label, value) in rows)
         for (final (i, part) in _fit(value, valueWidth).indexed)
-          ReceiptLine('${i == 0 ? label.padRight(labelWidth) : ' ' * labelWidth}${i == 0 ? ' : ' : '   '}$part'),
+          ReceiptLine(
+            '${i == 0 ? label.padRight(labelWidth) : ' ' * labelWidth}${i == 0 ? ' : ' : '   '}$part',
+            role: ReceiptRole.info,
+          ),
     ];
   }
 
@@ -146,12 +160,24 @@ class ReceiptLabels {
     required this.markPaid,
     required this.markDebt,
     required this.markCancelled,
+    required this.markUnpaid,
+    required this.debtPayment,
+    required this.debtPaidNow,
+    required this.debtPaidTotal,
+    required this.debtOwed,
   });
 
   /// Centered status mark under the total, printed as "*** LUNAS ***".
   final String markPaid;
   final String markDebt;
   final String markCancelled;
+  final String markUnpaid;
+
+  /// Debt payment slip: title and the three amounts (this payment, paid so far, still owed).
+  final String debtPayment;
+  final String debtPaidNow;
+  final String debtPaidTotal;
+  final String debtOwed;
 
   final String number;
   final String date;

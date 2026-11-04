@@ -24,6 +24,8 @@ class CancelSale {
 
   Future<Result<void>> call(Sale sale, String reason) async {
     if (Validators.cancelReason(reason) != null) return const Err(ValidationFailure('reason_length'));
+    // A debt payment is not a sale: there is no transaction to cancel and no stock to return.
+    if (sale.isDebtPayment) return const Err(ConflictFailure('debt_payment_final'));
     if (sale.status == SaleStatus.cancelled) return const Ok(null);
     if (sale.isSynced) {
       final id = sale.transactionId;

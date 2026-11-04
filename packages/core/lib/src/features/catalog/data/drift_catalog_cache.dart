@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import '../../../database/app_database.dart';
 import '../../category/domain/entities/category.dart';
 import '../../customer/domain/entities/customer.dart';
+import '../../debt/domain/entities/debt.dart';
 import '../../product/domain/entities/product.dart';
 import '../domain/repositories/catalog_cache.dart';
 
@@ -147,6 +148,57 @@ class DriftCatalogCache implements CatalogCache {
         soldCount: Value(soldCount),
       );
 
+  @override
+  Stream<List<Debt>> watchDebts({String? search}) {
+    final q = _db.select(_db.cachedDebts);
+    final term = search?.trim().toLowerCase();
+    if (term != null && term.isNotEmpty) q.where((d) => d.customerName.lower().like('%$term%'));
+    q.orderBy([(d) => OrderingTerm.asc(d.customerName)]);
+    return q.watch().map((rows) => rows.map(_debt).toList());
+  }
+
+  @override
+  Future<Debt?> debtOfCustomer(String customerId) async {
+    final row = await (_db.select(_db.cachedDebts)..where((d) => d.customerId.equals(customerId))).getSingleOrNull();
+    return row == null ? null : _debt(row);
+  }
+
+  @override
+  Future<void> replaceDebts(List<Debt> debts) => _db.transaction(() async {
+        await _db.delete(_db.cachedDebts).go();
+        await _db.batch((b) => b.insertAll(_db.cachedDebts, [
+              for (final d in debts)
+                CachedDebtsCompanion.insert(
+                  id: d.id,
+                  customerId: d.customerId,
+                  customerName: Value(d.customerName),
+                  total: d.total,
+                  remaining: d.remaining,
+                  date: Value(d.date),
+                ),
+            ]));
+      });
+
+  @override
+  Future<void> reduceDebt(String debtId, int amount) => _db.transaction(() async {
+        await _db.customUpdate(
+          'UPDATE cached_debts SET remaining = MAX(0, remaining - ?) WHERE id = ?',
+          variables: [Variable.withInt(amount), Variable.withString(debtId)],
+          updates: {_db.cachedDebts},
+        );
+        await (_db.delete(_db.cachedDebts)..where((d) => d.id.equals(debtId) & d.remaining.equals(0))).go();
+      });
+
+  static Debt _debt(CachedDebt r) => Debt(
+        id: r.id,
+        customerId: r.customerId,
+        customerName: r.customerName,
+        total: r.total,
+        remaining: r.remaining,
+        paid: false,
+        date: r.date,
+      );
+
   /// The cache keeps only the outstanding total, not individual debts.
   static Customer _customer(CachedCustomer r) => Customer(id: r.id, name: r.name, phone: r.phone, address: r.address);
 
@@ -155,6 +207,5 @@ class DriftCatalogCache implements CatalogCache {
         name: c.name,
         phone: Value(c.phone),
         address: Value(c.address),
-        outstandingDebt: Value(c.outstandingDebt),
       );
 }

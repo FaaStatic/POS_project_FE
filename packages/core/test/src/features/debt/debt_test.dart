@@ -40,13 +40,51 @@ void main() {
     expect(adapter.requests.single.data, {'debt_id': 'd1', 'user_id': 'u1', 'nominal_bayar': 5000, 'idempotency_key': 'k1'});
   });
 
-  test('get and manual add', () async {
+  test('unpaid list walks every page; payment history maps the register receipt number', () async {
+    var calls = 0;
+    adapter.on('GET', ApiPaths.debts, (o) {
+      calls++;
+      return FakeReply(200, envelope({'has_next': calls == 1, 'after_id': 'd1', 'after_time': '2026-10-25T08:00:00Z', 'transaction_list': [debtJson()]}));
+    });
+    expect((await repo.listUnpaid() as Ok<List<Debt>>).value, hasLength(2));
+    expect(adapter.requests.every((r) => r.queryParameters['status'] == 0), isTrue);
+
+    adapter.on('GET', ApiPaths.debtPayments, (_) => FakeReply(200, envelope({
+          'has_next': false,
+          'payment_list': [
+            {'id': 'p1', 'debt_id': 'd1', 'customer_name': 'Bu Sri', 'nominal_bayar': 3000, 'remaining_debt': 0, 'status': 'Lunas', 'cashier': 'kasir1', 'client_ref': 'HTG-AAAA-1', 'paid_at': '2026-10-25T08:00:00Z'},
+            {'id': 'p2', 'debt_id': 'd1', 'customer_name': 'Bu Sri', 'nominal_bayar': 1000, 'remaining_debt': 3000, 'status': 'Belum Lunas', 'cashier': 'admin', 'paid_at': '2026-10-24T08:00:00Z'},
+          ],
+        })));
+    final payments = (await GetDebtPayments(repo)(limit: 20) as Ok<List<DebtPaymentEntry>>).value;
+    expect(payments.map((p) => (p.clientRef, p.paid, p.amount)), [('HTG-AAAA-1', true, 3000), ('', false, 1000)]);
+    expect(adapter.requests.last.queryParameters, {'limit': 20});
+
+    await GetDebtPayments(repo)(customerId: 'k1');
+    expect(adapter.requests.last.queryParameters, {'limit': 50, 'customer_id': 'k1'});
+  });
+
+  test('receipt and monthly recap return the server pdf path', () async {
     adapter
-      ..on('GET', ApiPaths.debt('d1'), (_) => FakeReply(200, envelope(debtJson(status: 'Lunas', remaining: 0))))
-      ..on('POST', ApiPaths.debts, (_) => FakeReply(201, envelope(null)));
-    expect((await GetDebt(repo)('d1') as Ok<Debt>).value.paid, isTrue);
+      ..on('GET', ApiPaths.debtPaymentReceipt('p1'), (_) => FakeReply(200, envelope({'id': 'p1', 'url_pdf': '/api/v1/insight/reports/struk.pdf'})))
+      ..on('GET', ApiPaths.debtPaymentsReport, (_) => FakeReply(200, envelope({'count': 3, 'url_pdf': '/api/v1/insight/reports/rekap.pdf'})));
+    expect((await GetDebtPaymentReceiptPdf(repo)('p1') as Ok<String>).value, '/api/v1/insight/reports/struk.pdf');
+    expect((await GetDebtPaymentsRecapPdf(repo)(11, 2026) as Ok<String>).value, '/api/v1/insight/reports/rekap.pdf');
+    expect(adapter.requests.last.queryParameters, {'month': 11, 'year': 2026});
+  });
+
+  test('manual add', () async {
+    adapter.on('POST', ApiPaths.debts, (_) => FakeReply(201, envelope(null)));
     expect(await AddManualDebt(repo)(customerId: 'k1', amount: 10000, dueDate: DateTime(2026, 11, 1)), isA<Ok<void>>());
     expect(adapter.requests.last.data, {'customer_id': 'k1', 'total_transaksi': 10000, 'jatuh_tempo': '2026-11-01'});
     expect(await AddManualDebt(repo)(customerId: 'k1', amount: 0), isA<Err<void>>());
+  });
+
+  test('manual add sends the trimmed note and leaves a blank one out', () async {
+    adapter.on('POST', ApiPaths.debts, (_) => FakeReply(201, envelope(null)));
+    await AddManualDebt(repo)(customerId: 'k1', amount: 5000, note: '  Pinjam tunai ');
+    expect(adapter.requests.last.data, {'customer_id': 'k1', 'total_transaksi': 5000, 'note': 'Pinjam tunai'});
+    await AddManualDebt(repo)(customerId: 'k1', amount: 5000, note: '   ');
+    expect(adapter.requests.last.data, {'customer_id': 'k1', 'total_transaksi': 5000});
   });
 }

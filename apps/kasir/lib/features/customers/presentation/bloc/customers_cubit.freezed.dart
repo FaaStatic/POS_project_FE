@@ -309,7 +309,7 @@ $CustomerCopyWith<$Res>? get saved {
 /// @nodoc
 mixin _$CustomerDetailState {
 
- bool get loading; Customer? get customer; Failure? get failure;
+ bool get loading; Customer? get customer; Debt? get debt; Failure? get failure;
 /// Create a copy of CustomerDetailState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -321,20 +321,20 @@ $CustomerDetailStateCopyWith<CustomerDetailState> get copyWith => _$CustomerDeta
 @override
 bool operator ==(Object other) {
   final _this = this as CustomerDetailState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CustomerDetailState&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.customer, _this.customer) || other.customer == _this.customer)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CustomerDetailState&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.customer, _this.customer) || other.customer == _this.customer)&&(identical(other.debt, _this.debt) || other.debt == _this.debt)&&(identical(other.failure, _this.failure) || other.failure == _this.failure));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CustomerDetailState;
-  return Object.hash(runtimeType,_this.loading,_this.customer,_this.failure);
+  return Object.hash(runtimeType,_this.loading,_this.customer,_this.debt,_this.failure);
 }
 
 @override
 String toString() {
   final _this = this as CustomerDetailState;
-  return 'CustomerDetailState(loading: ${_this.loading}, customer: ${_this.customer}, failure: ${_this.failure})';
+  return 'CustomerDetailState(loading: ${_this.loading}, customer: ${_this.customer}, debt: ${_this.debt}, failure: ${_this.failure})';
 }
 
 
@@ -345,11 +345,11 @@ abstract mixin class $CustomerDetailStateCopyWith<$Res>  {
   factory $CustomerDetailStateCopyWith(CustomerDetailState value, $Res Function(CustomerDetailState) _then) = _$CustomerDetailStateCopyWithImpl;
 @useResult
 $Res call({
- bool loading, Customer? customer, Failure? failure
+ bool loading, Customer? customer, Debt? debt, Failure? failure
 });
 
 
-$CustomerCopyWith<$Res>? get customer;
+$CustomerCopyWith<$Res>? get customer;$DebtCopyWith<$Res>? get debt;
 
 }
 /// @nodoc
@@ -362,11 +362,12 @@ class _$CustomerDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of CustomerDetailState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? loading = null,Object? customer = freezed,Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? loading = null,Object? customer = freezed,Object? debt = freezed,Object? failure = freezed,}) {
   return _then(CustomerDetailState(
 loading: null == loading ? _self.loading : loading // ignore: cast_nullable_to_non_nullable
 as bool,customer: freezed == customer ? _self.customer : customer // ignore: cast_nullable_to_non_nullable
-as Customer?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Customer?,debt: freezed == debt ? _self.debt : debt // ignore: cast_nullable_to_non_nullable
+as Debt?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as Failure?,
   ));
 }
@@ -381,6 +382,18 @@ $CustomerCopyWith<$Res>? get customer {
 
   return $CustomerCopyWith<$Res>(_self.customer!, (value) {
     return _then(_self.copyWith(customer: value));
+  });
+}/// Create a copy of CustomerDetailState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DebtCopyWith<$Res>? get debt {
+    if (_self.debt == null) {
+    return null;
+  }
+
+  return $DebtCopyWith<$Res>(_self.debt!, (value) {
+    return _then(_self.copyWith(debt: value));
   });
 }
 }
@@ -464,10 +477,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool loading,  Customer? customer,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool loading,  Customer? customer,  Debt? debt,  Failure? failure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CustomerDetailState() when $default != null:
-return $default(_that.loading,_that.customer,_that.failure);case _:
+return $default(_that.loading,_that.customer,_that.debt,_that.failure);case _:
   return orElse();
 
 }
@@ -485,10 +498,10 @@ return $default(_that.loading,_that.customer,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool loading,  Customer? customer,  Failure? failure)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool loading,  Customer? customer,  Debt? debt,  Failure? failure)  $default,) {final _that = this;
 switch (_that) {
 case _CustomerDetailState():
-return $default(_that.loading,_that.customer,_that.failure);case _:
+return $default(_that.loading,_that.customer,_that.debt,_that.failure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -505,10 +518,10 @@ return $default(_that.loading,_that.customer,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool loading,  Customer? customer,  Failure? failure)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool loading,  Customer? customer,  Debt? debt,  Failure? failure)?  $default,) {final _that = this;
 switch (_that) {
 case _CustomerDetailState() when $default != null:
-return $default(_that.loading,_that.customer,_that.failure);case _:
+return $default(_that.loading,_that.customer,_that.debt,_that.failure);case _:
   return null;
 
 }
@@ -520,11 +533,12 @@ return $default(_that.loading,_that.customer,_that.failure);case _:
 
 
 class _CustomerDetailState implements CustomerDetailState {
-  const _CustomerDetailState({this.loading = true, this.customer, this.failure});
+  const _CustomerDetailState({this.loading = true, this.customer, this.debt, this.failure});
   
 
 @override@JsonKey() final  bool loading;
 @override final  Customer? customer;
+@override final  Debt? debt;
 @override final  Failure? failure;
 
 /// Create a copy of CustomerDetailState
@@ -537,18 +551,18 @@ _$CustomerDetailStateCopyWith<_CustomerDetailState> get copyWith => __$CustomerD
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CustomerDetailState&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.customer, customer) || other.customer == customer)&&(identical(other.failure, failure) || other.failure == failure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CustomerDetailState&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.customer, customer) || other.customer == customer)&&(identical(other.debt, debt) || other.debt == debt)&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,loading,customer,failure);
+    return Object.hash(runtimeType,loading,customer,debt,failure);
 }
 
 @override
 String toString() {
-    return 'CustomerDetailState(loading: $loading, customer: $customer, failure: $failure)';
+    return 'CustomerDetailState(loading: $loading, customer: $customer, debt: $debt, failure: $failure)';
 }
 
 
@@ -559,11 +573,11 @@ abstract mixin class _$CustomerDetailStateCopyWith<$Res> implements $CustomerDet
   factory _$CustomerDetailStateCopyWith(_CustomerDetailState value, $Res Function(_CustomerDetailState) _then) = __$CustomerDetailStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool loading, Customer? customer, Failure? failure
+ bool loading, Customer? customer, Debt? debt, Failure? failure
 });
 
 
-@override $CustomerCopyWith<$Res>? get customer;
+@override $CustomerCopyWith<$Res>? get customer;@override $DebtCopyWith<$Res>? get debt;
 
 }
 /// @nodoc
@@ -576,11 +590,12 @@ class __$CustomerDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of CustomerDetailState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? loading = null,Object? customer = freezed,Object? failure = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? loading = null,Object? customer = freezed,Object? debt = freezed,Object? failure = freezed,}) {
   return _then(_CustomerDetailState(
 loading: null == loading ? _self.loading : loading // ignore: cast_nullable_to_non_nullable
 as bool,customer: freezed == customer ? _self.customer : customer // ignore: cast_nullable_to_non_nullable
-as Customer?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Customer?,debt: freezed == debt ? _self.debt : debt // ignore: cast_nullable_to_non_nullable
+as Debt?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as Failure?,
   ));
 }
@@ -596,6 +611,18 @@ $CustomerCopyWith<$Res>? get customer {
 
   return $CustomerCopyWith<$Res>(_self.customer!, (value) {
     return _then(_self.copyWith(customer: value));
+  });
+}/// Create a copy of CustomerDetailState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DebtCopyWith<$Res>? get debt {
+    if (_self.debt == null) {
+    return null;
+  }
+
+  return $DebtCopyWith<$Res>(_self.debt!, (value) {
+    return _then(_self.copyWith(debt: value));
   });
 }
 }

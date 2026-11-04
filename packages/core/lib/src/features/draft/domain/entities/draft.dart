@@ -6,6 +6,9 @@ part 'draft.freezed.dart';
 
 enum DraftStatus { open, awaitingPayment, paid }
 
+/// A debt tab holds no products: its customer and the amount typed at the till are the cart.
+enum DraftKind { sale, debtPayment }
+
 @freezed
 abstract class DraftItem with _$DraftItem {
   const DraftItem._();
@@ -40,12 +43,14 @@ abstract class Draft with _$Draft {
     required DateTime createdAt,
     required DateTime updatedAt,
     @Default(DraftStatus.open) DraftStatus status,
+    @Default(DraftKind.sale) DraftKind kind,
     Charge? charge,
     String? paidSaleRef,
     @Default([]) List<DraftItem> items,
   }) = _Draft;
 
   bool get isEmpty => items.isEmpty;
+  bool get isDebtPayment => kind == DraftKind.debtPayment;
   bool get isLocked => status != DraftStatus.open;
   bool get hasDigital => items.any((i) => i.isDigital);
   double get itemCount => items.fold(0, (sum, i) => sum + i.qty);

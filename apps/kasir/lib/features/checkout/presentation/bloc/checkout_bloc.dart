@@ -20,6 +20,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     required this.scan,
     required this.purge,
     required this.checkout,
+    required this.payDebt,
     required this.startCharge,
     required this.resolveCharge,
     required this.shortfalls,
@@ -30,6 +31,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     on<NetworkChanged>((e, emit) => emit(state.copyWith(online: e.online)));
     on<TabSelected>(_tabSelected);
     on<NewTabRequested>(_newTab);
+    on<NewDebtTabRequested>(_newDebtTab);
     on<TabClosed>(_tabClosed);
     on<ProductAdded>(_productAdded);
     on<BarcodeSubmitted>(_barcode);
@@ -51,6 +53,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   final ScanBarcode scan;
   final PurgeStaleDrafts purge;
   final CheckoutTransaction checkout;
+  final PayDebtAtCounter payDebt;
   final StartCharge startCharge;
   final ResolveCharge resolveCharge;
   final FindStockShortfalls shortfalls;
@@ -111,6 +114,15 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     emit(state.copyWith(activeId: created.id, shortfalls: const {}, method: PaymentMethod.cash));
   }
 
+  Future<void> _newDebtTab(NewDebtTabRequested e, Emitter<CheckoutState> emit) async {
+    final existing = e.customerId == null
+        ? null
+        : state.drafts.where((d) => d.isDebtPayment && d.customerId == e.customerId && !d.isLocked).firstOrNull;
+    final tab = existing ?? await openDraft(kind: DraftKind.debtPayment);
+    if (existing == null && e.customerId != null) await drafts.setCustomer(tab.id, id: e.customerId, name: e.customerName);
+    emit(state.copyWith(activeId: tab.id, shortfalls: const {}, method: PaymentMethod.cash));
+  }
+
   Future<void> _tabClosed(TabClosed e, Emitter<CheckoutState> emit) async {
     final draft = state.drafts.where((d) => d.id == e.draftId).firstOrNull;
     if (draft == null) return;
@@ -167,6 +179,14 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     final draft = state.active;
     if (draft == null || state.paying) return;
     emit(state.copyWith(paying: true));
+    if (draft.isDebtPayment) {
+      final result = await payDebt(draft, amount: e.debtAmount ?? 0, cashReceived: e.amountPaid ?? 0);
+      emit(switch (result) {
+        Ok(:final value) => _notify(state.copyWith(paying: false), SaleRecordedNotice(value.sale, offline: value.offline)),
+        Err(:final failure) => _notify(state.copyWith(paying: false), FailureNotice(failure)),
+      });
+      return;
+    }
     switch (state.method) {
       case PaymentMethod.cash || PaymentMethod.debt:
         final cash = state.method == PaymentMethod.cash;

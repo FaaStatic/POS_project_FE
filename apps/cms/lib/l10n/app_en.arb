@@ -221,6 +221,11 @@
   "payFull": "Pay off {amount}",
   "paymentRecorded": "Payment recorded. {amount} left.",
   "debtAdded": "Credit added.",
+  "addDebt": "Add credit",
+  "currentDebt": "Current credit",
+  "debtBecomes": "Becomes {amount}",
+  "debtNote": "Note (optional)",
+  "debtNoteHint": "E.g. cash lent",
   "dueDate": "Due date (optional)",
   "pickCustomer": "Choose customer",
   "exceedsRemaining": "More than the remaining credit.",
@@ -297,7 +302,21 @@
   "createCategory": "Create category \"{name}\"",
   "@createCategory": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "statusSuccess": "Success",
+  "statusCancelled": "Cancelled",
+  "cancelledReasonLine": "Reason: {reason}",
+  "debtPaymentsTitle": "Debt payments",
+  "noDebtPayments": "No debt payments yet.",
+  "paidAmount": "Paid",
+  "balanceLeft": "Balance left",
+  "cashierName": "Cashier",
+  "paidViaCms": "CMS",
+  "downloadDebtReceipt": "Download payment receipt",
+  "debtRecapReport": "Debt payments recap",
+  "debtRecapHint": "One table of every debt payment in a month, for all customers: customer, cashier, date, balance, paid, balance left, and whether it is settled."
 }
