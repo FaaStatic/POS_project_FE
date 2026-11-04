@@ -11,6 +11,7 @@ void main() {
   late LocalFixture local;
   late MockTransactions remote;
   late RefreshCatalog refresh;
+  late MockProducts products;
   late FakeNetwork network;
   var scheduled = 0;
 
@@ -18,7 +19,8 @@ void main() {
   setUp(() {
     local = LocalFixture();
     remote = MockTransactions();
-    final products = MockProducts(), categories = MockCategories(), customers = MockCustomers();
+    products = MockProducts();
+    final categories = MockCategories(), customers = MockCustomers();
     when(products.listAll).thenAnswer((_) async => const Ok([]));
     when(categories.list).thenAnswer((_) async => const Ok([]));
     when(customers.listAll).thenAnswer((_) async => const Ok([]));
@@ -62,6 +64,27 @@ void main() {
     await pump();
     expect(cubit.state.pending, 0);
     expect(cubit.state.online, isTrue);
+    await cubit.close();
+  });
+
+  test('coming back to the app pulls the catalog once, not again within the gap', () async {
+    final cubit = build();
+    await cubit.refreshOnResume();
+    await cubit.refreshOnResume();
+    verify(products.listAll).called(1);
+    await cubit.close();
+  });
+
+  test('coming back to the app does not pull while sales wait to be sent', () async {
+    when(() => remote.sync(any())).thenAnswer((_) async => const Err(NetworkFailure()));
+    await local.sales.add(queued('a'));
+    final cubit = build();
+    await cubit.start();
+    network.set(true);
+    await pump();
+    expect(cubit.state, isA<SyncState>().having((s) => s.pending, 'pending', 1).having((s) => s.online, 'online', true));
+    await cubit.refreshOnResume();
+    verifyNever(products.listAll);
     await cubit.close();
   });
 

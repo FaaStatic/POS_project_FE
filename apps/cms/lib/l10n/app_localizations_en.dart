@@ -549,6 +549,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profit => 'Gross profit';
 
   @override
+  String get amountPaid => 'Cash received';
+
+  @override
+  String get changeGiven => 'Change';
+
+  @override
+  String get changeCash => 'Cash';
+
+  @override
+  String get changeCandy => 'Candy';
+
+  @override
+  String get changeProduct => 'Other product';
+
+  @override
   String get conflictOnly => 'Stock conflicts';
 
   @override
@@ -857,7 +872,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pickFile => 'Choose an .xlsx or .csv file';
 
   @override
-  String get downloadTemplate => 'Download CSV template';
+  String get downloadTemplate => 'Download Excel template';
+
+  @override
+  String get exportBarcodes => 'Export barcodes';
 
   @override
   String importing(String name) {
@@ -930,6 +948,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vImageSize => 'The image must be 500 KB or smaller.';
+
+  @override
+  String get vImageDimensions => 'The image side must be 4000 px or less.';
+
+  @override
+  String get vQtyWhole => 'A pcs quantity must be a whole number.';
+
+  @override
+  String get vQtyDecimals => 'At most 3 decimal places.';
+
+  @override
+  String get vQtyTooLarge => 'The quantity is too large.';
+
+  @override
+  String get exportTooManyParts =>
+      'Too many files to export at once. Narrow the search or category.';
 
   @override
   String get bulkImagesTooLarge =>

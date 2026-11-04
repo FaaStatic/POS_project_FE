@@ -91,5 +91,31 @@ void main() {
         {'kind': 'tunai', 'amount': 1500},
       ]);
     });
+
+    test('a server transaction keeps the cash received and each part of the change', () {
+      final t = TransactionModel.fromJson({
+        'transaction_id': 't1',
+        'invoice_number': 'INV-1',
+        'payment_type': 0,
+        'total_transaction': 7000,
+        'amount_paid': 10000,
+        'change_amount': 3000,
+        'change': [
+          {'kind': 'tunai', 'amount': 1000},
+          {'kind': 'permen', 'amount': 2000, 'product_id': 'p1', 'product_name': 'Permen', 'qty': 4},
+        ],
+      });
+      expect(t.amountPaid, 10000);
+      expect(t.changeAmount, 3000);
+      expect(t.change.map((c) => c.kind), [ChangeKind.cash, ChangeKind.candy]);
+      expect(t.change[1], isA<ChangeLine>().having((c) => c.productName, 'productName', 'Permen').having((c) => c.qty, 'qty', 4));
+    });
+
+    test('a transaction without change info reads as not recorded', () {
+      final t = TransactionModel.fromJson({'transaction_id': 't1', 'invoice_number': 'INV-1', 'payment_type': 1, 'total_transaction': 7000});
+      expect(t.amountPaid, isNull);
+      expect(t.changeAmount, isNull);
+      expect(t.change, isEmpty);
+    });
   });
 }

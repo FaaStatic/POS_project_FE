@@ -1454,6 +1454,12 @@ abstract class AppLocalizations {
   /// **'Ukuran gambar maksimal 500 KB.'**
   String get vImageSize;
 
+  /// No description provided for @vImageDimensions.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisi gambar maksimal 4000 piksel.'**
+  String get vImageDimensions;
+
   /// No description provided for @categoryPickHint.
   ///
   /// In id, this message translates to:

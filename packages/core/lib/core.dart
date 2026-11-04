@@ -33,6 +33,7 @@ export 'src/features/payment/domain/usecases/payment_usecases.dart';
 export 'src/features/product/data/datasources/product_remote_datasource.dart';
 export 'src/features/product/data/models/product_model.dart';
 export 'src/features/product/data/repositories/product_repository_impl.dart';
+export 'src/features/product/domain/entities/barcode_export.dart';
 export 'src/features/product/domain/entities/product.dart';
 export 'src/features/product/domain/repositories/product_repository.dart';
 export 'src/features/product/domain/sku_generator.dart';

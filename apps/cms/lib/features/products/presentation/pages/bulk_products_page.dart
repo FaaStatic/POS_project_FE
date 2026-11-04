@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
@@ -346,7 +345,7 @@ class _BulkProductsPageState extends State<BulkProductsPage> {
                 field(l10n.purchasePrice, r.purchase, rule: Validators.positiveInt, number: true, money: true),
                 field(l10n.sellingPrice, r.price, rule: Validators.positiveInt, number: true, money: true),
                 field(l10n.debtPrice, r.debtPrice, rule: Validators.positiveInt, number: true, money: true),
-                field(l10n.stock, r.stock, rule: Validators.nonNegativeNumber),
+                field(l10n.stock, r.stock, rule: (v) => Validators.quantity(v, whole: r.unit == ProductUnit.pcs)),
               ],
             ),
             ProductImageField(value: r.image, onChanged: (v) => setState(() => r.image = v)),
@@ -397,7 +396,14 @@ class _ImportFromFile extends StatelessWidget {
               label: l10n.downloadTemplate,
               icon: Iconsax.document_download_copy,
               variant: AppButtonVariant.outline,
-              onPressed: () => saveFile(utf8.encode(_template), 'template-produk.csv', mime: 'text/csv'),
+              onPressed: () async {
+                final result = await cubit.template();
+                if (!context.mounted) return;
+                if (result case Ok(:final value)) {
+                  saveFile(value, DownloadImportTemplate.fileName, mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                }
+                showResult(context, result, l10n.downloaded);
+              },
             ),
           ],
         ),
@@ -405,18 +411,6 @@ class _ImportFromFile extends StatelessWidget {
     );
   }
 
-  static final _template = ProductModel.toCsv(const [
-    NewProduct(
-      sku: 'IDM-GRG',
-      barcode: '8992388101012',
-      name: 'Indomie Goreng',
-      purchasePrice: 2800,
-      sellingPrice: 3500,
-      sellingPriceDebt: 4000,
-      stock: 40,
-      category: 'Mie Instan',
-    ),
-  ]);
 }
 
 class _ResultSummary extends StatelessWidget {

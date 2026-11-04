@@ -804,6 +804,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get vImageSize => 'Ukuran gambar maksimal 500 KB.';
 
   @override
+  String get vImageDimensions => 'Sisi gambar maksimal 4000 piksel.';
+
+  @override
   String get categoryPickHint => 'Cari atau pilih kategori';
 
   @override

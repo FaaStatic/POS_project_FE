@@ -291,7 +291,8 @@ as int,
 /// @nodoc
 mixin _$Transaction {
 
- String get id; String get invoice; PaymentMethod get method; int get total; int get profit; bool get stockConflict; bool get conflictReviewed; DateTime? get createdAt; List<TransactionItem> get items;
+ String get id; String get invoice; PaymentMethod get method; int get total; int get profit; bool get stockConflict; bool get conflictReviewed; DateTime? get createdAt; List<TransactionItem> get items;/// Cash received and how the change was handed back; null when the sale did not record it.
+ int? get amountPaid; int? get changeAmount; List<ChangeLine> get change;
 /// Create a copy of Transaction
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -303,20 +304,20 @@ $TransactionCopyWith<Transaction> get copyWith => _$TransactionCopyWithImpl<Tran
 @override
 bool operator ==(Object other) {
   final _this = this as Transaction;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transaction&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.invoice, _this.invoice) || other.invoice == _this.invoice)&&(identical(other.method, _this.method) || other.method == _this.method)&&(identical(other.total, _this.total) || other.total == _this.total)&&(identical(other.profit, _this.profit) || other.profit == _this.profit)&&(identical(other.stockConflict, _this.stockConflict) || other.stockConflict == _this.stockConflict)&&(identical(other.conflictReviewed, _this.conflictReviewed) || other.conflictReviewed == _this.conflictReviewed)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&const DeepCollectionEquality().equals(other.items, _this.items));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transaction&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.invoice, _this.invoice) || other.invoice == _this.invoice)&&(identical(other.method, _this.method) || other.method == _this.method)&&(identical(other.total, _this.total) || other.total == _this.total)&&(identical(other.profit, _this.profit) || other.profit == _this.profit)&&(identical(other.stockConflict, _this.stockConflict) || other.stockConflict == _this.stockConflict)&&(identical(other.conflictReviewed, _this.conflictReviewed) || other.conflictReviewed == _this.conflictReviewed)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.amountPaid, _this.amountPaid) || other.amountPaid == _this.amountPaid)&&(identical(other.changeAmount, _this.changeAmount) || other.changeAmount == _this.changeAmount)&&const DeepCollectionEquality().equals(other.change, _this.change));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Transaction;
-  return Object.hash(runtimeType,_this.id,_this.invoice,_this.method,_this.total,_this.profit,_this.stockConflict,_this.conflictReviewed,_this.createdAt,const DeepCollectionEquality().hash(_this.items));
+  return Object.hash(runtimeType,_this.id,_this.invoice,_this.method,_this.total,_this.profit,_this.stockConflict,_this.conflictReviewed,_this.createdAt,const DeepCollectionEquality().hash(_this.items),_this.amountPaid,_this.changeAmount,const DeepCollectionEquality().hash(_this.change));
 }
 
 @override
 String toString() {
   final _this = this as Transaction;
-  return 'Transaction(id: ${_this.id}, invoice: ${_this.invoice}, method: ${_this.method}, total: ${_this.total}, profit: ${_this.profit}, stockConflict: ${_this.stockConflict}, conflictReviewed: ${_this.conflictReviewed}, createdAt: ${_this.createdAt}, items: ${_this.items})';
+  return 'Transaction(id: ${_this.id}, invoice: ${_this.invoice}, method: ${_this.method}, total: ${_this.total}, profit: ${_this.profit}, stockConflict: ${_this.stockConflict}, conflictReviewed: ${_this.conflictReviewed}, createdAt: ${_this.createdAt}, items: ${_this.items}, amountPaid: ${_this.amountPaid}, changeAmount: ${_this.changeAmount}, change: ${_this.change})';
 }
 
 
@@ -327,7 +328,7 @@ abstract mixin class $TransactionCopyWith<$Res>  {
   factory $TransactionCopyWith(Transaction value, $Res Function(Transaction) _then) = _$TransactionCopyWithImpl;
 @useResult
 $Res call({
- String id, String invoice, PaymentMethod method, int total, int profit, bool stockConflict, bool conflictReviewed, DateTime? createdAt, List<TransactionItem> items
+ String id, String invoice, PaymentMethod method, int total, int profit, bool stockConflict, bool conflictReviewed, DateTime? createdAt, List<TransactionItem> items, int? amountPaid, int? changeAmount, List<ChangeLine> change
 });
 
 
@@ -344,7 +345,7 @@ class _$TransactionCopyWithImpl<$Res>
 
 /// Create a copy of Transaction
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? invoice = null,Object? method = null,Object? total = null,Object? profit = null,Object? stockConflict = null,Object? conflictReviewed = null,Object? createdAt = freezed,Object? items = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? invoice = null,Object? method = null,Object? total = null,Object? profit = null,Object? stockConflict = null,Object? conflictReviewed = null,Object? createdAt = freezed,Object? items = null,Object? amountPaid = freezed,Object? changeAmount = freezed,Object? change = null,}) {
   return _then(Transaction(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,invoice: null == invoice ? _self.invoice : invoice // ignore: cast_nullable_to_non_nullable
@@ -355,7 +356,10 @@ as int,stockConflict: null == stockConflict ? _self.stockConflict : stockConflic
 as bool,conflictReviewed: null == conflictReviewed ? _self.conflictReviewed : conflictReviewed // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
-as List<TransactionItem>,
+as List<TransactionItem>,amountPaid: freezed == amountPaid ? _self.amountPaid : amountPaid // ignore: cast_nullable_to_non_nullable
+as int?,changeAmount: freezed == changeAmount ? _self.changeAmount : changeAmount // ignore: cast_nullable_to_non_nullable
+as int?,change: null == change ? _self.change : change // ignore: cast_nullable_to_non_nullable
+as List<ChangeLine>,
   ));
 }
 
@@ -440,10 +444,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String invoice,  PaymentMethod method,  int total,  int profit,  bool stockConflict,  bool conflictReviewed,  DateTime? createdAt,  List<TransactionItem> items)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String invoice,  PaymentMethod method,  int total,  int profit,  bool stockConflict,  bool conflictReviewed,  DateTime? createdAt,  List<TransactionItem> items,  int? amountPaid,  int? changeAmount,  List<ChangeLine> change)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Transaction() when $default != null:
-return $default(_that.id,_that.invoice,_that.method,_that.total,_that.profit,_that.stockConflict,_that.conflictReviewed,_that.createdAt,_that.items);case _:
+return $default(_that.id,_that.invoice,_that.method,_that.total,_that.profit,_that.stockConflict,_that.conflictReviewed,_that.createdAt,_that.items,_that.amountPaid,_that.changeAmount,_that.change);case _:
   return orElse();
 
 }
@@ -461,10 +465,10 @@ return $default(_that.id,_that.invoice,_that.method,_that.total,_that.profit,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String invoice,  PaymentMethod method,  int total,  int profit,  bool stockConflict,  bool conflictReviewed,  DateTime? createdAt,  List<TransactionItem> items)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String invoice,  PaymentMethod method,  int total,  int profit,  bool stockConflict,  bool conflictReviewed,  DateTime? createdAt,  List<TransactionItem> items,  int? amountPaid,  int? changeAmount,  List<ChangeLine> change)  $default,) {final _that = this;
 switch (_that) {
 case _Transaction():
-return $default(_that.id,_that.invoice,_that.method,_that.total,_that.profit,_that.stockConflict,_that.conflictReviewed,_that.createdAt,_that.items);case _:
+return $default(_that.id,_that.invoice,_that.method,_that.total,_that.profit,_that.stockConflict,_that.conflictReviewed,_that.createdAt,_that.items,_that.amountPaid,_that.changeAmount,_that.change);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -481,10 +485,10 @@ return $default(_that.id,_that.invoice,_that.method,_that.total,_that.profit,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String invoice,  PaymentMethod method,  int total,  int profit,  bool stockConflict,  bool conflictReviewed,  DateTime? createdAt,  List<TransactionItem> items)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String invoice,  PaymentMethod method,  int total,  int profit,  bool stockConflict,  bool conflictReviewed,  DateTime? createdAt,  List<TransactionItem> items,  int? amountPaid,  int? changeAmount,  List<ChangeLine> change)?  $default,) {final _that = this;
 switch (_that) {
 case _Transaction() when $default != null:
-return $default(_that.id,_that.invoice,_that.method,_that.total,_that.profit,_that.stockConflict,_that.conflictReviewed,_that.createdAt,_that.items);case _:
+return $default(_that.id,_that.invoice,_that.method,_that.total,_that.profit,_that.stockConflict,_that.conflictReviewed,_that.createdAt,_that.items,_that.amountPaid,_that.changeAmount,_that.change);case _:
   return null;
 
 }
@@ -496,7 +500,7 @@ return $default(_that.id,_that.invoice,_that.method,_that.total,_that.profit,_th
 
 
 class _Transaction implements Transaction {
-  const _Transaction({required this.id, required this.invoice, required this.method, required this.total, this.profit = 0, this.stockConflict = false, this.conflictReviewed = false, this.createdAt,  List<TransactionItem> items = const []}): _items = items;
+  const _Transaction({required this.id, required this.invoice, required this.method, required this.total, this.profit = 0, this.stockConflict = false, this.conflictReviewed = false, this.createdAt,  List<TransactionItem> items = const [], this.amountPaid, this.changeAmount,  List<ChangeLine> change = const []}): _items = items,_change = change;
   
 
 @override final  String id;
@@ -514,6 +518,16 @@ class _Transaction implements Transaction {
   return EqualUnmodifiableListView(_items);
 }
 
+/// Cash received and how the change was handed back; null when the sale did not record it.
+@override final  int? amountPaid;
+@override final  int? changeAmount;
+ final  List<ChangeLine> _change;
+@override@JsonKey() List<ChangeLine> get change {
+  if (_change is EqualUnmodifiableListView) return _change;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_change);
+}
+
 
 /// Create a copy of Transaction
 /// with the given fields replaced by the non-null parameter values.
@@ -525,18 +539,18 @@ _$TransactionCopyWith<_Transaction> get copyWith => __$TransactionCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transaction&&(identical(other.id, id) || other.id == id)&&(identical(other.invoice, invoice) || other.invoice == invoice)&&(identical(other.method, method) || other.method == method)&&(identical(other.total, total) || other.total == total)&&(identical(other.profit, profit) || other.profit == profit)&&(identical(other.stockConflict, stockConflict) || other.stockConflict == stockConflict)&&(identical(other.conflictReviewed, conflictReviewed) || other.conflictReviewed == conflictReviewed)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.items, _items));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transaction&&(identical(other.id, id) || other.id == id)&&(identical(other.invoice, invoice) || other.invoice == invoice)&&(identical(other.method, method) || other.method == method)&&(identical(other.total, total) || other.total == total)&&(identical(other.profit, profit) || other.profit == profit)&&(identical(other.stockConflict, stockConflict) || other.stockConflict == stockConflict)&&(identical(other.conflictReviewed, conflictReviewed) || other.conflictReviewed == conflictReviewed)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.amountPaid, amountPaid) || other.amountPaid == amountPaid)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount)&&const DeepCollectionEquality().equals(other.change, _change));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,invoice,method,total,profit,stockConflict,conflictReviewed,createdAt,const DeepCollectionEquality().hash(_items));
+    return Object.hash(runtimeType,id,invoice,method,total,profit,stockConflict,conflictReviewed,createdAt,const DeepCollectionEquality().hash(_items),amountPaid,changeAmount,const DeepCollectionEquality().hash(_change));
 }
 
 @override
 String toString() {
-    return 'Transaction(id: $id, invoice: $invoice, method: $method, total: $total, profit: $profit, stockConflict: $stockConflict, conflictReviewed: $conflictReviewed, createdAt: $createdAt, items: $items)';
+    return 'Transaction(id: $id, invoice: $invoice, method: $method, total: $total, profit: $profit, stockConflict: $stockConflict, conflictReviewed: $conflictReviewed, createdAt: $createdAt, items: $items, amountPaid: $amountPaid, changeAmount: $changeAmount, change: $change)';
 }
 
 
@@ -547,7 +561,7 @@ abstract mixin class _$TransactionCopyWith<$Res> implements $TransactionCopyWith
   factory _$TransactionCopyWith(_Transaction value, $Res Function(_Transaction) _then) = __$TransactionCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String invoice, PaymentMethod method, int total, int profit, bool stockConflict, bool conflictReviewed, DateTime? createdAt, List<TransactionItem> items
+ String id, String invoice, PaymentMethod method, int total, int profit, bool stockConflict, bool conflictReviewed, DateTime? createdAt, List<TransactionItem> items, int? amountPaid, int? changeAmount, List<ChangeLine> change
 });
 
 
@@ -564,7 +578,7 @@ class __$TransactionCopyWithImpl<$Res>
 
 /// Create a copy of Transaction
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? invoice = null,Object? method = null,Object? total = null,Object? profit = null,Object? stockConflict = null,Object? conflictReviewed = null,Object? createdAt = freezed,Object? items = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? invoice = null,Object? method = null,Object? total = null,Object? profit = null,Object? stockConflict = null,Object? conflictReviewed = null,Object? createdAt = freezed,Object? items = null,Object? amountPaid = freezed,Object? changeAmount = freezed,Object? change = null,}) {
   return _then(_Transaction(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,invoice: null == invoice ? _self.invoice : invoice // ignore: cast_nullable_to_non_nullable
@@ -575,7 +589,10 @@ as int,stockConflict: null == stockConflict ? _self.stockConflict : stockConflic
 as bool,conflictReviewed: null == conflictReviewed ? _self.conflictReviewed : conflictReviewed // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<TransactionItem>,
+as List<TransactionItem>,amountPaid: freezed == amountPaid ? _self.amountPaid : amountPaid // ignore: cast_nullable_to_non_nullable
+as int?,changeAmount: freezed == changeAmount ? _self.changeAmount : changeAmount // ignore: cast_nullable_to_non_nullable
+as int?,change: null == change ? _self._change : change // ignore: cast_nullable_to_non_nullable
+as List<ChangeLine>,
   ));
 }
 

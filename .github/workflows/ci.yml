@@ -15,6 +15,14 @@ jobs:
           flutter-version: 3.47.2
           channel: stable
           cache: true
+      # .env.dev and .env.prod are not tracked but are declared as assets, so the build needs them.
+      - name: Create env files from the templates
+        run: |
+          for app in cms kasir; do
+            cp apps/$app/.env.example apps/$app/.env.dev
+            cp apps/$app/.env.example apps/$app/.env.prod
+            sed -i 's/^FLAVOR=.*/FLAVOR=prod/' apps/$app/.env.prod
+          done
       - run: flutter pub get
       - run: dart run melos run gen_l10n
       - run: dart run melos run analyze

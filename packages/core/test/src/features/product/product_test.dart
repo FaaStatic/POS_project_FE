@@ -48,9 +48,9 @@ void main() {
   });
 
   test('get keeps the server barcode image and tolerates its absence', () async {
-    adapter.on('GET', ApiPaths.product('p1'), (_) => FakeReply(200, envelope({...productJson('p1', barcode: 'SKU-p1-1a2b3c4d'), 'barcode_image': 'data:image/webp;base64,AAAA'})));
+    adapter.on('GET', ApiPaths.product('p1'), (_) => FakeReply(200, envelope({...productJson('p1', barcode: 'SKU-p1-1a2b3c4d'), 'barcode_image': 'AAAA'})));
     adapter.on('GET', ApiPaths.product('p2'), (_) => FakeReply(200, envelope(productJson('p2'))));
-    expect(((await repo.get('p1')) as Ok<Product>).value.barcodeImage, 'data:image/webp;base64,AAAA');
+    expect(((await repo.get('p1')) as Ok<Product>).value.barcodeImage, 'AAAA');
     expect(((await repo.get('p2')) as Ok<Product>).value.barcodeImage, '');
   });
 
@@ -117,6 +117,49 @@ void main() {
     expect(await AdjustStock(repo)('p1', 0), const Err<void>(ValidationFailure('zero_delta')));
     expect(await DeleteProduct(repo)('p1'), isA<Ok<void>>());
     expect(await GetProduct(repo)('missing'), const Err<Product>(NetworkFailure()));
+  });
+
+  test('the import template is fetched from the template path', () async {
+    adapter.on('GET', ApiPaths.productsTemplate, (_) => const FakeReply(200, [1, 2, 3]));
+    expect((await DownloadImportTemplate(repo)() as Ok<List<int>>).value, isNotEmpty);
+    expect(DownloadImportTemplate.fileName, endsWith('.xlsx'));
+  });
+
+  test('ExportBarcodes follows X-Total-Parts and sends the filter with every part', () async {
+    adapter.on('GET', ApiPaths.productsExportBarcodes, (_) => const FakeReply(200, [1], {'x-total-parts': '3'}));
+    final files = <BarcodeExport>[];
+    final result = await ExportBarcodes(repo)(const ProductQuery(search: 'gula', categoryId: 'c1'), (f) async => files.add(f));
+    expect(result, const Ok(3));
+    expect(files.map((f) => f.part), [1, 2, 3]);
+    expect(files.last.fileName, 'barcode-produk-part-3-of-3.xlsx');
+    expect(adapter.requests.map((r) => r.queryParameters['part']), [1, 2, 3]);
+    for (final r in adapter.requests) {
+      expect(r.queryParameters, containsPair('search', 'gula'));
+      expect(r.queryParameters, containsPair('category_id', 'c1'));
+    }
+  });
+
+  test('ExportBarcodes is one file without paging headers and stops at the first failed part', () async {
+    adapter.on('GET', ApiPaths.productsExportBarcodes, (_) => const FakeReply(200, [1]));
+    final one = <BarcodeExport>[];
+    expect(await ExportBarcodes(repo)(const ProductQuery(), (f) async => one.add(f)), const Ok(1));
+    expect(one.single.totalParts, 1);
+
+    adapter.on('GET', ApiPaths.productsExportBarcodes, (o) {
+      if (o.queryParameters['part'] == 2) return FakeReply(500, errorBody('boom'));
+      return const FakeReply(200, [1], {'x-total-parts': '3'});
+    });
+    final saved = <int>[];
+    expect(await ExportBarcodes(repo)(const ProductQuery(), (f) async => saved.add(f.part)), isA<Err<int>>());
+    expect(saved, [1]);
+  });
+
+  test('ExportBarcodes refuses a server that asks for more parts than the cap, before saving any', () async {
+    adapter.on('GET', ApiPaths.productsExportBarcodes, (_) => FakeReply(200, [1], {'x-total-parts': '${ExportBarcodes.maxParts + 1}'}));
+    final saved = <int>[];
+    final result = await ExportBarcodes(repo)(const ProductQuery(), (f) async => saved.add(f.part));
+    expect(result, const Err<int>(ValidationFailure('export_too_many_parts')));
+    expect(saved, isEmpty);
   });
 
   test('bulk uploads CSV as multipart and maps the import report', () async {

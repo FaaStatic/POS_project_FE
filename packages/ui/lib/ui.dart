@@ -12,6 +12,7 @@ export 'package:shadcn_ui/shadcn_ui.dart'
         ShadOption,
         ShadSelect,
         ShadSeparator,
+        ShadShadows,
         ShadSwitch,
         ShadTab,
         ShadTabs,

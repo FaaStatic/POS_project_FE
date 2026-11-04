@@ -24,6 +24,7 @@ String? _keyText(AppLocalizations l10n, String key) => switch (key) {
       'import_format' => l10n.importFormat,
       'import_empty' => l10n.importEmpty,
       'import_too_large' => l10n.importTooLarge,
+      'export_too_many_parts' => l10n.exportTooManyParts,
       'barcode_format' => l10n.vBarcode,
       'required' => l10n.vRequired,
       'username_length' => l10n.vUsernameLength,
@@ -47,6 +48,10 @@ String? validationText(BuildContext context, String? key) {
     'image_not_webp' => l10n.vImageWebp,
     'image_not_square' => l10n.vImageSquare,
     'image_too_large' => l10n.vImageSize,
+    'image_dimensions' => l10n.vImageDimensions,
+    'qty_whole' => l10n.vQtyWhole,
+    'qty_decimals' => l10n.vQtyDecimals,
+    'qty_too_large' => l10n.vQtyTooLarge,
     _ => l10n.vRequired,
   };
 }

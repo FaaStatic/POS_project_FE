@@ -146,7 +146,7 @@ class _FormState extends State<_Form> {
               ),
               if (widget.product.barcodeImage.isNotEmpty) ...[
                 const SizedBox(height: Space.md),
-                Center(child: BarcodeImage(dataUri: widget.product.barcodeImage, semanticLabel: l10n.barcode)),
+                Center(child: BarcodeImage(image: widget.product.barcodeImage, semanticLabel: l10n.barcode)),
               ],
               const SizedBox(height: Space.lg),
               AppSelect<ProductUnit>(

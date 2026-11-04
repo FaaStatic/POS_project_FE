@@ -33,6 +33,18 @@ void main() {
     await cubit.close();
   });
 
+  test('rewriting the same rows does not emit again, so the list is not rebuilt', () async {
+    final cubit = ProductsCubit(local.cache)..start();
+    await cubit.stream.firstWhere((s) => !s.loading && s.products.isNotEmpty);
+    final emitted = <ProductsState>[];
+    final sub = cubit.stream.listen(emitted.add);
+    await local.cache.replaceProducts(cubit.state.products);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    await sub.cancel();
+    expect(emitted, isEmpty);
+    await cubit.close();
+  });
+
   test('without a page size the cubit reads everything, as before', () async {
     final cubit = ProductsCubit(local.cache)..start();
     final s = await cubit.stream.firstWhere((s) => !s.loading);

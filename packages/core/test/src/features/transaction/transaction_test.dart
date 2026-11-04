@@ -107,10 +107,10 @@ void main() {
   test('conflict review and PDFs', () async {
     adapter
       ..on('PATCH', ApiPaths.transactionConflictReview('t1'), (_) => FakeReply(200, envelope(null)))
-      ..on('GET', ApiPaths.reportTransaction, (_) => FakeReply(200, envelope({'url_pdf': '/api/reports/inv.pdf'})))
-      ..on('GET', ApiPaths.reportMonth, (_) => FakeReply(200, envelope({'url_pdf': '/api/reports/oct.pdf'})));
+      ..on('GET', ApiPaths.reportTransaction, (_) => FakeReply(200, envelope({'url_pdf': '/api/v1/insight/reports/inv.pdf'})))
+      ..on('GET', ApiPaths.reportMonth, (_) => FakeReply(200, envelope({'url_pdf': '/api/v1/insight/reports/oct.pdf'})));
     expect(await MarkConflictReviewed(repo)('t1'), isA<Ok<void>>());
-    expect(await GetReceiptPdf(repo)('t1'), const Ok('/api/reports/inv.pdf'));
-    expect(await GetMonthlyReportPdf(repo)(10, 2026), const Ok('/api/reports/oct.pdf'));
+    expect(await GetReceiptPdf(repo)('t1'), const Ok('/api/v1/insight/reports/inv.pdf'));
+    expect(await GetMonthlyReportPdf(repo)(10, 2026), const Ok('/api/v1/insight/reports/oct.pdf'));
   });
 }

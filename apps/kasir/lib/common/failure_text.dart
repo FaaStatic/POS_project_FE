@@ -53,6 +53,7 @@ String? validationText(BuildContext context, String? key) {
     'image_not_webp' => l10n.vImageWebp,
     'image_not_square' => l10n.vImageSquare,
     'image_too_large' => l10n.vImageSize,
+    'image_dimensions' => l10n.vImageDimensions,
     _ => l10n.vRequired,
   };
 }

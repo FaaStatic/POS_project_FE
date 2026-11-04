@@ -233,6 +233,7 @@
   "vImageWebp": "The image must be a WebP file.",
   "vImageSquare": "The image must be square (1:1 ratio).",
   "vImageSize": "The image must be 500 KB or smaller.",
+  "vImageDimensions": "The image side must be 4000 px or less.",
   "categoryPickHint": "Search or pick a category",
   "vCategoryExisting": "Pick a category that already exists."
 }

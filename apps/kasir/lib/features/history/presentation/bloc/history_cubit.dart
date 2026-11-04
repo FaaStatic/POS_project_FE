@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -27,6 +28,7 @@ class HistoryCubit extends Cubit<HistoryState> {
           final pb = b.status == SaleStatus.pending || b.status == SaleStatus.failed ? 0 : 1;
           return pa != pb ? pa - pb : b.createdAt.compareTo(a.createdAt);
         });
+      if (!state.loading && listEquals(state.sales, sorted)) return;
       emit(HistoryState(loading: false, sales: sorted));
     });
   }

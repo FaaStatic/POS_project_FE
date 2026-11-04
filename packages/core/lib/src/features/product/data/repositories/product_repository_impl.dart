@@ -1,6 +1,7 @@
 import '../../../../common/guard.dart';
 import '../../../../common/page.dart';
 import '../../../../common/result.dart';
+import '../../domain/entities/barcode_export.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../datasources/product_remote_datasource.dart';
@@ -40,6 +41,13 @@ class ProductRepositoryImpl implements ProductRepository {
   @override
   Future<Result<BulkImportResult>> importFile(List<int> bytes, String filename) =>
       guard(() => _remote.importFile(bytes, filename));
+
+  @override
+  Future<Result<List<int>>> importTemplate() => guard(_remote.importTemplate);
+
+  @override
+  Future<Result<BarcodeExport>> exportBarcodes(ProductQuery filter, {int part = 1}) =>
+      guard(() => _remote.exportBarcodes(filter, part: part));
 
   @override
   Future<Result<void>> adjustStock(String id, double delta) => guard(() => _remote.adjustStock(id, delta));

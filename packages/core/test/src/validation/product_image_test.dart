@@ -84,6 +84,25 @@ void main() {
       expect(ProductImage.validate(padded(500 * 1024 + 1)), 'image_too_large');
     });
 
+    test('the longest side is capped at the backend pixel limit', () {
+      // Only the VP8L header is read, so a bare header is enough to test the rule.
+      Uint8List header(int side) {
+        final b = Uint8List(40)
+          ..setRange(0, 4, 'RIFF'.codeUnits)
+          ..setRange(8, 12, 'WEBP'.codeUnits)
+          ..setRange(12, 16, 'VP8L'.codeUnits);
+        b[20] = 0x2f;
+        final bits = (side - 1) | ((side - 1) << 14);
+        for (var i = 0; i < 4; i++) {
+          b[21 + i] = (bits >> (8 * i)) & 0xff;
+        }
+        return b;
+      }
+
+      expect(ProductImage.validate(header(ProductImage.maxSide)), isNull);
+      expect(ProductImage.validate(header(ProductImage.maxSide + 1)), 'image_dimensions');
+    });
+
     test('format is checked before size, size before ratio', () {
       final bigPng = Uint8List(600 * 1024)..setRange(0, 4, [0x89, 0x50, 0x4e, 0x47]);
       expect(ProductImage.validate(bigPng), 'image_not_webp');

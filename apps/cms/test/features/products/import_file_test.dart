@@ -30,7 +30,7 @@ void main() {
     expect(form.files.single.value.filename, 'produk.xlsx');
   });
 
-  testWidgets('wrong format is refused without uploading; template downloads', (tester) async {
+  testWidgets('wrong format is refused without uploading', (tester) async {
     final app = CmsHarness();
     debugPickedFile = const PickedFile('produk.xls', [1]);
     await app.pump(tester, location: '/products/bulk');
@@ -38,8 +38,16 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Hanya file .xlsx atau .csv.'), findsOneWidget);
     expect(app.adapter.requests.where((r) => r.path == ApiPaths.productsBulk), isEmpty);
-    await tester.tap(find.text('Unduh template CSV'));
-    expect(savedFiles.last, 'template-produk.csv');
+  });
+
+  testWidgets('the Excel template is fetched from the backend and saved', (tester) async {
+    final app = CmsHarness();
+    app.adapter.on('GET', ApiPaths.productsTemplate, (_) => const FakeReply(200, [80, 75]));
+    await app.pump(tester, location: '/products/bulk');
+    await tester.tap(find.text('Unduh template Excel'));
+    await tester.pumpAndSettle();
+    expect(app.adapter.requests.last.path, ApiPaths.productsTemplate);
+    expect(savedFiles.last, 'template-produk.xlsx');
   });
 
   testWidgets('cancelling the file dialog does nothing', (tester) async {

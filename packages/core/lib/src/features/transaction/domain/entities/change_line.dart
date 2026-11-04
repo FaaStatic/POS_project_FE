@@ -11,6 +11,9 @@ enum ChangeKind {
 
   const ChangeKind(this.wire);
   final String wire;
+
+  /// Unknown kinds read as other goods, the only kind that always carries a product name.
+  static ChangeKind fromWire(String? wire) => values.firstWhere((k) => k.wire == wire, orElse: () => product);
 }
 
 /// One part of the change handed back: money, candy, or another physical product.

@@ -497,6 +497,7 @@
   "vImageWebp": "Gambar harus berformat WebP.",
   "vImageSquare": "Gambar harus persegi (rasio 1:1).",
   "vImageSize": "Ukuran gambar maksimal 500 KB.",
+  "vImageDimensions": "Sisi gambar maksimal 4000 piksel.",
   "categoryPickHint": "Cari atau pilih kategori",
   "vCategoryExisting": "Pilih kategori yang sudah ada."
 }

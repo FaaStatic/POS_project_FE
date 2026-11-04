@@ -4,6 +4,7 @@ import '../../../../common/json.dart';
 import '../../../../common/page.dart';
 import '../../../../constants/api_paths.dart';
 import '../../../../network/api_client.dart';
+import '../../domain/entities/barcode_export.dart';
 import '../../domain/entities/product.dart';
 import '../models/product_model.dart';
 
@@ -48,6 +49,20 @@ class ProductRemoteDatasource {
   Future<BulkImportResult> importFile(List<int> bytes, String filename) async {
     final form = FormData.fromMap({'file_upload': MultipartFile.fromBytes(bytes, filename: filename)});
     return ProductModel.bulkResultFromJson(readMap(await _api.post(ApiPaths.productsBulk, body: form)));
+  }
+
+  Future<List<int>> importTemplate() => _api.bytes(ApiPaths.productsTemplate);
+
+  Future<BarcodeExport> exportBarcodes(ProductQuery filter, {required int part}) async {
+    final (bytes, headers) = await _api.download(
+      ApiPaths.productsExportBarcodes,
+      query: {'search': filter.search, 'category_id': filter.categoryId, 'part': part},
+    );
+    return BarcodeExport(
+      part: part,
+      totalParts: int.tryParse(headers['x-total-parts'] ?? '') ?? 1,
+      bytes: bytes,
+    );
   }
 
   Future<void> adjustStock(String id, double delta) => _api.patch(ApiPaths.productsStock, body: {'id': id, 'stock': delta});

@@ -803,6 +803,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vImageSize => 'The image must be 500 KB or smaller.';
 
   @override
+  String get vImageDimensions => 'The image side must be 4000 px or less.';
+
+  @override
   String get categoryPickHint => 'Search or pick a category';
 
   @override

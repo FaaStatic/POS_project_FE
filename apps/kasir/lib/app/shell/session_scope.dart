@@ -29,10 +29,12 @@ class _SessionScopeState extends State<SessionScope> {
   late final CheckoutBloc _checkout = getIt<CheckoutBloc>()..add(const CheckoutStarted());
   late final SyncCubit _sync = getIt<SyncCubit>()..start();
   final _subs = <StreamSubscription<String>>[];
+  late final AppLifecycleListener _lifecycle;
 
   @override
   void initState() {
     super.initState();
+    _lifecycle = AppLifecycleListener(onResume: () => unawaited(_sync.refreshOnResume()));
     final push = getIt<PushService>();
     unawaited(push.registerDevice());
     _subs
@@ -55,6 +57,7 @@ class _SessionScopeState extends State<SessionScope> {
 
   @override
   void dispose() {
+    _lifecycle.dispose();
     for (final s in _subs) {
       s.cancel();
     }

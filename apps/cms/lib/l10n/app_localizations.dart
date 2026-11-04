@@ -1094,6 +1094,36 @@ abstract class AppLocalizations {
   /// **'Laba kotor'**
   String get profit;
 
+  /// No description provided for @amountPaid.
+  ///
+  /// In id, this message translates to:
+  /// **'Uang diterima'**
+  String get amountPaid;
+
+  /// No description provided for @changeGiven.
+  ///
+  /// In id, this message translates to:
+  /// **'Kembalian'**
+  String get changeGiven;
+
+  /// No description provided for @changeCash.
+  ///
+  /// In id, this message translates to:
+  /// **'Tunai'**
+  String get changeCash;
+
+  /// No description provided for @changeCandy.
+  ///
+  /// In id, this message translates to:
+  /// **'Permen'**
+  String get changeCandy;
+
+  /// No description provided for @changeProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Produk lain'**
+  String get changeProduct;
+
   /// No description provided for @conflictOnly.
   ///
   /// In id, this message translates to:
@@ -1649,8 +1679,14 @@ abstract class AppLocalizations {
   /// No description provided for @downloadTemplate.
   ///
   /// In id, this message translates to:
-  /// **'Unduh template CSV'**
+  /// **'Unduh template Excel'**
   String get downloadTemplate;
+
+  /// No description provided for @exportBarcodes.
+  ///
+  /// In id, this message translates to:
+  /// **'Ekspor barcode'**
+  String get exportBarcodes;
 
   /// No description provided for @importing.
   ///
@@ -1783,6 +1819,36 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Ukuran gambar maksimal 500 KB.'**
   String get vImageSize;
+
+  /// No description provided for @vImageDimensions.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisi gambar maksimal 4000 piksel.'**
+  String get vImageDimensions;
+
+  /// No description provided for @vQtyWhole.
+  ///
+  /// In id, this message translates to:
+  /// **'Satuan pcs harus bilangan bulat.'**
+  String get vQtyWhole;
+
+  /// No description provided for @vQtyDecimals.
+  ///
+  /// In id, this message translates to:
+  /// **'Maksimal 3 angka desimal.'**
+  String get vQtyDecimals;
+
+  /// No description provided for @vQtyTooLarge.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah terlalu besar.'**
+  String get vQtyTooLarge;
+
+  /// No description provided for @exportTooManyParts.
+  ///
+  /// In id, this message translates to:
+  /// **'Terlalu banyak file untuk diekspor sekaligus. Persempit pencarian atau kategori.'**
+  String get exportTooManyParts;
 
   /// No description provided for @bulkImagesTooLarge.
   ///

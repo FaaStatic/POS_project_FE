@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -80,7 +81,10 @@ class ProductsCubit extends Cubit<ProductsState> {
     final limit = _limit;
     _products = _cache.watchProducts(search: state.query, categoryId: state.categoryId, limit: limit).listen((p) {
       _widening = false;
-      emit(state.copyWith(loading: false, products: p, hasMore: limit != null && p.length >= limit));
+      final hasMore = limit != null && p.length >= limit;
+      // Drift re-emits after any write to the table; an unchanged page must not rebuild the list.
+      if (!state.loading && state.hasMore == hasMore && listEquals(state.products, p)) return;
+      emit(state.copyWith(loading: false, products: p, hasMore: hasMore));
     });
   }
 
@@ -108,7 +112,10 @@ class CustomersCubit extends Cubit<CustomersState> {
   void search(String query) {
     _sub?.cancel();
     emit(state.copyWith(query: query));
-    _sub = _cache.watchCustomers(search: query).listen((c) => emit(state.copyWith(loading: false, customers: c)));
+    _sub = _cache.watchCustomers(search: query).listen((c) {
+      if (!state.loading && listEquals(state.customers, c)) return;
+      emit(state.copyWith(loading: false, customers: c));
+    });
   }
 
   @override

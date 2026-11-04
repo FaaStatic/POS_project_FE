@@ -42,6 +42,12 @@ class TransactionDetailPage extends StatelessWidget {
   }
 }
 
+String _changeLabel(AppLocalizations l10n, ChangeLine line, String locale) {
+  if (line.isCash) return l10n.changeCash;
+  final kind = line.kind == ChangeKind.candy ? l10n.changeCandy : l10n.changeProduct;
+  return '$kind · ${line.productName} × ${formatQty(line.qty, locale: locale)}';
+}
+
 class _Body extends StatelessWidget {
   const _Body({required this.transaction, required this.working});
   final Transaction transaction;
@@ -124,6 +130,33 @@ class _Body extends StatelessWidget {
                 Text(money(context, t.profit), style: num),
               ],
             ),
+            if (t.amountPaid != null) ...[
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                children: [
+                  Text(l10n.amountPaid, style: theme.textTheme.bodyLarge),
+                  Text(money(context, t.amountPaid!), style: num),
+                ],
+              ),
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                children: [
+                  Text(l10n.changeGiven, style: theme.textTheme.bodyLarge),
+                  Text(money(context, t.changeAmount ?? 0), style: num),
+                ],
+              ),
+              for (final c in t.change)
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: Space.lg),
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    children: [
+                      Text(_changeLabel(l10n, c, Localizations.localeOf(context).languageCode), style: theme.textTheme.bodyMedium),
+                      Text(money(context, c.amount), style: theme.textTheme.bodyMedium?.tabular),
+                    ],
+                  ),
+                ),
+            ],
             const SizedBox(height: Space.xxl),
             Wrap(
               spacing: Space.md,

@@ -52,7 +52,31 @@ class SyncCubit extends Cubit<SyncState> {
     unawaited(scheduleNext().catchError((_) {}));
     if (online) {
       await refreshCatalog();
+      _lastRefresh = DateTime.now();
       await syncNow(quiet: true);
+    }
+  }
+
+  bool _refreshing = false;
+  DateTime? _lastRefresh;
+
+  /// Permission prompts, the scanner and file pickers also bring the app back to the front;
+  /// the catalog is pulled at most this often.
+  static const resumeGap = Duration(seconds: 30);
+
+  /// The app is in front again: pull the catalog so products added elsewhere show up.
+  /// Skipped offline, while a pull runs, and while sales wait to be sent, because the server
+  /// stock does not include them yet. Lists skip the emit when nothing changed.
+  Future<void> refreshOnResume() async {
+    final last = _lastRefresh;
+    if (!state.online || state.pending > 0 || state.syncing || _refreshing) return;
+    if (last != null && DateTime.now().difference(last) < resumeGap) return;
+    _refreshing = true;
+    try {
+      await refreshCatalog();
+      _lastRefresh = DateTime.now();
+    } finally {
+      _refreshing = false;
     }
   }
 

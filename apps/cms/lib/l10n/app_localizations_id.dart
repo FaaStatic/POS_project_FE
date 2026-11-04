@@ -550,6 +550,21 @@ class AppLocalizationsId extends AppLocalizations {
   String get profit => 'Laba kotor';
 
   @override
+  String get amountPaid => 'Uang diterima';
+
+  @override
+  String get changeGiven => 'Kembalian';
+
+  @override
+  String get changeCash => 'Tunai';
+
+  @override
+  String get changeCandy => 'Permen';
+
+  @override
+  String get changeProduct => 'Produk lain';
+
+  @override
   String get conflictOnly => 'Konflik stok';
 
   @override
@@ -857,7 +872,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get pickFile => 'Pilih file .xlsx atau .csv';
 
   @override
-  String get downloadTemplate => 'Unduh template CSV';
+  String get downloadTemplate => 'Unduh template Excel';
+
+  @override
+  String get exportBarcodes => 'Ekspor barcode';
 
   @override
   String importing(String name) {
@@ -930,6 +948,22 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get vImageSize => 'Ukuran gambar maksimal 500 KB.';
+
+  @override
+  String get vImageDimensions => 'Sisi gambar maksimal 4000 piksel.';
+
+  @override
+  String get vQtyWhole => 'Satuan pcs harus bilangan bulat.';
+
+  @override
+  String get vQtyDecimals => 'Maksimal 3 angka desimal.';
+
+  @override
+  String get vQtyTooLarge => 'Jumlah terlalu besar.';
+
+  @override
+  String get exportTooManyParts =>
+      'Terlalu banyak file untuk diekspor sekaligus. Persempit pencarian atau kategori.';
 
   @override
   String get bulkImagesTooLarge =>

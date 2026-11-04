@@ -2,6 +2,7 @@ import '../../../../common/failure.dart';
 import '../../../../common/page.dart';
 import '../../../../common/result.dart';
 import '../../../../validation/validators.dart';
+import '../entities/barcode_export.dart';
 import '../entities/product.dart';
 import '../repositories/product_repository.dart';
 
@@ -82,6 +83,43 @@ class BulkCreateProducts {
   Future<Result<BulkImportResult>> call(List<NewProduct> products) {
     if (products.isEmpty) return Future.value(const Err(ValidationFailure('empty')));
     return _repo.bulkCreate(products);
+  }
+}
+
+class DownloadImportTemplate {
+  const DownloadImportTemplate(this._repo);
+  final ProductRepository _repo;
+
+  static const fileName = 'template-produk.xlsx';
+
+  Future<Result<List<int>>> call() => _repo.importTemplate();
+}
+
+/// Every part of the barcode sheet for [filter], each handed to [onPart] as it arrives so only
+/// one part is held in memory. The first request says how many parts there are; a failed part
+/// stops the export and the error is returned. Resolves to the number of parts delivered.
+class ExportBarcodes {
+  const ExportBarcodes(this._repo);
+  final ProductRepository _repo;
+
+  /// `X-Total-Parts` comes from the server; more parts than this is refused (50,000 products).
+  static const maxParts = 100;
+
+  Future<Result<int>> call(ProductQuery filter, Future<void> Function(BarcodeExport part) onPart) async {
+    var parts = 1;
+    for (var part = 1; part <= parts; part++) {
+      switch (await _repo.exportBarcodes(filter, part: part)) {
+        case Ok(:final value):
+          if (part == 1) {
+            if (value.totalParts > maxParts) return const Err(ValidationFailure('export_too_many_parts'));
+            parts = value.totalParts;
+          }
+          await onPart(value);
+        case Err(:final failure):
+          return Err(failure);
+      }
+    }
+    return Ok(parts);
   }
 }
 

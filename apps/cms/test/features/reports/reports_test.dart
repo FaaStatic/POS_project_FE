@@ -11,8 +11,8 @@ void main() {
   testWidgets('downloads the monthly PDF for the chosen month', (tester) async {
     final app = CmsHarness();
     app.adapter
-      ..on('GET', ApiPaths.reportMonth, (_) => FakeReply(200, envelope({'url_pdf': '/api/reports/2026-10.pdf'})))
-      ..on('GET', '/api/reports/2026-10.pdf', (_) => const FakeReply(200, [37, 80]));
+      ..on('GET', ApiPaths.reportMonth, (_) => FakeReply(200, envelope({'url_pdf': '/api/v1/insight/reports/2026-10.pdf'})))
+      ..on('GET', '/insight/reports/2026-10.pdf', (_) => const FakeReply(200, [37, 80]));
     await app.pump(tester, location: '/reports');
     await tester.tap(find.widgetWithText(ShadButton, 'Unduh PDF'));
     await tester.pumpAndSettle();

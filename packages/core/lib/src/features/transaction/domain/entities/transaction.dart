@@ -30,6 +30,11 @@ abstract class Transaction with _$Transaction {
     @Default(false) bool conflictReviewed,
     DateTime? createdAt,
     @Default([]) List<TransactionItem> items,
+
+    /// Cash received and how the change was handed back; null when the sale did not record it.
+    int? amountPaid,
+    int? changeAmount,
+    @Default([]) List<ChangeLine> change,
   }) = _Transaction;
 }
 

@@ -23,6 +23,18 @@ abstract final class TransactionModel {
               subtotal: readInt(d['subtotal']),
             ),
         ],
+        amountPaid: j['amount_paid'] == null ? null : readInt(j['amount_paid']),
+        changeAmount: j['change_amount'] == null ? null : readInt(j['change_amount']),
+        change: [
+          for (final c in readList(j['change']))
+            ChangeLine(
+              kind: ChangeKind.fromWire(readNullableString(c['kind'])),
+              amount: readInt(c['amount']),
+              productId: readNullableString(c['product_id']),
+              productName: readString(c['product_name']),
+              qty: readDouble(c['qty']),
+            ),
+        ],
       );
 
   static Map<String, dynamic> checkoutToJson(CheckoutRequest r) => {
