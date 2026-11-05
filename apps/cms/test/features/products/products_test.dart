@@ -69,9 +69,7 @@ void main() {
     expect(body, containsPair('category', 'Sembako'));
     expect(body, containsPair('selling_price_debt', 17000));
 
-    await tester.tap(find.byTooltip('Aksi'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Ubah stok'));
+    await tester.tap(find.byTooltip('Ubah stok'));
     await tester.pumpAndSettle();
     await tester.enterText(formFields, '-2');
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
@@ -79,9 +77,7 @@ void main() {
     expect(find.text('Stok diperbarui.'), findsOneWidget);
     await dismissInfo(tester);
 
-    await tester.tap(find.byTooltip('Aksi'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Hapus'));
+    await tester.tap(find.byTooltip('Hapus'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ShadButton, 'Hapus'));
     await tester.pumpAndSettle();
@@ -91,9 +87,7 @@ void main() {
   testWidgets('stock adjustment refuses a fraction of a pcs product before any request', (tester) async {
     final app = setup();
     await app.pump(tester, location: '/products');
-    await tester.tap(find.byTooltip('Aksi'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Ubah stok'));
+    await tester.tap(find.byTooltip('Ubah stok'));
     await tester.pumpAndSettle();
     await tester.enterText(formFields, '2.5');
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));

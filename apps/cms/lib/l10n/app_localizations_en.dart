@@ -137,9 +137,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get search => 'Search';
 
   @override
-  String get actions => 'Actions';
-
-  @override
   String get save => 'Save';
 
   @override

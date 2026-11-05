@@ -90,6 +90,11 @@ class ReceiptView extends StatelessWidget {
     for (var i = 0; i < document.lines.length;) {
       final line = document.lines[i];
       if (line.role == ReceiptRole.body || line.role == ReceiptRole.info) {
+        if (_isRule(line.text)) {
+          children.add(const CustomPaint(painter: _DashPainter(_ink), size: Size.fromHeight(_bodySize * 1.4)));
+          i++;
+          continue;
+        }
         children.add(
           Text(
             line.text,
@@ -168,6 +173,9 @@ class ReceiptView extends StatelessWidget {
     );
   }
 
+  /// A row made only of hyphens is a separator; the printer keeps it as text.
+  static bool _isRule(String text) => text.length > 2 && text.codeUnits.every((c) => c == 0x2D);
+
   static TextStyle _lineStyle(ReceiptLine line) {
     // Same family and left edge as the grid, so only the size changes; the rows are left-aligned text.
     final base = line.role == ReceiptRole.info ? _mono.copyWith(fontSize: _infoSize) : _mono;
@@ -181,4 +189,35 @@ class ReceiptView extends StatelessWidget {
         textDirection: TextDirection.ltr,
       )..layout()).width /
       10;
+}
+
+/// Separator drawn edge to edge of the cell grid, the way an Indomaret or Alfamart slip rules off
+/// its sections. The first dash starts on the left edge and the last ends on the right edge; the
+/// gaps stretch to fit, so the line lines up with the left-aligned text and the right-aligned prices
+/// whatever monospace font the platform picked.
+class _DashPainter extends CustomPainter {
+  const _DashPainter(this.color);
+  final Color color;
+
+  static const _dash = 5.0;
+  static const _minGap = 3.0;
+  static const _stroke = 1.2;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final count = ((size.width + _minGap) / (_dash + _minGap)).floor();
+    if (count < 2) return;
+    final gap = (size.width - count * _dash) / (count - 1);
+    final y = size.height / 2;
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = _stroke;
+    for (var i = 0; i < count; i++) {
+      final x = i * (_dash + gap);
+      canvas.drawLine(Offset(x, y), Offset(x + _dash, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashPainter old) => old.color != color;
 }

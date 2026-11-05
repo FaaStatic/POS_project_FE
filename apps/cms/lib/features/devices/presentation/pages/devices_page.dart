@@ -41,9 +41,10 @@ class DevicesPage extends StatelessWidget {
               TableColumnSpec(label: l10n.lastActive, cell: (c, d) => Text(dateTimeText(c, d.lastUsedAt))),
               TableColumnSpec(label: 'Device ID', secondary: true, cell: (_, d) => Text(d.deviceId)),
             ],
-            actions: (context, d) => AppButton(
-              label: l10n.revoke,
-              variant: AppButtonVariant.destructiveGhost,
+            actions: (context, d) => IconAction(
+              icon: Iconsax.shield_cross_copy,
+              tooltip: l10n.revoke,
+              destructive: true,
               onPressed: () async {
                 final ok = await showConfirmDialog(
                   context,

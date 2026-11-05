@@ -135,6 +135,35 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('wide: cards sharing a row are the same height, and top products rank by revenue', (tester) async {
+    final app = CmsHarness();
+    serveDashboard(app.adapter, conflicts: 2, oldDebt: true);
+    app.adapter.on('GET', ApiPaths.transactions, (_) => FakeReply(200, envelope({'list_transaction': []})));
+    await app.pump(tester, location: '/dashboard', size: const Size(1440, 2400));
+    double heightOf(String title) => tester.getSize(find.ancestor(of: find.textContaining(title), matching: find.byType(ShadCard)).first).height;
+    expect(heightOf('Perlu tindakan'), heightOf('Omzet dan laba kotor harian'));
+    expect(heightOf('Transaksi terbaru'), heightOf('5 produk terlaris'));
+    expect(heightOf('Pembagian metode bayar'), heightOf('Hutang baru dan dibayar'));
+    expect(heightOf('Hutang baru dan dibayar'), heightOf('Perangkat yang sedang login'));
+    expect(find.text('Indomie Goreng'), findsOneWidget);
+    expect(find.text('40 terjual'), findsOneWidget);
+    expect(tester.widget<LinearProgressIndicator>(find.byType(LinearProgressIndicator)).value, 1.0, reason: 'the leader fills the bar');
+  });
+
+  testWidgets('phone at 200% text: every card fits, including those below the fold', (tester) async {
+    final app = CmsHarness();
+    serveDashboard(app.adapter, conflicts: 1, oldDebt: true, failedPayment: true);
+    app.adapter.on('GET', ApiPaths.transactions, (_) => FakeReply(200, envelope({
+          'list_transaction': [
+            {'transaction_id': 't1', 'invoice_number': 'INV-001', 'payment_type': 0, 'total_transaction': 7000, 'created_at': '2026-10-25T08:00:00Z'},
+          ],
+        })));
+    // Tall enough that the lazy list builds every card.
+    await app.pump(tester, location: '/dashboard', size: const Size(360, 7000), textScale: 2);
+    expect(find.text('Perangkat yang sedang login'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('summary failure offers retry', (tester) async {
     final app = CmsHarness();
     serveDashboard(app.adapter);

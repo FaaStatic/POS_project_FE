@@ -344,12 +344,6 @@ abstract class AppLocalizations {
   /// **'Cari'**
   String get search;
 
-  /// No description provided for @actions.
-  ///
-  /// In id, this message translates to:
-  /// **'Aksi'**
-  String get actions;
-
   /// No description provided for @save.
   ///
   /// In id, this message translates to:

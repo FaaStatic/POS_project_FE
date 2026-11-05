@@ -16,7 +16,7 @@ void main() {
       ..on('DELETE', ApiPaths.device('d1'), (_) => FakeReply(200, envelope(null)));
     await app.pump(tester, location: '/devices');
     expect(find.text('kasir1'), findsOneWidget);
-    await tester.tap(find.widgetWithText(ShadButton, 'Cabut'));
+    await tester.tap(find.byTooltip('Cabut'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ShadButton, 'Cabut').last);
     await tester.pumpAndSettle();

@@ -138,9 +138,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get search => 'Cari';
 
   @override
-  String get actions => 'Aksi';
-
-  @override
   String get save => 'Simpan';
 
   @override

@@ -200,9 +200,7 @@ void main() {
   testWidgets('editing a product keeps its SKU and never reads the others', (tester) async {
     final app = _setup();
     await app.pump(tester, location: '/products', size: const Size(1280, 1100));
-    await tester.tap(find.byTooltip('Aksi'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Ubah'));
+    await tester.tap(find.byTooltip('Ubah'));
     await tester.pumpAndSettle();
 
     expect(_sku(tester), 'MIE-P-IG-001');

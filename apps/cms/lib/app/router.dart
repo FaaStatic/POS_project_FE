@@ -146,7 +146,13 @@ GoRouter buildRouter(AuthCubit auth, {String? initialLocation}) => GoRouter(
           routes: [
             GoRoute(
               path: Routes.staff,
-              builder: (_, s) => StaffPage(openAdd: s.uri.queryParameters['add'] == '1'),
+              builder: (_, s) => StaffPage(
+                openAdd: s.uri.queryParameters['add'] == '1',
+                currentUserId: switch (auth.state) {
+                  AuthAuthenticated(:final session) => session.userId,
+                  _ => null,
+                },
+              ),
             ),
           ],
         ),

@@ -13,10 +13,13 @@ import '../../../../l10n/app_localizations.dart';
 import '../bloc/staff_cubit.dart';
 
 class StaffPage extends StatelessWidget {
-  const StaffPage({super.key, this.openAdd = false});
+  const StaffPage({super.key, this.openAdd = false, this.currentUserId});
 
   /// Set by the dashboard quick action.
   final bool openAdd;
+
+  /// The signed-in superadmin. Their own row has no password reset; the backend refuses it too.
+  final String? currentUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -65,13 +68,31 @@ class StaffPage extends StatelessWidget {
                       TableColumnSpec(label: l10n.role, cell: (_, s) => Text(s.role.isSuper ? l10n.roleSuper : l10n.roleStaff)),
                       TableColumnSpec(label: l10n.createdAt, secondary: true, cell: (c, s) => Text(dateText(c, s.createdAt))),
                     ],
-                    actions: (context, s) => ActionsMenu(actions: [
-                      if (s.active) ...[
-                        RowAction(l10n.resetPassword, () => _reset(context, s)),
-                        RowAction(l10n.deactivate, () => report(context, cubit.deactivate(s), l10n.staffDeactivated)),
-                      ] else
-                        RowAction(l10n.restore, () => report(context, cubit.restore(s), l10n.staffRestored)),
-                      RowAction(l10n.purge, () => _purge(context, s), destructive: true),
+                    // A superadmin row only offers a password reset, and only to another superadmin;
+                    // deactivating or deleting one is a CLI job on the server.
+                    actions: (context, s) => Row(mainAxisSize: MainAxisSize.min, children: [
+                      if (s.active && s.id != currentUserId)
+                        IconAction(icon: Iconsax.key_copy, tooltip: l10n.resetPassword, onPressed: () => _reset(context, s)),
+                      if (!s.role.isSuper) ...[
+                        if (s.active)
+                          IconAction(
+                            icon: Iconsax.user_minus_copy,
+                            tooltip: l10n.deactivate,
+                            onPressed: () => report(context, cubit.deactivate(s), l10n.staffDeactivated),
+                          )
+                        else
+                          IconAction(
+                            icon: Iconsax.refresh_copy,
+                            tooltip: l10n.restore,
+                            onPressed: () => report(context, cubit.restore(s), l10n.staffRestored),
+                          ),
+                        IconAction(
+                          icon: Iconsax.trash_copy,
+                          tooltip: l10n.purge,
+                          destructive: true,
+                          onPressed: () => _purge(context, s),
+                        ),
+                      ],
                     ]),
                   ),
                 ),

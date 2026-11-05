@@ -100,9 +100,7 @@ void main() {
     expect(find.text('Tersimpan.'), findsOneWidget);
     await dismissInfo(tester);
 
-    await tester.tap(find.byTooltip('Aksi'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Hapus permanen'));
+    await tester.tap(find.byTooltip('Hapus permanen'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ShadButton, 'Hapus permanen'));
     await tester.pumpAndSettle();

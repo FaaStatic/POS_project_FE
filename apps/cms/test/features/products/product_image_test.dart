@@ -125,9 +125,7 @@ void main() {
     testWidgets('editing: a stored base64 picture is previewed, and a new pick patches only the image', (tester) async {
       final app = _setup(image: square64Base64);
       await app.pump(tester, location: '/products', size: const Size(1280, 1000));
-      await tester.tap(find.byTooltip('Aksi'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Ubah'));
+      await tester.tap(find.byTooltip('Ubah'));
       await tester.pumpAndSettle();
       expect(find.text('Ganti gambar'), findsOneWidget);
 
@@ -145,9 +143,7 @@ void main() {
     testWidgets('editing: removing the picture clears it on the backend', (tester) async {
       final app = _setup(image: square64Base64);
       await app.pump(tester, location: '/products', size: const Size(1280, 1000));
-      await tester.tap(find.byTooltip('Aksi'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Ubah'));
+      await tester.tap(find.byTooltip('Ubah'));
       await tester.pumpAndSettle();
 
       await tester.ensureVisible(find.text('Hapus gambar'));
