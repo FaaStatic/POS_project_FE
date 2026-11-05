@@ -1,44 +1,10 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:ui/ui.dart';
 
 import '../l10n/app_localizations.dart';
 import 'failure_text.dart';
 import 'paged_list_cubit.dart';
-
-class RowAction {
-  const RowAction(this.label, this.onPressed, {this.destructive = false});
-  final String label;
-  final VoidCallback? onPressed;
-  final bool destructive;
-}
-
-/// Visible "Aksi" button that opens the row's actions; keyboard reachable.
-class ActionsMenu extends StatelessWidget {
-  const ActionsMenu({super.key, required this.actions});
-  final List<RowAction> actions;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return MenuAnchor(
-      menuChildren: [
-        for (final a in actions)
-          MenuItemButton(
-            onPressed: a.onPressed,
-            child: Text(a.label, style: a.destructive ? TextStyle(color: scheme.error) : null),
-          ),
-      ],
-      // Icon only: a labelled button on every row outweighs the data it acts on.
-      builder: (context, controller, _) => IconButton(
-        tooltip: AppLocalizations.of(context).actions,
-        icon: const Icon(Iconsax.more_copy, size: 20),
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-      ),
-    );
-  }
-}
 
 /// Loading, error, empty, and data states for a paged list.
 class PagedBody<T> extends StatelessWidget {

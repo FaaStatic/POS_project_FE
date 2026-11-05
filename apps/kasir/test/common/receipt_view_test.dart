@@ -55,6 +55,16 @@ void main() {
     expect(widths.values.toSet().length, 1, reason: '$widths');
   });
 
+  testWidgets('separators run edge to edge of the grid, level with the text and the right-aligned prices', (tester) async {
+    await _pump(tester);
+    final rule = find.byWidgetPredicate((w) => w is CustomPaint && w.painter.runtimeType.toString() == '_DashPainter');
+    expect(rule, findsOneWidget);
+    expect(find.text('--------------------------------'), findsNothing, reason: 'drawn, not typeset');
+    final total = find.text('TOTAL                    Rp 7.000');
+    expect(tester.getTopLeft(rule).dx, closeTo(tester.getTopLeft(total).dx, 0.01));
+    expect(tester.getTopRight(rule).dx, closeTo(tester.getTopRight(total).dx, 0.01));
+  });
+
   testWidgets('narrow screens and large text shrink the paper instead of overflowing', (tester) async {
     await _pump(tester, width: 280, textScale: 2);
     expect(tester.takeException(), isNull);

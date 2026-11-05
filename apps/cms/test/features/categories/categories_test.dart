@@ -18,8 +18,12 @@ void main() {
       ..on('DELETE', ApiPaths.category('c2'), (_) => FakeReply(200, envelope(null)));
     await app.pump(tester, location: '/categories');
     expect(find.text('3 produk'), findsOneWidget);
-    final deletes = find.widgetWithText(ShadButton, 'Hapus');
-    expect(tester.widget<ShadButton>(deletes.at(0)).onPressed, isNull);
+    // A category in use keeps a disabled icon whose tooltip says why.
+    final inUse = find.descendant(
+      of: find.byTooltip('Hapus. Dipakai 3 produk. Pindahkan produknya dulu.'),
+      matching: find.byType(ShadIconButton),
+    );
+    expect(tester.widget<ShadIconButton>(inUse).onPressed, isNull);
 
     await tester.tap(find.widgetWithText(ShadButton, 'Tambah kategori'));
     await tester.pumpAndSettle();
@@ -30,7 +34,7 @@ void main() {
     await tester.tap(find.widgetWithText(ShadButton, 'Batal'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.widgetWithText(ShadButton, 'Ganti nama').first);
+    await tester.tap(find.byTooltip('Ganti nama').first);
     await tester.pumpAndSettle();
     await tester.enterText(formFields, 'Sembako Pokok');
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
@@ -38,7 +42,7 @@ void main() {
     expect(app.adapter.requests.last.path, ApiPaths.categories);
     await dismissInfo(tester);
 
-    await tester.tap(deletes.at(1));
+    await tester.tap(find.byTooltip('Hapus'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ShadButton, 'Hapus').last);
     await tester.pumpAndSettle();

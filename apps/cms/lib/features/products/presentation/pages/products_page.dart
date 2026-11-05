@@ -93,10 +93,20 @@ class ProductsPage extends StatelessWidget {
                         ),
                       ),
                     ],
-                    actions: (context, p) => ActionsMenu(actions: [
-                      RowAction(l10n.edit, () => openProductForm(context, cubit, existing: p)),
-                      if (!p.isDigital) RowAction(l10n.adjustStock, () => _stock(context, cubit, p)),
-                      RowAction(l10n.delete, () => _delete(context, cubit, p), destructive: true),
+                    actions: (context, p) => Row(mainAxisSize: MainAxisSize.min, children: [
+                      IconAction(
+                        icon: Iconsax.edit_2_copy,
+                        tooltip: l10n.edit,
+                        onPressed: () => openProductForm(context, cubit, existing: p),
+                      ),
+                      if (!p.isDigital)
+                        IconAction(icon: Iconsax.box_copy, tooltip: l10n.adjustStock, onPressed: () => _stock(context, cubit, p)),
+                      IconAction(
+                        icon: Iconsax.trash_copy,
+                        tooltip: l10n.delete,
+                        destructive: true,
+                        onPressed: () => _delete(context, cubit, p),
+                      ),
                     ]),
                   ),
                 ),

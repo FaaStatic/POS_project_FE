@@ -78,17 +78,32 @@ class CustomersPage extends StatelessWidget {
                           cell: (_, c) => Text(c.address.isEmpty ? '-' : c.address),
                         ),
                       ],
-                      actions: (context, c) => ActionsMenu(
-                        actions: [
-                          RowAction(l10n.edit, () => openCustomerForm(context, cubit, existing: c)),
+                      actions: (context, c) => Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconAction(
+                            icon: Iconsax.edit_2_copy,
+                            tooltip: l10n.edit,
+                            onPressed: () => openCustomerForm(context, cubit, existing: c),
+                          ),
                           if (c.active)
-                            RowAction(
-                              l10n.deactivate,
-                              () => report(context, cubit.deactivate(c), l10n.customerDeactivated),
+                            IconAction(
+                              icon: Iconsax.user_minus_copy,
+                              tooltip: l10n.deactivate,
+                              onPressed: () => report(context, cubit.deactivate(c), l10n.customerDeactivated),
                             )
                           else
-                            RowAction(l10n.restore, () => report(context, cubit.restore(c), l10n.customerRestored)),
-                          RowAction(l10n.purge, () => _purge(context, cubit, c), destructive: true),
+                            IconAction(
+                              icon: Iconsax.refresh_copy,
+                              tooltip: l10n.restore,
+                              onPressed: () => report(context, cubit.restore(c), l10n.customerRestored),
+                            ),
+                          IconAction(
+                            icon: Iconsax.trash_copy,
+                            tooltip: l10n.purge,
+                            destructive: true,
+                            onPressed: () => _purge(context, cubit, c),
+                          ),
                         ],
                       ),
                     ),

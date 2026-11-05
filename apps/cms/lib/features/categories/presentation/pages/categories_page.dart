@@ -39,15 +39,14 @@ class CategoriesPage extends StatelessWidget {
               TableColumnSpec(label: l10n.categoryName, flex: 2, cell: (_, c) => Text(c.name)),
               TableColumnSpec(label: l10n.navProducts, cell: (_, c) => Text(l10n.productCount(c.productCount))),
             ],
-            actions: (context, c) => Wrap(spacing: Space.sm, alignment: WrapAlignment.end, children: [
-              AppButton(label: l10n.rename, variant: AppButtonVariant.outline, onPressed: () => _name(context, cubit, existing: c)),
-              Tooltip(
-                message: c.productCount > 0 ? l10n.categoryInUse(c.productCount) : '',
-                child: AppButton(
-                  label: l10n.delete,
-                  variant: AppButtonVariant.destructiveGhost,
-                  onPressed: c.productCount > 0 ? null : () => _delete(context, cubit, c),
-                ),
+            actions: (context, c) => Row(mainAxisSize: MainAxisSize.min, children: [
+              IconAction(icon: Iconsax.edit_2_copy, tooltip: l10n.rename, onPressed: () => _name(context, cubit, existing: c)),
+              // A category with products cannot go; the tooltip says why instead of leaving a dead icon.
+              IconAction(
+                icon: Iconsax.trash_copy,
+                tooltip: c.productCount > 0 ? '${l10n.delete}. ${l10n.categoryInUse(c.productCount)}' : l10n.delete,
+                destructive: true,
+                onPressed: c.productCount > 0 ? null : () => _delete(context, cubit, c),
               ),
             ]),
           );

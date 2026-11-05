@@ -14,8 +14,9 @@ import '../../../../l10n/app_localizations.dart';
 import '../bloc/dashboard_cubit.dart';
 import '../widgets/daily_chart.dart';
 
-/// Summary panel, then chart beside "needs action", then recent transactions
-/// beside the details. On phones "needs action" comes first.
+/// Summary panel, then chart beside "needs action", recent transactions beside the top
+/// products, and three small breakdown cards. Cards that share a row are the same height.
+/// On narrow screens "needs action" comes first and everything stacks.
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key, required this.onDownloadMonthReport});
 
@@ -44,46 +45,50 @@ class DashboardPage extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, c) {
                   final wide = c.maxWidth >= 1100;
-                  Widget pair(Widget main, Widget side) => wide
-                      // Top-aligned: the chart's LayoutBuilder cannot report intrinsic heights.
-                      ? Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(flex: 2, child: main),
-                            const SizedBox(width: Space.lg),
-                            Expanded(child: side),
-                          ],
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            main,
-                            const SizedBox(height: Space.lg),
-                            side,
-                          ],
-                        );
+                  // IntrinsicHeight is safe here: the chart plot sits in a fixed-height box, so nothing
+                  // below it is asked for intrinsic sizes.
+                  Widget row(List<(int, Widget)> cells) => IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      spacing: Space.lg,
+                      children: [for (final (flex, card) in cells) Expanded(flex: flex, child: card)],
+                    ),
+                  );
 
-                  final needs = _NeedsAction(state: state);
-                  final children = <Widget>[
-                    if (!wide) ...[needs, const SizedBox(height: Space.lg)],
+                  List<Widget> cards(DashboardSummary summary) {
+                    final chart = SurfaceCard(
+                      child: DailyChart(days: summary.daily, title: l10n.dailyChartTitle(_rangeName(l10n, state))),
+                    );
+                    final recent = _RecentTransactions(items: state.recent, full: wide ? true : null);
+                    final top = _TopProducts(products: summary.topProducts);
+                    final mix = _PaymentMix(summary: summary);
+                    final debt = _DebtFlow(summary: summary);
+                    final devices = _DevicesOnline(summary: summary);
+                    return wide
+                        ? [
+                            row([(2, chart), (1, _NeedsAction(state: state))]),
+                            row([(2, recent), (1, top)]),
+                            row([(1, mix), (1, debt), (1, devices)]),
+                          ]
+                        : [chart, top, recent, mix, debt, devices];
+                  }
+
+                  final items = <Widget>[
+                    if (!wide) _NeedsAction(state: state),
                     _SummaryPanel(state: state),
-                    const SizedBox(height: Space.lg),
                     if (summary == null && state.loading)
                       const Padding(padding: EdgeInsets.all(Space.xxl), child: LoadingView())
                     else if (summary == null)
                       ErrorState(message: l10n.loadFailed(failureText(context, state.failure!)), onRetry: cubit.load)
-                    else ...[
-                      pair(
-                        SurfaceCard(
-                          child: DailyChart(days: summary.daily, title: l10n.dailyChartTitle(_rangeName(l10n, state))),
-                        ),
-                        wide ? needs : _Details(summary: summary, part: 0),
-                      ),
-                      const SizedBox(height: Space.lg),
-                      pair(_RecentTransactions(items: state.recent), _Details(summary: summary, part: wide ? -1 : 1)),
-                    ],
+                    else
+                      ...cards(summary),
                   ];
-                  return ListView(padding: const EdgeInsets.all(Space.lg), children: children);
+                  return ListView.separated(
+                    padding: const EdgeInsets.all(Space.lg),
+                    itemCount: items.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: Space.lg),
+                    itemBuilder: (_, i) => items[i],
+                  );
                 },
               ),
             );
@@ -318,19 +323,7 @@ class _NeedsAction extends StatelessWidget {
     final theme = Theme.of(context);
     final status = StatusColors.of(context);
     final conflicts = state.summary?.openStockConflicts ?? 0;
-    Widget row(IconData icon, Color color, Color bg, String text, VoidCallback onTap, {String? amount}) => ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(Radii.small + 4)),
-        child: Icon(icon, color: color, size: 20),
-      ),
-      title: Text(text),
-      subtitle: amount == null ? null : Text(amount, style: theme.textTheme.titleSmall?.tabular),
-      trailing: const Icon(Icons.chevron_right_rounded),
-      onTap: onTap,
-    );
+    final alerts = conflicts > 0 || state.failedPayments > 0;
     return SurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -340,37 +333,37 @@ class _NeedsAction extends StatelessWidget {
           if (state.loading && state.summary == null)
             const LinearProgressIndicator()
           else if (state.nothingToDo)
-            row(Iconsax.tick_circle_copy, status.success, status.successContainer, l10n.nothingToDo, () {})
+            _ActionRow(icon: Iconsax.tick_circle_copy, color: status.success, background: status.successContainer, title: l10n.nothingToDo)
           else ...[
             if (conflicts > 0)
-              row(
-                Iconsax.warning_2_copy,
-                status.warning,
-                status.warningContainer,
-                l10n.openConflicts(conflicts),
-                () => context.go('/transactions?conflicts=1'),
+              _ActionRow(
+                icon: Iconsax.warning_2_copy,
+                color: status.warning,
+                background: status.warningContainer,
+                title: l10n.openConflicts(conflicts),
+                onTap: () => context.go('/transactions?conflicts=1'),
               ),
             if (state.failedPayments > 0)
-              row(
-                Iconsax.card_remove_copy,
-                status.danger,
-                status.dangerContainer,
-                l10n.failedPayments(state.failedPayments),
-                () => context.go('/payments?status=failed&today=1'),
+              _ActionRow(
+                icon: Iconsax.card_remove_copy,
+                color: status.danger,
+                background: status.dangerContainer,
+                title: l10n.failedPayments(state.failedPayments),
+                onTap: () => context.go('/payments?status=failed&today=1'),
               ),
             if (state.oldestDebts.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.only(top: Space.md),
-                child: Text(l10n.oldestDebts, style: theme.textTheme.titleSmall),
-              ),
+              if (alerts) const Divider(height: Space.xxl) else const SizedBox(height: Space.sm),
+              Text(l10n.oldestDebts, style: theme.textTheme.titleSmall),
+              const SizedBox(height: Space.xs),
               for (final d in state.oldestDebts)
-                row(
-                  Iconsax.wallet_money_copy,
-                  status.warning,
-                  status.warningContainer,
-                  '${d.customerName} · ${dateText(context, d.date)}',
-                  () => context.go('/customers/${d.customerId}'),
+                _ActionRow(
+                  icon: Iconsax.wallet_money_copy,
+                  color: status.warning,
+                  background: status.warningContainer,
+                  title: d.customerName,
+                  subtitle: dateText(context, d.date),
                   amount: money(context, d.remaining),
+                  onTap: () => context.go('/customers/${d.customerId}'),
                 ),
             ],
           ],
@@ -380,9 +373,75 @@ class _NeedsAction extends StatelessWidget {
   }
 }
 
+/// One follow-up: icon tile, what it is, an optional amount on the right and a chevron when it opens
+/// something. Rows share one height so a stack of them reads as a list.
+class _ActionRow extends StatelessWidget {
+  const _ActionRow({
+    required this.icon,
+    required this.color,
+    required this.background,
+    required this.title,
+    this.subtitle,
+    this.amount,
+    this.onTap,
+  });
+  final IconData icon;
+  final Color color;
+  final Color background;
+  final String title;
+  final String? subtitle;
+  final String? amount;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(Radii.small),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: Space.sm),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(Radii.small + 4)),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(width: Space.md),
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: theme.textTheme.bodyLarge, maxLines: 2, overflow: TextOverflow.ellipsis),
+                  if (subtitle != null) Text(subtitle!, style: theme.textTheme.bodySmall),
+                ],
+              ),
+            ),
+            if (amount != null) ...[
+              const SizedBox(width: Space.md),
+              _Amount(amount!, theme.textTheme.titleSmall?.tabular),
+            ],
+            if (onTap != null) ...[
+              const SizedBox(width: Space.sm),
+              Icon(Icons.chevron_right_rounded, color: theme.colorScheme.onSurfaceVariant),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _RecentTransactions extends StatelessWidget {
-  const _RecentTransactions({required this.items});
+  const _RecentTransactions({required this.items, this.full});
   final List<Transaction> items;
+
+  /// Forces the wide or the compact columns. Null measures the card, which cannot happen inside the
+  /// IntrinsicHeight rows, so the wide layout passes true.
+  final bool? full;
 
   @override
   Widget build(BuildContext context) {
@@ -397,9 +456,11 @@ class _RecentTransactions extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(Space.xl, Space.lg, Space.md, Space.md),
-            child: Row(
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Expanded(child: Text(l10n.recentTransactions, style: theme.textTheme.titleLarge)),
+                Text(l10n.recentTransactions, style: theme.textTheme.titleLarge),
                 AppButton(label: l10n.seeAll, variant: AppButtonVariant.ghost, onPressed: () => context.go('/transactions')),
               ],
             ),
@@ -410,9 +471,9 @@ class _RecentTransactions extends StatelessWidget {
               child: Text(l10n.noTransactions),
             )
           else
-            LayoutBuilder(
-              builder: (context, c) {
-                final full = c.maxWidth >= 560;
+            _withWidth(
+              full,
+              (context, full) {
                 Widget cells(List<(Widget, int)> parts) => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: Space.xl, vertical: Space.md),
                   child: Row(
@@ -464,82 +525,191 @@ class _RecentTransactions extends StatelessWidget {
   }
 }
 
-/// [part] 0 = top products and payment mix, 1 = credit flow and devices, -1 = all.
-class _Details extends StatelessWidget {
-  const _Details({required this.summary, required this.part});
-  final DashboardSummary summary;
-  final int part;
+/// Calls [builder] with [forced], or with whether the available width is at least 560 when [forced] is null.
+Widget _withWidth(bool? forced, Widget Function(BuildContext context, bool wide) builder) =>
+    forced != null ? Builder(builder: (context) => builder(context, forced)) : LayoutBuilder(builder: (context, c) => builder(context, c.maxWidth >= 560));
+
+/// Best sellers by revenue. The bar is each product's revenue against the leader's, so the
+/// ranking reads at a glance; the order is a real ranking, which is why the rows are numbered.
+class _TopProducts extends StatelessWidget {
+  const _TopProducts({required this.products});
+  final List<({String name, double qty, int total})> products;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final locale = Localizations.localeOf(context).languageCode;
-    final num = theme.textTheme.bodyMedium?.tabular;
-    final payTotal = summary.paymentMethods.fold<int>(0, (a, m) => a + m.total);
-
-    Widget section(String title, List<Widget> rows) => Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(title, style: theme.textTheme.titleMedium),
-        const SizedBox(height: Space.sm),
-        if (rows.isEmpty) Text(l10n.noData) else ...rows,
-      ],
-    );
-    Widget line(String left, String right, {String? sub}) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: Space.xs + 2),
-      child: Wrap(
-        alignment: WrapAlignment.spaceBetween,
-        spacing: Space.md,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(left, style: theme.textTheme.bodyLarge),
-              if (sub != null) Text(sub, style: theme.textTheme.bodySmall),
-            ],
-          ),
-          Text(right, style: num),
-        ],
-      ),
-    );
-
-    final first = [
-      section(l10n.topProducts, [
-        for (final p in summary.topProducts.take(5))
-          line(p.name, money(context, p.total), sub: l10n.sold(formatQty(p.qty, locale: locale))),
-      ]),
-      section(l10n.paymentMix, [
-        for (final m in summary.paymentMethods)
-          line(
-            methodLabel(l10n, PaymentMethod.fromWire(m.method)),
-            money(context, m.total),
-            sub: '${m.count}× · ${payTotal == 0 ? 0 : (m.total * 100 / payTotal).round()}%',
-          ),
-      ]),
-    ];
-    final second = [
-      section(l10n.debtFlow, [
-        line(l10n.newDebt, money(context, summary.debtNew)),
-        line(l10n.paidDebt, money(context, summary.debtPaid)),
-      ]),
-      section(l10n.devicesOnline, [
-        for (final d in summary.devicesOnline) line(d.platform == 'ios' ? 'iOS' : 'Android', '${d.count}'),
-      ]),
-    ];
-    final sections = switch (part) {
-      0 => first,
-      1 => second,
-      _ => [...first, ...second],
-    };
+    final top = products.take(5).toList();
+    final leader = top.fold<int>(0, (best, p) => p.total > best ? p.total : best);
     return SurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final (i, s) in sections.indexed) ...[if (i > 0) const Divider(height: Space.xxl), s],
+          Text(l10n.topProducts, style: theme.textTheme.titleLarge),
+          const SizedBox(height: Space.md),
+          if (top.isEmpty)
+            Text(l10n.noData)
+          else
+            for (final (i, p) in top.indexed)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: Space.sm),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 24,
+                      child: Text('${i + 1}', style: theme.textTheme.bodyMedium?.tabular.copyWith(color: scheme.onSurfaceVariant)),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(flex: 3, child: Text(p.name, style: theme.textTheme.bodyLarge, maxLines: 2, overflow: TextOverflow.ellipsis)),
+                              const SizedBox(width: Space.md),
+                              _Amount(money(context, p.total), theme.textTheme.bodyMedium?.tabular),
+                            ],
+                          ),
+                          Text(l10n.sold(formatQty(p.qty, locale: locale)), style: theme.textTheme.bodySmall),
+                          const SizedBox(height: Space.sm),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(2),
+                            child: LinearProgressIndicator(
+                              value: leader == 0 ? 0 : p.total / leader,
+                              minHeight: 4,
+                              backgroundColor: scheme.surfaceContainerHigh,
+                              color: scheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
         ],
       ),
     );
   }
+}
+
+class _PaymentMix extends StatelessWidget {
+  const _PaymentMix({required this.summary});
+  final DashboardSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final payTotal = summary.paymentMethods.fold<int>(0, (a, m) => a + m.total);
+    return _ListCard(
+      title: l10n.paymentMix,
+      rows: [
+        for (final m in summary.paymentMethods)
+          _ValueLine(
+            methodLabel(l10n, PaymentMethod.fromWire(m.method)),
+            money(context, m.total),
+            sub: '${m.count}× · ${payTotal == 0 ? 0 : (m.total * 100 / payTotal).round()}%',
+          ),
+      ],
+    );
+  }
+}
+
+class _DebtFlow extends StatelessWidget {
+  const _DebtFlow({required this.summary});
+  final DashboardSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return _ListCard(
+      title: l10n.debtFlow,
+      rows: [
+        _ValueLine(l10n.newDebt, money(context, summary.debtNew)),
+        _ValueLine(l10n.paidDebt, money(context, summary.debtPaid)),
+      ],
+    );
+  }
+}
+
+class _DevicesOnline extends StatelessWidget {
+  const _DevicesOnline({required this.summary});
+  final DashboardSummary summary;
+
+  @override
+  Widget build(BuildContext context) => _ListCard(
+    title: AppLocalizations.of(context).devicesOnline,
+    rows: [for (final d in summary.devicesOnline) _ValueLine(d.platform == 'ios' ? 'iOS' : 'Android', '${d.count}')],
+  );
+}
+
+/// A titled card of label and value lines; "no data" when there are none.
+class _ListCard extends StatelessWidget {
+  const _ListCard({required this.title, required this.rows});
+  final String title;
+  final List<Widget> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(title, style: theme.textTheme.titleLarge),
+          const SizedBox(height: Space.md),
+          if (rows.isEmpty) Text(AppLocalizations.of(context).noData) else ...rows,
+        ],
+      ),
+    );
+  }
+}
+
+/// Label (with an optional small line under it) on the left, value on the right edge.
+class _ValueLine extends StatelessWidget {
+  const _ValueLine(this.left, this.right, {this.sub});
+  final String left;
+  final String right;
+  final String? sub;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: Space.xs + 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(left, style: theme.textTheme.bodyLarge),
+                if (sub != null) Text(sub!, style: theme.textTheme.bodySmall),
+              ],
+            ),
+          ),
+          const SizedBox(width: Space.md),
+          _Amount(right, theme.textTheme.bodyMedium?.tabular),
+        ],
+      ),
+    );
+  }
+}
+
+/// A value on the right edge of a row. It shrinks to fit rather than overflowing when the card is
+/// narrow or the text is scaled up, and never takes more than its share from the label beside it.
+class _Amount extends StatelessWidget {
+  const _Amount(this.text, this.style);
+  final String text;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) =>
+      Flexible(flex: 2, child: FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerRight, child: Text(text, style: style)));
 }

@@ -87,9 +87,7 @@ void main() {
     await dismissInfo(tester);
     expect(app.adapter.requests.where((r) => r.path == ApiPaths.register).single.data, {'username': 'kasir2', 'password': 'secret1'});
 
-    await tester.tap(find.byTooltip('Aksi'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Atur ulang kata sandi'));
+    await tester.tap(find.byTooltip('Atur ulang kata sandi'));
     await tester.pumpAndSettle();
     await tester.enterText(formFields, 'newpass1');
     await tester.tap(find.widgetWithText(ShadButton, 'Simpan'));
@@ -97,9 +95,7 @@ void main() {
     expect(find.text('Kata sandi diganti. Sesi staf ini dicabut.'), findsOneWidget);
     await dismissInfo(tester);
 
-    await tester.tap(find.byTooltip('Aksi'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Hapus permanen'));
+    await tester.tap(find.byTooltip('Hapus permanen'));
     await tester.pumpAndSettle();
     final purge = find.widgetWithText(ShadButton, 'Hapus permanen');
     expect(tester.widget<ShadButton>(purge).onPressed, isNull);
@@ -108,6 +104,21 @@ void main() {
     await tester.tap(purge);
     await tester.pumpAndSettle();
     expect(find.text('Punya riwayat transaksi, jadi dianonimkan.'), findsOneWidget);
+  });
+
+  testWidgets('superadmin rows only offer a password reset, and never on the signed-in admin', (tester) async {
+    final app = CmsHarness();
+    Map<String, dynamic> admin(String id, String name) => {...staffJson(id, name), 'role': 'superadmin'};
+    app.adapter.on('GET', ApiPaths.users, (_) => FakeReply(200, envelope({
+          'has_next': false,
+          'staff': [admin('u1', 'owner'), admin('a2', 'owner2'), staffJson('s1', 'kasir1')],
+        })));
+    await app.pump(tester, location: '/staff');
+
+    // owner is the signed-in admin (id u1): no actions. owner2: reset only. kasir1: all three.
+    expect(find.byTooltip('Atur ulang kata sandi'), findsNWidgets(2));
+    expect(find.byTooltip('Nonaktifkan'), findsOneWidget);
+    expect(find.byTooltip('Hapus permanen'), findsOneWidget);
   });
 
   testWidgets('staff page empty and error states', (tester) async {
