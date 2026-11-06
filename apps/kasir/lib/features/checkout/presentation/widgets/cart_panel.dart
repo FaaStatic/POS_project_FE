@@ -10,6 +10,7 @@ import '../../../../common/labels.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/checkout_bloc.dart';
 import 'change_sheet.dart';
+import 'close_tab.dart';
 import 'charge_view.dart';
 import 'customer_picker.dart';
 import 'debt_panel.dart';
@@ -104,21 +105,6 @@ class _CartStep extends StatelessWidget {
   final VoidCallback onNext;
   final ScrollController? scrollController;
 
-  Future<void> _close(BuildContext context) async {
-    final l10n = AppLocalizations.of(context);
-    final bloc = context.read<CheckoutBloc>();
-    if (!draft.isEmpty) {
-      final ok = await showConfirmDialog(
-        context,
-        title: l10n.closeTabTitle(draft.number, qty(context, draft.itemCount)),
-        confirmLabel: l10n.remove,
-        destructive: true,
-      );
-      if (!ok) return;
-    }
-    bloc.add(TabClosed(draft.id));
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -133,7 +119,7 @@ class _CartStep extends StatelessWidget {
           subtitle: l10n.itemsCount(qty(context, draft.itemCount)),
           trailing: IconButton(
             tooltip: l10n.closeTab,
-            onPressed: () => _close(context),
+            onPressed: () => confirmCloseTab(context, draft),
             style: IconButton.styleFrom(
               foregroundColor: theme.colorScheme.error,
               backgroundColor: StatusColors.of(context).dangerContainer,

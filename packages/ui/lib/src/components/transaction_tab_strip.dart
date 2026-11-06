@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../l10n/ui_localizations.dart';
 import '../theme/status_colors.dart';
@@ -7,7 +8,14 @@ import '../tokens/typography.dart';
 import 'app_button.dart';
 
 class TransactionTab {
-  const TransactionTab({required this.id, required this.number, required this.subtitle, this.highlight = false, this.label});
+  const TransactionTab({
+    required this.id,
+    required this.number,
+    required this.subtitle,
+    this.highlight = false,
+    this.label,
+    this.closable = false,
+  });
   final int id;
   final int number;
 
@@ -19,6 +27,9 @@ class TransactionTab {
 
   /// Status subtitles (waiting, paid) are drawn in the success color.
   final bool highlight;
+
+  /// The active tab shows a close button when this is set and the strip has an `onClose`.
+  final bool closable;
 }
 
 /// "Transaksi N" tabs as a scrolling row. The active tab is ink and scrolled into
@@ -33,6 +44,8 @@ class TransactionTabStrip extends StatefulWidget {
     required this.onShowAll,
     this.onNewDebt,
     this.newDebtLabel = '',
+    this.onClose,
+    this.closeLabel = '',
   });
 
   final List<TransactionTab> tabs;
@@ -44,6 +57,10 @@ class TransactionTabStrip extends StatefulWidget {
   /// Opens a debt payment tab; the action is left out when null.
   final VoidCallback? onNewDebt;
   final String newDebtLabel;
+
+  /// Closes a tab; the close button is left out when null.
+  final ValueChanged<int>? onClose;
+  final String closeLabel;
 
   @override
   State<TransactionTabStrip> createState() => _TransactionTabStripState();
@@ -82,6 +99,8 @@ class _TransactionTabStripState extends State<TransactionTabStrip> {
               highlight: tab.highlight,
               active: tab.id == widget.activeId,
               onTap: () => widget.onSelect(tab.id),
+              onClose: tab.closable && tab.id == widget.activeId && widget.onClose != null ? () => widget.onClose!(tab.id) : null,
+              closeLabel: widget.closeLabel,
             ),
             if (tab != widget.tabs.last) const SizedBox(width: Space.sm),
           ],
@@ -123,7 +142,7 @@ class _TransactionTabStripState extends State<TransactionTabStrip> {
                 label: Text('${widget.tabs.length}'),
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 textColor: Theme.of(context).colorScheme.onPrimary,
-                child: const Icon(Icons.view_agenda_outlined),
+                child: const Icon(Iconsax.shopping_cart_copy),
               ),
             )
           : AppButton(
@@ -171,6 +190,8 @@ class _Tab extends StatelessWidget {
     required this.highlight,
     required this.active,
     required this.onTap,
+    this.onClose,
+    this.closeLabel = '',
   });
 
   final String label;
@@ -179,6 +200,10 @@ class _Tab extends StatelessWidget {
   final bool active;
   final VoidCallback onTap;
 
+  /// Only the open tab gets one (the strip decides), so a row of tabs does not turn into a row of crosses.
+  final VoidCallback? onClose;
+  final String closeLabel;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -186,6 +211,7 @@ class _Tab extends StatelessWidget {
     final status = StatusColors.of(context);
     final radius = BorderRadius.circular(Radii.medium);
     // Full-strength subtitle on the active blue tab: a faded one drops under 4.5:1.
+    final edge = onClose == null ? Space.sm : Space.xs;
     final fg = active ? scheme.onPrimary : scheme.onSurface;
     final sub = active ? scheme.onPrimary : (highlight ? status.success : scheme.onSurfaceVariant);
     return Semantics(
@@ -201,13 +227,28 @@ class _Tab extends StatelessWidget {
             duration: const Duration(milliseconds: 180),
             curve: Curves.easeOutCubic,
             constraints: const BoxConstraints(minHeight: 56, minWidth: 128),
-            padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.sm),
-            child: Column(
+            // The 48dp close button sets the height of the tab that has one.
+            padding: EdgeInsets.fromLTRB(onClose == null ? Space.lg : Space.md, edge, onClose == null ? Space.lg : Space.xs, edge),
+            child: Row(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: theme.textTheme.labelLarge?.copyWith(color: fg)),
-                Text(subtitle, style: theme.textTheme.labelMedium?.tabular.copyWith(color: sub)),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label, style: theme.textTheme.labelLarge?.copyWith(color: fg)),
+                    Text(subtitle, style: theme.textTheme.labelMedium?.tabular.copyWith(color: sub)),
+                  ],
+                ),
+                if (onClose case final close?)
+                  IconButton(
+                    tooltip: closeLabel,
+                    onPressed: close,
+                    color: fg,
+                    // 40 wide keeps the active tab inside a 360 phone's strip; the height is the full 48dp.
+                    style: IconButton.styleFrom(minimumSize: const Size(40, 48), padding: EdgeInsets.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                    icon: const Icon(Icons.close_rounded, size: 20),
+                  ),
               ],
             ),
           ),

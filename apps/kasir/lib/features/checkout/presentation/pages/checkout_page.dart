@@ -13,6 +13,7 @@ import '../../../../common/tablet_layout.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/checkout_bloc.dart';
 import '../widgets/cart_panel.dart';
+import '../widgets/close_tab.dart';
 import '../widgets/debt_list.dart';
 import '../widgets/open_tabs_sheet.dart';
 import '../widgets/product_list.dart';
@@ -50,6 +51,8 @@ class CheckoutPage extends StatelessWidget {
                       label: d.isDebtPayment ? draftTitle(context, d) : null,
                       highlight: d.status != DraftStatus.open,
                       subtitle: draftSubtitle(context, d),
+                      // A tab waiting on QRIS/VA cannot be dropped, and the only empty sale tab would just come back.
+                      closable: d.status != DraftStatus.awaitingPayment && !(state.drafts.length == 1 && d.isEmpty && !d.isDebtPayment),
                     ),
                 ],
                 activeId: state.activeId,
@@ -57,6 +60,8 @@ class CheckoutPage extends StatelessWidget {
                 onNew: () => context.read<CheckoutBloc>().add(const NewTabRequested()),
                 onNewDebt: () => context.read<CheckoutBloc>().add(const NewDebtTabRequested()),
                 newDebtLabel: l10n.payDebtTab,
+                closeLabel: l10n.closeTab,
+                onClose: (id) => confirmCloseTab(context, state.drafts.firstWhere((d) => d.id == id)),
                 onShowAll: () async {
                   final bloc = context.read<CheckoutBloc>();
                   final id = await showOpenTabs(context, state.drafts, state.activeId);
