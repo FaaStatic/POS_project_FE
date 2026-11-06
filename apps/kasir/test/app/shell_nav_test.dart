@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kasir/common/tablet_layout.dart';
 
 import '../helpers/app_harness.dart';
 
@@ -14,11 +15,14 @@ void main() {
 
       expect(find.byType(NavigationRail), findsNothing);
       final bar = tester.getSize(find.byType(NavigationBar));
-      if (size.width < 600) {
-        expect(bar.width, size.width - 24);
+      // On a tablet the checkout keeps the order panel on the right; the pill floats in the catalog column.
+      final column = checkoutBeside(size) ? size.width - checkoutPanelWidth(size.width) : size.width;
+      if (column < 600) {
+        expect(bar.width, column - 24);
       } else {
-        expect(bar.width, closeTo((size.width * 0.6).clamp(360, 560), 1));
+        expect(bar.width, closeTo((column * 0.6).clamp(360, 560), 1));
       }
+      expect(tester.getRect(find.byType(NavigationBar)).right, lessThanOrEqualTo(column));
       await tester.runAsync(app.close);
     });
   }

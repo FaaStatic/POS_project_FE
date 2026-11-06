@@ -9,6 +9,9 @@ class KasirDestination {
   final IconData icon;
 }
 
+/// Index of the checkout tab in [kasirDestinations].
+const kasirCheckoutIndex = 0;
+
 /// Order matches the StatefulShellRoute branches in router.dart.
 final kasirDestinations = <KasirDestination>[
   KasirDestination((l) => l.navCheckout, Iconsax.shopping_cart_copy),
