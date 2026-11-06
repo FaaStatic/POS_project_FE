@@ -14,7 +14,8 @@ const kasirCheckoutIndex = 0;
 
 /// Order matches the StatefulShellRoute branches in router.dart.
 final kasirDestinations = <KasirDestination>[
-  KasirDestination((l) => l.navCheckout, Iconsax.shopping_cart_copy),
+  // The cart icon belongs to the open carts ("Semua" in the tab strip); the cashier tab is the calculator.
+  KasirDestination((l) => l.navCheckout, Iconsax.calculator_copy),
   KasirDestination((l) => l.navHistory, Iconsax.receipt_2_copy),
   KasirDestination((l) => l.navCustomers, Iconsax.profile_2user_copy),
   // Products and settings are rare for a cashier, so they share "Lainnya" (Square POS "More").

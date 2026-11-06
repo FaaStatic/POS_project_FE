@@ -61,10 +61,15 @@ class KasirShell extends StatelessWidget {
               left: 0,
               right: beside ? checkoutPanelWidth(window.width) : 0,
               bottom: 0,
-              child: _FloatingNav(
-                selected: shell.currentIndex,
-                onSelect: _go,
-                destinations: [for (final d in kasirDestinations) NavigationDestination(icon: Icon(d.icon), label: d.label(l10n))],
+              // NavigationBar pads itself by the top inset too (a Scaffold bottom bar had it removed), stretching the pill by the status bar.
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: _FloatingNav(
+                  selected: shell.currentIndex,
+                  onSelect: _go,
+                  destinations: [for (final d in kasirDestinations) NavigationDestination(icon: Icon(d.icon), label: d.label(l10n))],
+                ),
               ),
             ),
         ],

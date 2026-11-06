@@ -26,4 +26,19 @@ void main() {
       await tester.runAsync(app.close);
     });
   }
+
+  testWidgets('the pill keeps its own height under a status bar inset and does not cover the page', (tester) async {
+    final app = AppHarness(online: true)..serveBackend();
+    await app.tokens.writeRefreshToken('r0');
+    tester.view.padding = const FakeViewPadding(top: 47, bottom: 34);
+    tester.view.viewPadding = const FakeViewPadding(top: 47, bottom: 34);
+    addTearDown(tester.view.resetPadding);
+    addTearDown(tester.view.resetViewPadding);
+    await app.pump(tester, size: const Size(390, 844));
+
+    final bar = tester.getRect(find.byType(NavigationBar));
+    expect(bar.height, 68, reason: 'the status bar inset must not stretch the pill');
+    expect(tester.getRect(find.byType(Scaffold).last).bottom, lessThanOrEqualTo(bar.top + 0.5), reason: 'the page ends above the pill');
+    await tester.runAsync(app.close);
+  });
 }
