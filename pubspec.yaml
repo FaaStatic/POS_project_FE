@@ -11,9 +11,12 @@ workspace:
   - apps/kasir
 
 dev_dependencies:
-  melos: 8.9.0
+  melos: 8.10.0
 
 melos:
+  command:
+    run:
+      noSelect: true
   scripts:
     setup:
       description: Generate localizations and code (freezed, json, drift). Run after pub get.
@@ -23,9 +26,11 @@ melos:
     cms:
       description: Run the CMS in Chrome on port 5173 (dev). Extra flutter args go after "--".
       run: cd apps/cms && flutter run -d chrome --web-port 5173 --pid-file "$MELOS_ROOT_PATH/.dart_tool/cms.pid" -t lib/main_dev.dart
+      stdio: inherit
     kasir:
       description: Run the kasir app (dev). Pick a device with "-- -d <device-id>".
       run: cd apps/kasir && flutter run --pid-file "$MELOS_ROOT_PATH/.dart_tool/kasir.pid" -t lib/main_dev.dart
+      stdio: inherit
     cms-reload:
       description: Hot reload the running CMS (from a second terminal).
       run: kill -USR1 "$(cat "$MELOS_ROOT_PATH/.dart_tool/cms.pid" 2>/dev/null)" 2>/dev/null || echo "CMS is not running. Start it with melos run cms"
@@ -51,17 +56,35 @@ melos:
       description: Kasir integration tests on a device. Pick it with "-- -d <device-id>".
       run: cd apps/kasir && flutter test integration_test
     analyze:
-      run: dart run melos exec -c 1 -- flutter analyze --no-fatal-infos
+      exec:
+        command: flutter analyze --no-fatal-infos
+        concurrency: 1
       description: Static analysis for every package.
     test:
-      run: dart run melos exec -c 1 --dir-exists=test -- flutter test
+      exec:
+        command: flutter test
+        concurrency: 1
+      packageFilters:
+        dirExists: test
       description: Unit and widget tests for every package.
     coverage:
-      run: dart run melos exec -c 1 --dir-exists=test -- "flutter test --coverage && dart run \$MELOS_ROOT_PATH/tool/check_coverage.dart"
+      exec:
+        command: flutter test --coverage && dart run $MELOS_ROOT_PATH/tool/check_coverage.dart
+        concurrency: 1
+      packageFilters:
+        dirExists: test
       description: Fails when domain, data, or presentation/bloc coverage drops under 80%.
     build_runner:
-      run: dart run melos exec -c 1 --depends-on build_runner -- dart run build_runner build --delete-conflicting-outputs
+      exec:
+        command: dart run build_runner build --delete-conflicting-outputs
+        concurrency: 1
+      packageFilters:
+        dependsOn: build_runner
       description: Code generation (freezed, json_serializable, drift).
     gen_l10n:
-      run: dart run melos exec -c 1 --file-exists=l10n.yaml -- flutter gen-l10n
+      exec:
+        command: flutter gen-l10n
+        concurrency: 1
+      packageFilters:
+        fileExists: l10n.yaml
       description: Generate localizations from ARB files.

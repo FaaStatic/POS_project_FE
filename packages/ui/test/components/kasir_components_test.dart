@@ -30,6 +30,34 @@ void main() {
     expect([selected, added, shown], [2, 1, 1]);
   });
 
+  testWidgets('only the open tab carries a close button, and only when it can be closed', (tester) async {
+    int? closed;
+    final all = [for (final t in tabs(3)) TransactionTab(id: t.id, number: t.number, subtitle: t.subtitle, closable: t.id != 3)];
+    await pumpUi(
+      tester,
+      TransactionTabStrip(
+        tabs: all,
+        activeId: 2,
+        onSelect: (_) {},
+        onNew: () {},
+        onShowAll: () {},
+        onClose: (id) => closed = id,
+        closeLabel: 'Tutup tab',
+      ),
+    );
+    expect(find.byTooltip('Tutup tab'), findsOneWidget);
+    await tester.ensureVisible(find.byTooltip('Tutup tab'));
+    await tester.tap(find.byTooltip('Tutup tab'));
+    expect(closed, 2);
+    expect(tester.getSize(find.byTooltip('Tutup tab')).height, greaterThanOrEqualTo(48));
+
+    await pumpUi(
+      tester,
+      TransactionTabStrip(tabs: all, activeId: 3, onSelect: (_) {}, onNew: () {}, onShowAll: () {}, onClose: (_) {}, closeLabel: 'Tutup tab'),
+    );
+    expect(find.byTooltip('Tutup tab'), findsNothing, reason: 'a tab that cannot be closed has no button');
+  });
+
   for (final width in [360.0, 900.0]) {
     testWidgets('tab strip fits ${width}px at 200% text in dark theme', (tester) async {
       await pumpUi(

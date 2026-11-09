@@ -292,4 +292,23 @@ void main() {
     expect(find.text('Rp 4.000'), findsWidgets);
     await tester.runAsync(app.close);
   });
+
+  testWidgets('an empty new tab is closed from the tab itself on a phone, where the cart bar is hidden', (tester) async {
+    final app = AppHarness(online: true)..serveBackend();
+    await app.tokens.writeRefreshToken('r0');
+    await app.pump(tester, size: const Size(390, 844));
+    // The only empty tab has nothing to close: it would be replaced by an identical one.
+    expect(find.byTooltip('Tutup tab'), findsNothing);
+
+    await tester.tap(find.byTooltip('Pembeli baru'));
+    await app.settle(tester);
+    expect(find.text('Transaksi 2'), findsWidgets);
+    // The test font is wider than Inter, so the cross can sit past the strip's edge; press it directly.
+    tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.close_rounded)).onPressed!();
+    await app.settle(tester);
+
+    expect(find.text('Transaksi 2'), findsNothing);
+    expect(find.text('Transaksi 1'), findsWidgets);
+    await tester.runAsync(app.close);
+  });
 }

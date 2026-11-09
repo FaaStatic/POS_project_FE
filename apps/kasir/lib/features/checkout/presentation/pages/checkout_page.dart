@@ -9,18 +9,17 @@ import '../../../../app/di.dart';
 import '../../../../common/catalog/catalog_cubits.dart';
 import '../../../../common/labels.dart';
 import '../../../../common/scrolls_when_short.dart';
+import '../../../../common/tablet_layout.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/checkout_bloc.dart';
 import '../widgets/cart_panel.dart';
+import '../widgets/close_tab.dart';
 import '../widgets/debt_list.dart';
 import '../widgets/open_tabs_sheet.dart';
 import '../widgets/product_list.dart';
 
 class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key});
-
-  /// Landscape tablets; portrait tablets keep the grid and open the cart as a sheet.
-  static const _sideBySide = 900.0;
 
   Future<void> _scan(BuildContext context) async {
     final bloc = context.read<CheckoutBloc>();
@@ -52,6 +51,8 @@ class CheckoutPage extends StatelessWidget {
                       label: d.isDebtPayment ? draftTitle(context, d) : null,
                       highlight: d.status != DraftStatus.open,
                       subtitle: draftSubtitle(context, d),
+                      // A tab waiting on QRIS/VA cannot be dropped, and the only empty sale tab would just come back.
+                      closable: d.status != DraftStatus.awaitingPayment && !(state.drafts.length == 1 && d.isEmpty && !d.isDebtPayment),
                     ),
                 ],
                 activeId: state.activeId,
@@ -59,6 +60,8 @@ class CheckoutPage extends StatelessWidget {
                 onNew: () => context.read<CheckoutBloc>().add(const NewTabRequested()),
                 onNewDebt: () => context.read<CheckoutBloc>().add(const NewDebtTabRequested()),
                 newDebtLabel: l10n.payDebtTab,
+                closeLabel: l10n.closeTab,
+                onClose: (id) => confirmCloseTab(context, state.drafts.firstWhere((d) => d.id == id)),
                 onShowAll: () async {
                   final bloc = context.read<CheckoutBloc>();
                   final id = await showOpenTabs(context, state.drafts, state.activeId);
@@ -67,7 +70,8 @@ class CheckoutPage extends StatelessWidget {
               );
               return LayoutBuilder(
                 builder: (context, constraints) {
-                  final wide = constraints.maxWidth >= _sideBySide;
+                  final window = MediaQuery.sizeOf(context);
+                  final wide = checkoutBeside(window);
                   // Short phones at large text: the tab strip scrolls with the products so the
                   // list keeps room. The header stays pinned because it holds the cart button.
                   final roomy = wide || constraints.maxHeight >= 600 * MediaQuery.textScalerOf(context).scale(1);
@@ -78,10 +82,12 @@ class CheckoutPage extends StatelessWidget {
                   final main = Column(
                     children: [
                       // Short windows (phone landscape) drop the big title to give the list room.
-                      _Header(showTitle: roomy),
+                      _Header(showTitle: roomy && !wide),
                       if (roomy) ...[strip, const SizedBox(height: Space.sm)],
                       Expanded(key: const ValueKey('products'), child: products),
                       if (!wide) const _CartBar(),
+                      // The shell floats the nav pill over this column and reports its height as bottom padding.
+                      if (wide) SizedBox(height: MediaQuery.paddingOf(context).bottom),
                     ],
                   );
                   if (!wide) return ScrollsWhenShort(child: main);
@@ -89,14 +95,13 @@ class CheckoutPage extends StatelessWidget {
                   return Row(
                     children: [
                       Expanded(child: main),
+                      // The panel stands apart from the catalog: a firmer edge than a card hairline plus a soft shadow.
                       DecoratedBox(
                         decoration: BoxDecoration(
-                          border: Border(left: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
+                          border: Border(left: BorderSide(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.35))),
+                          boxShadow: const [BoxShadow(color: Color(0x12000000), offset: Offset(-6, 0), blurRadius: 16)],
                         ),
-                        child: SizedBox(
-                          width: constraints.maxWidth >= 1100 ? 420 : 380,
-                          child: const CartPanel(),
-                        ),
+                        child: SizedBox(width: checkoutPanelWidth(window.width), child: const CartPanel()),
                       ),
                     ],
                   );
