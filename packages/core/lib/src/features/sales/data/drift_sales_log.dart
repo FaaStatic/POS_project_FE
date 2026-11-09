@@ -63,12 +63,22 @@ class DriftSalesLog implements SalesLog {
   }
 
   @override
-  Future<void> markSynced(String clientRef, {String? transactionId, String? invoice, bool stockConflict = false}) =>
+  Future<void> markSynced(
+    String clientRef, {
+    String? transactionId,
+    String? invoice,
+    bool stockConflict = false,
+    int? debtBefore,
+    int? debtAfter,
+  }) =>
       (_db.update(_db.sales)..where((s) => s.clientRef.equals(clientRef))).write(SalesCompanion(
         status: Value(SaleStatus.synced.index),
         transactionId: Value(transactionId),
         receiptNumber: invoice == null || invoice.isEmpty ? const Value.absent() : Value(invoice),
         stockConflict: Value(stockConflict),
+        // The server's balance replaces the estimate made offline.
+        debtBefore: Value.absentIfNull(debtBefore),
+        debtAfter: Value.absentIfNull(debtAfter),
         error: const Value(null),
       ));
 
@@ -130,7 +140,6 @@ class DriftSalesLog implements SalesLog {
         cancelReason: r.cancelReason,
         kind: SaleKind.values[r.kind],
         debtId: r.debtId,
-        debtTotal: r.debtTotal,
         debtBefore: r.debtBefore,
         debtAfter: r.debtAfter,
         amountPaid: r.amountPaid,
@@ -175,7 +184,6 @@ class DriftSalesLog implements SalesLog {
         cancelReason: Value(s.cancelReason),
         kind: Value(s.kind.index),
         debtId: Value(s.debtId),
-        debtTotal: Value(s.debtTotal),
         debtBefore: Value(s.debtBefore),
         debtAfter: Value(s.debtAfter),
         amountPaid: Value(s.amountPaid),

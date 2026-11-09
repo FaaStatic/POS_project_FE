@@ -88,6 +88,7 @@ abstract class CheckoutResult with _$CheckoutResult {
     required int total,
     required PaymentMethod method,
     @Default(false) bool stockConflict,
+    String? debtId,
     int? debtRemaining,
   }) = _CheckoutResult;
 }
@@ -120,6 +121,10 @@ abstract class SyncResult with _$SyncResult {
     @Default(false) bool stockConflict,
     @Default(false) bool retryable,
     String? error,
+
+    /// The customer's total owed before and after a credit sale, when the server answered with it.
+    int? debtBefore,
+    int? debtAfter,
   }) = _SyncResult;
 
   bool get accepted => status != SyncStatus.failed;

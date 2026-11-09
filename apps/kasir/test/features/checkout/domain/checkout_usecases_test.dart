@@ -141,6 +141,84 @@ void main() {
       expect(sale.customerName, 'Bu Sri');
     });
 
+    group('credit sale and the customer balance', () {
+      Debt owed(int remaining) =>
+          Debt(id: 'd1', customerId: 'k1', customerName: 'Bu Sri', total: remaining, remaining: remaining, paid: false);
+
+      test('online: the server balance is on the receipt and in the cache, also for a customer who had settled', () async {
+        final draft = await local.draftWith([(indomie, 2)], customerId: 'k1', customerName: 'Bu Sri');
+        when(() => remote.create(any())).thenAnswer((_) async => const Ok(CheckoutResult(
+              transactionId: 't1', invoice: 'INV-1', total: 8000, method: PaymentMethod.debt, debtId: 'd9', debtRemaining: 8000)));
+        final sale = (await checkout()(draft, PaymentMethod.debt) as Ok<CheckoutOutcome>).value.sale;
+        expect((sale.debtBefore, sale.debtAfter), (0, 8000));
+        final cached = (await local.cache.debtOfCustomer('k1'))!;
+        expect((cached.id, cached.remaining), ('d9', 8000));
+      });
+
+      test('online: adds to the open debt already in the cache', () async {
+        await local.cache.replaceDebts([owed(5000)]);
+        final draft = await local.draftWith([(indomie, 2)], customerId: 'k1', customerName: 'Bu Sri');
+        when(() => remote.create(any())).thenAnswer((_) async => const Ok(CheckoutResult(
+              transactionId: 't1', invoice: 'INV-1', total: 8000, method: PaymentMethod.debt, debtId: 'd1', debtRemaining: 13000)));
+        final sale = (await checkout()(draft, PaymentMethod.debt) as Ok<CheckoutOutcome>).value.sale;
+        expect((sale.debtBefore, sale.debtAfter), (5000, 13000));
+        expect((await local.cache.debtOfCustomer('k1'))!.remaining, 13000);
+      });
+
+      test('offline: the balance is the cached one plus this sale, and the cache grows', () async {
+        network.online = false;
+        await local.cache.replaceDebts([owed(5000)]);
+        final draft = await local.draftWith([(indomie, 2)], customerId: 'k1', customerName: 'Bu Sri');
+        final sale = (await checkout()(draft, PaymentMethod.debt) as Ok<CheckoutOutcome>).value.sale;
+        expect((sale.debtBefore, sale.debtAfter), (5000, 13000));
+        final cached = (await local.cache.debtOfCustomer('k1'))!;
+        expect((cached.id, cached.remaining, cached.total), ('d1', 13000, 13000));
+      });
+
+      test('offline: a customer with no open debt gets a local entry until the next refresh', () async {
+        network.online = false;
+        final draft = await local.draftWith([(indomie, 2)], customerId: 'k1', customerName: 'Bu Sri');
+        final sale = (await checkout()(draft, PaymentMethod.debt) as Ok<CheckoutOutcome>).value.sale;
+        expect((sale.debtBefore, sale.debtAfter), (0, 8000));
+        expect((await local.cache.debtOfCustomer('k1'))!.remaining, 8000);
+      });
+
+      test('a refresh keeps what is still queued: the server list does not know it yet', () async {
+        network.online = false;
+        await local.cache.replaceDebts([owed(5000)]);
+        final draft = await local.draftWith([(indomie, 2)], customerId: 'k1', customerName: 'Bu Sri');
+        await checkout()(draft, PaymentMethod.debt);
+        await local.cache.replaceDebts([owed(5000)]);
+        expect((await local.cache.debtOfCustomer('k1'))!.remaining, 13000);
+
+        // Once the queue has synced, the server list already holds it and nothing is added twice.
+        await local.sales.markSynced('ref-1', invoice: 'INV-1');
+        await local.cache.replaceDebts([owed(13000)]);
+        expect((await local.cache.debtOfCustomer('k1'))!.remaining, 13000);
+      });
+
+      test('a local entry takes the server debt id once an online sale names it', () async {
+        network.online = false;
+        await checkout()(await local.draftWith([(indomie, 1)], customerId: 'k1', customerName: 'Bu Sri'), PaymentMethod.debt);
+        expect((await local.cache.debtOfCustomer('k1'))!.id, startsWith(localDebtPrefix));
+        network.online = true;
+        when(() => remote.create(any())).thenAnswer((_) async => const Ok(CheckoutResult(
+              transactionId: 't1', invoice: 'INV-1', total: 4000, method: PaymentMethod.debt, debtId: 'd9', debtRemaining: 8000)));
+        await checkout()(await local.draftWith([(indomie, 1)], customerId: 'k1', customerName: 'Bu Sri'), PaymentMethod.debt);
+        expect((await local.cache.debtOfCustomer('k1'))!.id, 'd9');
+      });
+
+      test('a cash sale leaves the balance alone', () async {
+        await local.cache.replaceDebts([owed(5000)]);
+        final draft = await local.draftWith([(indomie, 1)], customerId: 'k1', customerName: 'Bu Sri');
+        when(() => remote.create(any())).thenAnswer((_) async => const Ok(CheckoutResult(
+              transactionId: 't1', invoice: 'INV-1', total: 3500, method: PaymentMethod.cash)));
+        final sale = (await checkout()(draft, PaymentMethod.cash) as Ok<CheckoutOutcome>).value.sale;
+        expect(sale.debtAfter, isNull);
+        expect((await local.cache.debtOfCustomer('k1'))!.remaining, 5000);
+      });
+    });
+
     test('digital lines need a destination', () async {
       final draft = await local.draftWith([(pulsa, 1)]);
       expect(await checkout()(draft, PaymentMethod.cash), const Err<CheckoutOutcome>(ValidationFailure('destination_required')));

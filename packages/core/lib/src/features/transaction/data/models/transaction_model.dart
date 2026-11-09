@@ -68,6 +68,7 @@ abstract final class TransactionModel {
         total: readInt(j['total_transaction']),
         method: PaymentMethod.fromWire(readString(j['payment_type'])),
         stockConflict: readBool(j['stock_conflict']),
+        debtId: j['debt_info'] is Map ? readString(readMap(j['debt_info'])['debt_id']) : null,
         debtRemaining: j['debt_info'] is Map ? readInt(readMap(j['debt_info'])['remaining_debt']) : null,
       );
 
@@ -95,5 +96,7 @@ abstract final class TransactionModel {
         stockConflict: readBool(j['stock_conflict']),
         retryable: readBool(j['retryable']),
         error: readNullableString(j['error']),
+        debtBefore: j['debt_info'] is Map ? readInt(readMap(j['debt_info'])['previous_remaining_debt']) : null,
+        debtAfter: j['debt_info'] is Map ? readInt(readMap(j['debt_info'])['remaining_debt']) : null,
       );
 }

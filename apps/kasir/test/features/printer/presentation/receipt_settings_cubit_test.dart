@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kasir/features/printer/data/esc_pos.dart';
@@ -30,6 +32,26 @@ void main() {
     expect(bytes.take(2), [0x1B, 0x40]);
     expect(bytes.skip(bytes.length - 4), [0x1D, 0x56, 0x42, 0x00]);
     expect(String.fromCharCodes(bytes), contains('Kopi -> Rp 3.000'));
+  });
+
+  test('raster logo: GS v 0 header, 1 bit per pixel, dark opaque pixels print, transparent ones stay blank', () {
+    // 10 x 2: row 0 all black, row 1 black only at x = 0; one transparent pixel in row 0.
+    final rgba = Uint8List(10 * 2 * 4);
+    for (var i = 0; i < 20; i++) {
+      final dark = i < 10 || i == 10;
+      rgba.setRange(i * 4, i * 4 + 4, dark ? [0, 0, 0, 255] : [255, 255, 255, 255]);
+    }
+    rgba[9 * 4 + 3] = 0; // x = 9 of row 0 is transparent
+    final raster = rasterImage(rgba, 10, 2);
+    expect(raster.sublist(0, 8), [0x1D, 0x76, 0x30, 0, 2, 0, 2, 0]);
+    expect(raster.sublist(8), [0xFF, 0x80, 0x80, 0x00]);
+  });
+
+  test('a logo is centered and printed before the first line', () {
+    final logo = Uint8List.fromList([1, 2, 3]);
+    final bytes = encodeReceipt(ReceiptDocument(const [ReceiptLine('Toko')]), logo: logo);
+    expect(bytes.sublist(0, 2 + 3 + 3), [0x1B, 0x40, 0x1B, 0x61, 1, 1, 2, 3]);
+    expect(encodeReceipt(ReceiptDocument(const [ReceiptLine('Toko')])).sublist(0, 5), [0x1B, 0x40, 0x1B, 0x61, 0]);
   });
 }
 

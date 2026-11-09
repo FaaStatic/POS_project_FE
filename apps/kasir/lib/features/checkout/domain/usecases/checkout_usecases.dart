@@ -193,14 +193,17 @@ class CheckoutTransaction {
       );
       switch (result) {
         case Ok(:final value):
-          final recorded = sale(
-            value.invoice,
-            transactionId: value.transactionId,
-            total: value.total,
-            conflict: value.stockConflict,
-            status: SaleStatus.synced,
+          final recorded = await _withBalance(
+            sale(
+              value.invoice,
+              transactionId: value.transactionId,
+              total: value.total,
+              conflict: value.stockConflict,
+              status: SaleStatus.synced,
+            ),
+            serverRemaining: value.debtRemaining,
           );
-          await _commit(draft, recorded);
+          await _commit(draft, recorded, debtId: value.debtId);
           return Ok(CheckoutOutcome(recorded, offline: false));
         case Err(failure: NetworkFailure()):
           break;
@@ -209,13 +212,33 @@ class CheckoutTransaction {
       }
     }
 
-    final queued = sale(await sales.nextOfflineNumber());
+    final queued = await _withBalance(sale(await sales.nextOfflineNumber()));
     await _commit(draft, queued);
     return Ok(CheckoutOutcome(queued, offline: true));
   }
 
-  Future<void> _commit(Draft draft, Sale sale) async {
+  /// A credit sale carries the customer's balance before and after it. The server's answer wins;
+  /// offline it is the cached balance plus this sale.
+  Future<Sale> _withBalance(Sale sale, {int? serverRemaining}) async {
+    final customerId = sale.customerId;
+    if (sale.method != PaymentMethod.debt || customerId == null) return sale;
+    final after = serverRemaining ?? ((await cache.debtOfCustomer(customerId))?.remaining ?? 0) + sale.total;
+    return sale.copyWith(debtBefore: after - sale.total, debtAfter: after);
+  }
+
+  /// The sale is stored first; the cache follows, and a refresh repairs it if this part fails.
+  Future<void> _commit(Draft draft, Sale sale, {String? debtId}) async {
     await sales.add(sale);
+    if (sale.debtAfter != null) {
+      await cache.addDebt(
+        customerId: sale.customerId!,
+        customerName: sale.customerName ?? '',
+        amount: sale.total,
+        debtId: debtId,
+        // Only the server's balance is exact; offline the cache adds the sale to its own.
+        remaining: sale.isSynced ? sale.debtAfter : null,
+      );
+    }
     await cache.adjustStock({for (final l in sale.lines) l.productId: -l.qty}, countSale: true);
     // Goods handed back as change leave the shelf too, but are not a sale of that product.
     final given = <String, double>{};
@@ -263,6 +286,8 @@ class PayDebtAtCounter {
     if (customerId == null) return const Err(ValidationFailure('customer_required'));
     final debt = await cache.debtOfCustomer(customerId);
     if (debt == null) return const Err(ValidationFailure('no_debt'));
+    // A credit sale made offline for a customer with no open debt: the server has no id for it yet.
+    if (debt.id.startsWith(localDebtPrefix)) return const Err(ValidationFailure('debt_not_synced'));
     if (amount <= 0) return const Err(ValidationFailure('positive_number'));
     if (amount > debt.remaining) return const Err(ValidationFailure('exceeds_remaining'));
     if (cashReceived < amount) return const Err(ValidationFailure('amount_paid_short'));
@@ -283,7 +308,6 @@ class PayDebtAtCounter {
       change: cashReceived > amount ? [ChangeLine.cash(cashReceived - amount)] : const [],
       kind: SaleKind.debtPayment,
       debtId: debt.id,
-      debtTotal: debt.total,
       debtBefore: debt.remaining,
       debtAfter: after,
     );

@@ -73,10 +73,18 @@ void main() {
 
   testWidgets('the app logo sits behind the text as a faint watermark', (tester) async {
     await _pump(tester);
-    final logo = find.descendant(of: find.byType(ReceiptView), matching: find.byType(BrandLogo));
-    expect(logo, findsOneWidget);
-    final opacity = tester.widget<Opacity>(find.ancestor(of: logo, matching: find.byType(Opacity)).first);
+    final faint = find.descendant(of: find.byType(Opacity), matching: find.byType(BrandLogo));
+    expect(faint, findsOneWidget);
+    final opacity = tester.widget<Opacity>(find.ancestor(of: faint, matching: find.byType(Opacity)).first);
     expect(opacity.opacity, lessThan(0.1));
+  });
+
+  testWidgets('a full-strength logo sits above the store name', (tester) async {
+    await _pump(tester);
+    final logos = find.descendant(of: find.byType(ReceiptView), matching: find.byType(BrandLogo));
+    expect(logos, findsNWidgets(2));
+    final header = logos.evaluate().map((e) => e.widget).firstWhere((w) => !tester.any(find.ancestor(of: find.byWidget(w), matching: find.byType(Opacity))));
+    expect(tester.getBottomLeft(find.byWidget(header)).dy, lessThan(tester.getTopLeft(find.text('Toko Maju')).dy));
   });
 
   testWidgets('store name, address and footer are sized from the type scale and the body is 15sp', (tester) async {

@@ -813,7 +813,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get receiptDebtPaidNow => 'Paid now';
 
   @override
-  String get receiptDebtPaidTotal => 'Total paid';
+  String get receiptDebtPrevious => 'Previous balance';
+
+  @override
+  String get receiptDebtEstimate => '(estimated balance)';
 
   @override
   String get receiptDebtOwed => 'Balance owed';
@@ -849,6 +852,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get debtNoDebt => 'This customer has no debt.';
+
+  @override
+  String get debtNotSynced =>
+      'This debt was only recorded on this device. Sync before taking a payment.';
 
   @override
   String get historySalesTab => 'Sales';

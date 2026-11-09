@@ -69,6 +69,16 @@ void main() {
     verifyNever(() => debts.pay(debtId: any(named: 'debtId'), userId: any(named: 'userId'), amount: any(named: 'amount'), idempotencyKey: any(named: 'idempotencyKey')));
   });
 
+  test('a debt only recorded on this device cannot be paid until it has synced', () async {
+    await local.cache.replaceDebts([]);
+    await local.cache.addDebt(customerId: 'k1', customerName: 'Bu Sri', amount: 5000);
+    expect(
+      await pay()(await debtTab(), amount: 1000, cashReceived: 1000),
+      const Err<CheckoutOutcome>(ValidationFailure('debt_not_synced')),
+    );
+    expect(await local.sales.pending(kind: SaleKind.debtPayment), isEmpty);
+  });
+
   test('a dropped connection queues the payment instead of losing it', () async {
     when(() => debts.pay(debtId: any(named: 'debtId'), userId: any(named: 'userId'), amount: any(named: 'amount'), idempotencyKey: any(named: 'idempotencyKey')))
         .thenAnswer((_) async => const Err(NetworkFailure()));

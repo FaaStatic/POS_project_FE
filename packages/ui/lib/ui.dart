@@ -19,8 +19,10 @@ export 'package:shadcn_ui/shadcn_ui.dart'
         ShadTheme,
         showShadDialog;
 
+export 'gen/assets.gen.dart' show Assets;
 export 'l10n/ui_localizations.dart';
 export 'src/components/app_autocomplete.dart';
+export 'src/components/brand_bitmap.dart';
 export 'src/components/app_button.dart';
 export 'src/components/app_search_select.dart';
 export 'src/components/app_text_field.dart';

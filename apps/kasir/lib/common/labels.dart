@@ -39,8 +39,9 @@ ReceiptDocument receiptFor(BuildContext context, Sale sale, ReceiptSettings sett
       markUnpaid: l10n.receiptMarkUnpaid,
       debtPayment: l10n.receiptDebtPayment,
       debtPaidNow: l10n.receiptDebtPaidNow,
-      debtPaidTotal: l10n.receiptDebtPaidTotal,
+      debtPrevious: l10n.receiptDebtPrevious,
       debtOwed: l10n.receiptDebtOwed,
+      debtEstimate: l10n.receiptDebtEstimate,
     ),
   );
 }
