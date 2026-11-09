@@ -10,7 +10,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'kasir'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -24,7 +24,6 @@ class AppDatabase extends _$AppDatabase {
           if (from < 3) {
             await m.addColumn(sales, sales.kind);
             await m.addColumn(sales, sales.debtId);
-            await m.addColumn(sales, sales.debtTotal);
             await m.addColumn(sales, sales.debtBefore);
             await m.addColumn(sales, sales.debtAfter);
             await m.addColumn(draftCarts, draftCarts.kind);
@@ -32,6 +31,8 @@ class AppDatabase extends _$AppDatabase {
             // The customer cache no longer keeps a debt total; open debts have their own table.
             await m.alterTable(TableMigration(cachedCustomers));
           }
+          // v4: sales no longer keep the debt's original total; the table is rebuilt without that column.
+          if (from < 4) await m.alterTable(TableMigration(sales));
         },
         beforeOpen: (details) async => customStatement('PRAGMA foreign_keys = ON'),
       );

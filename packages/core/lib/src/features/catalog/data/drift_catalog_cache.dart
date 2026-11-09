@@ -5,6 +5,8 @@ import '../../category/domain/entities/category.dart';
 import '../../customer/domain/entities/customer.dart';
 import '../../debt/domain/entities/debt.dart';
 import '../../product/domain/entities/product.dart';
+import '../../sales/domain/entities/sale.dart';
+import '../../../constants/payment_method.dart';
 import '../domain/repositories/catalog_cache.dart';
 
 class DriftCatalogCache implements CatalogCache {
@@ -177,6 +179,50 @@ class DriftCatalogCache implements CatalogCache {
                   date: Value(d.date),
                 ),
             ]));
+        await _replayQueued();
+      });
+
+  /// The server list knows nothing of sales and payments still waiting in the queue, so they are
+  /// applied on top of it again; otherwise a refresh would undo them until the next sync.
+  Future<void> _replayQueued() async {
+    final queued = await (_db.select(_db.sales)
+          ..where((s) => s.status.equals(SaleStatus.pending.index) & s.customerId.isNotNull())
+          ..orderBy([(s) => OrderingTerm.asc(s.createdAt)]))
+        .get();
+    for (final s in queued) {
+      if (s.kind == SaleKind.debtPayment.index) {
+        if (s.debtId != null) await reduceDebt(s.debtId!, s.total);
+      } else if (s.method == PaymentMethod.debt.index) {
+        await addDebt(customerId: s.customerId!, customerName: s.customerName ?? '', amount: s.total);
+      }
+    }
+  }
+
+  @override
+  Future<void> addDebt({
+    required String customerId,
+    required String customerName,
+    required int amount,
+    String? debtId,
+    int? remaining,
+  }) => _db.transaction(() async {
+        final open = await (_db.select(_db.cachedDebts)..where((d) => d.customerId.equals(customerId))).getSingleOrNull();
+        if (open == null) {
+          await _db.into(_db.cachedDebts).insert(CachedDebtsCompanion.insert(
+                id: debtId ?? '$localDebtPrefix$customerId',
+                customerId: customerId,
+                customerName: Value(customerName),
+                total: amount,
+                remaining: remaining ?? amount,
+              ));
+          return;
+        }
+        await (_db.update(_db.cachedDebts)..where((d) => d.id.equals(open.id))).write(CachedDebtsCompanion(
+          // The server has now named the debt this local entry stood for.
+          id: debtId != null && open.id.startsWith(localDebtPrefix) ? Value(debtId) : const Value.absent(),
+          total: Value(open.total + amount),
+          remaining: Value(remaining ?? open.remaining + amount),
+        ));
       });
 
   @override

@@ -33,6 +33,7 @@ String? _keyText(AppLocalizations l10n, String key) => switch (key) {
       'reason_length' => l10n.cancelReasonShort,
       'exceeds_remaining' => l10n.exceedsRemaining,
       'no_debt' => l10n.debtNoDebt,
+      'debt_not_synced' => l10n.debtNotSynced,
       'customer_required' => l10n.debtTabPickCustomer,
       'positive_number' => l10n.vPositive,
       'barcode_format' => l10n.vBarcode,

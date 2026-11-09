@@ -25,6 +25,9 @@ class ReceiptView extends StatelessWidget {
   /// The store address is small print under the name.
   static const _addressSize = 8.0;
 
+  /// Logo above the store name.
+  static const _logoHeight = 48.0;
+
   /// Opacity of the logo behind the text.
   static const _watermark = 0.07;
 
@@ -86,12 +89,23 @@ class ReceiptView extends StatelessWidget {
       ),
     );
 
-    final children = <Widget>[];
+    final children = <Widget>[
+      // Screen only: the thermal slip gets the same mark as a raster (see esc_pos.dart).
+      const Padding(
+        padding: EdgeInsets.only(bottom: Space.sm),
+        child: Center(child: BrandLogo.mark(height: _logoHeight)),
+      ),
+    ];
     for (var i = 0; i < document.lines.length;) {
       final line = document.lines[i];
       if (line.role == ReceiptRole.body || line.role == ReceiptRole.info) {
         if (_isRule(line.text)) {
-          children.add(const CustomPaint(painter: _DashPainter(_ink), size: Size.fromHeight(_bodySize * 1.4)));
+          children.add(
+            CustomPaint(
+              painter: _DashPainter(_ink, twin: line.text.startsWith('=')),
+              size: const Size.fromHeight(_bodySize * 1.4),
+            ),
+          );
           i++;
           continue;
         }
@@ -173,8 +187,8 @@ class ReceiptView extends StatelessWidget {
     );
   }
 
-  /// A row made only of hyphens is a separator; the printer keeps it as text.
-  static bool _isRule(String text) => text.length > 2 && text.codeUnits.every((c) => c == 0x2D);
+  /// A row made only of hyphens (single) or equals signs (double) is a separator; the printer keeps it as text.
+  static bool _isRule(String text) => RegExp(r'^(-{3,}|={3,})$').hasMatch(text);
 
   static TextStyle _lineStyle(ReceiptLine line) {
     // Same family and left edge as the grid, so only the size changes; the rows are left-aligned text.
@@ -196,12 +210,16 @@ class ReceiptView extends StatelessWidget {
 /// gaps stretch to fit, so the line lines up with the left-aligned text and the right-aligned prices
 /// whatever monospace font the platform picked.
 class _DashPainter extends CustomPainter {
-  const _DashPainter(this.color);
+  const _DashPainter(this.color, {this.twin = false});
   final Color color;
+
+  /// Two parallel dashed lines, for the rules under the store block and above the footer.
+  final bool twin;
 
   static const _dash = 5.0;
   static const _minGap = 3.0;
   static const _stroke = 1.2;
+  static const _pairGap = 3.0;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -212,12 +230,15 @@ class _DashPainter extends CustomPainter {
     final paint = Paint()
       ..color = color
       ..strokeWidth = _stroke;
+    final offsets = twin ? const [-_pairGap / 2, _pairGap / 2] : const [0.0];
     for (var i = 0; i < count; i++) {
       final x = i * (_dash + gap);
-      canvas.drawLine(Offset(x, y), Offset(x + _dash, y), paint);
+      for (final dy in offsets) {
+        canvas.drawLine(Offset(x, y + dy), Offset(x + _dash, y + dy), paint);
+      }
     }
   }
 
   @override
-  bool shouldRepaint(_DashPainter old) => old.color != color;
+  bool shouldRepaint(_DashPainter old) => old.color != color || old.twin != twin;
 }

@@ -1478,11 +1478,17 @@ abstract class AppLocalizations {
   /// **'Dibayar sekarang'**
   String get receiptDebtPaidNow;
 
-  /// No description provided for @receiptDebtPaidTotal.
+  /// No description provided for @receiptDebtPrevious.
   ///
   /// In id, this message translates to:
-  /// **'Saldo terbayar'**
-  String get receiptDebtPaidTotal;
+  /// **'Saldo sebelumnya'**
+  String get receiptDebtPrevious;
+
+  /// No description provided for @receiptDebtEstimate.
+  ///
+  /// In id, this message translates to:
+  /// **'(saldo perkiraan)'**
+  String get receiptDebtEstimate;
 
   /// No description provided for @receiptDebtOwed.
   ///
@@ -1549,6 +1555,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Pelanggan ini tidak punya hutang.'**
   String get debtNoDebt;
+
+  /// No description provided for @debtNotSynced.
+  ///
+  /// In id, this message translates to:
+  /// **'Hutang ini baru dicatat di perangkat ini. Sinkronkan dulu sebelum menerima pembayaran.'**
+  String get debtNotSynced;
 
   /// No description provided for @historySalesTab.
   ///

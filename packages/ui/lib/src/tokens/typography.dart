@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
-const fontFamily = 'Inter';
-const fontPackage = 'ui';
+import '../../gen/assets.gen.dart';
+import '../../gen/fonts.gen.dart';
+
+const fontFamily = FontFamily.inter;
+const fontPackage = Assets.package;
 
 /// [compact] is the pointer-driven CMS scale (14px body, as shadcn on the web);
 /// the touch scale keeps a 16px body for the kasir at arm's length.

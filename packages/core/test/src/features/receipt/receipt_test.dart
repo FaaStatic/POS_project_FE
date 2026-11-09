@@ -18,8 +18,9 @@ const labels = ReceiptLabels(
   markUnpaid: 'BELUM LUNAS',
   debtPayment: 'PEMBAYARAN HUTANG',
   debtPaidNow: 'Dibayar sekarang',
-  debtPaidTotal: 'Saldo terbayar',
+  debtPrevious: 'Saldo sebelumnya',
   debtOwed: 'Saldo terhutang',
+  debtEstimate: '(saldo perkiraan)',
 );
 
 void main() {
@@ -125,7 +126,6 @@ void main() {
       total: 3000,
       lines: const [],
       kind: SaleKind.debtPayment,
-      debtTotal: 9000,
       debtBefore: 5000,
       debtAfter: 2000,
     );
@@ -137,7 +137,7 @@ void main() {
     expect(partly, contains('PEMBAYARAN HUTANG'));
     expect(partly, contains('Dibayar sekarang'));
     expect(partly, contains('Rp 3.000'));
-    expect(partly, matches(RegExp(r'Saldo terbayar\s+Rp 7\.000')));
+    expect(partly, matches(RegExp(r'Saldo sebelumnya\s+Rp 5\.000')));
     expect(partly, matches(RegExp(r'Saldo terhutang\s+Rp 2\.000')));
     expect(partly, contains('*** BELUM LUNAS ***'));
     expect(partly, isNot(contains('TOTAL')));
@@ -145,9 +145,58 @@ void main() {
       expect(line.length, lessThanOrEqualTo(32), reason: line);
     }
 
-    final settled = text(payment.copyWith(debtBefore: 3000, debtAfter: 0, debtTotal: 9000));
+    final settled = text(payment.copyWith(debtBefore: 3000, debtAfter: 0));
     expect(settled, contains('*** LUNAS ***'));
     expect(settled, matches(RegExp(r'Saldo terhutang\s+Rp 0')));
+  });
+
+  group('credit sale', () {
+    final credit = sale.copyWith(
+      receiptNumber: 'INV-9',
+      method: PaymentMethod.debt,
+      total: 50000,
+      debtBefore: 120000,
+      debtAfter: 170000,
+    );
+    String text(Sale s) => ReceiptDocument.fromSale(s, const ReceiptSettings(), methodLabel: (_) => 'Hutang', labels: labels)
+        .lines
+        .map((l) => l.text)
+        .join('\n');
+
+    test('lists the customer balance before and after, between the total and the status mark', () {
+      final out = text(credit);
+      expect(out, matches(RegExp(r'Saldo sebelumnya\s+Rp 120\.000')));
+      expect(out, matches(RegExp(r'Saldo terhutang\s+Rp 170\.000')));
+      expect(out.indexOf('TOTAL'), lessThan(out.indexOf('Saldo sebelumnya')));
+      expect(out.indexOf('Saldo terhutang'), lessThan(out.indexOf('*** HUTANG ***')));
+      expect(out, isNot(contains('perkiraan')));
+      for (final line in out.split('\n')) {
+        expect(line.length, lessThanOrEqualTo(32), reason: line);
+      }
+    });
+
+    test('an offline slip marks the balance as an estimate', () {
+      expect(text(credit.copyWith(receiptNumber: 'OFF-ABCD-1')), contains('(saldo perkiraan)'));
+    });
+
+    test('no balance rows when the balance is unknown, or for a cash sale', () {
+      expect(text(credit.copyWith(debtBefore: null, debtAfter: null)), isNot(contains('Saldo')));
+      expect(text(sale.copyWith(debtBefore: 1, debtAfter: 2)), isNot(contains('Saldo')));
+    });
+  });
+
+  test('the rules under the store block and above the footer are double; the others stay single', () {
+    final lines = ReceiptDocument.fromSale(
+      sale,
+      const ReceiptSettings(storeName: 'Toko Maju', footer: 'Terima kasih'),
+      methodLabel: (_) => 'Tunai',
+      labels: labels,
+    ).lines.map((l) => l.text).toList();
+    final rules = lines.where((l) => RegExp(r'^[-=]+$').hasMatch(l)).toList();
+    expect(rules.first, '=' * 32);
+    expect(rules.last, '=' * 32);
+    expect(rules.sublist(1, rules.length - 1), everyElement('-' * 32));
+    expect(lines[lines.length - 2], '=' * 32);
   });
 
   test('number, date, cashier and customer rows carry the info role; items and totals do not', () {

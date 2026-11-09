@@ -35,12 +35,13 @@ class ReceiptDocument {
   }) {
     final width = settings.paper.chars;
     final rule = '-' * width;
+    final doubleRule = '=' * width;
     final lines = <ReceiptLine>[
       ReceiptLine(settings.storeName.isEmpty ? labels.storeNameMissing : settings.storeName,
           align: ReceiptAlign.center, bold: true, role: ReceiptRole.store),
       if (settings.storeAddress.isNotEmpty)
         for (final part in _wrap(settings.storeAddress, width)) ReceiptLine(part, align: ReceiptAlign.center, role: ReceiptRole.address),
-      ReceiptLine(rule),
+      ReceiptLine(doubleRule),
       ..._fields([
         (labels.number, sale.receiptNumber),
         (labels.date, formatDateTime(sale.createdAt, locale: locale)),
@@ -52,8 +53,8 @@ class ReceiptDocument {
         ReceiptLine(labels.debtPayment, align: ReceiptAlign.center, bold: true),
         ReceiptLine(rule),
         for (final row in _pair(labels.debtPaidNow, formatRupiah(sale.total, locale: locale), width)) ReceiptLine(row, bold: true),
-        for (final row in _pair(labels.debtPaidTotal, formatRupiah(sale.debtPaidSoFar, locale: locale), width)) ReceiptLine(row),
-        for (final row in _pair(labels.debtOwed, formatRupiah(sale.debtAfter ?? 0, locale: locale), width)) ReceiptLine(row),
+        for (final row in _pair(labels.debtPrevious, formatRupiah(sale.debtBefore ?? 0, locale: locale), width)) ReceiptLine(row),
+        for (final row in _pair(labels.debtOwed, formatRupiah(sale.debtAfter ?? 0, locale: locale), width)) ReceiptLine(row, bold: true),
       ] else ...[
         for (final item in sale.lines) ...[
           for (final part in _wrap(item.name, width)) ReceiptLine(part),
@@ -67,6 +68,11 @@ class ReceiptDocument {
         ],
         ReceiptLine(rule),
         for (final row in _pair(labels.total, formatRupiah(sale.total, locale: locale), width)) ReceiptLine(row, bold: true),
+        if (sale.method == PaymentMethod.debt && sale.debtBefore != null && sale.debtAfter != null) ...[
+          for (final row in _pair(labels.debtPrevious, formatRupiah(sale.debtBefore!, locale: locale), width)) ReceiptLine(row),
+          for (final row in _pair(labels.debtOwed, formatRupiah(sale.debtAfter!, locale: locale), width)) ReceiptLine(row, bold: true),
+          if (sale.isOffline) ReceiptLine(labels.debtEstimate, align: ReceiptAlign.center),
+        ],
       ],
       for (final row in _pair(labels.method, methodLabel(sale.method), width)) ReceiptLine(row),
       ReceiptLine(
@@ -82,7 +88,7 @@ class ReceiptDocument {
       ),
       if (sale.isOffline) ReceiptLine(labels.offlineNote, align: ReceiptAlign.center),
       if (settings.footer.isNotEmpty) ...[
-        ReceiptLine(rule),
+        ReceiptLine(doubleRule),
         for (final part in _wrap(settings.footer, width)) ReceiptLine(part, align: ReceiptAlign.center, role: ReceiptRole.footer),
       ],
     ];
@@ -163,8 +169,9 @@ class ReceiptLabels {
     required this.markUnpaid,
     required this.debtPayment,
     required this.debtPaidNow,
-    required this.debtPaidTotal,
+    required this.debtPrevious,
     required this.debtOwed,
+    required this.debtEstimate,
   });
 
   /// Centered status mark under the total, printed as "*** LUNAS ***".
@@ -173,11 +180,14 @@ class ReceiptLabels {
   final String markCancelled;
   final String markUnpaid;
 
-  /// Debt payment slip: title and the three amounts (this payment, paid so far, still owed).
+  /// Debt payment slip: title and this payment. [debtPrevious] and [debtOwed] are the customer's
+  /// total balance before and after, also printed on a credit sale; [debtEstimate] flags a balance
+  /// computed offline.
   final String debtPayment;
   final String debtPaidNow;
-  final String debtPaidTotal;
+  final String debtPrevious;
   final String debtOwed;
+  final String debtEstimate;
 
   final String number;
   final String date;

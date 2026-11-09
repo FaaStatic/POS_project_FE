@@ -1181,7 +1181,7 @@ as List<ChangeLine>,
 /// @nodoc
 mixin _$CheckoutResult {
 
- String get transactionId; String get invoice; int get total; PaymentMethod get method; bool get stockConflict; int? get debtRemaining;
+ String get transactionId; String get invoice; int get total; PaymentMethod get method; bool get stockConflict; String? get debtId; int? get debtRemaining;
 /// Create a copy of CheckoutResult
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1193,20 +1193,20 @@ $CheckoutResultCopyWith<CheckoutResult> get copyWith => _$CheckoutResultCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as CheckoutResult;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckoutResult&&(identical(other.transactionId, _this.transactionId) || other.transactionId == _this.transactionId)&&(identical(other.invoice, _this.invoice) || other.invoice == _this.invoice)&&(identical(other.total, _this.total) || other.total == _this.total)&&(identical(other.method, _this.method) || other.method == _this.method)&&(identical(other.stockConflict, _this.stockConflict) || other.stockConflict == _this.stockConflict)&&(identical(other.debtRemaining, _this.debtRemaining) || other.debtRemaining == _this.debtRemaining));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckoutResult&&(identical(other.transactionId, _this.transactionId) || other.transactionId == _this.transactionId)&&(identical(other.invoice, _this.invoice) || other.invoice == _this.invoice)&&(identical(other.total, _this.total) || other.total == _this.total)&&(identical(other.method, _this.method) || other.method == _this.method)&&(identical(other.stockConflict, _this.stockConflict) || other.stockConflict == _this.stockConflict)&&(identical(other.debtId, _this.debtId) || other.debtId == _this.debtId)&&(identical(other.debtRemaining, _this.debtRemaining) || other.debtRemaining == _this.debtRemaining));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CheckoutResult;
-  return Object.hash(runtimeType,_this.transactionId,_this.invoice,_this.total,_this.method,_this.stockConflict,_this.debtRemaining);
+  return Object.hash(runtimeType,_this.transactionId,_this.invoice,_this.total,_this.method,_this.stockConflict,_this.debtId,_this.debtRemaining);
 }
 
 @override
 String toString() {
   final _this = this as CheckoutResult;
-  return 'CheckoutResult(transactionId: ${_this.transactionId}, invoice: ${_this.invoice}, total: ${_this.total}, method: ${_this.method}, stockConflict: ${_this.stockConflict}, debtRemaining: ${_this.debtRemaining})';
+  return 'CheckoutResult(transactionId: ${_this.transactionId}, invoice: ${_this.invoice}, total: ${_this.total}, method: ${_this.method}, stockConflict: ${_this.stockConflict}, debtId: ${_this.debtId}, debtRemaining: ${_this.debtRemaining})';
 }
 
 
@@ -1217,7 +1217,7 @@ abstract mixin class $CheckoutResultCopyWith<$Res>  {
   factory $CheckoutResultCopyWith(CheckoutResult value, $Res Function(CheckoutResult) _then) = _$CheckoutResultCopyWithImpl;
 @useResult
 $Res call({
- String transactionId, String invoice, int total, PaymentMethod method, bool stockConflict, int? debtRemaining
+ String transactionId, String invoice, int total, PaymentMethod method, bool stockConflict, String? debtId, int? debtRemaining
 });
 
 
@@ -1234,14 +1234,15 @@ class _$CheckoutResultCopyWithImpl<$Res>
 
 /// Create a copy of CheckoutResult
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? transactionId = null,Object? invoice = null,Object? total = null,Object? method = null,Object? stockConflict = null,Object? debtRemaining = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? transactionId = null,Object? invoice = null,Object? total = null,Object? method = null,Object? stockConflict = null,Object? debtId = freezed,Object? debtRemaining = freezed,}) {
   return _then(CheckoutResult(
 transactionId: null == transactionId ? _self.transactionId : transactionId // ignore: cast_nullable_to_non_nullable
 as String,invoice: null == invoice ? _self.invoice : invoice // ignore: cast_nullable_to_non_nullable
 as String,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
 as int,method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
 as PaymentMethod,stockConflict: null == stockConflict ? _self.stockConflict : stockConflict // ignore: cast_nullable_to_non_nullable
-as bool,debtRemaining: freezed == debtRemaining ? _self.debtRemaining : debtRemaining // ignore: cast_nullable_to_non_nullable
+as bool,debtId: freezed == debtId ? _self.debtId : debtId // ignore: cast_nullable_to_non_nullable
+as String?,debtRemaining: freezed == debtRemaining ? _self.debtRemaining : debtRemaining // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }
@@ -1327,10 +1328,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String transactionId,  String invoice,  int total,  PaymentMethod method,  bool stockConflict,  int? debtRemaining)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String transactionId,  String invoice,  int total,  PaymentMethod method,  bool stockConflict,  String? debtId,  int? debtRemaining)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CheckoutResult() when $default != null:
-return $default(_that.transactionId,_that.invoice,_that.total,_that.method,_that.stockConflict,_that.debtRemaining);case _:
+return $default(_that.transactionId,_that.invoice,_that.total,_that.method,_that.stockConflict,_that.debtId,_that.debtRemaining);case _:
   return orElse();
 
 }
@@ -1348,10 +1349,10 @@ return $default(_that.transactionId,_that.invoice,_that.total,_that.method,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String transactionId,  String invoice,  int total,  PaymentMethod method,  bool stockConflict,  int? debtRemaining)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String transactionId,  String invoice,  int total,  PaymentMethod method,  bool stockConflict,  String? debtId,  int? debtRemaining)  $default,) {final _that = this;
 switch (_that) {
 case _CheckoutResult():
-return $default(_that.transactionId,_that.invoice,_that.total,_that.method,_that.stockConflict,_that.debtRemaining);case _:
+return $default(_that.transactionId,_that.invoice,_that.total,_that.method,_that.stockConflict,_that.debtId,_that.debtRemaining);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1368,10 +1369,10 @@ return $default(_that.transactionId,_that.invoice,_that.total,_that.method,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String transactionId,  String invoice,  int total,  PaymentMethod method,  bool stockConflict,  int? debtRemaining)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String transactionId,  String invoice,  int total,  PaymentMethod method,  bool stockConflict,  String? debtId,  int? debtRemaining)?  $default,) {final _that = this;
 switch (_that) {
 case _CheckoutResult() when $default != null:
-return $default(_that.transactionId,_that.invoice,_that.total,_that.method,_that.stockConflict,_that.debtRemaining);case _:
+return $default(_that.transactionId,_that.invoice,_that.total,_that.method,_that.stockConflict,_that.debtId,_that.debtRemaining);case _:
   return null;
 
 }
@@ -1383,7 +1384,7 @@ return $default(_that.transactionId,_that.invoice,_that.total,_that.method,_that
 
 
 class _CheckoutResult implements CheckoutResult {
-  const _CheckoutResult({required this.transactionId, required this.invoice, required this.total, required this.method, this.stockConflict = false, this.debtRemaining});
+  const _CheckoutResult({required this.transactionId, required this.invoice, required this.total, required this.method, this.stockConflict = false, this.debtId, this.debtRemaining});
   
 
 @override final  String transactionId;
@@ -1391,6 +1392,7 @@ class _CheckoutResult implements CheckoutResult {
 @override final  int total;
 @override final  PaymentMethod method;
 @override@JsonKey() final  bool stockConflict;
+@override final  String? debtId;
 @override final  int? debtRemaining;
 
 /// Create a copy of CheckoutResult
@@ -1403,18 +1405,18 @@ _$CheckoutResultCopyWith<_CheckoutResult> get copyWith => __$CheckoutResultCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckoutResult&&(identical(other.transactionId, transactionId) || other.transactionId == transactionId)&&(identical(other.invoice, invoice) || other.invoice == invoice)&&(identical(other.total, total) || other.total == total)&&(identical(other.method, method) || other.method == method)&&(identical(other.stockConflict, stockConflict) || other.stockConflict == stockConflict)&&(identical(other.debtRemaining, debtRemaining) || other.debtRemaining == debtRemaining));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckoutResult&&(identical(other.transactionId, transactionId) || other.transactionId == transactionId)&&(identical(other.invoice, invoice) || other.invoice == invoice)&&(identical(other.total, total) || other.total == total)&&(identical(other.method, method) || other.method == method)&&(identical(other.stockConflict, stockConflict) || other.stockConflict == stockConflict)&&(identical(other.debtId, debtId) || other.debtId == debtId)&&(identical(other.debtRemaining, debtRemaining) || other.debtRemaining == debtRemaining));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,transactionId,invoice,total,method,stockConflict,debtRemaining);
+    return Object.hash(runtimeType,transactionId,invoice,total,method,stockConflict,debtId,debtRemaining);
 }
 
 @override
 String toString() {
-    return 'CheckoutResult(transactionId: $transactionId, invoice: $invoice, total: $total, method: $method, stockConflict: $stockConflict, debtRemaining: $debtRemaining)';
+    return 'CheckoutResult(transactionId: $transactionId, invoice: $invoice, total: $total, method: $method, stockConflict: $stockConflict, debtId: $debtId, debtRemaining: $debtRemaining)';
 }
 
 
@@ -1425,7 +1427,7 @@ abstract mixin class _$CheckoutResultCopyWith<$Res> implements $CheckoutResultCo
   factory _$CheckoutResultCopyWith(_CheckoutResult value, $Res Function(_CheckoutResult) _then) = __$CheckoutResultCopyWithImpl;
 @override @useResult
 $Res call({
- String transactionId, String invoice, int total, PaymentMethod method, bool stockConflict, int? debtRemaining
+ String transactionId, String invoice, int total, PaymentMethod method, bool stockConflict, String? debtId, int? debtRemaining
 });
 
 
@@ -1442,14 +1444,15 @@ class __$CheckoutResultCopyWithImpl<$Res>
 
 /// Create a copy of CheckoutResult
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? transactionId = null,Object? invoice = null,Object? total = null,Object? method = null,Object? stockConflict = null,Object? debtRemaining = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? transactionId = null,Object? invoice = null,Object? total = null,Object? method = null,Object? stockConflict = null,Object? debtId = freezed,Object? debtRemaining = freezed,}) {
   return _then(_CheckoutResult(
 transactionId: null == transactionId ? _self.transactionId : transactionId // ignore: cast_nullable_to_non_nullable
 as String,invoice: null == invoice ? _self.invoice : invoice // ignore: cast_nullable_to_non_nullable
 as String,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
 as int,method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
 as PaymentMethod,stockConflict: null == stockConflict ? _self.stockConflict : stockConflict // ignore: cast_nullable_to_non_nullable
-as bool,debtRemaining: freezed == debtRemaining ? _self.debtRemaining : debtRemaining // ignore: cast_nullable_to_non_nullable
+as bool,debtId: freezed == debtId ? _self.debtId : debtId // ignore: cast_nullable_to_non_nullable
+as String?,debtRemaining: freezed == debtRemaining ? _self.debtRemaining : debtRemaining // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }
@@ -1754,7 +1757,8 @@ as List<ChangeLine>,
 /// @nodoc
 mixin _$SyncResult {
 
- String get clientRef; SyncStatus get status; String? get transactionId; String? get invoice; bool get stockConflict; bool get retryable; String? get error;
+ String get clientRef; SyncStatus get status; String? get transactionId; String? get invoice; bool get stockConflict; bool get retryable; String? get error;/// The customer's total owed before and after a credit sale, when the server answered with it.
+ int? get debtBefore; int? get debtAfter;
 /// Create a copy of SyncResult
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1766,20 +1770,20 @@ $SyncResultCopyWith<SyncResult> get copyWith => _$SyncResultCopyWithImpl<SyncRes
 @override
 bool operator ==(Object other) {
   final _this = this as SyncResult;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SyncResult&&(identical(other.clientRef, _this.clientRef) || other.clientRef == _this.clientRef)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.transactionId, _this.transactionId) || other.transactionId == _this.transactionId)&&(identical(other.invoice, _this.invoice) || other.invoice == _this.invoice)&&(identical(other.stockConflict, _this.stockConflict) || other.stockConflict == _this.stockConflict)&&(identical(other.retryable, _this.retryable) || other.retryable == _this.retryable)&&(identical(other.error, _this.error) || other.error == _this.error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SyncResult&&(identical(other.clientRef, _this.clientRef) || other.clientRef == _this.clientRef)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.transactionId, _this.transactionId) || other.transactionId == _this.transactionId)&&(identical(other.invoice, _this.invoice) || other.invoice == _this.invoice)&&(identical(other.stockConflict, _this.stockConflict) || other.stockConflict == _this.stockConflict)&&(identical(other.retryable, _this.retryable) || other.retryable == _this.retryable)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.debtBefore, _this.debtBefore) || other.debtBefore == _this.debtBefore)&&(identical(other.debtAfter, _this.debtAfter) || other.debtAfter == _this.debtAfter));
 }
 
 
 @override
 int get hashCode {
   final _this = this as SyncResult;
-  return Object.hash(runtimeType,_this.clientRef,_this.status,_this.transactionId,_this.invoice,_this.stockConflict,_this.retryable,_this.error);
+  return Object.hash(runtimeType,_this.clientRef,_this.status,_this.transactionId,_this.invoice,_this.stockConflict,_this.retryable,_this.error,_this.debtBefore,_this.debtAfter);
 }
 
 @override
 String toString() {
   final _this = this as SyncResult;
-  return 'SyncResult(clientRef: ${_this.clientRef}, status: ${_this.status}, transactionId: ${_this.transactionId}, invoice: ${_this.invoice}, stockConflict: ${_this.stockConflict}, retryable: ${_this.retryable}, error: ${_this.error})';
+  return 'SyncResult(clientRef: ${_this.clientRef}, status: ${_this.status}, transactionId: ${_this.transactionId}, invoice: ${_this.invoice}, stockConflict: ${_this.stockConflict}, retryable: ${_this.retryable}, error: ${_this.error}, debtBefore: ${_this.debtBefore}, debtAfter: ${_this.debtAfter})';
 }
 
 
@@ -1790,7 +1794,7 @@ abstract mixin class $SyncResultCopyWith<$Res>  {
   factory $SyncResultCopyWith(SyncResult value, $Res Function(SyncResult) _then) = _$SyncResultCopyWithImpl;
 @useResult
 $Res call({
- String clientRef, SyncStatus status, String? transactionId, String? invoice, bool stockConflict, bool retryable, String? error
+ String clientRef, SyncStatus status, String? transactionId, String? invoice, bool stockConflict, bool retryable, String? error, int? debtBefore, int? debtAfter
 });
 
 
@@ -1807,7 +1811,7 @@ class _$SyncResultCopyWithImpl<$Res>
 
 /// Create a copy of SyncResult
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? clientRef = null,Object? status = null,Object? transactionId = freezed,Object? invoice = freezed,Object? stockConflict = null,Object? retryable = null,Object? error = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? clientRef = null,Object? status = null,Object? transactionId = freezed,Object? invoice = freezed,Object? stockConflict = null,Object? retryable = null,Object? error = freezed,Object? debtBefore = freezed,Object? debtAfter = freezed,}) {
   return _then(SyncResult(
 clientRef: null == clientRef ? _self.clientRef : clientRef // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -1816,7 +1820,9 @@ as String?,invoice: freezed == invoice ? _self.invoice : invoice // ignore: cast
 as String?,stockConflict: null == stockConflict ? _self.stockConflict : stockConflict // ignore: cast_nullable_to_non_nullable
 as bool,retryable: null == retryable ? _self.retryable : retryable // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,debtBefore: freezed == debtBefore ? _self.debtBefore : debtBefore // ignore: cast_nullable_to_non_nullable
+as int?,debtAfter: freezed == debtAfter ? _self.debtAfter : debtAfter // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -1901,10 +1907,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String clientRef,  SyncStatus status,  String? transactionId,  String? invoice,  bool stockConflict,  bool retryable,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String clientRef,  SyncStatus status,  String? transactionId,  String? invoice,  bool stockConflict,  bool retryable,  String? error,  int? debtBefore,  int? debtAfter)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SyncResult() when $default != null:
-return $default(_that.clientRef,_that.status,_that.transactionId,_that.invoice,_that.stockConflict,_that.retryable,_that.error);case _:
+return $default(_that.clientRef,_that.status,_that.transactionId,_that.invoice,_that.stockConflict,_that.retryable,_that.error,_that.debtBefore,_that.debtAfter);case _:
   return orElse();
 
 }
@@ -1922,10 +1928,10 @@ return $default(_that.clientRef,_that.status,_that.transactionId,_that.invoice,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String clientRef,  SyncStatus status,  String? transactionId,  String? invoice,  bool stockConflict,  bool retryable,  String? error)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String clientRef,  SyncStatus status,  String? transactionId,  String? invoice,  bool stockConflict,  bool retryable,  String? error,  int? debtBefore,  int? debtAfter)  $default,) {final _that = this;
 switch (_that) {
 case _SyncResult():
-return $default(_that.clientRef,_that.status,_that.transactionId,_that.invoice,_that.stockConflict,_that.retryable,_that.error);case _:
+return $default(_that.clientRef,_that.status,_that.transactionId,_that.invoice,_that.stockConflict,_that.retryable,_that.error,_that.debtBefore,_that.debtAfter);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1942,10 +1948,10 @@ return $default(_that.clientRef,_that.status,_that.transactionId,_that.invoice,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String clientRef,  SyncStatus status,  String? transactionId,  String? invoice,  bool stockConflict,  bool retryable,  String? error)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String clientRef,  SyncStatus status,  String? transactionId,  String? invoice,  bool stockConflict,  bool retryable,  String? error,  int? debtBefore,  int? debtAfter)?  $default,) {final _that = this;
 switch (_that) {
 case _SyncResult() when $default != null:
-return $default(_that.clientRef,_that.status,_that.transactionId,_that.invoice,_that.stockConflict,_that.retryable,_that.error);case _:
+return $default(_that.clientRef,_that.status,_that.transactionId,_that.invoice,_that.stockConflict,_that.retryable,_that.error,_that.debtBefore,_that.debtAfter);case _:
   return null;
 
 }
@@ -1957,7 +1963,7 @@ return $default(_that.clientRef,_that.status,_that.transactionId,_that.invoice,_
 
 
 class _SyncResult extends SyncResult {
-  const _SyncResult({required this.clientRef, required this.status, this.transactionId, this.invoice, this.stockConflict = false, this.retryable = false, this.error}): super._();
+  const _SyncResult({required this.clientRef, required this.status, this.transactionId, this.invoice, this.stockConflict = false, this.retryable = false, this.error, this.debtBefore, this.debtAfter}): super._();
   
 
 @override final  String clientRef;
@@ -1967,6 +1973,9 @@ class _SyncResult extends SyncResult {
 @override@JsonKey() final  bool stockConflict;
 @override@JsonKey() final  bool retryable;
 @override final  String? error;
+/// The customer's total owed before and after a credit sale, when the server answered with it.
+@override final  int? debtBefore;
+@override final  int? debtAfter;
 
 /// Create a copy of SyncResult
 /// with the given fields replaced by the non-null parameter values.
@@ -1978,18 +1987,18 @@ _$SyncResultCopyWith<_SyncResult> get copyWith => __$SyncResultCopyWithImpl<_Syn
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SyncResult&&(identical(other.clientRef, clientRef) || other.clientRef == clientRef)&&(identical(other.status, status) || other.status == status)&&(identical(other.transactionId, transactionId) || other.transactionId == transactionId)&&(identical(other.invoice, invoice) || other.invoice == invoice)&&(identical(other.stockConflict, stockConflict) || other.stockConflict == stockConflict)&&(identical(other.retryable, retryable) || other.retryable == retryable)&&(identical(other.error, error) || other.error == error));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SyncResult&&(identical(other.clientRef, clientRef) || other.clientRef == clientRef)&&(identical(other.status, status) || other.status == status)&&(identical(other.transactionId, transactionId) || other.transactionId == transactionId)&&(identical(other.invoice, invoice) || other.invoice == invoice)&&(identical(other.stockConflict, stockConflict) || other.stockConflict == stockConflict)&&(identical(other.retryable, retryable) || other.retryable == retryable)&&(identical(other.error, error) || other.error == error)&&(identical(other.debtBefore, debtBefore) || other.debtBefore == debtBefore)&&(identical(other.debtAfter, debtAfter) || other.debtAfter == debtAfter));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,clientRef,status,transactionId,invoice,stockConflict,retryable,error);
+    return Object.hash(runtimeType,clientRef,status,transactionId,invoice,stockConflict,retryable,error,debtBefore,debtAfter);
 }
 
 @override
 String toString() {
-    return 'SyncResult(clientRef: $clientRef, status: $status, transactionId: $transactionId, invoice: $invoice, stockConflict: $stockConflict, retryable: $retryable, error: $error)';
+    return 'SyncResult(clientRef: $clientRef, status: $status, transactionId: $transactionId, invoice: $invoice, stockConflict: $stockConflict, retryable: $retryable, error: $error, debtBefore: $debtBefore, debtAfter: $debtAfter)';
 }
 
 
@@ -2000,7 +2009,7 @@ abstract mixin class _$SyncResultCopyWith<$Res> implements $SyncResultCopyWith<$
   factory _$SyncResultCopyWith(_SyncResult value, $Res Function(_SyncResult) _then) = __$SyncResultCopyWithImpl;
 @override @useResult
 $Res call({
- String clientRef, SyncStatus status, String? transactionId, String? invoice, bool stockConflict, bool retryable, String? error
+ String clientRef, SyncStatus status, String? transactionId, String? invoice, bool stockConflict, bool retryable, String? error, int? debtBefore, int? debtAfter
 });
 
 
@@ -2017,7 +2026,7 @@ class __$SyncResultCopyWithImpl<$Res>
 
 /// Create a copy of SyncResult
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? clientRef = null,Object? status = null,Object? transactionId = freezed,Object? invoice = freezed,Object? stockConflict = null,Object? retryable = null,Object? error = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? clientRef = null,Object? status = null,Object? transactionId = freezed,Object? invoice = freezed,Object? stockConflict = null,Object? retryable = null,Object? error = freezed,Object? debtBefore = freezed,Object? debtAfter = freezed,}) {
   return _then(_SyncResult(
 clientRef: null == clientRef ? _self.clientRef : clientRef // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -2026,7 +2035,9 @@ as String?,invoice: freezed == invoice ? _self.invoice : invoice // ignore: cast
 as String?,stockConflict: null == stockConflict ? _self.stockConflict : stockConflict // ignore: cast_nullable_to_non_nullable
 as bool,retryable: null == retryable ? _self.retryable : retryable // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,debtBefore: freezed == debtBefore ? _self.debtBefore : debtBefore // ignore: cast_nullable_to_non_nullable
+as int?,debtAfter: freezed == debtAfter ? _self.debtAfter : debtAfter // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

@@ -3,6 +3,9 @@ import '../../../customer/domain/entities/customer.dart';
 import '../../../debt/domain/entities/debt.dart';
 import '../../../product/domain/entities/product.dart';
 
+/// Id of a debt entry made on this device for a customer the server has no open debt for yet.
+const localDebtPrefix = 'pending-';
+
 /// Device-local copy of products, categories, and customers (kasir only).
 abstract interface class CatalogCache {
   /// Most-sold first, then by name.
@@ -31,6 +34,17 @@ abstract interface class CatalogCache {
   Stream<List<Debt>> watchDebts({String? search});
   Future<Debt?> debtOfCustomer(String customerId);
   Future<void> replaceDebts(List<Debt> debts);
+
+  /// Puts a credit sale on the customer's open debt, creating the entry when they had none (a settled
+  /// customer). [remaining] is the server's balance when it answered; offline the cached one grows by
+  /// [amount], and a customer without an entry gets a local one that the next refresh replaces.
+  Future<void> addDebt({
+    required String customerId,
+    required String customerName,
+    required int amount,
+    String? debtId,
+    int? remaining,
+  });
 
   /// Takes [amount] off a debt the moment a payment is recorded here; a cleared debt leaves the cache.
   Future<void> reduceDebt(String debtId, int amount);

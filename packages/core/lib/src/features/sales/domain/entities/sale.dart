@@ -52,9 +52,8 @@ abstract class Sale with _$Sale {
     @Default([]) List<ChangeLine> change,
     @Default(SaleKind.sale) SaleKind kind,
 
-    /// Debt payments only: the debt paid toward, its original total, and what is owed before and after.
+    /// The debt paid toward (debt payments only), and the customer's total owed before and after a debt payment or credit sale.
     String? debtId,
-    int? debtTotal,
     int? debtBefore,
     int? debtAfter,
   }) = _Sale;
@@ -65,6 +64,5 @@ abstract class Sale with _$Sale {
 
   /// A debt payment that cleared the debt.
   /// Everything paid toward the debt so far, this payment included.
-  int get debtPaidSoFar => (debtTotal ?? 0) - (debtAfter ?? 0);
   bool get debtSettled => isDebtPayment && debtAfter == 0;
 }

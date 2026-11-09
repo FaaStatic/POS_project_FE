@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'data_image.dart';
 import '../tokens/colors.dart';
 import '../tokens/spacing.dart';
+import '../tokens/typography.dart';
 
 /// Product or person initials on a soft tile, or the image when [imageUrl] loads.
 /// [colorKey] (a category id) picks a stable pastel so a shelf of products reads
@@ -39,8 +40,8 @@ class InitialAvatar extends StatelessWidget {
       child: Text(
         initials(name),
         style: TextStyle(
-          fontFamily: 'Inter',
-          package: 'ui',
+          fontFamily: fontFamily,
+          package: fontPackage,
           fontWeight: FontWeight.w700,
           fontSize: size * 0.36,
           color: fg,

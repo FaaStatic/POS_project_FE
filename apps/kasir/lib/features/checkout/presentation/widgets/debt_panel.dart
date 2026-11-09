@@ -32,6 +32,8 @@ class _DebtPanelState extends State<DebtPanel> {
   @override
   void initState() {
     super.initState();
+    // The cash is locked to the amount: a debt payment takes exactly what is typed, so there is no change.
+    _amount.addListener(() => _cash.text = _amount.text);
     _load();
   }
 
@@ -44,7 +46,6 @@ class _DebtPanelState extends State<DebtPanel> {
   void _load() {
     final id = widget.draft.customerId;
     _loadedFor = id;
-    _cash.clear();
     _amount.clear();
     _debt = id == null ? null : getIt<CatalogCache>().debtOfCustomer(id).then((d) {
       // The full debt is the starting amount; a part payment is typed over it.
@@ -61,9 +62,6 @@ class _DebtPanelState extends State<DebtPanel> {
   }
 
   int get _amountValue => int.tryParse(_amount.text) ?? 0;
-
-  /// Left empty, the cash is taken as exactly the amount.
-  int get _cashValue => _cash.text.isEmpty ? _amountValue : int.tryParse(_cash.text) ?? 0;
 
   Future<void> _close() async => context.read<CheckoutBloc>().add(TabClosed(widget.draft.id));
 
@@ -125,8 +123,7 @@ class _DebtPanelState extends State<DebtPanel> {
     return StatefulBuilder(
       builder: (context, setLocal) {
         final amount = _amountValue;
-        final cash = _cashValue;
-        final valid = amount > 0 && amount <= debt.remaining && cash >= amount;
+        final valid = amount > 0 && amount <= debt.remaining;
         final left = debt.remaining - amount;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -167,10 +164,7 @@ class _DebtPanelState extends State<DebtPanel> {
                   AppTextField(
                     label: l10n.cashReceived,
                     controller: _cash,
-                    hint: amount > 0 ? rupiah(context, amount) : null,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    onChanged: (_) => setLocal(() {}),
+                    enabled: false,
                   ),
                   const SizedBox(height: Space.lg),
                   _Row(label: l10n.debtLeft, value: rupiah(context, left < 0 ? 0 : left), emphasis: left == 0 && amount > 0),
@@ -179,10 +173,6 @@ class _DebtPanelState extends State<DebtPanel> {
                       padding: const EdgeInsets.only(top: Space.xs),
                       child: Text(l10n.debtSettledLabel, style: theme.textTheme.labelLarge?.copyWith(color: StatusColors.of(context).success)),
                     ),
-                  if (cash > amount && amount > 0) ...[
-                    const SizedBox(height: Space.sm),
-                    _Row(label: l10n.change, value: rupiah(context, cash - amount)),
-                  ],
                 ],
               ),
             ),
@@ -196,7 +186,7 @@ class _DebtPanelState extends State<DebtPanel> {
                   expand: true,
                   loading: widget.paying,
                   onPressed: valid
-                      ? () => context.read<CheckoutBloc>().add(PayRequested(debtAmount: amount, amountPaid: cash))
+                      ? () => context.read<CheckoutBloc>().add(PayRequested(debtAmount: amount, amountPaid: amount))
                       : null,
                 ),
               ),

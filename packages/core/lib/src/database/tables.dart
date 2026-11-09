@@ -91,8 +91,7 @@ class Sales extends Table {
   IntColumn get kind => integer().withDefault(const Constant(0))();
   TextColumn get debtId => text().nullable()();
 
-  /// What the customer still owed before and after a debt payment.
-  IntColumn get debtTotal => integer().nullable()();
+  /// What the customer owed in total before and after a debt payment or credit sale.
   IntColumn get debtBefore => integer().nullable()();
   IntColumn get debtAfter => integer().nullable()();
 

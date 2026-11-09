@@ -1974,17 +1974,6 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _debtTotalMeta = const VerificationMeta(
-    'debtTotal',
-  );
-  @override
-  late final GeneratedColumn<int> debtTotal = GeneratedColumn<int>(
-    'debt_total',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _debtBeforeMeta = const VerificationMeta(
     'debtBefore',
   );
@@ -2027,7 +2016,6 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
     changeJson,
     kind,
     debtId,
-    debtTotal,
     debtBefore,
     debtAfter,
   ];
@@ -2183,12 +2171,6 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
         debtId.isAcceptableOrUnknown(data['debt_id']!, _debtIdMeta),
       );
     }
-    if (data.containsKey('debt_total')) {
-      context.handle(
-        _debtTotalMeta,
-        debtTotal.isAcceptableOrUnknown(data['debt_total']!, _debtTotalMeta),
-      );
-    }
     if (data.containsKey('debt_before')) {
       context.handle(
         _debtBeforeMeta,
@@ -2282,10 +2264,6 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, SaleRow> {
         DriftSqlType.string,
         data['${effectivePrefix}debt_id'],
       ),
-      debtTotal: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}debt_total'],
-      ),
       debtBefore: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}debt_before'],
@@ -2335,8 +2313,7 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
   final int kind;
   final String? debtId;
 
-  /// What the customer still owed before and after a debt payment.
-  final int? debtTotal;
+  /// What the customer owed in total before and after a debt payment or credit sale.
   final int? debtBefore;
   final int? debtAfter;
   const SaleRow({
@@ -2358,7 +2335,6 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     this.changeJson,
     required this.kind,
     this.debtId,
-    this.debtTotal,
     this.debtBefore,
     this.debtAfter,
   });
@@ -2398,9 +2374,6 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     map['kind'] = Variable<int>(kind);
     if (!nullToAbsent || debtId != null) {
       map['debt_id'] = Variable<String>(debtId);
-    }
-    if (!nullToAbsent || debtTotal != null) {
-      map['debt_total'] = Variable<int>(debtTotal);
     }
     if (!nullToAbsent || debtBefore != null) {
       map['debt_before'] = Variable<int>(debtBefore);
@@ -2447,9 +2420,6 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
       debtId: debtId == null && nullToAbsent
           ? const Value.absent()
           : Value(debtId),
-      debtTotal: debtTotal == null && nullToAbsent
-          ? const Value.absent()
-          : Value(debtTotal),
       debtBefore: debtBefore == null && nullToAbsent
           ? const Value.absent()
           : Value(debtBefore),
@@ -2483,7 +2453,6 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
       changeJson: serializer.fromJson<String?>(json['changeJson']),
       kind: serializer.fromJson<int>(json['kind']),
       debtId: serializer.fromJson<String?>(json['debtId']),
-      debtTotal: serializer.fromJson<int?>(json['debtTotal']),
       debtBefore: serializer.fromJson<int?>(json['debtBefore']),
       debtAfter: serializer.fromJson<int?>(json['debtAfter']),
     );
@@ -2510,7 +2479,6 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
       'changeJson': serializer.toJson<String?>(changeJson),
       'kind': serializer.toJson<int>(kind),
       'debtId': serializer.toJson<String?>(debtId),
-      'debtTotal': serializer.toJson<int?>(debtTotal),
       'debtBefore': serializer.toJson<int?>(debtBefore),
       'debtAfter': serializer.toJson<int?>(debtAfter),
     };
@@ -2535,7 +2503,6 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     Value<String?> changeJson = const Value.absent(),
     int? kind,
     Value<String?> debtId = const Value.absent(),
-    Value<int?> debtTotal = const Value.absent(),
     Value<int?> debtBefore = const Value.absent(),
     Value<int?> debtAfter = const Value.absent(),
   }) => SaleRow(
@@ -2559,7 +2526,6 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     changeJson: changeJson.present ? changeJson.value : this.changeJson,
     kind: kind ?? this.kind,
     debtId: debtId.present ? debtId.value : this.debtId,
-    debtTotal: debtTotal.present ? debtTotal.value : this.debtTotal,
     debtBefore: debtBefore.present ? debtBefore.value : this.debtBefore,
     debtAfter: debtAfter.present ? debtAfter.value : this.debtAfter,
   );
@@ -2601,7 +2567,6 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
           : this.changeJson,
       kind: data.kind.present ? data.kind.value : this.kind,
       debtId: data.debtId.present ? data.debtId.value : this.debtId,
-      debtTotal: data.debtTotal.present ? data.debtTotal.value : this.debtTotal,
       debtBefore: data.debtBefore.present
           ? data.debtBefore.value
           : this.debtBefore,
@@ -2630,7 +2595,6 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
           ..write('changeJson: $changeJson, ')
           ..write('kind: $kind, ')
           ..write('debtId: $debtId, ')
-          ..write('debtTotal: $debtTotal, ')
           ..write('debtBefore: $debtBefore, ')
           ..write('debtAfter: $debtAfter')
           ..write(')'))
@@ -2638,7 +2602,7 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
   }
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode => Object.hash(
     clientRef,
     receiptNumber,
     createdAt,
@@ -2657,10 +2621,9 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
     changeJson,
     kind,
     debtId,
-    debtTotal,
     debtBefore,
     debtAfter,
-  ]);
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2683,7 +2646,6 @@ class SaleRow extends DataClass implements Insertable<SaleRow> {
           other.changeJson == this.changeJson &&
           other.kind == this.kind &&
           other.debtId == this.debtId &&
-          other.debtTotal == this.debtTotal &&
           other.debtBefore == this.debtBefore &&
           other.debtAfter == this.debtAfter);
 }
@@ -2707,7 +2669,6 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
   final Value<String?> changeJson;
   final Value<int> kind;
   final Value<String?> debtId;
-  final Value<int?> debtTotal;
   final Value<int?> debtBefore;
   final Value<int?> debtAfter;
   final Value<int> rowid;
@@ -2730,7 +2691,6 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     this.changeJson = const Value.absent(),
     this.kind = const Value.absent(),
     this.debtId = const Value.absent(),
-    this.debtTotal = const Value.absent(),
     this.debtBefore = const Value.absent(),
     this.debtAfter = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2754,7 +2714,6 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     this.changeJson = const Value.absent(),
     this.kind = const Value.absent(),
     this.debtId = const Value.absent(),
-    this.debtTotal = const Value.absent(),
     this.debtBefore = const Value.absent(),
     this.debtAfter = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2784,7 +2743,6 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     Expression<String>? changeJson,
     Expression<int>? kind,
     Expression<String>? debtId,
-    Expression<int>? debtTotal,
     Expression<int>? debtBefore,
     Expression<int>? debtAfter,
     Expression<int>? rowid,
@@ -2808,7 +2766,6 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
       if (changeJson != null) 'change_json': changeJson,
       if (kind != null) 'kind': kind,
       if (debtId != null) 'debt_id': debtId,
-      if (debtTotal != null) 'debt_total': debtTotal,
       if (debtBefore != null) 'debt_before': debtBefore,
       if (debtAfter != null) 'debt_after': debtAfter,
       if (rowid != null) 'rowid': rowid,
@@ -2834,7 +2791,6 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     Value<String?>? changeJson,
     Value<int>? kind,
     Value<String?>? debtId,
-    Value<int?>? debtTotal,
     Value<int?>? debtBefore,
     Value<int?>? debtAfter,
     Value<int>? rowid,
@@ -2858,7 +2814,6 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
       changeJson: changeJson ?? this.changeJson,
       kind: kind ?? this.kind,
       debtId: debtId ?? this.debtId,
-      debtTotal: debtTotal ?? this.debtTotal,
       debtBefore: debtBefore ?? this.debtBefore,
       debtAfter: debtAfter ?? this.debtAfter,
       rowid: rowid ?? this.rowid,
@@ -2922,9 +2877,6 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
     if (debtId.present) {
       map['debt_id'] = Variable<String>(debtId.value);
     }
-    if (debtTotal.present) {
-      map['debt_total'] = Variable<int>(debtTotal.value);
-    }
     if (debtBefore.present) {
       map['debt_before'] = Variable<int>(debtBefore.value);
     }
@@ -2958,7 +2910,6 @@ class SalesCompanion extends UpdateCompanion<SaleRow> {
           ..write('changeJson: $changeJson, ')
           ..write('kind: $kind, ')
           ..write('debtId: $debtId, ')
-          ..write('debtTotal: $debtTotal, ')
           ..write('debtBefore: $debtBefore, ')
           ..write('debtAfter: $debtAfter, ')
           ..write('rowid: $rowid')
@@ -5286,7 +5237,6 @@ typedef $$SalesTableCreateCompanionBuilder = SalesCompanion Function({
   Value<String?> changeJson,
   Value<int> kind,
   Value<String?> debtId,
-  Value<int?> debtTotal,
   Value<int?> debtBefore,
   Value<int?> debtAfter,
   Value<int> rowid,
@@ -5310,7 +5260,6 @@ typedef $$SalesTableUpdateCompanionBuilder = SalesCompanion Function({
   Value<String?> changeJson,
   Value<int> kind,
   Value<String?> debtId,
-  Value<int?> debtTotal,
   Value<int?> debtBefore,
   Value<int?> debtAfter,
   Value<int> rowid,
@@ -5411,11 +5360,6 @@ class $$SalesTableFilterComposer extends Composer<_$AppDatabase, $SalesTable> {
 
   ColumnFilters<String> get debtId => $composableBuilder(
     column: $table.debtId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get debtTotal => $composableBuilder(
-    column: $table.debtTotal,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5529,11 +5473,6 @@ class $$SalesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get debtTotal => $composableBuilder(
-    column: $table.debtTotal,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<int> get debtBefore => $composableBuilder(
     column: $table.debtBefore,
     builder: (column) => ColumnOrderings(column),
@@ -5626,9 +5565,6 @@ class $$SalesTableAnnotationComposer
   GeneratedColumn<String> get debtId =>
       $composableBuilder(column: $table.debtId, builder: (column) => column);
 
-  GeneratedColumn<int> get debtTotal =>
-      $composableBuilder(column: $table.debtTotal, builder: (column) => column);
-
   GeneratedColumn<int> get debtBefore => $composableBuilder(
     column: $table.debtBefore,
     builder: (column) => column,
@@ -5684,7 +5620,6 @@ class $$SalesTableTableManager
                 Value<String?> changeJson = const Value.absent(),
                 Value<int> kind = const Value.absent(),
                 Value<String?> debtId = const Value.absent(),
-                Value<int?> debtTotal = const Value.absent(),
                 Value<int?> debtBefore = const Value.absent(),
                 Value<int?> debtAfter = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5707,7 +5642,6 @@ class $$SalesTableTableManager
                 changeJson: changeJson,
                 kind: kind,
                 debtId: debtId,
-                debtTotal: debtTotal,
                 debtBefore: debtBefore,
                 debtAfter: debtAfter,
                 rowid: rowid,
@@ -5732,7 +5666,6 @@ class $$SalesTableTableManager
                 Value<String?> changeJson = const Value.absent(),
                 Value<int> kind = const Value.absent(),
                 Value<String?> debtId = const Value.absent(),
-                Value<int?> debtTotal = const Value.absent(),
                 Value<int?> debtBefore = const Value.absent(),
                 Value<int?> debtAfter = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5755,7 +5688,6 @@ class $$SalesTableTableManager
                 changeJson: changeJson,
                 kind: kind,
                 debtId: debtId,
-                debtTotal: debtTotal,
                 debtBefore: debtBefore,
                 debtAfter: debtAfter,
                 rowid: rowid,

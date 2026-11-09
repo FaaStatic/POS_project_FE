@@ -814,7 +814,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get receiptDebtPaidNow => 'Dibayar sekarang';
 
   @override
-  String get receiptDebtPaidTotal => 'Saldo terbayar';
+  String get receiptDebtPrevious => 'Saldo sebelumnya';
+
+  @override
+  String get receiptDebtEstimate => '(saldo perkiraan)';
 
   @override
   String get receiptDebtOwed => 'Saldo terhutang';
@@ -850,6 +853,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get debtNoDebt => 'Pelanggan ini tidak punya hutang.';
+
+  @override
+  String get debtNotSynced =>
+      'Hutang ini baru dicatat di perangkat ini. Sinkronkan dulu sebelum menerima pembayaran.';
 
   @override
   String get historySalesTab => 'Penjualan';

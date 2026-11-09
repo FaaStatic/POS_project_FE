@@ -12,7 +12,14 @@ abstract interface class SalesLog {
   Future<Sale?> byRef(String clientRef);
   Future<Sale?> byTransactionId(String transactionId);
 
-  Future<void> markSynced(String clientRef, {String? transactionId, String? invoice, bool stockConflict = false});
+  Future<void> markSynced(
+    String clientRef, {
+    String? transactionId,
+    String? invoice,
+    bool stockConflict = false,
+    int? debtBefore,
+    int? debtAfter,
+  });
 
   /// Retryable errors stay in the queue with the reason; others leave the automatic queue.
   Future<void> markFailed(String clientRef, String error, {required bool retryable});

@@ -64,6 +64,22 @@ void main() {
     verify(products.listAll).called(1);
   });
 
+  test('a credit sale takes the server balance in place of the offline estimate', () async {
+    await local.sales.add(queued('a').copyWith(
+          method: PaymentMethod.debt,
+          customerId: 'k1',
+          customerName: 'Bu Sri',
+          debtBefore: 1000,
+          debtAfter: 4500,
+        ));
+    when(() => remote.sync(any())).thenAnswer((_) async => const Ok([
+          SyncResult(clientRef: 'a', status: SyncStatus.created, transactionId: 't1', invoice: 'INV-1', debtBefore: 2000, debtAfter: 5500),
+        ]));
+    await sync()();
+    final s = (await local.sales.byRef('a'))!;
+    expect((s.receiptNumber, s.debtBefore, s.debtAfter), ('INV-1', 2000, 5500));
+  });
+
   test('retryable failures stay queued', () async {
     await local.sales.add(queued('a'));
     when(() => remote.sync(any())).thenAnswer((_) async =>

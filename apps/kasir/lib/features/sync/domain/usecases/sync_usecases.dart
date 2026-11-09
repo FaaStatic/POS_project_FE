@@ -59,6 +59,8 @@ class SyncPendingTransactions {
             transactionId: r.transactionId,
             invoice: r.invoice,
             stockConflict: r.stockConflict,
+            debtBefore: r.debtBefore,
+            debtAfter: r.debtAfter,
           );
           synced++;
           if (r.stockConflict) conflicts++;

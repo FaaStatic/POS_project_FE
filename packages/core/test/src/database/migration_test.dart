@@ -63,7 +63,7 @@ void main() {
     expect(old.total, 7000);
     expect(old.amountPaid, isNull);
     expect(old.changeJson, isNull);
-    expect([old.kind, old.debtId, old.debtTotal], [0, isNull, isNull]);
+    expect([old.kind, old.debtId], [0, isNull]);
     expect((await db.select(db.draftCarts).getSingle()).kind, 0);
     expect(await db.select(db.cachedDebts).get(), isEmpty);
     // The customer cache lost its debt total column but kept the customer.
@@ -77,6 +77,31 @@ void main() {
     expect(sale.amountPaid, 10000);
     expect(sale.change.single.amount, 3000);
     expect(sale.lines.single.name, 'Indomie');
+  });
+
+  test('a v3 database loses the debt_total column and keeps its sales', () async {
+    final db = AppDatabase(NativeDatabase.memory(setup: (raw) {
+      raw.execute('''
+        CREATE TABLE sales (
+          client_ref TEXT NOT NULL PRIMARY KEY, receipt_number TEXT NOT NULL, created_at INTEGER NOT NULL,
+          method INTEGER NOT NULL, customer_id TEXT NULL, customer_name TEXT NULL, cashier_name TEXT NOT NULL,
+          total INTEGER NOT NULL, lines_json TEXT NOT NULL, status INTEGER NOT NULL DEFAULT 0, error TEXT NULL,
+          transaction_id TEXT NULL, stock_conflict INTEGER NOT NULL DEFAULT 0 CHECK (stock_conflict IN (0, 1)),
+          cancel_reason TEXT NULL, amount_paid INTEGER NULL, change_json TEXT NULL,
+          kind INTEGER NOT NULL DEFAULT 0, debt_id TEXT NULL, debt_total INTEGER NULL,
+          debt_before INTEGER NULL, debt_after INTEGER NULL
+        )''');
+      raw.execute(
+        "INSERT INTO sales (client_ref, receipt_number, created_at, method, cashier_name, total, lines_json, kind, debt_total, debt_before, debt_after) "
+        "VALUES ('p', 'HTG-1', 1790000000, 0, 'kasir', 3000, '[]', 1, 9000, 5000, 2000)",
+      );
+      raw.execute('PRAGMA user_version = 3');
+    }));
+    addTearDown(db.close);
+    final sale = (await DriftSalesLog(db, MemoryStore()).byRef('p'))!;
+    expect((sale.total, sale.debtBefore, sale.debtAfter), (3000, 5000, 2000));
+    final columns = await db.customSelect('PRAGMA table_info(sales)').get();
+    expect(columns.map((c) => c.read<String>('name')), isNot(contains('debt_total')));
   });
 
   test('a change line of a kind this build does not know is skipped, not fatal', () async {
