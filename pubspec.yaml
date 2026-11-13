@@ -28,7 +28,11 @@ melos:
       run: cd apps/cms && flutter run -d chrome --web-port 5173 --pid-file "$MELOS_ROOT_PATH/.dart_tool/cms.pid" -t lib/main_dev.dart
       stdio: inherit
     kasir:
-      description: Run the kasir app (dev). Pick a device with "-- -d <device-id>".
+      description: Run the kasir app (prod flavor, prod API). Pick a device with "-- -d <device-id>".
+      run: cd apps/kasir && flutter run --flavor prod --pid-file "$MELOS_ROOT_PATH/.dart_tool/kasir.pid" -t lib/main_prod.dart
+      stdio: inherit
+    kasir-dev:
+      description: Run the kasir app (dev flavor, local API). Pick a device with "-- -d <device-id>".
       run: cd apps/kasir && flutter run --flavor dev --pid-file "$MELOS_ROOT_PATH/.dart_tool/kasir.pid" -t lib/main_dev.dart
       stdio: inherit
     kasir-staging:

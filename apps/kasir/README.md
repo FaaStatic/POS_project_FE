@@ -15,4 +15,4 @@ flutter run --flavor dev -t lib/main_dev.dart
 flutter build apk --flavor staging -t lib/main_staging.dart
 ```
 
-From the repo root: `dart run melos run kasir`, `kasir-staging`, `build-apk`, `build-apk-staging`.
+From the repo root: `dart run melos run kasir-dev`, `kasir-staging`, `kasir` (prod), `build-apk`, `build-apk-staging`.

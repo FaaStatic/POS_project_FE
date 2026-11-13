@@ -14,7 +14,9 @@ dart run melos run test
 dart run melos run coverage           # gagal kalau domain/data/presentation/bloc < 80%
 dart run melos run setup              # gen_l10n + build_runner
 dart run melos run cms                # CMS di Chrome :5173
-dart run melos run kasir -- -d <id>   # kasir di device
+dart run melos run kasir-dev -- -d <id>      # kasir flavor dev (API lokal)
+dart run melos run kasir-staging -- -d <id>  # kasir flavor staging
+dart run melos run kasir -- -d <id>          # kasir flavor prod (API prod)
 ```
 
 ## Keputusan yang menyimpang dari PRD atau menambahkannya
@@ -27,7 +29,7 @@ dart run melos run kasir -- -d <id>   # kasir di device
 - `.env.dev`, `.env.prod`, dan `.env.staging` tidak masuk git (`.gitignore` per app); hanya `.env.example` yang di-track. Semuanya dideklarasikan sebagai asset di `pubspec.yaml`, jadi tanpa file itu build dan test gagal: salin dari `.env.example` (CI melakukannya di `.github/workflows/ci.yml`). Isinya placeholder `API_BASE_URL` (host saja) dan `API_VERSION` (`v1`, `v2`, ...). Emulator Android butuh `http://10.0.2.2:<port>`.
 - URL API: `{API_BASE_URL}/api/{API_VERSION}/{group}/{service}`, group `account|catalog|sales|insight` seperti backend. `AppConfig.apiUrl` menjadi base URL Dio, jadi `ApiPaths` hanya `/{group}/{service}/...` (relatif, tetap `const`, tanpa state global; isolate background kasir ikut benar karena membangun Dio dari config yang sama). `API_VERSION` harus sama dengan `server.api_version` backend; CI/CD menulis ulang barisnya di `.env.prod` lalu membangun ulang FE tiap versi server naik. Formatnya divalidasi (`^v[0-9]+$`), kosong berarti `v1`. Versi tidak cocok: backend menjawab 404 dengan pesan `api version not supported, use /api/vN`, yang tampil sebagai teks error. `url_pdf` dari server absolut (`/api/v1/insight/reports/x.pdf`); `ApiPaths.reportFile` menjadikannya relatif dan tidak membandingkan versinya.
 - Firebase satu project `pos-app-51cb3` dengan satu app Android dan satu iOS per flavor kasir. Konfigurasi per flavor: `apps/kasir/android/app/src/<flavor>/google-services.json`, `apps/kasir/ios/config/<flavor>/GoogleService-Info.plist` (disalin ke bundle oleh build phase "Copy GoogleService-Info.plist" lewat `FLAVOR_NAME`), dan `apps/kasir/lib/firebase_options_<flavor>.dart` yang dioper `main_<flavor>.dart` ke `bootstrap`. App dev dan staging dibuat dengan `firebase apps:create` lalu `firebase apps:sdkconfig` (`flutterfire configure` macet di mesin ini). Flavor baru berarti app Firebase baru, ikon, string nama, dan build configuration iOS baru. Kalau Firebase gagal start, app tetap jalan dan push dimatikan.
-- Jalankan app dari root: `melos run cms`, `melos run kasir -- -d <id>`; hot reload lewat `melos run kasir-reload` karena Melos tidak meneruskan stdin.
+- Jalankan app dari root: `melos run cms`, `melos run kasir-dev -- -d <id>` (`kasir-staging`, `kasir` untuk prod); hot reload lewat `melos run kasir-reload` karena Melos tidak meneruskan stdin.
 - `Failure` memakai sealed class Dart 3, bukan freezed, karena tidak butuh codegen.
 - Test double HTTP (`FakeAdapter`) diekspor dari `package:core/testing.dart`; jangan di-import kode produksi.
 - Enum backend: `type_payment` 0 tunai, 1 hutang, 2 transfer (VA), 3 qris; `unit` 0 pcs, 1 gram, 2 kg, 3 liter, 4 kardus, 5 ikat; `product_type` 0 fisik, 1 digital.
