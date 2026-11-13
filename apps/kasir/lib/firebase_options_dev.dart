@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart'
 ///
 /// Example:
 /// ```dart
-/// import 'firebase_options.dart';
+/// import 'firebase_options_dev.dart';
 /// // ...
 /// await Firebase.initializeApp(
 ///   options: DefaultFirebaseOptions.currentPlatform,
@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDKzGwxs05u-4FqmtPPi0EnjH6pFyVOalc',
-    appId: '1:111397374230:android:d2ea28ca8703d8bc98a837',
+    appId: '1:111397374230:android:257b141a14f2699d98a837',
     messagingSenderId: '111397374230',
     projectId: 'pos-app-51cb3',
     storageBucket: 'pos-app-51cb3.firebasestorage.app',
@@ -59,10 +59,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyA4PjlZB79i1NpM4GHNEB6H7pzLKBmfwSA',
-    appId: '1:111397374230:ios:579ef6eb0d4fe01598a837',
+    appId: '1:111397374230:ios:ebf85bdac8e9747598a837',
     messagingSenderId: '111397374230',
     projectId: 'pos-app-51cb3',
     storageBucket: 'pos-app-51cb3.firebasestorage.app',
-    iosBundleId: 'com.suhaili.cashier-ios',
+    iosBundleId: 'com.suhaili.cashier-ios.dev',
   );
 }

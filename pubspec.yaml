@@ -29,7 +29,11 @@ melos:
       stdio: inherit
     kasir:
       description: Run the kasir app (dev). Pick a device with "-- -d <device-id>".
-      run: cd apps/kasir && flutter run --pid-file "$MELOS_ROOT_PATH/.dart_tool/kasir.pid" -t lib/main_dev.dart
+      run: cd apps/kasir && flutter run --flavor dev --pid-file "$MELOS_ROOT_PATH/.dart_tool/kasir.pid" -t lib/main_dev.dart
+      stdio: inherit
+    kasir-staging:
+      description: Run the kasir app (staging flavor). Pick a device with "-- -d <device-id>".
+      run: cd apps/kasir && flutter run --flavor staging --pid-file "$MELOS_ROOT_PATH/.dart_tool/kasir.pid" -t lib/main_staging.dart
       stdio: inherit
     cms-reload:
       description: Hot reload the running CMS (from a second terminal).
@@ -48,13 +52,19 @@ melos:
       run: cd apps/cms && flutter build web -t lib/main_prod.dart
     build-apk:
       description: Release APK of the kasir app (prod env).
-      run: cd apps/kasir && flutter build apk -t lib/main_prod.dart
+      run: cd apps/kasir && flutter build apk --flavor prod -t lib/main_prod.dart
+    build-apk-staging:
+      description: Release APK of the kasir app (staging flavor).
+      run: cd apps/kasir && flutter build apk --flavor staging -t lib/main_staging.dart
     build-ipa:
       description: Release IPA of the kasir app (prod env, needs Apple signing).
-      run: cd apps/kasir && flutter build ipa -t lib/main_prod.dart
+      run: cd apps/kasir && flutter build ipa --flavor prod -t lib/main_prod.dart
+    build-ipa-staging:
+      description: Release IPA of the kasir app (staging flavor, needs Apple signing).
+      run: cd apps/kasir && flutter build ipa --flavor staging -t lib/main_staging.dart
     integration:
       description: Kasir integration tests on a device. Pick it with "-- -d <device-id>".
-      run: cd apps/kasir && flutter test integration_test
+      run: cd apps/kasir && flutter test integration_test --flavor dev
     analyze:
       exec:
         command: flutter analyze --no-fatal-infos

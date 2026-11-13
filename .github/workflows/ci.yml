@@ -23,6 +23,8 @@ jobs:
             cp apps/$app/.env.example apps/$app/.env.prod
             sed -i 's/^FLAVOR=.*/FLAVOR=prod/' apps/$app/.env.prod
           done
+          cp apps/kasir/.env.example apps/kasir/.env.staging
+          sed -i 's/^FLAVOR=.*/FLAVOR=staging/' apps/kasir/.env.staging
       - run: flutter pub get
       - run: dart run melos run gen_l10n
       - run: dart run melos run analyze
