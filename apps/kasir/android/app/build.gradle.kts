@@ -32,6 +32,11 @@ android {
         versionName = flutter.versionName
     }
 
+    // AGP's default ignore list contains ".*", which drops the .env.* assets from the APK.
+    androidResources {
+        ignoreAssetsPatterns += listOf("!.svn", "!.git", "!.ds_store", "!*.scc", "<dir>_*", "!CVS", "!thumbs.db", "!picasa.ini", "!*~")
+    }
+
     flavorDimensions += "env"
     productFlavors {
         create("dev") {
