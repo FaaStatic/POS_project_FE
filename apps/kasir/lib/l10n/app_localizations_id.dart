@@ -560,6 +560,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get vNumber => 'Masukkan angka';
 
   @override
+  String environmentLabel(String name) {
+    return 'Lingkungan: $name';
+  }
+
+  @override
   String get storeInfo => 'Info toko di struk';
 
   @override

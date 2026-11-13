@@ -15,10 +15,13 @@ const designShotUrl = 'https://dribbble.com/shots/27265995-Mobile-App-Design-for
 /// [account] and [sync] are supplied by the app layer (signed-in user and
 /// sign-out; manual sync of the offline queue).
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key, required this.account, required this.sync});
+  const SettingsPage({super.key, required this.account, required this.sync, required this.flavor});
 
   final Widget account;
   final Widget sync;
+
+  /// `dev`, `staging` or `prod`, from [AppConfig.flavor].
+  final String flavor;
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +93,17 @@ class SettingsPage extends StatelessWidget {
             ),
             const SizedBox(height: Space.md),
             SurfaceCard(child: account),
+            const SizedBox(height: Space.sm),
+            Center(
+              child: Text(
+                l10n.environmentLabel(switch (flavor) {
+                  'prod' => 'Production',
+                  'staging' => 'Staging',
+                  _ => 'Dev',
+                }),
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
             const SizedBox(height: Space.sm),
             Center(
               child: DesignCredit(

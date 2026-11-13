@@ -1,3 +1,4 @@
+import 'package:core/core.dart' show AppConfig;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -87,6 +88,7 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
                         return token;
                       }),
                       sync: const SyncTile(),
+                      flavor: getIt<AppConfig>().flavor,
                     ),
                     routes: [
                       GoRoute(path: 'printer', builder: (_, _) => const PrinterSettingsPage()),

@@ -561,6 +561,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vNumber => 'Enter a number';
 
   @override
+  String environmentLabel(String name) {
+    return 'Environment: $name';
+  }
+
+  @override
   String get storeInfo => 'Store info on receipts';
 
   @override

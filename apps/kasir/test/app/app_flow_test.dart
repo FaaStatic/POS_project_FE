@@ -152,6 +152,7 @@ void main() {
     await app.settle(tester);
     final row = find.widgetWithText(ListTile, 'Sinkronkan sekarang');
     expect(find.text('Semua transaksi sudah terkirim'), findsOneWidget);
+    expect(find.text('Lingkungan: Dev'), findsOneWidget);
     await tester.tap(row);
     await app.settle(tester);
     expect(find.text('Tidak ada yang perlu dikirim'), findsOneWidget);

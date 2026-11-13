@@ -332,6 +332,14 @@
   "vBarcode": "Hanya huruf, angka, - . _ (maks 64)",
   "vSku": "Maks 50 karakter",
   "vNumber": "Masukkan angka",
+  "environmentLabel": "Lingkungan: {name}",
+  "@environmentLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "storeInfo": "Info toko di struk",
   "storeName": "Nama toko",
   "storeAddress": "Alamat toko",

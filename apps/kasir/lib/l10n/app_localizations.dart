@@ -1052,6 +1052,12 @@ abstract class AppLocalizations {
   /// **'Masukkan angka'**
   String get vNumber;
 
+  /// No description provided for @environmentLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Lingkungan: {name}'**
+  String environmentLabel(String name);
+
   /// No description provided for @storeInfo.
   ///
   /// In id, this message translates to:

@@ -159,6 +159,14 @@
   "vBarcode": "Letters, digits, - . _ only (max 64)",
   "vSku": "Max 50 characters",
   "vNumber": "Enter a number",
+  "environmentLabel": "Environment: {name}",
+  "@environmentLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "storeInfo": "Store info on receipts",
   "storeName": "Store name",
   "storeAddress": "Store address",
