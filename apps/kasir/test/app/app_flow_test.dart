@@ -1,5 +1,6 @@
-import 'package:core/core.dart' show Customer, Debt, Product;
+import 'package:core/core.dart' show ApiPaths, Customer, Debt, Product;
 import 'package:core/mobile.dart';
+import 'package:core/testing.dart' show FakeReply, envelope;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -311,5 +312,36 @@ void main() {
     expect(find.text('Transaksi 2'), findsNothing);
     expect(find.text('Transaksi 1'), findsWidgets);
     await tester.runAsync(app.close);
+  });
+
+  testWidgets('tablet: a customer opens in the right pane, and the phone still pushes a page', (tester) async {
+    Map<String, dynamic> customer() => {'id': 'k1', 'nama': 'Bu Rahma', 'no_hp': '0812', 'alamat': 'Jl. Mawar', 'active': true};
+    AppHarness build() => AppHarness(online: true)
+      ..serveBackend()
+      ..adapter.on('GET', ApiPaths.customers, (_) => FakeReply(200, envelope({'has_next': false, 'customer_lists': [customer()]})))
+      ..adapter.on('GET', ApiPaths.customer('k1'), (_) => FakeReply(200, envelope(customer())));
+
+    final tablet = build();
+    await tablet.tokens.writeRefreshToken('r0');
+    await tablet.pump(tester, size: const Size(1280, 800));
+    await tester.tap(find.text('Pelanggan').first);
+    await tablet.settle(tester);
+    await tester.tap(find.text('Bu Rahma'));
+    await tablet.settle(tester);
+    expect(tester.takeException(), isNull);
+    expect(find.text('Jl. Mawar'), findsOneWidget, reason: 'the detail sits beside the list');
+    expect(find.text('Bu Rahma'), findsWidgets);
+    await tester.runAsync(tablet.close);
+
+    final phone = build();
+    await phone.tokens.writeRefreshToken('r0');
+    await phone.pump(tester, size: const Size(412, 892));
+    await tester.tap(find.text('Pelanggan').first);
+    await phone.settle(tester);
+    await tester.tap(find.text('Bu Rahma'));
+    await phone.settle(tester);
+    expect(find.text('Jl. Mawar'), findsOneWidget, reason: 'the phone opens the detail as its own page');
+    expect(find.text('Tambah pelanggan'), findsNothing);
+    await tester.runAsync(phone.close);
   });
 }

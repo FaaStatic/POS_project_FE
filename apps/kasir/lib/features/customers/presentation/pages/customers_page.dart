@@ -6,6 +6,7 @@ import 'package:ui/ui.dart';
 
 import '../../../../app/di.dart';
 import '../../../../common/failure_text.dart';
+import '../../../../common/master_detail.dart';
 import '../../../../common/refresh_on_show.dart';
 import '../../../../common/scrolls_when_short.dart';
 import '../../../../app/shell/kasir_page.dart';
@@ -65,7 +66,7 @@ class CustomersPage extends StatelessWidget {
                                 title: Text(c.name),
                                 subtitle: c.phone.isEmpty ? null : Text(c.phone),
                                 trailing: const Icon(Icons.chevron_right_rounded),
-                                onTap: () => context.push('/customers/${c.id}'),
+                                onTap: () => openDetail(context, c.id, '/customers/${c.id}'),
                               ),
                             );
                           },

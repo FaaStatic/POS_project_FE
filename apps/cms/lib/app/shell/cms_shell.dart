@@ -48,23 +48,9 @@ class _CmsShellState extends State<CmsShell> {
             body: ShellScope(openMenu: () => _scaffold.currentState?.openDrawer(), child: widget.shell),
           );
         }
-        final l10n = AppLocalizations.of(context);
         final nav = width <= Breakpoints.expanded
-            // Eleven destinations outgrow a short window (1024 × 768), so the rail scrolls there.
-            ? FillOrScroll(
-                child: NavigationRail(
-                  selectedIndex: index,
-                  onDestinationSelected: _go,
-                  labelType: NavigationRailLabelType.all,
-                  leading: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: Space.md),
-                    child: BrandLogo.mark(),
-                  ),
-                  destinations: [
-                    for (final d in cmsDestinations) NavigationRailDestination(icon: Icon(d.icon, size: 20), label: Text(d.label(l10n))),
-                  ],
-                ),
-              )
+            // Eleven destinations outgrow a short window (1024 × 768), so the strip scrolls there.
+            ? FillOrScroll(child: _IconSidebar(selected: index, onSelect: _go))
             : SizedBox(width: 248, child: sidebar);
         return Scaffold(
           body: Row(
@@ -191,6 +177,7 @@ class _NavItem extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
+            hoverColor: theme.colorScheme.primary.withValues(alpha: 0.06),
             child: Container(
               height: 40,
               padding: const EdgeInsets.symmetric(horizontal: Space.md),
@@ -217,6 +204,61 @@ class _NavItem extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// 600 to 1024 wide: the sidebar folded to icons. A tooltip names each page; the open one carries the same
+/// tint and left bar as the full sidebar, so the two read as one control at different widths.
+class _IconSidebar extends StatelessWidget {
+  const _IconSidebar({required this.selected, required this.onSelect});
+
+  final int selected;
+  final ValueChanged<int> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final shell = ShellColors.of(context);
+    return SizedBox(
+      width: 72,
+      child: Column(
+        children: [
+          const Padding(padding: EdgeInsets.symmetric(vertical: Space.lg), child: BrandLogo.mark()),
+          for (final (i, d) in cmsDestinations.indexed)
+            Tooltip(
+              message: d.label(l10n),
+              child: Semantics(
+                label: d.label(l10n),
+                selected: i == selected,
+                button: true,
+                excludeSemantics: true,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(Space.sm, 0, Space.sm, 2),
+                  child: Material(
+                    color: i == selected ? shell.navSelected : Colors.transparent,
+                    borderRadius: BorderRadius.circular(Radii.small + 2),
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () => onSelect(i),
+                      hoverColor: theme.colorScheme.primary.withValues(alpha: 0.06),
+                      child: Container(
+                        height: 40,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          border: Border(left: BorderSide(color: i == selected ? theme.colorScheme.primary : Colors.transparent, width: 3)),
+                        ),
+                        child: Icon(d.icon, size: 20, color: i == selected ? shell.onNavSelected : shell.onNavMuted),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          const SizedBox(height: Space.lg),
+        ],
       ),
     );
   }

@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import '../features/auth/presentation/bloc/auth_cubit.dart';
 import '../features/auth/presentation/pages/login_page.dart';
 import '../features/auth/presentation/pages/splash_page.dart';
-import '../features/auth/presentation/widgets/account_section.dart';
 import '../features/categories/presentation/pages/categories_page.dart';
 import '../features/customers/presentation/pages/customer_detail_page.dart';
 import '../features/customers/presentation/pages/customers_page.dart';
@@ -166,7 +165,7 @@ GoRouter buildRouter(AuthCubit auth, {String? initialLocation}) => GoRouter(
           routes: [
             GoRoute(
               path: Routes.settings,
-              builder: (_, _) => const SettingsPage(account: AccountSection()),
+              builder: (_, _) => const SettingsPage(),
             ),
           ],
         ),

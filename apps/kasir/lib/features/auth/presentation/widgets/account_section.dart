@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:ui/ui.dart';
 
 import '../../../../app/di.dart';
@@ -50,7 +51,18 @@ class AccountSection extends StatelessWidget {
         if (auth case AuthAuthenticated(:final Session session))
           Text(l10n.signedInAs(session.username), style: Theme.of(context).textTheme.bodyLarge),
         const SizedBox(height: Space.md),
-        AppButton(label: l10n.logout, variant: AppButtonVariant.outline, onPressed: () => _logout(context)),
+        // Danger tonal: red text on a soft red fill, full width, so sign-out is findable but never the loudest thing.
+        FilledButton.tonalIcon(
+          onPressed: () => _logout(context),
+          icon: const Icon(Iconsax.logout_copy),
+          label: Text(l10n.logout),
+          style: FilledButton.styleFrom(
+            minimumSize: const Size.fromHeight(TapSize.min),
+            backgroundColor: Theme.of(context).colorScheme.errorContainer,
+            foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.of(context).controlRadius)),
+          ),
+        ),
       ],
     );
   }

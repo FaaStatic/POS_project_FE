@@ -71,7 +71,7 @@ class CheckoutPage extends StatelessWidget {
               return LayoutBuilder(
                 builder: (context, constraints) {
                   final window = MediaQuery.sizeOf(context);
-                  final wide = checkoutBeside(window);
+                  final wide = splitPaneFits(window);
                   // Short phones at large text: the tab strip scrolls with the products so the
                   // list keeps room. The header stays pinned because it holds the cart button.
                   final roomy = wide || constraints.maxHeight >= 600 * MediaQuery.textScalerOf(context).scale(1);

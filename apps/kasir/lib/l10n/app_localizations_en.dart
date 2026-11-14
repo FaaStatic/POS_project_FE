@@ -561,6 +561,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vNumber => 'Enter a number';
 
   @override
+  String get pickCustomerHint => 'Pick a customer to see the details.';
+
+  @override
+  String get pickSaleHint => 'Pick a sale to see its receipt.';
+
+  @override
+  String get pickSettingHint => 'Pick a menu on the left to open it.';
+
+  @override
+  String appVersionLabel(String version) {
+    return 'Version $version';
+  }
+
+  @override
   String environmentLabel(String name) {
     return 'Environment: $name';
   }

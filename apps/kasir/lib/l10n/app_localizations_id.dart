@@ -560,6 +560,20 @@ class AppLocalizationsId extends AppLocalizations {
   String get vNumber => 'Masukkan angka';
 
   @override
+  String get pickCustomerHint => 'Pilih pelanggan untuk melihat detailnya.';
+
+  @override
+  String get pickSaleHint => 'Pilih transaksi untuk melihat struknya.';
+
+  @override
+  String get pickSettingHint => 'Pilih menu di kiri untuk membukanya.';
+
+  @override
+  String appVersionLabel(String version) {
+    return 'Versi $version';
+  }
+
+  @override
   String environmentLabel(String name) {
     return 'Lingkungan: $name';
   }

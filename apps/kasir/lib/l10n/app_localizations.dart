@@ -1052,6 +1052,30 @@ abstract class AppLocalizations {
   /// **'Masukkan angka'**
   String get vNumber;
 
+  /// No description provided for @pickCustomerHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih pelanggan untuk melihat detailnya.'**
+  String get pickCustomerHint;
+
+  /// No description provided for @pickSaleHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih transaksi untuk melihat struknya.'**
+  String get pickSaleHint;
+
+  /// No description provided for @pickSettingHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih menu di kiri untuk membukanya.'**
+  String get pickSettingHint;
+
+  /// No description provided for @appVersionLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Versi {version}'**
+  String appVersionLabel(String version);
+
   /// No description provided for @environmentLabel.
   ///
   /// In id, this message translates to:

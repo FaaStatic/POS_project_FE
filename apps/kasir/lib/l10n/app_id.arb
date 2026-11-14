@@ -332,6 +332,17 @@
   "vBarcode": "Hanya huruf, angka, - . _ (maks 64)",
   "vSku": "Maks 50 karakter",
   "vNumber": "Masukkan angka",
+  "pickCustomerHint": "Pilih pelanggan untuk melihat detailnya.",
+  "pickSaleHint": "Pilih transaksi untuk melihat struknya.",
+  "pickSettingHint": "Pilih menu di kiri untuk membukanya.",
+  "appVersionLabel": "Versi {version}",
+  "@appVersionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "environmentLabel": "Lingkungan: {name}",
   "@environmentLabel": {
     "placeholders": {

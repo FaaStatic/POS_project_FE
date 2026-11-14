@@ -7,6 +7,7 @@ import 'package:ui/ui.dart';
 import '../../../../app/di.dart';
 import '../../../../common/failure_text.dart';
 import '../../../../common/labels.dart';
+import '../../../../common/master_detail.dart';
 import '../../../../common/receipt_view.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/history_cubit.dart';
@@ -126,13 +127,15 @@ class _Body extends StatelessWidget {
           loading: working,
           onPressed: () => cubit.print(receiptFor(context, sale, settings)),
         ),
-      const SizedBox(height: Space.md),
-      AppButton(
-        label: l10n.done,
-        large: true,
-        expand: true,
-        onPressed: () => context.canPop() ? context.pop() : context.go('/checkout'),
-      ),
+      if (!inDetailPane(context)) ...[
+        const SizedBox(height: Space.md),
+        AppButton(
+          label: l10n.done,
+          large: true,
+          expand: true,
+          onPressed: () => context.canPop() ? context.pop() : context.go('/checkout'),
+        ),
+      ],
       if (sale.status != SaleStatus.cancelled && !sale.isDebtPayment) ...[
         const SizedBox(height: Space.xl),
         AppButton(

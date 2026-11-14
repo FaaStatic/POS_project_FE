@@ -1,6 +1,7 @@
 import 'package:core/core.dart' show AppConfig;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../features/auth/presentation/bloc/auth_cubit.dart';
 import '../features/auth/presentation/pages/login_page.dart';
@@ -19,6 +20,7 @@ import '../features/products/presentation/pages/product_edit_page.dart';
 import '../features/products/presentation/pages/products_page.dart';
 import '../features/push/data/push_service.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
+import '../common/master_detail.dart';
 import 'di.dart';
 import 'shell/kasir_shell.dart';
 import 'shell/session_scope.dart';
@@ -34,83 +36,151 @@ abstract final class Routes {
 }
 
 GoRouter buildRouter(AuthCubit auth) => GoRouter(
-      initialLocation: Routes.home,
-      // Keeps the requested page across splash and login, so a reload stays put.
-      redirect: (context, state) {
-        final location = state.matchedLocation;
-        final gate = location == Routes.splash || location == Routes.login;
-        final from = gate ? state.uri.queryParameters['from'] : state.uri.toString();
-        String to(String gatePath) => from == null || from == Routes.home ? gatePath : '$gatePath?from=${Uri.encodeComponent(from)}';
-        return switch (auth.state) {
-          AuthUnknown() => location == Routes.splash ? null : to(Routes.splash),
-          AuthUnauthenticated() => location == Routes.login ? null : to(Routes.login),
-          AuthAuthenticated() => gate ? from ?? Routes.home : null,
-        };
-      },
+  initialLocation: Routes.home,
+  // Keeps the requested page across splash and login, so a reload stays put.
+  redirect: (context, state) {
+    final location = state.matchedLocation;
+    final gate = location == Routes.splash || location == Routes.login;
+    final from = gate
+        ? state.uri.queryParameters['from']
+        : state.uri.toString();
+    String to(String gatePath) => from == null || from == Routes.home
+        ? gatePath
+        : '$gatePath?from=${Uri.encodeComponent(from)}';
+    return switch (auth.state) {
+      AuthUnknown() => location == Routes.splash ? null : to(Routes.splash),
+      AuthUnauthenticated() =>
+        location == Routes.login ? null : to(Routes.login),
+      AuthAuthenticated() => gate ? from ?? Routes.home : null,
+    };
+  },
+  routes: [
+    GoRoute(path: Routes.splash, builder: (_, _) => const SplashPage()),
+    // Routes default to no transition here; this fade gives the splash logo time to fly.
+    GoRoute(
+      path: Routes.login,
+      pageBuilder: (_, state) => CustomTransitionPage<void>(
+        key: state.pageKey,
+        transitionDuration: Durations.medium4,
+        transitionsBuilder: (_, animation, _, child) =>
+            FadeTransition(opacity: animation, child: child),
+        child: const LoginPage(),
+      ),
+    ),
+    ShellRoute(
+      builder: (_, _, child) => SessionScope(child: child),
       routes: [
-        GoRoute(path: Routes.splash, builder: (_, _) => const SplashPage()),
-        // Routes default to no transition here; this fade gives the splash logo time to fly.
-        GoRoute(
-          path: Routes.login,
-          pageBuilder: (_, state) => CustomTransitionPage<void>(
-            key: state.pageKey,
-            transitionDuration: Durations.medium4,
-            transitionsBuilder: (_, animation, _, child) => FadeTransition(opacity: animation, child: child),
-            child: const LoginPage(),
-          ),
-        ),
-        ShellRoute(
-          builder: (_, _, child) => SessionScope(child: child),
-          routes: [
-            StatefulShellRoute.indexedStack(
-              builder: (_, _, shell) => KasirShell(shell: shell, banner: const SyncBanner()),
-              branches: [
-                StatefulShellBranch(routes: [GoRoute(path: Routes.checkout, builder: (_, _) => const CheckoutPage())]),
-                StatefulShellBranch(routes: [GoRoute(path: Routes.history, builder: (_, _) => const HistoryPage())]),
-                StatefulShellBranch(routes: [
-                  GoRoute(
-                    path: Routes.customers,
-                    builder: (_, _) => const CustomersPage(),
-                    routes: [
-                      GoRoute(path: 'new', builder: (_, _) => const AddCustomerPage()),
-                      GoRoute(path: ':id', builder: (_, s) => CustomerDetailPage(customerId: s.pathParameters['id']!)),
-                    ],
+        StatefulShellRoute.indexedStack(
+          builder: (_, _, shell) =>
+              KasirShell(shell: shell, banner: const SyncBanner()),
+          branches: [
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: Routes.checkout,
+                  builder: (_, _) => const CheckoutPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: Routes.history,
+                  builder: (_, _) => MasterDetail(
+                    list: const HistoryPage(),
+                    detail: (ref) => SaleDetailPage(clientRef: ref),
+                    icon: Iconsax.receipt_2_copy,
+                    hint: (l10n) => l10n.pickSaleHint,
                   ),
-                ]),
-                StatefulShellBranch(routes: [
-                  GoRoute(
-                    path: Routes.settings,
-                    builder: (_, _) => SettingsPage(
-                      account: AccountSection(beforeLogout: () async {
-                        final push = getIt<PushService>();
-                        final token = push.token;
-                        await push.unregister();
-                        return token;
-                      }),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: Routes.customers,
+                  builder: (_, _) => MasterDetail(
+                    list: const CustomersPage(),
+                    detail: (id) => CustomerDetailPage(customerId: id),
+                    icon: Iconsax.profile_2user_copy,
+                    hint: (l10n) => l10n.pickCustomerHint,
+                  ),
+                  routes: [
+                    GoRoute(
+                      path: 'new',
+                      builder: (_, _) => const AddCustomerPage(),
+                    ),
+                    GoRoute(
+                      path: ':id',
+                      builder: (_, s) => CustomerDetailPage(
+                        customerId: s.pathParameters['id']!,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: Routes.settings,
+                  builder: (_, _) => MasterDetail(
+                    list: SettingsPage(
+                      account: AccountSection(
+                        beforeLogout: () async {
+                          final push = getIt<PushService>();
+                          final token = push.token;
+                          await push.unregister();
+                          return token;
+                        },
+                      ),
                       sync: const SyncTile(),
                       flavor: getIt<AppConfig>().flavor,
                     ),
-                    routes: [
-                      GoRoute(path: 'printer', builder: (_, _) => const PrinterSettingsPage()),
-                      GoRoute(path: 'store', builder: (_, _) => const StoreInfoPage()),
-                      GoRoute(
-                        path: 'products',
-                        builder: (_, _) => const ProductsPage(),
-                        routes: [
-                          GoRoute(path: ':id', builder: (_, s) => ProductEditPage(productId: s.pathParameters['id']!)),
-                        ],
-                      ),
-                    ],
+                    detail: (id) => switch (id) {
+                      'printer' => const PrinterSettingsPage(),
+                      'store' => const StoreInfoPage(),
+                      _ => const ProductsPage(),
+                    },
+                    icon: Iconsax.setting_2_copy,
+                    hint: (l10n) => l10n.pickSettingHint,
                   ),
-                ]),
+                  routes: [
+                    GoRoute(
+                      path: 'printer',
+                      builder: (_, _) => const PrinterSettingsPage(),
+                    ),
+                    GoRoute(
+                      path: 'store',
+                      builder: (_, _) => const StoreInfoPage(),
+                    ),
+                    GoRoute(
+                      path: 'products',
+                      builder: (_, _) => const ProductsPage(),
+                      routes: [
+                        GoRoute(
+                          path: ':id',
+                          builder: (_, s) => ProductEditPage(
+                            productId: s.pathParameters['id']!,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ],
-            ),
-            GoRoute(path: '/scan', builder: (_, _) => const ScannerPage()),
-            GoRoute(
-              path: '/sale/:ref',
-              builder: (_, s) => SaleDetailPage(clientRef: s.pathParameters['ref']!, autoPrint: s.uri.queryParameters['print'] == '1'),
             ),
           ],
         ),
+        GoRoute(path: '/scan', builder: (_, _) => const ScannerPage()),
+        GoRoute(
+          path: '/sale/:ref',
+          builder: (_, s) => SaleDetailPage(
+            clientRef: s.pathParameters['ref']!,
+            autoPrint: s.uri.queryParameters['print'] == '1',
+          ),
+        ),
       ],
-    );
+    ),
+  ],
+);

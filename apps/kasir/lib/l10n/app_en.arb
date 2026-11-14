@@ -159,6 +159,17 @@
   "vBarcode": "Letters, digits, - . _ only (max 64)",
   "vSku": "Max 50 characters",
   "vNumber": "Enter a number",
+  "pickCustomerHint": "Pick a customer to see the details.",
+  "pickSaleHint": "Pick a sale to see its receipt.",
+  "pickSettingHint": "Pick a menu on the left to open it.",
+  "appVersionLabel": "Version {version}",
+  "@appVersionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "environmentLabel": "Environment: {name}",
   "@environmentLabel": {
     "placeholders": {

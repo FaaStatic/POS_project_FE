@@ -16,7 +16,7 @@ void main() {
       expect(find.byType(NavigationRail), findsNothing);
       final bar = tester.getSize(find.byType(NavigationBar));
       // On a tablet the checkout keeps the order panel on the right; the pill floats in the catalog column.
-      final column = checkoutBeside(size) ? size.width - checkoutPanelWidth(size.width) : size.width;
+      final column = splitPaneFits(size) ? size.width - checkoutPanelWidth(size.width) : size.width;
       if (column < 600) {
         expect(bar.width, column - 24);
       } else {

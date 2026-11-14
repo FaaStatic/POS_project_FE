@@ -44,7 +44,9 @@ class _SearchFieldState extends State<SearchField> {
   Widget build(BuildContext context) {
     final l10n = UiLocalizations.of(context);
     final sizes = AppSizes.of(context);
-    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
+    final scheme = Theme.of(context).colorScheme;
+    final radius = BorderRadius.circular(sizes.controlRadius);
+    final muted = scheme.onSurfaceVariant;
     final iconSize = sizes.compact ? 16.0 : 20.0;
     return ListenableBuilder(
       listenable: _controller,
@@ -55,6 +57,14 @@ class _SearchFieldState extends State<SearchField> {
         textInputAction: TextInputAction.search,
         onChanged: widget.onChanged,
         onSubmitted: widget.onSubmitted,
+        // Touch density: a filled field with no frame; the icon and placeholder identify it.
+        decoration: sizes.compact
+            ? null
+            : ShadDecoration(
+                color: scheme.surface,
+                border: ShadBorder.all(width: 0, color: Colors.transparent, radius: radius),
+                focusedBorder: ShadBorder.all(width: 2, color: scheme.primary, radius: radius),
+              ),
         placeholder: Text(widget.hint ?? l10n.search),
         leading: Icon(Iconsax.search_normal_1_copy, size: iconSize, color: muted),
         trailing: Row(

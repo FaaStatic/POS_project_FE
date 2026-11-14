@@ -33,13 +33,13 @@ class AppSizes extends ThemeExtension<AppSizes> {
   final double cardPadding;
 
   static const dense = AppSizes(compact: true, control: 40, primary: 44, controlRadius: 8, cardRadius: 12, cardPadding: Space.xl);
-  // shadcn radii (8 controls, 12 cards and dialogs); only the touch targets stay larger.
+  // Touch density: larger radii and flat surfaces so phones and tablets read as an app, not a web page.
   static const touch = AppSizes(
     compact: false,
     control: TapSize.min,
     primary: TapSize.primary,
-    controlRadius: 8,
-    cardRadius: 12,
+    controlRadius: 14,
+    cardRadius: 20,
     cardPadding: Space.lg,
   );
 
@@ -203,8 +203,8 @@ abstract final class AppTheme {
         backgroundColor: scheme.surface,
         radius: BorderRadius.circular(sizes.cardRadius),
         padding: EdgeInsets.all(sizes.cardPadding),
-        border: ShadBorder.all(width: 1, color: scheme.outlineVariant),
-        shadows: ShadShadows.sm,
+        border: sizes.compact ? ShadBorder.all(width: 1, color: scheme.outlineVariant) : ShadBorder.none, // touch: flat cards
+        shadows: sizes.compact ? ShadShadows.sm : const [],
       ),
       alertDialogTheme: dialog,
       primaryDialogTheme: dialog,
@@ -249,7 +249,7 @@ abstract final class AppTheme {
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: card,
-          side: BorderSide(color: scheme.outlineVariant),
+          side: sizes.compact ? BorderSide(color: scheme.outlineVariant) : BorderSide.none,
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(

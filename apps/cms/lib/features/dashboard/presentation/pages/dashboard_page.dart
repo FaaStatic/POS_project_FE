@@ -177,7 +177,7 @@ class _SummaryPanel extends StatelessWidget {
           const SizedBox(height: Space.lg),
           LayoutBuilder(
             builder: (context, c) {
-              final columns = c.maxWidth >= 900 ? 4 : (c.maxWidth >= 480 ? 2 : 1);
+              final columns = c.maxWidth >= 720 ? 4 : (c.maxWidth >= 480 ? 2 : 1);
               return Column(
                 spacing: Space.md,
                 children: [
@@ -225,13 +225,13 @@ class _StatTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
-              color: scheme.primary,
+              color: scheme.primaryContainer,
               borderRadius: BorderRadius.circular(Radii.control),
             ),
-            child: Icon(icon, color: scheme.onPrimary, size: 22),
+            child: Icon(icon, color: scheme.onPrimaryContainer, size: 20),
           ),
           const SizedBox(height: Space.md),
           Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant)),

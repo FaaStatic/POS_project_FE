@@ -87,23 +87,16 @@ class _ProductPaneState extends State<ProductPane> {
                         ),
                       ),
                       const SizedBox(width: Space.sm),
-                      // Large text: the label would squeeze the search field to nothing, so the glyph carries it.
-                      if (MediaQuery.textScalerOf(context).scale(1) > 1.3)
-                        IconButton.outlined(
-                          tooltip: l10n.scan,
-                          style: IconButton.styleFrom(
-                            minimumSize: const Size.square(TapSize.min),
-                          ),
-                          onPressed: widget.onScan,
-                          icon: const Icon(Iconsax.scan_barcode_copy),
-                        )
-                      else
-                        AppButton(
-                          label: l10n.scan,
-                          icon: Iconsax.scan_barcode_copy,
-                          variant: AppButtonVariant.outline,
-                          onPressed: widget.onScan,
+                      // One filled square next to the search field, as on a phone POS; the tooltip and semantics carry the label.
+                      IconButton.filled(
+                        tooltip: l10n.scan,
+                        style: IconButton.styleFrom(
+                          minimumSize: const Size.square(TapSize.min),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.of(context).controlRadius)),
                         ),
+                        onPressed: widget.onScan,
+                        icon: const Icon(Iconsax.scan_barcode_copy),
+                      ),
                     ],
                   ),
                 ),
@@ -330,7 +323,6 @@ class _PressCardState extends State<_PressCard> {
         decoration: BoxDecoration(
           color: _down ? scheme.surfaceContainerHigh : scheme.surface,
           borderRadius: BorderRadius.circular(AppSizes.of(context).cardRadius),
-          border: Border.all(color: scheme.outlineVariant),
         ),
         child: widget.child,
       ),

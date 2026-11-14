@@ -4,20 +4,20 @@ import 'package:kasir/common/tablet_layout.dart';
 
 void main() {
   test('the order sits beside the catalog on tablets and not on phones turned sideways', () {
-    expect(checkoutBeside(const Size(360, 780)), isFalse);
+    expect(splitPaneFits(const Size(360, 780)), isFalse);
     expect(
-      checkoutBeside(const Size(844, 390)),
+      splitPaneFits(const Size(844, 390)),
       isFalse,
       reason: 'phone landscape under 900 keeps the cart sheet',
     );
     expect(
-      checkoutBeside(const Size(800, 1280)),
+      splitPaneFits(const Size(800, 1280)),
       isTrue,
       reason: 'portrait tablet',
     );
-    expect(checkoutBeside(const Size(1280, 800)), isTrue);
+    expect(splitPaneFits(const Size(1280, 800)), isTrue);
     expect(
-      checkoutBeside(const Size(932, 430)),
+      splitPaneFits(const Size(932, 430)),
       isTrue,
       reason: 'wide phone landscape was already side by side',
     );

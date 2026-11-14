@@ -56,16 +56,16 @@ melos:
       run: cd apps/cms && flutter build web -t lib/main_prod.dart
     build-apk:
       description: Release APK of the kasir app (prod env).
-      run: cd apps/kasir && flutter build apk --flavor prod -t lib/main_prod.dart
+      run: cd apps/kasir && flutter build apk --flavor prod --obfuscate --split-debug-info=build/symbols -t lib/main_prod.dart
     build-apk-staging:
       description: Release APK of the kasir app (staging flavor).
-      run: cd apps/kasir && flutter build apk --flavor staging -t lib/main_staging.dart
+      run: cd apps/kasir && flutter build apk --flavor staging --obfuscate --split-debug-info=build/symbols -t lib/main_staging.dart
     build-ipa:
       description: Release IPA of the kasir app (prod env, needs Apple signing).
-      run: cd apps/kasir && flutter build ipa --flavor prod -t lib/main_prod.dart
+      run: cd apps/kasir && flutter build ipa --flavor prod --obfuscate --split-debug-info=build/symbols -t lib/main_prod.dart
     build-ipa-staging:
       description: Release IPA of the kasir app (staging flavor, needs Apple signing).
-      run: cd apps/kasir && flutter build ipa --flavor staging -t lib/main_staging.dart
+      run: cd apps/kasir && flutter build ipa --flavor staging --obfuscate --split-debug-info=build/symbols -t lib/main_staging.dart
     integration:
       description: Kasir integration tests on a device. Pick it with "-- -d <device-id>".
       run: cd apps/kasir && flutter test integration_test --flavor dev
