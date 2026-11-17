@@ -1,9 +1,9 @@
 name: deploy
 
-# master: otomatis setelah workflow "ci" hijau -> production (cms).
-# dev: hanya manual (Actions > deploy > Run workflow > pilih branch dev) -> staging (cms-staging).
-# Urutan: build + test Flutter web CMS -> image -> cek versi terpasang -> deploy -> healthcheck di server
-# -> tes lewat domain publik. Gagal setelah deploy: kembali ke image sebelumnya.
+# master: otomatis setelah workflow "ci" hijau -> production (cms, APK kasir flavor prod).
+# dev: hanya manual (Actions > deploy > Run workflow > pilih branch dev) -> staging (cms-staging, APK kasir flavor staging).
+# CMS: build + test Flutter web -> image nginx -> cek versi -> deploy -> healthcheck di server -> tes publik -> rollback bila gagal.
+# Kasir: build APK release (artifact); tidak menyentuh VPS.
 on:
   workflow_run:
     workflows: [ci]
@@ -18,20 +18,21 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  target:
     # workflow_run juga terpicu oleh CI yang gagal atau PR; hanya push yang lulus yang lanjut.
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    permissions:
-      contents: read
-      packages: write
+    timeout-minutes: 5
     outputs:
       service: ${{ steps.target.outputs.service }}
       environment: ${{ steps.target.outputs.environment }}
+      flavor: ${{ steps.target.outputs.flavor }}
       host: ${{ steps.target.outputs.host }}
+      api_url: ${{ steps.target.outputs.api_url }}
+      image: ${{ steps.target.outputs.image }}
+      sha: ${{ steps.target.outputs.sha }}
       tag: ${{ steps.target.outputs.tag }}
     steps:
       - id: target
@@ -61,9 +62,17 @@ jobs:
             echo "tag=sha-${SHA::12}"
           } >> "$GITHUB_OUTPUT"
 
+  build:
+    needs: target
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ steps.target.outputs.sha }}
+          ref: ${{ needs.target.outputs.sha }}
           persist-credentials: false
 
       # Versi Flutter sama dengan yang dipakai ci.yml.
@@ -80,8 +89,8 @@ jobs:
       # jadi .env.prod CMS diarahkan ke API milik environment target.
       - name: Siapkan file env
         env:
-          API_URL: ${{ steps.target.outputs.api_url }}
-          FLAVOR: ${{ steps.target.outputs.flavor }}
+          API_URL: ${{ needs.target.outputs.api_url }}
+          FLAVOR: ${{ needs.target.outputs.flavor }}
         run: |
           for app in cms kasir; do
             for name in dev staging prod; do
@@ -99,12 +108,6 @@ jobs:
       - name: Build web CMS
         run: cd apps/cms && flutter build web --release -t lib/main_prod.dart
 
-      - name: Siapkan konteks image
-        run: |
-          mkdir dist
-          cp -r apps/cms/build/web dist/web
-          cp deploy/cms/Dockerfile deploy/cms/nginx.conf dist/
-
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -113,22 +116,24 @@ jobs:
       - uses: docker/setup-buildx-action@v3
       - uses: docker/build-push-action@v6
         with:
-          context: dist
+          context: .
+          file: deploy/cms/Dockerfile
+          platforms: linux/amd64
           push: true
-          tags: ${{ steps.target.outputs.image }}:${{ steps.target.outputs.tag }}
+          tags: ${{ needs.target.outputs.image }}:${{ needs.target.outputs.tag }}
 
   deploy:
-    needs: build
+    needs: [target, build]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # Secret VPS_SSH_KEY diisi per environment: production = gha-fe-prod, staging = gha-fe-staging.
-    environment: ${{ needs.build.outputs.environment }}
+    environment: ${{ needs.target.outputs.environment }}
     permissions:
       packages: read
     env:
-      SERVICE: ${{ needs.build.outputs.service }}
-      TAG: ${{ needs.build.outputs.tag }}
-      CMS_HOST: ${{ needs.build.outputs.host }}
+      SERVICE: ${{ needs.target.outputs.service }}
+      TAG: ${{ needs.target.outputs.tag }}
+      CMS_HOST: ${{ needs.target.outputs.host }}
     steps:
       - name: Siapkan SSH
         env:
@@ -177,3 +182,95 @@ jobs:
       - name: Rollback ke versi sebelumnya
         if: failure() && steps.smoke.outcome == 'failure'
         run: ssh vps "rollback $SERVICE"
+
+  apk:
+    # Setelah build lulus (analyze + test), jadi APK tidak dibuat dari kode yang gagal test.
+    needs: [target, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    # Secret ANDROID_* diisi per environment.
+    environment: ${{ needs.target.outputs.environment }}
+    permissions:
+      contents: read
+    env:
+      FLAVOR: ${{ needs.target.outputs.flavor }}
+      ENVIRONMENT: ${{ needs.target.outputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.target.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+      - id: flutter
+        run: |
+          echo "version=$(sed -n 's/^ *flutter-version: *//p' .github/workflows/ci.yml | head -1)" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter.outputs.version }}
+          channel: stable
+          cache: true
+
+      - name: Siapkan file env
+        env:
+          API_URL: ${{ needs.target.outputs.api_url }}
+        run: |
+          for app in cms kasir; do
+            for name in dev staging prod; do
+              cp apps/$app/.env.example apps/$app/.env.$name
+              sed -i "s/^FLAVOR=.*/FLAVOR=$name/" apps/$app/.env.$name
+            done
+          done
+          sed -i "s|^API_BASE_URL=.*|API_BASE_URL=$API_URL|" apps/kasir/.env.$FLAVOR
+
+      # Tanpa keystore build.gradle.kts memakai debug key: boleh untuk staging, tidak untuk production.
+      - name: Siapkan keystore
+        working-directory: apps/kasir/android
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PW: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            if [ "$ENVIRONMENT" = production ]; then echo "Secret keystore belum diset di environment production" >&2; exit 1; fi
+            echo "::warning::Keystore belum diset: APK ditandatangani debug key, hanya untuk perangkat uji"
+            exit 0
+          fi
+          printf '%s' "$KEYSTORE_B64" | base64 -d > app/upload-keystore.jks
+          {
+            echo "storePassword=$STORE_PW"
+            echo "keyPassword=$KEY_PW"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "storeFile=upload-keystore.jks"
+          } > key.properties
+
+      - run: flutter pub get
+      - run: dart run melos run gen_l10n
+
+      - name: Build APK
+        working-directory: apps/kasir
+        # versionCode dari nomor run: selalu naik, Android menolak update dengan versionCode lebih rendah.
+        run: >-
+          flutter build apk --release --flavor "$FLAVOR" -t "lib/main_$FLAVOR.dart"
+          --obfuscate --split-debug-info=build/symbols --build-number=${{ github.run_number }}
+
+      - name: Hapus keystore dari runner
+        if: always()
+        working-directory: apps/kasir/android
+        run: rm -f app/upload-keystore.jks key.properties
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kasir-${{ needs.target.outputs.flavor }}-apk-${{ github.run_number }}
+          path: apps/kasir/build/app/outputs/flutter-apk/app-${{ needs.target.outputs.flavor }}-release.apk
+          retention-days: 30
+      # Symbol untuk membaca stack trace dari build yang di-obfuscate.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kasir-${{ needs.target.outputs.flavor }}-symbols-${{ github.run_number }}
+          path: apps/kasir/build/symbols
+          retention-days: 30
