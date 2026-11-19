@@ -32,7 +32,7 @@ class KasirShell extends StatelessWidget {
     if (kasirDestinations.length < 2) return Scaffold(body: body);
 
     final window = MediaQuery.sizeOf(context);
-    final beside = shell.currentIndex == kasirCheckoutIndex && checkoutBeside(window);
+    final beside = shell.currentIndex == kasirCheckoutIndex && splitPaneFits(window);
     // The Scaffold no longer reserves the bar, so the pill hides while the keyboard is up
     // (it used to sit behind it) and the page leaves room for it, or the checkout does itself.
     final typing = MediaQuery.viewInsetsOf(context).bottom > 0;

@@ -91,68 +91,76 @@ class ResponsiveTable<T> extends StatelessWidget {
       // The gap keeps a right-aligned number off the text column beside it.
       child: Row(spacing: Space.lg, children: children),
     );
-    // shadcn table: one white card, hairline header, zebra rows to keep the eye on a line.
+    // Web table: one white card, a header that stays put while the rows scroll, hairline rules, and a
+    // hover tint so the pointer always shows which row an action belongs to.
+    final headerRow = DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLow,
+        border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
+      ),
+      child: cells([
+        for (final c in visible)
+          Expanded(
+            flex: c.flex,
+            child: Text(c.label, style: header, textAlign: c.numeric ? TextAlign.end : TextAlign.start),
+          ),
+        if (actions != null)
+          SizedBox(
+            width: _actionsWidth,
+            child: Text(UiLocalizations.of(context).actions, style: header, textAlign: TextAlign.end),
+          ),
+      ]),
+    );
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.lg),
       child: Card(
         clipBehavior: Clip.antiAlias,
-        child: ListView.builder(
-          // A short list still has to be pullable.
-          physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: rows.length + 1 + (more == null ? 0 : 1),
-          itemBuilder: (context, i) {
-            if (i == 0) {
-              return DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
-                ),
-                child: cells([
-                  for (final c in visible)
-                    Expanded(
-                      flex: c.flex,
-                      child: Text(c.label, style: header, textAlign: c.numeric ? TextAlign.end : TextAlign.start),
-                    ),
-                  if (actions != null)
-                    SizedBox(
-                      width: _actionsWidth,
-                      child: Text(UiLocalizations.of(context).actions, style: header, textAlign: TextAlign.end),
-                    ),
-                ]),
-              );
-            }
-            if (i > rows.length) return more!;
-            final row = rows[i - 1];
-            return Material(
-              key: ValueKey(rowKey(row)),
-              color: i.isEven ? theme.colorScheme.surfaceContainerLow : Colors.transparent,
-              child: InkWell(
-                onTap: onTap == null ? null : () => onTap!(row),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
-                  ),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: sizes.compact ? 48 : TapSize.min + 8),
-                    child: cells([
-                      for (final c in visible)
-                        Expanded(
-                          flex: c.flex,
-                          child: Align(
-                            alignment: c.numeric ? Alignment.centerRight : Alignment.centerLeft,
-                            child: c.cell(context, row),
-                          ),
+        child: Column(
+          children: [
+            headerRow,
+            Expanded(
+              child: ListView.builder(
+                // A short list still has to be pullable.
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: rows.length + (more == null ? 0 : 1),
+                itemBuilder: (context, i) {
+                  if (i == rows.length) return more!;
+                  final row = rows[i];
+                  return Material(
+                    key: ValueKey(rowKey(row)),
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: onTap == null ? null : () => onTap!(row),
+                      hoverColor: theme.colorScheme.primary.withValues(alpha: 0.05),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
                         ),
-                      if (actions != null)
-                        SizedBox(
-                          width: _actionsWidth,
-                          child: Align(alignment: Alignment.centerRight, child: actions!(context, row)),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: sizes.compact ? 48 : TapSize.min + 8),
+                          child: cells([
+                            for (final c in visible)
+                              Expanded(
+                                flex: c.flex,
+                                child: Align(
+                                  alignment: c.numeric ? Alignment.centerRight : Alignment.centerLeft,
+                                  child: c.cell(context, row),
+                                ),
+                              ),
+                            if (actions != null)
+                              SizedBox(
+                                width: _actionsWidth,
+                                child: Align(alignment: Alignment.centerRight, child: actions!(context, row)),
+                              ),
+                          ]),
                         ),
-                    ]),
-                  ),
-                ),
+                      ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );

@@ -182,6 +182,24 @@ abstract class AppLocalizations {
   /// **'Kata sandi minimal 6 karakter'**
   String get vPasswordLength;
 
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In id, this message translates to:
+  /// **'Tampilan'**
+  String get settingsAppearance;
+
+  /// No description provided for @settingsLanguageHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Bahasa yang dipakai di seluruh CMS.'**
+  String get settingsLanguageHint;
+
+  /// No description provided for @settingsThemeHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Sistem mengikuti pengaturan perangkat.'**
+  String get settingsThemeHint;
+
   /// No description provided for @settingsTitle.
   ///
   /// In id, this message translates to:

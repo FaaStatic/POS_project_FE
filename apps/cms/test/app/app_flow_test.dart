@@ -104,10 +104,13 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('English'));
     await tester.pumpAndSettle();
-    expect(find.text('Signed in as owner'), findsOneWidget);
     await tester.tap(find.text('Dark'));
     await tester.pumpAndSettle();
-    expect(Theme.of(tester.element(find.text('Signed in as owner'))).brightness, Brightness.dark);
+    expect(Theme.of(tester.element(find.text('Settings').first)).brightness, Brightness.dark);
+    expect(find.text('Sign out'), findsNothing, reason: 'sign-out is only in the account menu');
+    await tester.tap(find.byTooltip('Account'));
+    await tester.pumpAndSettle();
+    expect(find.text('Signed in as owner'), findsOneWidget);
     await tester.tap(find.text('Sign out'));
     await tester.pumpAndSettle();
     expect(find.text('Sign in to CMS'), findsOneWidget);
@@ -147,5 +150,30 @@ void main() {
     await tester.tap(find.text('Staf'));
     await tester.pumpAndSettle();
     expect(find.text('Tambah staf'), findsWidgets);
+  });
+
+  testWidgets('medium width folds the sidebar to icons with tooltips, and an icon navigates', (tester) async {
+    adapter
+      ..on('POST', ApiPaths.refresh, (_) => FakeReply(200, loginData('superadmin')))
+      ..on('GET', ApiPaths.users, (_) => FakeReply(200, envelope({'staff': []})));
+    await pumpApp(tester, size: const Size(900, 800));
+    expect(find.byType(NavigationRail), findsNothing);
+    expect(find.byTooltip('Staf'), findsOneWidget);
+    await tester.tap(find.byTooltip('Staf'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tambah staf'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('wide page header puts the page action on the title row', (tester) async {
+    adapter
+      ..on('POST', ApiPaths.refresh, (_) => FakeReply(200, loginData('superadmin')))
+      ..on('GET', ApiPaths.users, (_) => FakeReply(200, envelope({'staff': []})));
+    await pumpApp(tester, size: const Size(1280, 800));
+    await tester.tap(find.text('Staf').first);
+    await tester.pumpAndSettle();
+    final title = tester.getTopLeft(find.descendant(of: find.byType(Scaffold).last, matching: find.text('Staf')).first);
+    final action = tester.getTopLeft(find.widgetWithText(ShadButton, 'Tambah staf').first);
+    expect((action.dy - title.dy).abs(), lessThan(40), reason: 'action and title share one row');
   });
 }

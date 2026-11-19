@@ -25,8 +25,8 @@ class ShellScope extends InheritedWidget {
   bool updateShouldNotify(ShellScope old) => old.openMenu != openMenu;
 }
 
-/// Page frame: white top bar (title, language, account), a wrapping row of
-/// labelled page actions, then the body. The design credit lives on Settings.
+/// Page frame: a slim white top bar (menu on narrow windows, language, account), then the page header
+/// (title on the left, the page's actions on the right) and the body. The design credit lives on Settings.
 class CmsPage extends StatelessWidget {
   const CmsPage({super.key, required this.title, required this.body, this.actions = const [], this.fab});
 
@@ -39,40 +39,67 @@ class CmsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final openMenu = ShellScope.menuOf(context);
     final theme = Theme.of(context);
-    final narrow = MediaQuery.sizeOf(context).width < Breakpoints.medium;
+    final scheme = theme.colorScheme;
+    final heading = Semantics(
+      header: true,
+      child: Text(title, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700), maxLines: 2, overflow: TextOverflow.ellipsis),
+    );
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: openMenu == null
-            ? null
-            : IconButton(
-                icon: const Icon(Iconsax.menu_1_copy),
-                tooltip: AppLocalizations.of(context).openMenu,
-                onPressed: openMenu,
-              ),
-        toolbarHeight: 64,
-        titleSpacing: openMenu == null ? Space.xl : 0,
-        title: Text(title, style: theme.textTheme.titleLarge),
-        backgroundColor: theme.colorScheme.surface,
-        shape: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
-        actions: const [_LanguageButton(), SizedBox(width: Space.xs), _AccountMenu(), SizedBox(width: Space.lg)],
-      ),
       floatingActionButton: fab,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (actions.isNotEmpty)
-            // Phones scroll the action row sideways instead of stacking it.
-            narrow
-                ? SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, 0),
-                    child: Row(children: [for (final a in actions) Padding(padding: const EdgeInsets.only(right: Space.sm), child: a)]),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, 0),
-                    child: Wrap(spacing: Space.sm, runSpacing: Space.sm, children: actions),
-                  ),
+          DecoratedBox(
+            decoration: BoxDecoration(color: scheme.surface, border: Border(bottom: BorderSide(color: scheme.outlineVariant))),
+            child: SizedBox(
+              height: 56,
+              child: Row(
+                children: [
+                  if (openMenu != null)
+                    IconButton(icon: const Icon(Iconsax.menu_1_copy), tooltip: AppLocalizations.of(context).openMenu, onPressed: openMenu)
+                  else
+                    const SizedBox(width: Space.xl),
+                  const Spacer(),
+                  const _LanguageButton(),
+                  const SizedBox(width: Space.xs),
+                  const _AccountMenu(),
+                  const SizedBox(width: Space.lg),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, Space.xs),
+            child: LayoutBuilder(
+              builder: (context, box) {
+                if (actions.isEmpty) return heading;
+                // Wide: actions share the title row, right aligned. Narrow: they scroll sideways under it.
+                if (box.maxWidth >= 760) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // A fixed ceiling, not Flexible: two flex children would split the row in half and squeeze the actions.
+                      ConstrainedBox(constraints: const BoxConstraints(maxWidth: 360), child: Padding(padding: const EdgeInsets.only(top: Space.xs), child: heading)),
+                      const SizedBox(width: Space.lg),
+                      // Expanded so the actions fill the rest of the row and hug its right edge.
+                      Expanded(child: Wrap(alignment: WrapAlignment.end, spacing: Space.sm, runSpacing: Space.sm, children: actions)),
+                    ],
+                  );
+                }
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    heading,
+                    const SizedBox(height: Space.md),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(children: [for (final a in actions) Padding(padding: const EdgeInsets.only(right: Space.sm), child: a)]),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
           Expanded(child: body),
         ],
       ),

@@ -54,6 +54,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vPasswordLength => 'Password must be at least 6 characters';
 
   @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsLanguageHint => 'The language used across the CMS.';
+
+  @override
+  String get settingsThemeHint => 'System follows the device setting.';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override

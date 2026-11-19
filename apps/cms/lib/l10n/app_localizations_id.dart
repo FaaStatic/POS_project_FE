@@ -55,6 +55,15 @@ class AppLocalizationsId extends AppLocalizations {
   String get vPasswordLength => 'Kata sandi minimal 6 karakter';
 
   @override
+  String get settingsAppearance => 'Tampilan';
+
+  @override
+  String get settingsLanguageHint => 'Bahasa yang dipakai di seluruh CMS.';
+
+  @override
+  String get settingsThemeHint => 'Sistem mengikuti pengaturan perangkat.';
+
+  @override
   String get settingsTitle => 'Pengaturan';
 
   @override

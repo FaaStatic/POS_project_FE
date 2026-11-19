@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:ui/ui.dart';
 
@@ -9,6 +8,7 @@ import '../../../../app/di.dart';
 import '../../../../common/pull_refresh.dart';
 import '../../../../app/shell/kasir_page.dart';
 import '../../../../common/labels.dart';
+import '../../../../common/master_detail.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../sync/presentation/bloc/sync_cubit.dart';
 import '../bloc/history_cubit.dart';
@@ -158,7 +158,7 @@ class SaleTile extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.xs),
-        onTap: () => context.push('/sale/${sale.clientRef}'),
+        onTap: () => openDetail(context, sale.clientRef, '/sale/${sale.clientRef}'),
         title: Text(sale.receiptNumber, style: theme.textTheme.titleSmall?.tabular),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: Space.xs),
